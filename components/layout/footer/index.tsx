@@ -1,15 +1,20 @@
+"use client";
+
 import React from "react";
+import { useTranslations } from "next-intl";
 import styles from "./footer.module.scss";
 
 export const Footer: React.FC = () => {
+  const t = useTranslations("landing.footer");
+
   return (
     <footer className={styles.footer}>
       <p>
-        Built for <strong>La Crypta Lightning Hackathons 2026</strong>
+        {t("builtFor")} <strong>{t("hackathonName")}</strong>
       </p>
-      <p>Powered by Lightning Network · Nostr · OpenClaw · NWC</p>
+      <p>{t("poweredBy")}</p>
       <br />
-      <p className={styles.motto}>⚡ Bitcoin o Muerte 💀</p>
+      <p className={styles.motto}>{t("motto")}</p>
     </footer>
   );
 };

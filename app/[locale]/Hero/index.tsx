@@ -1,10 +1,12 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
+import { useTranslations } from "next-intl";
 import Button from "@/components/ui/button";
 import styles from "./hero.module.scss";
 
 export const Hero: React.FC = () => {
+  const t = useTranslations("landing.hero");
   const particlesRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -25,16 +27,15 @@ export const Hero: React.FC = () => {
   return (
     <header className={styles.hero} data-hero>
       <div ref={particlesRef} className={styles.particles} aria-hidden="true" />
-      <div className={styles.badge}>Built for La Crypta Hackathons 2026</div>
-      <h1>BitByBit ⚡</h1>
+      <div className={styles.badge}>{t("badge")}</div>
+      <h1>BitByBit</h1>
       <p className={styles.subtitle}>
-        Earn sats. Build habits. Change lives.
+        {t("tagline")}
         <br />
-        A habit tracker powered by Bitcoin Lightning that rewards task completion
-        with real sats.
+        {t("subtitle")}
       </p>
       <Button href="#use-cases" size="lg">
-        Explore the Vision ↓
+        {t("cta")} ↓
       </Button>
     </header>
   );

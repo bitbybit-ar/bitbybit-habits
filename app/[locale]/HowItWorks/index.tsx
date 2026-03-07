@@ -1,23 +1,28 @@
+"use client";
+
 import React from "react";
+import { useTranslations } from "next-intl";
 import Section from "@/components/ui/section";
 import SectionTitle from "@/components/ui/section-title";
 import Card from "@/components/ui/card";
 import styles from "./how-it-works.module.scss";
 
-const STEPS = [
-  { number: 1, title: "Fund a Wallet", description: "A sponsor — parent, community, or yourself — loads sats into a Lightning wallet" },
-  { number: 2, title: "Set Up Tasks", description: "Create habits and daily tasks with sat rewards attached to each one" },
-  { number: 3, title: "Get Reminded", description: "AI bot sends Duolingo-style reminders. Motivational, persistent, fun." },
-  { number: 4, title: "Complete → Earn ⚡", description: "Finish the task, get verified, receive sats instantly via Lightning" },
-];
-
 export const HowItWorks: React.FC = () => {
+  const t = useTranslations("landing.howItWorks");
+
+  const STEPS = [
+    { number: 1, title: t("step1Title"), description: t("step1Desc") },
+    { number: 2, title: t("step2Title"), description: t("step2Desc") },
+    { number: 3, title: t("step3Title"), description: t("step3Desc") },
+    { number: 4, title: t("step4Title"), description: t("step4Desc") },
+  ];
+
   return (
     <Section id="how-it-works" aria-labelledby="how-title">
       <SectionTitle
         id="how-title"
-        title="How It Works"
-        subtitle="Four simple steps from task to sats"
+        title={t("title")}
+        subtitle={t("subtitle")}
       />
       <div className={styles.steps}>
         {STEPS.map((step) => (
