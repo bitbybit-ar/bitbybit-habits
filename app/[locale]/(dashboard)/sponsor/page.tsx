@@ -206,6 +206,53 @@ export default function SponsorDashboard() {
     }
   }, []);
 
+  const handleLeaveFamily = useCallback(async (familyId: string) => {
+    try {
+      const res = await fetch("/api/families/leave", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ family_id: familyId }),
+      });
+      if (res.ok) {
+        setFamilies((prev) => prev.filter((f) => f.id !== familyId));
+      }
+    } catch {
+      // Silently handle
+    }
+  }, []);
+
+  const handleDeleteFamily = useCallback(async (familyId: string) => {
+    try {
+      const res = await fetch(`/api/families/${familyId}`, { method: "DELETE" });
+      if (res.ok) {
+        setFamilies((prev) => prev.filter((f) => f.id !== familyId));
+      }
+    } catch {
+      // Silently handle
+    }
+  }, []);
+
+  const handleRoleChange = useCallback(async (familyId: string, userId: string, newRole: string) => {
+    try {
+      const res = await fetch("/api/families/role", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ family_id: familyId, user_id: userId, new_role: newRole }),
+      });
+      if (res.ok) {
+        setFamilies((prev) =>
+          prev.map((f) =>
+            f.id === familyId
+              ? { ...f, members: f.members.map((m) => m.user_id === userId ? { ...m, role: newRole } : m) }
+              : f
+          )
+        );
+      }
+    } catch {
+      // Silently handle
+    }
+  }, []);
+
   const handleLogout = useCallback(async () => {
     try {
       await fetch("/api/auth/logout", { method: "POST" });
@@ -365,14 +412,24 @@ export default function SponsorDashboard() {
           {families.length === 0 ? (
             <p className={styles.loadingText}>{t("sponsorDashboard.noFamily")}</p>
           ) : (
-            families.map((family) => (
-              <FamilyCard
-                key={family.id}
-                name={family.name}
-                inviteCode={family.invite_code}
-                members={family.members}
-              />
-            ))
+            families.map((family) => {
+              const myMembership = family.members.find((m) => m.user_id === session?.user_id);
+              return (
+                <FamilyCard
+                  key={family.id}
+                  familyId={family.id}
+                  name={family.name}
+                  inviteCode={family.invite_code}
+                  members={family.members}
+                  createdBy={family.created_by}
+                  currentUserId={session?.user_id ?? ""}
+                  currentUserRole={myMembership?.role}
+                  onLeave={handleLeaveFamily}
+                  onDelete={handleDeleteFamily}
+                  onRoleChange={handleRoleChange}
+                />
+              );
+            })
           )}
         </div>
       )}
