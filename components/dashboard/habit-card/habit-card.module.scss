@@ -61,6 +61,13 @@
   text-overflow: ellipsis;
 }
 
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: $spacing-8;
+  flex-shrink: 0;
+}
+
 .satBadge {
   display: inline-flex;
   align-items: center;
@@ -73,6 +80,37 @@
   font-weight: $font-weight-bold;
   flex-shrink: 0;
   line-height: 1;
+}
+
+.habitActions {
+  display: flex;
+  gap: 4px;
+}
+
+.editBtn,
+.deleteBtn {
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: $border-radius-full;
+  background: rgba(255, 255, 255, 0.05);
+  color: $color-text-secondary;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background 0.2s, color 0.2s;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: $color-text-primary;
+  }
+}
+
+.deleteBtn:hover {
+  background: rgba($color-error, 0.15);
+  color: $color-error;
 }
 
 .meta {

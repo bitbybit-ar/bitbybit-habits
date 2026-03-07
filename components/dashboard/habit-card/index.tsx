@@ -1,7 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { CheckIcon, FlameIcon, BoltIcon, ClockIcon } from "@/components/icons";
+import { CheckIcon, FlameIcon, BoltIcon, ClockIcon, PencilIcon } from "@/components/icons";
+import { EditHabitModal } from "@/components/dashboard/edit-habit-modal";
 import { cn } from "@/lib/utils";
 import type { Habit, Completion } from "@/lib/types";
 import styles from "./habit-card.module.scss";
@@ -11,6 +13,9 @@ interface HabitCardProps {
   completions: Completion[];
   onComplete: (habitId: string) => void;
   hideAction?: boolean;
+  currentUserId?: string;
+  onEdit?: (habit: Habit) => void;
+  onDelete?: (habitId: string) => void;
 }
 
 function getScheduleText(habit: Habit, t: ReturnType<typeof useTranslations>): string {
@@ -107,8 +112,10 @@ function getTodayStatus(habitId: string, completions: Completion[]): TodayStatus
   return "incomplete";
 }
 
-export function HabitCard({ habit, completions, onComplete, hideAction }: HabitCardProps) {
+export function HabitCard({ habit, completions, onComplete, hideAction, currentUserId, onEdit, onDelete }: HabitCardProps) {
   const t = useTranslations();
+  const [editing, setEditing] = useState(false);
+  const isCreator = currentUserId === habit.created_by;
   const last7Days = getLast7Days();
   const scheduleText = getScheduleText(habit, t);
   const currentStreak = calculateCurrentStreak(habit.id, completions);
@@ -131,9 +138,31 @@ export function HabitCard({ habit, completions, onComplete, hideAction }: HabitC
             )}
           </div>
         </div>
-        <div className={styles.satBadge}>
-          <BoltIcon size={12} />
-          {habit.sat_reward} {t("sats.sats")}
+        <div className={styles.headerRight}>
+          <div className={styles.satBadge}>
+            <BoltIcon size={12} />
+            {habit.sat_reward} {t("sats.sats")}
+          </div>
+          {isCreator && onEdit && onDelete && (
+            <div className={styles.habitActions}>
+              <button
+                className={styles.editBtn}
+                onClick={() => setEditing(true)}
+                title={t("common.edit")}
+              >
+                <PencilIcon size={14} />
+              </button>
+              <button
+                className={styles.deleteBtn}
+                onClick={() => {
+                  if (confirm(t("habits.confirmDelete"))) onDelete(habit.id);
+                }}
+                title={t("common.delete")}
+              >
+                ✕
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
@@ -199,6 +228,16 @@ export function HabitCard({ habit, completions, onComplete, hideAction }: HabitC
             </div>
           )}
         </div>
+      )}
+      {editing && (
+        <EditHabitModal
+          habit={habit}
+          onSave={(updated) => {
+            setEditing(false);
+            if (onEdit) onEdit(updated);
+          }}
+          onClose={() => setEditing(false)}
+        />
       )}
     </div>
   );
