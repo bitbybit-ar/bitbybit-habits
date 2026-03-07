@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
 import { getDb } from "@/lib/db";
+import { createNotification } from "@/lib/notifications";
 import type { ApiResponse, Completion, Habit } from "@/lib/types";
 
 export async function POST(request: NextRequest) {
@@ -71,6 +72,28 @@ export async function POST(request: NextRequest) {
       VALUES (${habit_id}, ${session.user_id}, ${today}, ${status}, ${note ?? null}, ${evidence_url ?? null})
       RETURNING *
     ` as Completion[];
+
+    // Notify sponsor(s) in the family if pending approval
+    if (status === "pending" && habit.family_id) {
+      try {
+        const sponsors = await db`
+          SELECT fm.user_id FROM family_members fm
+          WHERE fm.family_id = ${habit.family_id} AND fm.role = 'sponsor'
+        `;
+        const displayName = session.display_name || session.username;
+        for (const sponsor of sponsors) {
+          await createNotification(
+            sponsor.user_id,
+            "completion_pending",
+            "Habit completed!",
+            `${displayName} completed "${habit.name}" and is waiting for approval.`,
+            { completion_id: completions[0].id, habit_id: habit.id, kid_name: displayName }
+          );
+        }
+      } catch (notifError) {
+        console.error("Error creating notification:", notifError);
+      }
+    }
 
     return NextResponse.json<ApiResponse<Completion>>({
       success: true,

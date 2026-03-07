@@ -119,6 +119,23 @@ CREATE TABLE IF NOT EXISTS wallets (
 );
 
 -- ============================================================
+-- NOTIFICACIONES
+-- ============================================================
+CREATE TABLE IF NOT EXISTS notifications (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES users(id),
+    type TEXT NOT NULL,
+    title TEXT NOT NULL,
+    body TEXT NOT NULL,
+    read BOOLEAN NOT NULL DEFAULT false,
+    metadata JSONB,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE INDEX idx_notifications_user ON notifications(user_id);
+CREATE INDEX idx_notifications_unread ON notifications(user_id, read) WHERE read = false;
+
+-- ============================================================
 -- FUNCION: actualizar updated_at automaticamente
 -- ============================================================
 CREATE OR REPLACE FUNCTION update_updated_at()

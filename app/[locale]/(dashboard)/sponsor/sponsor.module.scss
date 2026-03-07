@@ -121,6 +121,56 @@
   font-size: $font-size-base;
 }
 
+.paymentTable {
+  overflow-x: auto;
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+
+    th, td {
+      padding: $spacing-8 $spacing-12;
+      text-align: left;
+      font-size: 0.875rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    th {
+      font-weight: 600;
+      color: $color-text-primary;
+    }
+
+    td {
+      color: $color-text-secondary;
+    }
+  }
+}
+
+.statusBadge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 12px;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.retryBtn {
+  padding: $spacing-4 $spacing-12;
+  background: $color-error;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background 0.15s;
+
+  &:hover {
+    background: darken($color-error, 10%);
+  }
+}
+
 .badge {
   display: inline-flex;
   align-items: center;

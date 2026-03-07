@@ -1,0 +1,101 @@
+@use "@/styles/colors" as *;
+@use "@/styles/spacing" as *;
+
+.wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.bell {
+  background: none;
+  border: none;
+  font-size: 1.4rem;
+  cursor: pointer;
+  position: relative;
+  padding: $spacing-4;
+  line-height: 1;
+}
+
+.badge {
+  position: absolute;
+  top: -2px;
+  right: -4px;
+  background: $color-error;
+  color: white;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  font-size: 0.65rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+.dropdown {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  margin-top: $spacing-8;
+  width: 320px;
+  max-height: 400px;
+  overflow-y: auto;
+  background: $color-bg-dark-2;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  z-index: 100;
+}
+
+.empty {
+  padding: $spacing-16;
+  text-align: center;
+  color: $color-text-secondary;
+  font-size: 0.875rem;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.item {
+  padding: $spacing-12 $spacing-16;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  cursor: pointer;
+  transition: background 0.15s;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.03);
+  }
+
+  strong {
+    display: block;
+    font-size: 0.85rem;
+    color: $color-text-primary;
+  }
+
+  p {
+    margin: $spacing-4 0;
+    font-size: 0.8rem;
+    color: $color-text-secondary;
+  }
+
+  time {
+    font-size: 0.7rem;
+    color: $color-text-secondary;
+  }
+}
+
+.unread {
+  background: rgba($color-primary, 0.08);
+}
+
+.read {
+  background: transparent;
+}

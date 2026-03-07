@@ -84,6 +84,22 @@ export interface Wallet {
   created_at: string;
 }
 
+export interface Notification {
+  id: string;
+  user_id: string;
+  type: string;
+  title: string;
+  body: string;
+  read: boolean;
+  metadata: Record<string, unknown> | null;
+  created_at: string;
+}
+
+export interface PaymentWithDetails extends Payment {
+  habit_name: string;
+  other_user_display_name: string;
+}
+
 // ============================================================
 // API types
 // ============================================================

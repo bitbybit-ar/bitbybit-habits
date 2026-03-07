@@ -261,6 +261,38 @@
       "motto": "Bitcoin o Muerte"
     }
   },
+  "payments": {
+    "title": "Payments",
+    "noPayments": "No payments yet",
+    "status": {
+      "pending": "Pending",
+      "paid": "Paid",
+      "failed": "Failed"
+    },
+    "retryButton": "Retry",
+    "retrySuccess": "Payment queued for retry",
+    "retryError": "Could not retry payment",
+    "columns": {
+      "habit": "Habit",
+      "user": "User",
+      "amount": "Amount",
+      "status": "Status",
+      "date": "Date",
+      "actions": "Actions"
+    }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "empty": "No notifications",
+    "markAsRead": "Mark as read",
+    "types": {
+      "completion_pending": "Habit completed",
+      "completion_approved": "Habit approved",
+      "completion_rejected": "Habit rejected",
+      "payment_received": "Payment received",
+      "payment_failed": "Payment failed"
+    }
+  },
   "sponsorDashboard": {
     "pendingApprovals": "Pending approvals",
     "habitsCreated": "Habits created",

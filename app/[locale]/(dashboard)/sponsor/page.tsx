@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { LogOutIcon, BoltIcon, ClockIcon, PencilIcon } from "@/components/icons";
+import { NotificationBell } from "@/components/dashboard/notification-bell";
 import { StatsBar } from "@/components/dashboard/stats-bar";
 import { PendingList } from "@/components/dashboard/pending-list";
 import type { PendingCompletion } from "@/components/dashboard/pending-list";
@@ -12,7 +13,7 @@ import { FamilyCard } from "@/components/dashboard/family-card";
 import { HabitCard } from "@/components/dashboard/habit-card";
 import { Onboarding } from "@/components/dashboard/onboarding";
 import { cn } from "@/lib/utils";
-import type { Habit, Completion, AuthSession } from "@/lib/types";
+import type { Habit, Completion, AuthSession, PaymentWithDetails } from "@/lib/types";
 import styles from "./sponsor.module.scss";
 import statsStyles from "@/components/dashboard/stats-bar/stats-bar.module.scss";
 
@@ -30,7 +31,13 @@ interface FamilyWithMembers {
   }[];
 }
 
-type TabType = "pending" | "habits" | "create" | "family";
+type TabType = "pending" | "habits" | "create" | "family" | "payments";
+
+const STATUS_COLORS: Record<string, string> = {
+  pending: "#FF9F43",
+  paid: "#4CAF7D",
+  failed: "#EE5A5A",
+};
 
 export default function SponsorDashboard() {
   const t = useTranslations();
@@ -41,6 +48,8 @@ export default function SponsorDashboard() {
   const [pendingCompletions, setPendingCompletions] = useState<PendingCompletion[]>([]);
   const [families, setFamilies] = useState<FamilyWithMembers[]>([]);
   const [totalPaid, setTotalPaid] = useState(0);
+  const [payments, setPayments] = useState<PaymentWithDetails[]>([]);
+  const [paymentsLoading, setPaymentsLoading] = useState(false);
   const [loading, setLoading] = useState(true);
   const [showOnboarding, setShowOnboarding] = useState(false);
 
@@ -83,9 +92,48 @@ export default function SponsorDashboard() {
     }
   }, []);
 
+  const fetchPayments = useCallback(async () => {
+    setPaymentsLoading(true);
+    try {
+      const res = await fetch("/api/payments?role=sponsor");
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success) setPayments(data.data ?? []);
+      }
+    } catch {
+      // Silently handle
+    } finally {
+      setPaymentsLoading(false);
+    }
+  }, []);
+
+  const handleRetryPayment = useCallback(async (paymentId: string) => {
+    try {
+      const res = await fetch("/api/payments/retry", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ payment_id: paymentId }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success) {
+          setPayments((prev) =>
+            prev.map((p) => (p.id === paymentId ? { ...p, status: "pending" } : p))
+          );
+        }
+      }
+    } catch {
+      // Silently handle
+    }
+  }, []);
+
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  useEffect(() => {
+    if (activeTab === "payments") fetchPayments();
+  }, [activeTab, fetchPayments]);
 
   useEffect(() => {
     if (!loading && habits.length === 0 && families.length === 0) {
@@ -198,6 +246,7 @@ export default function SponsorDashboard() {
     { key: "habits", label: t("dashboard.myHabits") },
     { key: "create", label: t("habits.createHabit") },
     { key: "family", label: t("family.myFamily") },
+    { key: "payments", label: t("payments.title") },
   ];
 
   return (
@@ -206,10 +255,13 @@ export default function SponsorDashboard() {
         <h1 className={styles.title}>
           {t("dashboard.welcome")}, {displayName}
         </h1>
-        <button className={styles.logoutButton} onClick={handleLogout}>
-          <LogOutIcon size={18} />
-          <span>{t("auth.logout")}</span>
-        </button>
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          <NotificationBell />
+          <button className={styles.logoutButton} onClick={handleLogout}>
+            <LogOutIcon size={18} />
+            <span>{t("auth.logout")}</span>
+          </button>
+        </div>
       </div>
 
       {showOnboarding ? (
@@ -316,6 +368,60 @@ export default function SponsorDashboard() {
                 members={family.members}
               />
             ))
+          )}
+        </div>
+      )}
+
+      {activeTab === "payments" && (
+        <div className={styles.section}>
+          <h2 className={styles.sectionTitle}>{t("payments.title")}</h2>
+          {paymentsLoading ? (
+            <p className={styles.loadingText}>{t("common.loading")}</p>
+          ) : payments.length === 0 ? (
+            <p className={styles.loadingText}>{t("payments.noPayments")}</p>
+          ) : (
+            <div className={styles.paymentTable}>
+              <table>
+                <thead>
+                  <tr>
+                    <th>{t("payments.columns.habit")}</th>
+                    <th>{t("payments.columns.user")}</th>
+                    <th>{t("payments.columns.amount")}</th>
+                    <th>{t("payments.columns.status")}</th>
+                    <th>{t("payments.columns.date")}</th>
+                    <th>{t("payments.columns.actions")}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {payments.map((p) => (
+                    <tr key={p.id}>
+                      <td>{p.habit_name}</td>
+                      <td>{p.other_user_display_name}</td>
+                      <td>{p.amount_sats} sats</td>
+                      <td>
+                        <span
+                          className={styles.statusBadge}
+                          style={{ backgroundColor: STATUS_COLORS[p.status] }}
+                        >
+                          {t(`payments.status.${p.status}`)}
+                        </span>
+                      </td>
+                      <td>{new Date(p.created_at).toLocaleDateString()}</td>
+                      <td>
+                        {p.status === "failed" && (
+                          <button
+                            className={styles.retryBtn}
+                            onClick={() => handleRetryPayment(p.id)}
+                          >
+                            {t("payments.retryButton")}
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </div>
       )}
