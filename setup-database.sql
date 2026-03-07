@@ -11,7 +11,6 @@ CREATE TABLE IF NOT EXISTS users (
     username TEXT UNIQUE NOT NULL,
     password_hash TEXT NOT NULL,
     display_name TEXT NOT NULL,
-    role TEXT NOT NULL CHECK (role IN ('sponsor', 'kid')),
     avatar_url TEXT,
     locale TEXT NOT NULL DEFAULT 'es',
     created_at TIMESTAMP DEFAULT NOW(),
@@ -46,7 +45,7 @@ CREATE TABLE IF NOT EXISTS family_members (
 -- ============================================================
 CREATE TABLE IF NOT EXISTS habits (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    family_id UUID NOT NULL REFERENCES families(id) ON DELETE CASCADE,
+    family_id UUID REFERENCES families(id) ON DELETE CASCADE,
     created_by UUID NOT NULL REFERENCES users(id),
     assigned_to UUID NOT NULL REFERENCES users(id),
     name TEXT NOT NULL,
@@ -112,13 +111,11 @@ CREATE INDEX idx_payments_status ON payments(status);
 -- ============================================================
 CREATE TABLE IF NOT EXISTS wallets (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id UUID NOT NULL REFERENCES users(id),
-    family_id UUID NOT NULL REFERENCES families(id),
+    user_id UUID NOT NULL REFERENCES users(id) UNIQUE,
     nwc_url TEXT NOT NULL,
     label TEXT,
     active BOOLEAN NOT NULL DEFAULT true,
-    created_at TIMESTAMP DEFAULT NOW(),
-    UNIQUE(user_id, family_id)
+    created_at TIMESTAMP DEFAULT NOW()
 );
 
 -- ============================================================

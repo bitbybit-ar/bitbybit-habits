@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { invite_code } = body as { invite_code: string };
+    const { invite_code, role } = body as { invite_code: string; role?: string };
 
     if (!invite_code || invite_code.trim().length === 0) {
       return NextResponse.json<ApiResponse>(
@@ -55,10 +55,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Add user as member with their role
+    // Add user as member with selected role (defaults to kid)
+    const memberRole = role === "sponsor" ? "sponsor" : "kid";
+
     const members = await db`
       INSERT INTO family_members (family_id, user_id, role)
-      VALUES (${family.id}, ${session.user_id}, ${session.role})
+      VALUES (${family.id}, ${session.user_id}, ${memberRole})
       RETURNING *
     ` as FamilyMember[];
 

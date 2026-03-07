@@ -8,7 +8,6 @@ export interface User {
   username: string;
   password_hash: string;
   display_name: string;
-  role: "sponsor" | "kid";
   avatar_url?: string;
   locale: "es" | "en";
   created_at: string;
@@ -33,7 +32,7 @@ export interface FamilyMember {
 
 export interface Habit {
   id: string;
-  family_id: string;
+  family_id?: string;
   created_by: string;
   assigned_to: string;
   name: string;
@@ -79,7 +78,6 @@ export interface Payment {
 export interface Wallet {
   id: string;
   user_id: string;
-  family_id: string;
   nwc_url: string;
   label?: string;
   active: boolean;
@@ -95,7 +93,6 @@ export interface AuthSession {
   email: string;
   username: string;
   display_name: string;
-  role: "sponsor" | "kid";
   locale: "es" | "en";
 }
 

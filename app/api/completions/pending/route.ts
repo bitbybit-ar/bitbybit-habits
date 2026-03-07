@@ -24,13 +24,6 @@ export async function GET() {
     );
   }
 
-  if (session.role !== "sponsor") {
-    return NextResponse.json<ApiResponse>(
-      { success: false, error: "Solo los sponsors pueden ver completaciones pendientes" },
-      { status: 403 }
-    );
-  }
-
   const db = getDb();
 
   try {

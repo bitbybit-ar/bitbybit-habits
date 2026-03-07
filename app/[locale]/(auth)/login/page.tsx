@@ -33,8 +33,7 @@ export default function LoginPage() {
         return;
       }
 
-      const role = data.data.role;
-      router.push(role === "sponsor" ? "/sponsor" : "/kid");
+      router.push("/dashboard");
     } catch {
       setError(t("auth.connectionError"));
     } finally {

@@ -142,16 +142,7 @@
       "case2Item1": "Community funds a reward pool",
       "case2Item2": "Members earn sats for verified workouts",
       "case2Item3": "Integration with open-source fitness trackers (Nostr-based, self-hosted)",
-      "case2Item4": "Nostr zaps for celebrating milestones together",
-      "case3Tag": "Assisted Living",
-      "case3Title": "Dignity Through Achievement",
-      "case3Desc": "For people with mental health conditions who struggle with motivation for daily tasks. Family members fund the wallet as support — but instead of just receiving money, the person earns it by completing daily life tasks.",
-      "case3Item1": "Clean the apartment, make the bed, take out trash",
-      "case3Item2": "Help family members with simple tasks",
-      "case3Item3": "Tasks that are genuinely difficult due to lack of motivation",
-      "case3Item4": "Transforms financial support from charity into achievement",
-      "case3Item5": "Preserves dignity — earning, not just asking",
-      "case3Item6": "Small wins create momentum and help with recovery"
+      "case2Item4": "Nostr zaps for celebrating milestones together"
     },
     "whyLightning": {
       "title": "Why Bitcoin Lightning?",
@@ -167,10 +158,7 @@
       "reason3Desc": "Anyone with a phone can receive rewards. No bank account, no KYC, no borders.",
       "reason4Stat": "Permissionless",
       "reason4Title": "Open Protocol",
-      "reason4Desc": "No company controls it. No one can freeze funds or shut you down. Money that's truly yours.",
-      "reason5Stat": "Programmable",
-      "reason5Title": "Smart Rewards",
-      "reason5Desc": "Automate payments with code. Bots can send sats. Streaks can trigger bonuses. APIs for everything."
+      "reason4Desc": "No company controls it. No one can freeze funds or shut you down. Money that's truly yours."
     },
     "techStack": {
       "title": "Tech Stack",
@@ -178,9 +166,7 @@
       "lightningDesc": "Instant, near-free micro-payments. LNURL for easy withdrawals. NWC for wallet integration. Bolt12 for recurring rewards.",
       "nostrDesc": "Decentralized identity & login. Zaps for social rewards. NIP-05 verification. No accounts, no emails.",
       "openclawDesc": "AI-powered bot for Duolingo-style reminders, notifications about rewards, and smart task scheduling.",
-      "cashuDesc": "Ecash mints for instant, private micro-rewards. Perfect for kids' wallets — no on-chain fees.",
-      "whisperDesc": "Speech-to-text for accessibility. Complete tasks by voice. No screen needed.",
-      "ollamaDesc": "Privacy-first insights and habit analysis. All processing on-device. Your data never leaves."
+      "whisperDesc": "Speech-to-text for accessibility. Complete tasks by voice. No screen needed."
     },
     "roadmap": {
       "title": "Hackathon Roadmap",

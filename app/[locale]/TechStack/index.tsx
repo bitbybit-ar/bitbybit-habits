@@ -13,9 +13,7 @@ export const TechStack: React.FC = () => {
     { emoji: "⚡", title: "Lightning Network", description: t("lightningDesc") },
     { emoji: "🔐", title: "Nostr", description: t("nostrDesc") },
     { emoji: "🤖", title: "OpenClaw", description: t("openclawDesc") },
-    { emoji: "🍬", title: "Cashu", description: t("cashuDesc") },
     { emoji: "🗣️", title: "Whisper", description: t("whisperDesc") },
-    { emoji: "🧠", title: "Local AI (Ollama)", description: t("ollamaDesc") },
   ];
 
   return (

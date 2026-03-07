@@ -13,13 +13,6 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  if (session.role !== "sponsor") {
-    return NextResponse.json<ApiResponse>(
-      { success: false, error: "Solo los sponsors pueden aprobar completaciones" },
-      { status: 403 }
-    );
-  }
-
   const db = getDb();
 
   try {

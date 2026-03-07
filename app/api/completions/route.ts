@@ -13,13 +13,6 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  if (session.role !== "kid") {
-    return NextResponse.json<ApiResponse>(
-      { success: false, error: "Solo los kids pueden completar habitos" },
-      { status: 403 }
-    );
-  }
-
   const db = getDb();
 
   try {
@@ -114,8 +107,9 @@ export async function GET(request: NextRequest) {
       completions = await db`
         SELECT c.* FROM completions c
         INNER JOIN habits h ON h.id = c.habit_id
-        INNER JOIN family_members fm ON fm.family_id = h.family_id AND fm.user_id = ${session.user_id}
+        LEFT JOIN family_members fm ON fm.family_id = h.family_id AND fm.user_id = ${session.user_id}
         WHERE c.user_id = ${session.user_id}
+          AND (h.family_id IS NULL OR fm.id IS NOT NULL)
           AND c.date >= ${dateFrom}
           AND c.date <= ${dateTo}
         ORDER BY c.date DESC, c.completed_at DESC
@@ -124,8 +118,9 @@ export async function GET(request: NextRequest) {
       completions = await db`
         SELECT c.* FROM completions c
         INNER JOIN habits h ON h.id = c.habit_id
-        INNER JOIN family_members fm ON fm.family_id = h.family_id AND fm.user_id = ${session.user_id}
+        LEFT JOIN family_members fm ON fm.family_id = h.family_id AND fm.user_id = ${session.user_id}
         WHERE c.user_id = ${session.user_id}
+          AND (h.family_id IS NULL OR fm.id IS NOT NULL)
           AND c.date >= ${dateFrom}
         ORDER BY c.date DESC, c.completed_at DESC
       ` as Completion[];
@@ -133,8 +128,9 @@ export async function GET(request: NextRequest) {
       completions = await db`
         SELECT c.* FROM completions c
         INNER JOIN habits h ON h.id = c.habit_id
-        INNER JOIN family_members fm ON fm.family_id = h.family_id AND fm.user_id = ${session.user_id}
+        LEFT JOIN family_members fm ON fm.family_id = h.family_id AND fm.user_id = ${session.user_id}
         WHERE c.user_id = ${session.user_id}
+          AND (h.family_id IS NULL OR fm.id IS NOT NULL)
           AND c.date <= ${dateTo}
         ORDER BY c.date DESC, c.completed_at DESC
       ` as Completion[];
@@ -142,8 +138,9 @@ export async function GET(request: NextRequest) {
       completions = await db`
         SELECT c.* FROM completions c
         INNER JOIN habits h ON h.id = c.habit_id
-        INNER JOIN family_members fm ON fm.family_id = h.family_id AND fm.user_id = ${session.user_id}
+        LEFT JOIN family_members fm ON fm.family_id = h.family_id AND fm.user_id = ${session.user_id}
         WHERE c.user_id = ${session.user_id}
+          AND (h.family_id IS NULL OR fm.id IS NOT NULL)
         ORDER BY c.date DESC, c.completed_at DESC
       ` as Completion[];
     }

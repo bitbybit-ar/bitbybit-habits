@@ -21,33 +21,20 @@ export async function GET() {
   const today = new Date().toISOString().split("T")[0];
 
   try {
-    let habits: HabitWithCompletion[];
-
-    if (session.role === "kid") {
-      // Kid: habits assigned to them, within their families
-      habits = await db`
-        SELECT h.*,
-          CASE WHEN c.id IS NOT NULL THEN true ELSE false END AS completed_today
-        FROM habits h
-        INNER JOIN family_members fm ON fm.family_id = h.family_id AND fm.user_id = ${session.user_id}
-        LEFT JOIN completions c ON c.habit_id = h.id AND c.user_id = ${session.user_id} AND c.date = ${today}
-        WHERE h.assigned_to = ${session.user_id}
-          AND h.active = true
-        ORDER BY h.created_at DESC
-      ` as HabitWithCompletion[];
-    } else {
-      // Sponsor: habits created by them, within their families
-      habits = await db`
-        SELECT h.*,
-          CASE WHEN c.id IS NOT NULL THEN true ELSE false END AS completed_today
-        FROM habits h
-        INNER JOIN family_members fm ON fm.family_id = h.family_id AND fm.user_id = ${session.user_id}
-        LEFT JOIN completions c ON c.habit_id = h.id AND c.user_id = h.assigned_to AND c.date = ${today}
-        WHERE h.created_by = ${session.user_id}
-          AND h.active = true
-        ORDER BY h.created_at DESC
-      ` as HabitWithCompletion[];
-    }
+    // Get all habits: self-assigned (no family) + family habits where user is member
+    const habits = await db`
+      SELECT DISTINCT h.*,
+        CASE WHEN c.id IS NOT NULL THEN true ELSE false END AS completed_today
+      FROM habits h
+      LEFT JOIN family_members fm ON fm.family_id = h.family_id AND fm.user_id = ${session.user_id}
+      LEFT JOIN completions c ON c.habit_id = h.id AND c.user_id = h.assigned_to AND c.date = ${today}
+      WHERE (
+        (h.family_id IS NULL AND (h.assigned_to = ${session.user_id} OR h.created_by = ${session.user_id}))
+        OR (h.family_id IS NOT NULL AND fm.id IS NOT NULL AND (h.assigned_to = ${session.user_id} OR h.created_by = ${session.user_id}))
+      )
+        AND h.active = true
+      ORDER BY h.created_at DESC
+    ` as HabitWithCompletion[];
 
     return NextResponse.json<ApiResponse<HabitWithCompletion[]>>({
       success: true,
@@ -69,13 +56,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json<ApiResponse>(
       { success: false, error: "No autenticado" },
       { status: 401 }
-    );
-  }
-
-  if (session.role !== "sponsor") {
-    return NextResponse.json<ApiResponse>(
-      { success: false, error: "Solo los sponsors pueden crear habitos" },
-      { status: 403 }
     );
   }
 
@@ -107,48 +87,62 @@ export async function POST(request: NextRequest) {
       family_id: string;
     };
 
-    if (!name || !color || sat_reward == null || !schedule_type || !verification_type || !assigned_to || !family_id) {
+    if (!name || !color || !schedule_type || !verification_type) {
       return NextResponse.json<ApiResponse>(
         { success: false, error: "Faltan campos obligatorios" },
         { status: 400 }
       );
     }
 
-    // Validate sponsor owns the family
-    const sponsorMembership = await db`
-      SELECT id FROM family_members
-      WHERE family_id = ${family_id}
-        AND user_id = ${session.user_id}
-        AND role = 'sponsor'
-    `;
+    const isSelfAssigned = !assigned_to || assigned_to === session.user_id;
 
-    if (sponsorMembership.length === 0) {
-      return NextResponse.json<ApiResponse>(
-        { success: false, error: "No sos sponsor de esta familia" },
-        { status: 403 }
-      );
-    }
+    if (isSelfAssigned) {
+      // Self-assigned habit: no reward, family optional
+    } else {
+      // Assigning to someone else: must be sponsor in the family
+      if (!family_id) {
+        return NextResponse.json<ApiResponse>(
+          { success: false, error: "Se requiere family_id para asignar habitos a otros" },
+          { status: 400 }
+        );
+      }
 
-    // Validate assigned_to is a kid member of the family
-    const kidMembership = await db`
-      SELECT id FROM family_members
-      WHERE family_id = ${family_id}
-        AND user_id = ${assigned_to}
-        AND role = 'kid'
-    `;
+      const sponsorMembership = await db`
+        SELECT id FROM family_members
+        WHERE family_id = ${family_id}
+          AND user_id = ${session.user_id}
+          AND role = 'sponsor'
+      `;
 
-    if (kidMembership.length === 0) {
-      return NextResponse.json<ApiResponse>(
-        { success: false, error: "El usuario asignado no es un kid de esta familia" },
-        { status: 400 }
-      );
+      if (sponsorMembership.length === 0) {
+        return NextResponse.json<ApiResponse>(
+          { success: false, error: "No sos sponsor de esta familia" },
+          { status: 403 }
+        );
+      }
+
+      const assigneeMembership = await db`
+        SELECT id FROM family_members
+        WHERE family_id = ${family_id}
+          AND user_id = ${assigned_to}
+      `;
+
+      if (assigneeMembership.length === 0) {
+        return NextResponse.json<ApiResponse>(
+          { success: false, error: "El usuario asignado no es miembro de esta familia" },
+          { status: 400 }
+        );
+      }
     }
 
     const scheduleDaysJson = schedule_days ? JSON.stringify(schedule_days) : null;
+    const finalAssignedTo = isSelfAssigned ? session.user_id : assigned_to;
+    const finalSatReward = isSelfAssigned ? 0 : (sat_reward ?? 0);
+    const finalFamilyId = family_id ?? null;
 
     const habits = await db`
       INSERT INTO habits (family_id, created_by, assigned_to, name, description, color, sat_reward, schedule_type, schedule_days, schedule_times_per_week, verification_type)
-      VALUES (${family_id}, ${session.user_id}, ${assigned_to}, ${name.trim()}, ${description?.trim() ?? null}, ${color}, ${sat_reward}, ${schedule_type}, ${scheduleDaysJson}, ${schedule_times_per_week ?? null}, ${verification_type})
+      VALUES (${finalFamilyId}, ${session.user_id}, ${finalAssignedTo}, ${name.trim()}, ${description?.trim() ?? null}, ${color}, ${finalSatReward}, ${schedule_type}, ${scheduleDaysJson}, ${schedule_times_per_week ?? null}, ${verification_type})
       RETURNING *
     ` as Habit[];
 

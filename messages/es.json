@@ -142,16 +142,7 @@
       "case2Item1": "La comunidad fondea un pool de recompensas",
       "case2Item2": "Los miembros ganan sats por entrenamientos verificados",
       "case2Item3": "Integracion con trackers fitness open-source (basados en Nostr, self-hosted)",
-      "case2Item4": "Zaps de Nostr para celebrar logros juntos",
-      "case3Tag": "Vida Asistida",
-      "case3Title": "Dignidad a Traves del Logro",
-      "case3Desc": "Para personas con condiciones de salud mental que luchan con la motivacion para tareas diarias. Los familiares fondean la wallet como apoyo — pero en vez de solo recibir plata, la persona la gana completando tareas de la vida diaria.",
-      "case3Item1": "Limpiar el departamento, tender la cama, sacar la basura",
-      "case3Item2": "Ayudar a familiares con tareas simples",
-      "case3Item3": "Tareas que son genuinamente dificiles por falta de motivacion",
-      "case3Item4": "Transforma el apoyo financiero de caridad en logro",
-      "case3Item5": "Preserva la dignidad — ganar, no solo pedir",
-      "case3Item6": "Las pequenas victorias crean impulso y ayudan en la recuperacion"
+      "case2Item4": "Zaps de Nostr para celebrar logros juntos"
     },
     "whyLightning": {
       "title": "Por que Bitcoin Lightning?",
@@ -167,10 +158,7 @@
       "reason3Desc": "Cualquiera con un telefono puede recibir recompensas. Sin cuenta bancaria, sin KYC, sin fronteras.",
       "reason4Stat": "Sin Permisos",
       "reason4Title": "Protocolo Abierto",
-      "reason4Desc": "Ninguna empresa lo controla. Nadie puede congelar fondos o cerrarte la cuenta. Plata que es realmente tuya.",
-      "reason5Stat": "Programable",
-      "reason5Title": "Recompensas Inteligentes",
-      "reason5Desc": "Automatiza pagos con codigo. Los bots pueden enviar sats. Las rachas pueden disparar bonuses. APIs para todo."
+      "reason4Desc": "Ninguna empresa lo controla. Nadie puede congelar fondos o cerrarte la cuenta. Plata que es realmente tuya."
     },
     "techStack": {
       "title": "Tecnologias",
@@ -178,9 +166,7 @@
       "lightningDesc": "Micro-pagos instantaneos y casi gratis. LNURL para retiros faciles. NWC para integracion de wallets. Bolt12 para recompensas recurrentes.",
       "nostrDesc": "Identidad descentralizada y login. Zaps para recompensas sociales. Verificacion NIP-05. Sin cuentas, sin emails.",
       "openclawDesc": "Bot de IA para recordatorios estilo Duolingo, notificaciones de recompensas y programacion inteligente de tareas.",
-      "cashuDesc": "Mints de ecash para micro-recompensas instantaneas y privadas. Perfecto para wallets de chicos — sin fees on-chain.",
-      "whisperDesc": "Speech-to-text para accesibilidad. Completa tareas por voz. Sin pantalla necesaria.",
-      "ollamaDesc": "Analisis de habitos con privacidad. Todo el procesamiento en el dispositivo. Tus datos nunca salen."
+      "whisperDesc": "Speech-to-text para accesibilidad. Completa tareas por voz. Sin pantalla necesaria."
     },
     "roadmap": {
       "title": "Hoja de Ruta de la Hackathon",

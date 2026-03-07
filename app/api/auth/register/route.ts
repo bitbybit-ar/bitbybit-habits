@@ -5,19 +5,12 @@ import type { ApiResponse, User } from "@/lib/types";
 
 export async function POST(request: Request) {
   try {
-    const { email, username, password, display_name, role, locale } =
+    const { email, username, password, display_name, locale } =
       await request.json();
 
-    if (!email || !username || !password || !display_name || !role) {
+    if (!email || !username || !password || !display_name) {
       return NextResponse.json<ApiResponse>(
         { success: false, error: "Faltan campos requeridos" },
-        { status: 400 }
-      );
-    }
-
-    if (role !== "sponsor" && role !== "kid") {
-      return NextResponse.json<ApiResponse>(
-        { success: false, error: "Rol invalido" },
         { status: 400 }
       );
     }
@@ -30,9 +23,9 @@ export async function POST(request: Request) {
     const userLocale = locale ?? "es";
 
     const result = await db`
-      INSERT INTO users (email, username, password_hash, display_name, role, locale)
-      VALUES (${emailLower}, ${usernameLower}, ${password_hash}, ${display_name}, ${role}, ${userLocale})
-      RETURNING id, email, username, display_name, role, locale, created_at
+      INSERT INTO users (email, username, password_hash, display_name, locale)
+      VALUES (${emailLower}, ${usernameLower}, ${password_hash}, ${display_name}, ${userLocale})
+      RETURNING id, email, username, display_name, locale, created_at
     `;
 
     const user = result[0] as Omit<User, "password_hash">;

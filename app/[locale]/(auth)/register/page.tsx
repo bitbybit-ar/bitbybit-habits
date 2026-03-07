@@ -15,7 +15,6 @@ export default function RegisterPage() {
     password: "",
     confirmPassword: "",
     display_name: "",
-    role: "kid" as "sponsor" | "kid",
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -48,7 +47,6 @@ export default function RegisterPage() {
           username: form.username,
           password: form.password,
           display_name: form.display_name,
-          role: form.role,
         }),
       });
 
@@ -68,7 +66,7 @@ export default function RegisterPage() {
       const loginData = await loginRes.json();
 
       if (loginData.success) {
-        router.push(form.role === "sponsor" ? "/sponsor" : "/kid");
+        router.push("/dashboard");
       } else {
         router.push("/login");
       }
@@ -119,19 +117,6 @@ export default function RegisterPage() {
               required
               autoComplete="username"
             />
-          </div>
-
-          <div className={styles.field}>
-            <label htmlFor="role">{t("auth.role")}</label>
-            <select
-              id="role"
-              value={form.role}
-              onChange={(e) => update("role", e.target.value)}
-              className={styles.select}
-            >
-              <option value="kid">{t("auth.kid")}</option>
-              <option value="sponsor">{t("auth.sponsor")}</option>
-            </select>
           </div>
 
           <div className={styles.field}>

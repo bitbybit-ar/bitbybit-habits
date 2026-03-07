@@ -27,14 +27,6 @@ export const UseCases: React.FC = () => {
       description: t("case2Desc"),
       items: [t("case2Item1"), t("case2Item2"), t("case2Item3"), t("case2Item4")],
     },
-    {
-      icon: "🤝",
-      tag: t("case3Tag"),
-      tagVariant: "coral" as const,
-      title: t("case3Title"),
-      description: t("case3Desc"),
-      items: [t("case3Item1"), t("case3Item2"), t("case3Item3"), t("case3Item4"), t("case3Item5"), t("case3Item6")],
-    },
   ];
 
   return (

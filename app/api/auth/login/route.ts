@@ -18,7 +18,7 @@ export async function POST(request: Request) {
     const loginLower = login.toLowerCase();
 
     const result = await db`
-      SELECT id, email, username, password_hash, display_name, role, locale
+      SELECT id, email, username, password_hash, display_name, locale
       FROM users
       WHERE email = ${loginLower} OR username = ${loginLower}
     `;
@@ -45,7 +45,6 @@ export async function POST(request: Request) {
       email: user.email,
       username: user.username,
       display_name: user.display_name,
-      role: user.role,
       locale: user.locale as "es" | "en",
     });
 
@@ -56,7 +55,6 @@ export async function POST(request: Request) {
         email: user.email,
         username: user.username,
         display_name: user.display_name,
-        role: user.role,
         locale: user.locale,
       },
     });
