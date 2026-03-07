@@ -11,7 +11,63 @@
 }
 
 .header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: $spacing-12;
   margin-bottom: $spacing-20;
+
+  @include mobile {
+    flex-direction: column;
+  }
+}
+
+.headerActions {
+  display: flex;
+  gap: $spacing-8;
+  flex-shrink: 0;
+}
+
+.actionButton {
+  padding: $spacing-4 $spacing-12;
+  border-radius: $border-radius-md;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: transparent;
+  color: $color-text-secondary;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
+}
+
+.leaveButton {
+  &:hover {
+    color: $color-accent;
+    border-color: rgba($color-accent, 0.3);
+  }
+}
+
+.deleteButton {
+  color: $color-accent;
+  border-color: rgba($color-accent, 0.3);
+
+  &:hover {
+    background: rgba($color-accent, 0.1);
+  }
+}
+
+.confirmText {
+  font-size: $font-size-sm;
+  color: $color-accent;
+  margin: 0 0 $spacing-16;
+  padding: $spacing-12;
+  background: rgba($color-accent, 0.08);
+  border-radius: $border-radius-md;
 }
 
 .familyName {
@@ -19,6 +75,25 @@
   font-weight: $font-weight-bold;
   color: $color-text-primary;
   margin: 0;
+}
+
+.roleToggle {
+  margin-left: auto;
+  padding: $spacing-4 $spacing-8;
+  border-radius: $border-radius-md;
+  border: 1px solid rgba($color-primary, 0.3);
+  background: transparent;
+  color: $color-primary;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+
+  &:hover {
+    background: rgba($color-primary, 0.1);
+    border-color: $color-primary;
+  }
 }
 
 .codeSection {

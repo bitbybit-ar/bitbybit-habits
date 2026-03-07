@@ -14,14 +14,36 @@ interface FamilyMemberInfo {
 }
 
 interface FamilyCardProps {
+  familyId: string;
   name: string;
   inviteCode: string;
   members: FamilyMemberInfo[];
+  createdBy: string;
+  currentUserId: string;
+  currentUserRole?: string;
+  onLeave?: (familyId: string) => void;
+  onDelete?: (familyId: string) => void;
+  onRoleChange?: (familyId: string, userId: string, newRole: string) => void;
 }
 
-export function FamilyCard({ name, inviteCode, members }: FamilyCardProps) {
+export function FamilyCard({
+  familyId,
+  name,
+  inviteCode,
+  members,
+  createdBy,
+  currentUserId,
+  currentUserRole,
+  onLeave,
+  onDelete,
+  onRoleChange,
+}: FamilyCardProps) {
   const t = useTranslations();
   const [copied, setCopied] = useState(false);
+  const [confirmAction, setConfirmAction] = useState<"leave" | "delete" | null>(null);
+
+  const isCreator = currentUserId === createdBy;
+  const isSponsor = currentUserRole === "sponsor";
 
   const handleCopy = async () => {
     try {
@@ -33,11 +55,71 @@ export function FamilyCard({ name, inviteCode, members }: FamilyCardProps) {
     }
   };
 
+  const handleLeave = () => {
+    if (confirmAction === "leave") {
+      onLeave?.(familyId);
+      setConfirmAction(null);
+    } else {
+      setConfirmAction("leave");
+    }
+  };
+
+  const handleDelete = () => {
+    if (confirmAction === "delete") {
+      onDelete?.(familyId);
+      setConfirmAction(null);
+    } else {
+      setConfirmAction("delete");
+    }
+  };
+
+  const handleRoleToggle = (userId: string, currentRole: string) => {
+    const newRole = currentRole === "sponsor" ? "kid" : "sponsor";
+    onRoleChange?.(familyId, userId, newRole);
+  };
+
   return (
     <div className={styles.card}>
       <div className={styles.header}>
         <h3 className={styles.familyName}>{name}</h3>
+        <div className={styles.headerActions}>
+          {onLeave && (
+            <button
+              className={`${styles.actionButton} ${styles.leaveButton}`}
+              onClick={handleLeave}
+            >
+              {confirmAction === "leave"
+                ? t("common.confirm")
+                : t("family.leaveFamily")}
+            </button>
+          )}
+          {isCreator && onDelete && (
+            <button
+              className={`${styles.actionButton} ${styles.deleteButton}`}
+              onClick={handleDelete}
+            >
+              {confirmAction === "delete"
+                ? t("common.confirm")
+                : t("family.deleteFamily")}
+            </button>
+          )}
+          {confirmAction && (
+            <button
+              className={styles.actionButton}
+              onClick={() => setConfirmAction(null)}
+            >
+              {t("common.cancel")}
+            </button>
+          )}
+        </div>
       </div>
+
+      {confirmAction === "leave" && (
+        <p className={styles.confirmText}>{t("family.confirmLeave")}</p>
+      )}
+      {confirmAction === "delete" && (
+        <p className={styles.confirmText}>{t("family.confirmDelete")}</p>
+      )}
 
       <div className={styles.codeSection}>
         <span className={styles.codeLabel}>{t("family.inviteCode")}</span>
@@ -61,11 +143,22 @@ export function FamilyCard({ name, inviteCode, members }: FamilyCardProps) {
                 <UserIcon size={16} />
               </div>
               <div className={styles.memberInfo}>
-                <span className={styles.memberName}>{member.display_name || member.username}</span>
+                <span className={styles.memberName}>
+                  {member.display_name || member.username}
+                </span>
                 <span className={styles.memberRole}>
                   {member.role === "sponsor" ? t("auth.sponsor") : t("auth.kid")}
                 </span>
               </div>
+              {isSponsor && onRoleChange && member.user_id !== currentUserId && (
+                <button
+                  className={styles.roleToggle}
+                  onClick={() => handleRoleToggle(member.user_id, member.role)}
+                  title={t("family.changeRole")}
+                >
+                  {member.role === "sponsor" ? "→ Kid" : "→ Sponsor"}
+                </button>
+              )}
             </div>
           ))}
         </div>
