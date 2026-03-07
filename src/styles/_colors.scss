@@ -1,0 +1,43 @@
+// BitByBit Color System
+// Designed for children's eye safety + engagement
+
+// Primary — Sats Gold (warm amber, ~585nm, outside harmful blue range)
+$color-primary: #F7A825;
+$color-primary-dark: #C47F0A;
+$color-primary-light: #FBC96B;
+
+// Secondary — Sage Green (peak eye comfort at ~555nm)
+$color-secondary: #4CAF7D;
+$color-secondary-dark: #2E7D52;
+$color-secondary-light: #A5D6B7;
+
+// Accent — Warm tones only (no pure blue)
+$color-accent: #FF6B6B;
+$color-accent-alt: #4DB6AC;
+
+// Backgrounds — Dark mode default (reduces light emission 60-80%)
+$color-bg-dark: #0f0f18;
+$color-bg-dark-2: #1A1A2E;
+$color-bg-dark-3: #242442;
+$color-bg-light: #FFF8F0;
+$color-surface-dark: #242442;
+$color-surface-light: #FFF2E6;
+
+// Text — Warm-tinted to avoid harsh contrast
+$color-text-primary: #F0E6D8;
+$color-text-secondary: #B8A898;
+$color-text-dark: #2D2416;
+
+// Semantic
+$color-success: #4CAF7D;
+$color-warning: #FF9F43;
+$color-error: #EE5A5A;
+$color-info: #4DB6AC;
+
+// Bitcoin-specific
+$color-bitcoin: #F7931A;
+$color-lightning: #F7A825;
+
+// Gradients
+$gradient-primary: linear-gradient(135deg, #F7A825, #4CAF7D);
+$gradient-secondary: linear-gradient(135deg, #4CAF7D, #FF6B6B);

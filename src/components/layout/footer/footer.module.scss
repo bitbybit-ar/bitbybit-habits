@@ -1,0 +1,22 @@
+@use "@/styles/colors" as *;
+@use "@/styles/typography" as *;
+@use "@/styles/spacing" as *;
+@use "@/styles/common-mixins" as *;
+
+.footer {
+  text-align: center;
+  padding: 60px $container-padding;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+
+  p {
+    color: $color-text-secondary;
+    font-size: 0.9rem;
+    margin-bottom: $spacing-8;
+  }
+}
+
+.motto {
+  font-size: 1.2rem;
+  font-weight: $font-weight-bold;
+  @include gradient-text;
+}

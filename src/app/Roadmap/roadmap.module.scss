@@ -1,0 +1,116 @@
+@use "@/styles/colors" as *;
+@use "@/styles/typography" as *;
+@use "@/styles/spacing" as *;
+@use "@/styles/media-mixins" as *;
+
+.roadmap {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.item {
+  display: grid;
+  grid-template-columns: 100px 40px 1fr;
+  gap: 0;
+  align-items: start;
+  margin-bottom: $spacing-8;
+
+  @include mobile {
+    grid-template-columns: 60px 30px 1fr;
+  }
+}
+
+.month {
+  font-weight: $font-weight-bold;
+  font-size: $font-size-sm;
+  color: $color-primary;
+  text-align: right;
+  padding-top: 20px;
+  padding-right: $spacing-16;
+
+  @include mobile {
+    font-size: $font-size-xs;
+  }
+}
+
+.line {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.dot {
+  width: 16px;
+  height: 16px;
+  background: $gradient-primary;
+  border-radius: 50%;
+  margin-top: 22px;
+  z-index: 1;
+  flex-shrink: 0;
+  transition: transform 0.3s, box-shadow 0.3s;
+
+  .item:hover & {
+    transform: scale(1.3);
+    box-shadow: 0 0 12px rgba($color-primary, 0.5);
+  }
+}
+
+.connector {
+  width: 2px;
+  flex-grow: 1;
+  background: rgba($color-accent-alt, 0.2);
+  min-height: 40px;
+}
+
+.content {
+  background: $color-bg-dark-2;
+  border-radius: $border-radius-md;
+  padding: $spacing-20 $spacing-24;
+  margin-left: $spacing-16;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: border-color 0.3s, box-shadow 0.3s;
+
+  h4 {
+    font-size: $font-size-base;
+    margin-bottom: 6px;
+  }
+
+  p {
+    color: $color-text-secondary;
+    font-size: $font-size-sm;
+  }
+}
+
+.difficulty {
+  display: inline-block;
+  font-size: $font-size-xs;
+  color: $color-primary-light;
+  margin-top: $spacing-4;
+}
+
+// Current month highlight
+.current {
+  .dot {
+    width: 20px;
+    height: 20px;
+    margin-top: 20px;
+    box-shadow: 0 0 16px rgba($color-primary, 0.6), 0 0 32px rgba($color-primary, 0.3);
+    animation: pulseGlow 2s ease-in-out infinite;
+  }
+
+  .month {
+    font-size: 0.95rem;
+    color: $color-primary-light;
+  }
+
+  .content {
+    border-color: rgba($color-primary, 0.3);
+    box-shadow: 0 4px 20px rgba($color-primary, 0.08);
+  }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 16px rgba($color-primary, 0.6), 0 0 32px rgba($color-primary, 0.3); }
+  50% { box-shadow: 0 0 24px rgba($color-primary, 0.8), 0 0 48px rgba($color-primary, 0.4); }
+}

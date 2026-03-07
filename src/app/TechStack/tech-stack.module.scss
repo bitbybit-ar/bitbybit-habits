@@ -1,0 +1,41 @@
+@use "@/styles/colors" as *;
+@use "@/styles/typography" as *;
+@use "@/styles/spacing" as *;
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: $spacing-20;
+}
+
+.card {
+  background: $color-bg-dark-3;
+  border-radius: $border-radius-lg;
+  padding: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  gap: $spacing-16;
+  align-items: start;
+  transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+
+  &:hover {
+    transform: translateY(-3px);
+    border-color: rgba($color-accent-alt, 0.3);
+    box-shadow: 0 8px 25px rgba($color-accent-alt, 0.08);
+  }
+
+  h4 {
+    font-size: $font-size-base;
+    margin-bottom: 6px;
+  }
+
+  p {
+    color: $color-text-secondary;
+    font-size: $font-size-sm;
+  }
+}
+
+.emoji {
+  font-size: 2rem;
+  flex-shrink: 0;
+}

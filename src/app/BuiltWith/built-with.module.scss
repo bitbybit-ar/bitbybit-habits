@@ -1,0 +1,35 @@
+@use "@/styles/colors" as *;
+@use "@/styles/typography" as *;
+@use "@/styles/spacing" as *;
+@use "@/styles/media-mixins" as *;
+
+.poweredBy {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: $spacing-48;
+  flex-wrap: wrap;
+
+  @include mobile {
+    gap: $spacing-24;
+  }
+
+  a {
+    color: $color-text-secondary;
+    text-decoration: none;
+    font-size: $font-size-base;
+    font-weight: $font-weight-semibold;
+    transition: color 0.2s;
+    display: flex;
+    align-items: center;
+    gap: $spacing-8;
+
+    &:hover {
+      color: $color-text-primary;
+    }
+  }
+}
+
+.icon {
+  font-size: 1.5rem;
+}

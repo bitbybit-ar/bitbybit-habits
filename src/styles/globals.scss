@@ -1,0 +1,50 @@
+@use "./colors" as *;
+@use "./typography" as *;
+@use "./spacing" as *;
+
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: $font-family-base;
+  background: $color-bg-dark;
+  color: $color-text-primary;
+  line-height: $line-height-base;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+:focus-visible {
+  outline: 2px solid $color-primary;
+  outline-offset: 2px;
+}
+
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: $spacing-16;
+  background: $color-primary;
+  color: #000;
+  padding: $spacing-8 $spacing-16;
+  border-radius: $border-radius-sm;
+  font-weight: $font-weight-semibold;
+  z-index: 10000;
+  transition: top 0.2s;
+
+  &:focus {
+    top: $spacing-16;
+  }
+}

@@ -1,0 +1,21 @@
+@use "@/styles/colors" as *;
+@use "@/styles/spacing" as *;
+@use "@/styles/media-mixins" as *;
+
+.section {
+  padding: $spacing-100 0;
+
+  @include mobile {
+    padding: 60px 0;
+  }
+}
+
+.alternate {
+  background: $color-bg-dark-2;
+}
+
+.container {
+  max-width: $container-max-width;
+  margin: 0 auto;
+  padding: 0 $container-padding;
+}

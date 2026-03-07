@@ -1,0 +1,21 @@
+@use "@/styles/colors" as *;
+@use "@/styles/typography" as *;
+@use "@/styles/spacing" as *;
+
+.sectionTitle {
+  text-align: center;
+  margin-bottom: $spacing-64;
+
+  h2 {
+    font-size: $font-size-2xl;
+    font-weight: $font-weight-bold;
+    margin-bottom: $spacing-16;
+  }
+
+  p {
+    color: $color-text-secondary;
+    font-size: $font-size-lg;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+}

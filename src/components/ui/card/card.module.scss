@@ -1,0 +1,22 @@
+@use "@/styles/colors" as *;
+@use "@/styles/spacing" as *;
+
+.card {
+  background: $color-bg-dark-2;
+  border-radius: $border-radius-lg;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+}
+
+.variant-hover {
+  &:hover {
+    transform: translateY(-4px);
+    border-color: rgba($color-accent-alt, 0.3);
+    box-shadow: 0 8px 30px rgba($color-accent-alt, 0.1);
+  }
+}
+
+.variant-highlight {
+  border-color: rgba($color-primary, 0.3);
+  box-shadow: 0 4px 20px rgba($color-primary, 0.08);
+}

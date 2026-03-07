@@ -1,0 +1,38 @@
+@use "@/styles/colors" as *;
+@use "@/styles/typography" as *;
+@use "@/styles/spacing" as *;
+@use "@/styles/media-mixins" as *;
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: $spacing-32;
+}
+
+.step {
+  text-align: center;
+  padding: $spacing-32 $spacing-24;
+
+  h3 {
+    font-size: $font-size-md;
+    margin-bottom: $spacing-12;
+  }
+
+  p {
+    color: $color-text-secondary;
+    font-size: 0.95rem;
+  }
+}
+
+.stepNumber {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background: $gradient-primary;
+  border-radius: $border-radius-md;
+  font-size: 1.3rem;
+  font-weight: $font-weight-extrabold;
+  margin-bottom: $spacing-20;
+}

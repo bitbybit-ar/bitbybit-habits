@@ -1,0 +1,71 @@
+@use "@/styles/colors" as *;
+@use "@/styles/typography" as *;
+@use "@/styles/spacing" as *;
+@use "@/styles/media-mixins" as *;
+
+.useCases {
+  display: grid;
+  gap: $spacing-32;
+}
+
+.useCase {
+  background: $color-bg-dark-3;
+  border-radius: $border-radius-xl;
+  padding: $spacing-48;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: $spacing-32;
+  align-items: start;
+  transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
+
+  &:hover {
+    border-color: rgba($color-accent-alt, 0.3);
+    box-shadow: 0 8px 30px rgba($color-accent-alt, 0.08);
+    transform: translateY(-2px);
+  }
+
+  @include mobile {
+    grid-template-columns: 1fr;
+    padding: $spacing-32 $spacing-24;
+  }
+
+  h3 {
+    font-size: $font-size-xl;
+    margin-bottom: $spacing-8;
+  }
+
+  p {
+    color: $color-text-secondary;
+    font-size: $font-size-base;
+    line-height: 1.7;
+  }
+
+  ul {
+    list-style: none;
+    margin-top: $spacing-16;
+  }
+
+  li {
+    color: $color-text-secondary;
+    padding: 6px 0;
+    padding-left: $spacing-24;
+    position: relative;
+    font-size: 0.95rem;
+
+    &::before {
+      content: "⚡";
+      position: absolute;
+      left: 0;
+    }
+  }
+}
+
+.icon {
+  font-size: 3.5rem;
+  line-height: 1;
+
+  @include mobile {
+    font-size: 2.5rem;
+  }
+}

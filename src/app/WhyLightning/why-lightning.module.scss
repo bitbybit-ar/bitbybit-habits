@@ -1,0 +1,47 @@
+@use "@/styles/colors" as *;
+@use "@/styles/typography" as *;
+@use "@/styles/spacing" as *;
+@use "@/styles/common-mixins" as *;
+@use "@/styles/media-mixins" as *;
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: $spacing-24;
+
+  @include mobile {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: $spacing-16;
+  }
+}
+
+.card {
+  text-align: center;
+  padding: $spacing-40 $spacing-24;
+
+  h4 {
+    font-size: 1.05rem;
+    margin-bottom: $spacing-8;
+  }
+
+  p {
+    color: $color-text-secondary;
+    font-size: $font-size-sm;
+  }
+
+  @include mobile {
+    padding: $spacing-24 $spacing-16;
+  }
+}
+
+.icon {
+  font-size: 2.5rem;
+  margin-bottom: $spacing-16;
+}
+
+.stat {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-extrabold;
+  @include gradient-text;
+  margin-bottom: $spacing-8;
+}

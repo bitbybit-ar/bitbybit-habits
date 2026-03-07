@@ -1,0 +1,61 @@
+@use "@/styles/colors" as *;
+@use "@/styles/spacing" as *;
+@use "@/styles/typography" as *;
+
+.button {
+  display: inline-block;
+  border: none;
+  border-radius: $border-radius-md;
+  font-weight: $font-weight-bold;
+  cursor: pointer;
+  text-decoration: none;
+  text-align: center;
+  transition: transform 0.2s, box-shadow 0.2s;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+}
+
+.variant-primary {
+  background: $gradient-primary;
+  color: white;
+
+  &:hover {
+    box-shadow: 0 8px 30px rgba($color-primary, 0.3);
+  }
+}
+
+.variant-outline {
+  background: transparent;
+  border: 2px solid $color-primary;
+  color: $color-primary;
+
+  &:hover {
+    background: rgba($color-primary, 0.1);
+  }
+}
+
+.variant-ghost {
+  background: transparent;
+  color: $color-text-secondary;
+
+  &:hover {
+    color: $color-text-primary;
+  }
+}
+
+.size-sm {
+  padding: $spacing-8 $spacing-16;
+  font-size: $font-size-sm;
+}
+
+.size-default {
+  padding: $spacing-12 $spacing-32;
+  font-size: $font-size-base;
+}
+
+.size-lg {
+  padding: $spacing-16 $spacing-40;
+  font-size: $font-size-md;
+}
