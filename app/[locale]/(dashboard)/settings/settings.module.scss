@@ -1,0 +1,132 @@
+@use "@/styles/colors" as *;
+@use "@/styles/spacing" as *;
+@use "@/styles/typography" as *;
+@use "@/styles/common-mixins" as *;
+@use "@/styles/media-mixins" as *;
+
+.container {
+  @include container;
+  min-height: 100vh;
+  padding-top: $spacing-32;
+  padding-bottom: $spacing-40;
+
+  @include desktop {
+    padding-top: $spacing-48;
+  }
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-24;
+}
+
+.title {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  margin: 0;
+}
+
+.backButton {
+  padding: $spacing-8 $spacing-16;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: $border-radius-md;
+  background: transparent;
+  color: $color-text-secondary;
+  font-size: $font-size-sm;
+  cursor: pointer;
+
+  &:hover {
+    color: $color-text-primary;
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+}
+
+.loadingText {
+  color: $color-text-secondary;
+  font-size: $font-size-sm;
+}
+
+.card {
+  background: $color-bg-dark-2;
+  border-radius: $border-radius-lg;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  padding: $spacing-24;
+  max-width: 500px;
+}
+
+.field {
+  margin-bottom: $spacing-16;
+}
+
+.label {
+  display: block;
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  font-weight: $font-weight-semibold;
+  margin-bottom: $spacing-4;
+}
+
+.input,
+.select {
+  width: 100%;
+  padding: $spacing-12;
+  border-radius: $border-radius-md;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: $color-bg-dark;
+  color: $color-text-primary;
+  font-size: $font-size-sm;
+  outline: none;
+  box-sizing: border-box;
+
+  &:focus {
+    border-color: $color-primary;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.select {
+  appearance: none;
+  cursor: pointer;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: $spacing-12;
+  justify-content: flex-end;
+  margin-top: $spacing-20;
+}
+
+.savedText {
+  font-size: $font-size-sm;
+  color: $color-success;
+}
+
+.saveButton {
+  padding: $spacing-12 $spacing-24;
+  border-radius: $border-radius-md;
+  border: none;
+  background: $gradient-primary;
+  color: white;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-bold;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba($color-primary, 0.3);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}

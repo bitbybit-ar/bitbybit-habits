@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
-import { LogOutIcon } from "@/components/icons";
+import { LogOutIcon, SettingsIcon } from "@/components/icons";
 import { NotificationBell } from "@/components/dashboard/notification-bell";
 import { StatsBar } from "@/components/dashboard/stats-bar";
 import { HabitList } from "@/components/dashboard/habit-list";
@@ -136,6 +136,9 @@ export default function KidDashboard() {
         </h1>
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
           <NotificationBell />
+          <a href="/settings" className={styles.logoutButton} style={{ textDecoration: "none" }}>
+            <SettingsIcon size={18} />
+          </a>
           <button className={styles.logoutButton} onClick={handleLogout}>
             <LogOutIcon size={18} />
             <span>{t("auth.logout")}</span>
