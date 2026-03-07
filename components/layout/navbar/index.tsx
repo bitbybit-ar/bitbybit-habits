@@ -14,7 +14,6 @@ export const Navbar: React.FC = () => {
   const NAV_LINKS = [
     { href: "#how-it-works", label: t("landing.nav.howItWorks") },
     { href: "#use-cases", label: t("landing.nav.useCases") },
-    { href: "#why-lightning", label: t("landing.nav.whyLightning") },
     { href: "#tech-stack", label: t("landing.nav.techStack") },
     { href: "#roadmap", label: t("landing.nav.roadmap") },
     { href: "#team", label: t("landing.nav.team") },

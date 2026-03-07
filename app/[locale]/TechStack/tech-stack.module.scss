@@ -1,6 +1,7 @@
 @use "@/styles/colors" as *;
 @use "@/styles/typography" as *;
 @use "@/styles/spacing" as *;
+@use "@/styles/media-mixins" as *;
 
 .grid {
   display: grid;
@@ -38,4 +39,138 @@
 .emoji {
   font-size: 2rem;
   flex-shrink: 0;
+}
+
+.detailLink {
+  display: inline-block;
+  margin-top: $spacing-8;
+  background: none;
+  border: none;
+  color: $color-accent-alt;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.2s;
+
+  &:hover {
+    color: $color-primary;
+  }
+}
+
+// Modal overlay
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-24;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal {
+  background: $color-bg-dark-2;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: $border-radius-xl;
+  padding: $spacing-32;
+  max-width: 600px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  position: relative;
+  animation: slideUp 0.25s ease;
+
+  @include mobile {
+    padding: $spacing-24;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.closeButton {
+  position: absolute;
+  top: $spacing-16;
+  right: $spacing-16;
+  background: none;
+  border: none;
+  color: $color-text-secondary;
+  font-size: $font-size-lg;
+  cursor: pointer;
+  padding: $spacing-4;
+  line-height: 1;
+  transition: color 0.2s;
+
+  &:hover {
+    color: $color-text-primary;
+  }
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  gap: $spacing-12;
+  margin-bottom: $spacing-24;
+
+  h3 {
+    font-size: $font-size-xl;
+    font-weight: $font-weight-bold;
+    background: $gradient-primary;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+}
+
+.modalEmoji {
+  font-size: 2rem;
+}
+
+.modalGrid {
+  display: grid;
+  gap: $spacing-16;
+}
+
+.modalCard {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: $border-radius-md;
+  padding: $spacing-20;
+
+  h4 {
+    font-size: $font-size-base;
+    font-weight: $font-weight-semibold;
+    color: $color-text-primary;
+    margin-bottom: $spacing-4;
+  }
+
+  p {
+    color: $color-text-secondary;
+    font-size: $font-size-sm;
+    line-height: $line-height-base;
+  }
+}
+
+.modalStat {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-bold;
+  color: $color-primary;
+  margin-bottom: $spacing-4;
 }

@@ -80,3 +80,27 @@
   margin-bottom: $spacing-48;
   position: relative;
 }
+
+.buttons {
+  display: flex;
+  align-items: center;
+  gap: $spacing-16;
+  position: relative;
+}
+
+.previewButton {
+  display: inline-block;
+  padding: $spacing-12 $spacing-32;
+  border-radius: $border-radius-full;
+  font-size: $font-size-base;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  text-decoration: none;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  transition: all 0.2s;
+
+  &:hover {
+    border-color: rgba($color-primary, 0.4);
+    color: $color-primary;
+  }
+}

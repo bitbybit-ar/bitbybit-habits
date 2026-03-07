@@ -1,0 +1,90 @@
+@use "@/styles/colors" as *;
+@use "@/styles/typography" as *;
+@use "@/styles/spacing" as *;
+@use "@/styles/media-mixins" as *;
+
+.wrapper {
+  text-align: center;
+  max-width: 560px;
+  margin: 0 auto;
+  padding: $spacing-40 0;
+}
+
+.icon {
+  margin-bottom: $spacing-16;
+}
+
+.title {
+  font-size: $font-size-2xl;
+  font-weight: $font-weight-bold;
+  background: $gradient-primary;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: $spacing-12;
+}
+
+.subtitle {
+  color: $color-text-secondary;
+  font-size: $font-size-md;
+  line-height: $line-height-base;
+  margin-bottom: $spacing-32;
+}
+
+.buttons {
+  display: flex;
+  justify-content: center;
+  gap: $spacing-16;
+  margin-bottom: $spacing-24;
+
+  @include mobile {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+.primaryButton,
+.secondaryButton {
+  display: flex;
+  align-items: center;
+  gap: $spacing-8;
+  padding: $spacing-12 $spacing-32;
+  border-radius: $border-radius-md;
+  font-size: $font-size-base;
+  font-weight: $font-weight-semibold;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.primaryButton {
+  background: $color-primary;
+  color: $color-bg-dark;
+
+  &:hover {
+    background: lighten($color-primary, 5%);
+    transform: translateY(-2px);
+  }
+}
+
+.secondaryButton {
+  background: transparent;
+  color: $color-text-primary;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+
+  &:hover {
+    border-color: rgba($color-primary, 0.4);
+    color: $color-primary;
+    transform: translateY(-2px);
+  }
+}
+
+.previewLink {
+  color: $color-text-secondary;
+  font-size: $font-size-sm;
+  text-decoration: none;
+  transition: color 0.2s;
+
+  &:hover {
+    color: $color-primary;
+  }
+}

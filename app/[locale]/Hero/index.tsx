@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/routing";
 import Button from "@/components/ui/button";
 import styles from "./hero.module.scss";
 
@@ -34,9 +35,14 @@ export const Hero: React.FC = () => {
         <br />
         {t("subtitle")}
       </p>
-      <Button href="#use-cases" size="lg">
-        {t("cta")} ↓
-      </Button>
+      <div className={styles.buttons}>
+        <Button href="#use-cases" size="lg">
+          {t("cta")} ↓
+        </Button>
+        <Link href="/preview" className={styles.previewButton}>
+          {t("preview")}
+        </Link>
+      </div>
     </header>
   );
 };
