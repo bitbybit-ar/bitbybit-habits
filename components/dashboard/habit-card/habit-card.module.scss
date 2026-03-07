@@ -1,0 +1,233 @@
+@use "@/styles/colors" as *;
+@use "@/styles/spacing" as *;
+@use "@/styles/typography" as *;
+@use "@/styles/media-mixins" as *;
+
+.card {
+  background: $color-bg-dark-2;
+  border-radius: $border-radius-lg;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  padding: $spacing-20;
+  transition: border-color 0.2s ease;
+
+  &:hover {
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: $spacing-12;
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: $spacing-8;
+  min-width: 0;
+  flex: 1;
+}
+
+.colorDot {
+  width: 12px;
+  height: 12px;
+  border-radius: $border-radius-full;
+  flex-shrink: 0;
+}
+
+.habitInfo {
+  min-width: 0;
+  flex: 1;
+}
+
+.habitName {
+  font-size: $font-size-base;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.habitDescription {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  margin: 2px 0 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.satBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba($color-primary, 0.15);
+  color: $color-primary;
+  padding: 4px $spacing-8;
+  border-radius: $border-radius-full;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-16;
+  font-size: $font-size-xs;
+}
+
+.schedule {
+  color: $color-text-secondary;
+}
+
+.streak {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.streakActive {
+  color: $color-warning;
+}
+
+.streakInactive {
+  color: $color-text-secondary;
+  opacity: 0.5;
+}
+
+.streakCount {
+  font-weight: $font-weight-bold;
+  font-size: $font-size-sm;
+}
+
+// Date circles row
+.dateCircles {
+  display: flex;
+  gap: $spacing-8;
+  margin-bottom: $spacing-16;
+  justify-content: space-between;
+}
+
+.dateCircle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.dayLabel {
+  font-size: 10px;
+  color: $color-text-secondary;
+  text-transform: uppercase;
+}
+
+.dayLabelToday {
+  color: $color-primary;
+  font-weight: $font-weight-bold;
+}
+
+.circle {
+  width: 32px;
+  height: 32px;
+  border-radius: $border-radius-full;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  background: transparent;
+  transition: all 0.2s ease;
+
+  @include desktop {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+.circleCompleted {
+  background: $color-success;
+  border-color: $color-success;
+  color: white;
+}
+
+.circleToday {
+  border-color: $color-primary;
+  box-shadow: 0 0 0 2px rgba($color-primary, 0.2);
+}
+
+.circleMissed {
+  border-color: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.circleFuture {
+  border-color: rgba(255, 255, 255, 0.05);
+  opacity: 0.4;
+}
+
+// Action area
+.action {
+  margin-top: $spacing-4;
+}
+
+.completeButton {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-8;
+  padding: $spacing-12 $spacing-16;
+  border-radius: $border-radius-md;
+  border: none;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-bold;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+  background: $gradient-primary;
+  color: white;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba($color-primary, 0.3);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+}
+
+.statusBadge {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-8;
+  padding: $spacing-12 $spacing-16;
+  border-radius: $border-radius-md;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  border: none;
+}
+
+.statusPending {
+  background: rgba($color-warning, 0.12);
+  color: $color-warning;
+}
+
+.statusCompleted {
+  background: rgba($color-success, 0.12);
+  color: $color-success;
+}

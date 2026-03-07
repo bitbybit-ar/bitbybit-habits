@@ -1,0 +1,75 @@
+@use "@/styles/colors" as *;
+@use "@/styles/spacing" as *;
+@use "@/styles/typography" as *;
+@use "@/styles/common-mixins" as *;
+@use "@/styles/media-mixins" as *;
+
+.container {
+  @include container;
+  min-height: 100vh;
+  padding-top: $spacing-32;
+  padding-bottom: $spacing-40;
+
+  @include desktop {
+    padding-top: $spacing-48;
+  }
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-24;
+  gap: $spacing-16;
+
+  @include mobile {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.title {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  margin: 0;
+
+  @include desktop {
+    font-size: $font-size-2xl;
+  }
+}
+
+.logoutButton {
+  display: flex;
+  align-items: center;
+  gap: $spacing-8;
+  padding: $spacing-8 $spacing-16;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: $border-radius-md;
+  background: transparent;
+  color: $color-text-secondary;
+  font-size: $font-size-sm;
+  cursor: pointer;
+  @include transition;
+  flex-shrink: 0;
+
+  &:hover {
+    color: $color-text-primary;
+    border-color: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.03);
+  }
+}
+
+.sectionTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin: 0 0 $spacing-16;
+}
+
+.loadingText {
+  color: $color-text-secondary;
+  text-align: center;
+  padding-top: $spacing-80;
+  font-size: $font-size-base;
+}

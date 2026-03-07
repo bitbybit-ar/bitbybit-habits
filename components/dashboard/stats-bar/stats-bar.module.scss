@@ -1,0 +1,76 @@
+@use "@/styles/colors" as *;
+@use "@/styles/spacing" as *;
+@use "@/styles/typography" as *;
+@use "@/styles/media-mixins" as *;
+
+.statsBar {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: $spacing-12;
+  margin-bottom: $spacing-24;
+
+  @include desktop {
+    grid-template-columns: repeat(3, 1fr);
+    gap: $spacing-16;
+  }
+}
+
+.statCard {
+  display: flex;
+  align-items: center;
+  gap: $spacing-12;
+  background: $color-bg-dark-2;
+  border-radius: $border-radius-lg;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  padding: $spacing-16 $spacing-20;
+}
+
+.iconWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: $border-radius-md;
+  flex-shrink: 0;
+}
+
+.iconSats {
+  background: rgba($color-primary, 0.15);
+  color: $color-primary;
+}
+
+.iconStreak {
+  background: rgba($color-warning, 0.15);
+  color: $color-warning;
+}
+
+.iconPending {
+  background: rgba($color-accent-alt, 0.15);
+  color: $color-accent-alt;
+}
+
+.iconHabits {
+  background: rgba($color-secondary, 0.15);
+  color: $color-secondary;
+}
+
+.statContent {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.statValue {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  line-height: $line-height-tight;
+}
+
+.statLabel {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}

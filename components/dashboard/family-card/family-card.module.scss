@@ -1,0 +1,142 @@
+@use "@/styles/colors" as *;
+@use "@/styles/spacing" as *;
+@use "@/styles/typography" as *;
+@use "@/styles/media-mixins" as *;
+
+.card {
+  background: $color-bg-dark-2;
+  border-radius: $border-radius-lg;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  padding: $spacing-24;
+}
+
+.header {
+  margin-bottom: $spacing-20;
+}
+
+.familyName {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  margin: 0;
+}
+
+.codeSection {
+  margin-bottom: $spacing-24;
+}
+
+.codeLabel {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  color: $color-text-secondary;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: block;
+  margin-bottom: $spacing-8;
+}
+
+.codeRow {
+  display: flex;
+  align-items: center;
+  gap: $spacing-12;
+
+  @include mobile {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.code {
+  background: $color-bg-dark-3;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: $border-radius-md;
+  padding: $spacing-12 $spacing-20;
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-primary;
+  letter-spacing: 0.15em;
+  text-align: center;
+  flex: 1;
+}
+
+.copyButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-4;
+  padding: $spacing-12 $spacing-16;
+  border-radius: $border-radius-md;
+  border: 1px solid rgba($color-primary, 0.3);
+  background: transparent;
+  color: $color-primary;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+  white-space: nowrap;
+
+  &:hover {
+    background: rgba($color-primary, 0.1);
+    border-color: $color-primary;
+  }
+}
+
+.membersSection {
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding-top: $spacing-20;
+}
+
+.membersLabel {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  color: $color-text-secondary;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: block;
+  margin-bottom: $spacing-12;
+}
+
+.membersList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-8;
+}
+
+.member {
+  display: flex;
+  align-items: center;
+  gap: $spacing-12;
+  padding: $spacing-8 $spacing-12;
+  border-radius: $border-radius-md;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: $border-radius-full;
+  background: $color-bg-dark-3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $color-text-secondary;
+  flex-shrink: 0;
+}
+
+.memberInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.memberName {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+}
+
+.memberRole {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+}

@@ -1,0 +1,21 @@
+@use "@/styles/colors" as *;
+@use "@/styles/spacing" as *;
+@use "@/styles/typography" as *;
+@use "@/styles/common-mixins" as *;
+
+.container {
+  @include container;
+  min-height: 100vh;
+  padding-top: $spacing-80;
+  padding-bottom: $spacing-40;
+
+  h1 {
+    font-size: $font-size-2xl;
+    font-weight: $font-weight-bold;
+    margin-bottom: $spacing-24;
+  }
+
+  p {
+    color: $color-text-secondary;
+  }
+}

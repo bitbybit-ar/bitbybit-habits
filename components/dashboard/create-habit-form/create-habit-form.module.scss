@@ -1,0 +1,163 @@
+@use "@/styles/colors" as *;
+@use "@/styles/spacing" as *;
+@use "@/styles/typography" as *;
+@use "@/styles/media-mixins" as *;
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-20;
+  background: $color-bg-dark-2;
+  border-radius: $border-radius-lg;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  padding: $spacing-24;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-8;
+}
+
+.label {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-text-secondary;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.input,
+.textarea,
+.select {
+  background: $color-bg-dark-3;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: $border-radius-md;
+  padding: $spacing-12 $spacing-16;
+  font-size: $font-size-base;
+  color: $color-text-primary;
+  font-family: $font-family-base;
+  outline: none;
+  transition: border-color 0.2s ease;
+
+  &:focus {
+    border-color: $color-primary;
+  }
+
+  &::placeholder {
+    color: $color-text-secondary;
+    opacity: 0.5;
+  }
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+.select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23B8A898' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right $spacing-16 center;
+  padding-right: $spacing-40;
+
+  option {
+    background: $color-bg-dark-3;
+    color: $color-text-primary;
+  }
+}
+
+.colorPicker {
+  display: flex;
+  gap: $spacing-12;
+  flex-wrap: wrap;
+}
+
+.colorCircle {
+  width: 32px;
+  height: 32px;
+  border-radius: $border-radius-full;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 0.2s, border-color 0.2s;
+  padding: 0;
+
+  &:hover {
+    transform: scale(1.15);
+  }
+}
+
+.colorSelected {
+  border-color: $color-text-primary;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
+  transform: scale(1.15);
+}
+
+.daysGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-8;
+}
+
+.dayCheck {
+  display: flex;
+  align-items: center;
+  gap: $spacing-4;
+  cursor: pointer;
+  padding: $spacing-8 $spacing-12;
+  background: $color-bg-dark-3;
+  border-radius: $border-radius-md;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: background 0.2s, border-color 0.2s;
+
+  &:has(.checkbox:checked) {
+    background: rgba($color-primary, 0.15);
+    border-color: rgba($color-primary, 0.3);
+  }
+}
+
+.checkbox {
+  accent-color: $color-primary;
+  cursor: pointer;
+}
+
+.dayLabel {
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+  font-weight: $font-weight-medium;
+}
+
+.submitButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-8;
+  padding: $spacing-12 $spacing-24;
+  border-radius: $border-radius-md;
+  border: none;
+  font-size: $font-size-base;
+  font-weight: $font-weight-bold;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+  background: $gradient-primary;
+  color: white;
+  margin-top: $spacing-8;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba($color-primary, 0.3);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+}

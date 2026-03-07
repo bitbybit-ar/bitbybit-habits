@@ -1,0 +1,36 @@
+@use "@/styles/colors" as *;
+@use "@/styles/spacing" as *;
+@use "@/styles/typography" as *;
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-12;
+}
+
+.sectionTitle {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-text-secondary;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: $spacing-4;
+  margin-top: $spacing-8;
+
+  &:first-child {
+    margin-top: 0;
+  }
+}
+
+.emptyState {
+  text-align: center;
+  padding: $spacing-48 $spacing-24;
+  background: $color-bg-dark-2;
+  border-radius: $border-radius-lg;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.emptyText {
+  color: $color-text-secondary;
+  font-size: $font-size-sm;
+}

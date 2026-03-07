@@ -1,0 +1,1335 @@
+openapi: 3.0.3
+info:
+  title: BitByBit Habits API
+  description: |
+    API REST de BitByBit, un habit tracker que recompensa completar tareas con sats reales via Lightning Network.
+
+    **Caso de uso MVP**: "Mesada 2.0" donde sponsors (padres/tutores) crean habitos con recompensa en sats
+    y kids los completan para ganar.
+
+    ## Autenticacion
+
+    La API usa autenticacion basada en cookies de sesion (`session`). Para autenticarse:
+
+    1. Registrar un usuario con `POST /api/auth/register`
+    2. Iniciar sesion con `POST /api/auth/login`
+    3. La cookie `session` se setea automaticamente en la respuesta
+
+    Todos los endpoints (excepto auth) requieren una sesion activa.
+
+    ## Formato de respuesta
+
+    Todas las respuestas siguen el formato `ApiResponse`:
+    ```json
+    {
+      "success": true,
+      "data": { ... }
+    }
+    ```
+    En caso de error:
+    ```json
+    {
+      "success": false,
+      "error": "Descripcion del error"
+    }
+    ```
+  version: 1.0.0
+  contact:
+    name: BitByBit Team
+
+servers:
+  - url: /api
+    description: Servidor de la API
+
+tags:
+  - name: Auth
+    description: Autenticacion y gestion de sesiones
+  - name: Habits
+    description: Gestion de habitos
+  - name: Completions
+    description: Registro de completaciones de habitos
+  - name: Families
+    description: Gestion de familias y miembros
+  - name: Stats
+    description: Estadisticas y rachas del usuario
+
+paths:
+  /auth/register:
+    post:
+      tags:
+        - Auth
+      summary: Registrar un nuevo usuario
+      description: |
+        Crea un nuevo usuario en el sistema. El email y username deben ser unicos.
+        El rol puede ser `sponsor` (padre/tutor) o `kid` (hijo/a).
+      operationId: registerUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterRequest"
+            example:
+              email: "padre@ejemplo.com"
+              username: "papajuan"
+              password: "mipassword123"
+              display_name: "Juan"
+              role: "sponsor"
+              locale: "es"
+      responses:
+        "200":
+          description: Usuario registrado exitosamente
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/UserPublic"
+              example:
+                success: true
+                data:
+                  id: "550e8400-e29b-41d4-a716-446655440000"
+                  email: "padre@ejemplo.com"
+                  username: "papajuan"
+                  display_name: "Juan"
+                  role: "sponsor"
+                  locale: "es"
+                  created_at: "2026-03-07T10:00:00.000Z"
+        "400":
+          description: Faltan campos requeridos o rol invalido
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseError"
+              examples:
+                camposFaltantes:
+                  summary: Campos requeridos faltantes
+                  value:
+                    success: false
+                    error: "Faltan campos requeridos"
+                rolInvalido:
+                  summary: Rol no valido
+                  value:
+                    success: false
+                    error: "Rol invalido"
+        "409":
+          description: El email o nombre de usuario ya existe
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseError"
+              example:
+                success: false
+                error: "El email o nombre de usuario ya existe"
+        "500":
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseError"
+
+  /auth/login:
+    post:
+      tags:
+        - Auth
+      summary: Iniciar sesion
+      description: |
+        Autentica un usuario con email o username y password.
+        Setea una cookie `session` httpOnly con duracion de 7 dias.
+      operationId: loginUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+            example:
+              login: "papajuan"
+              password: "mipassword123"
+      responses:
+        "200":
+          description: Sesion iniciada exitosamente. Se setea cookie `session`.
+          headers:
+            Set-Cookie:
+              description: Cookie de sesion httpOnly
+              schema:
+                type: string
+                example: "session=eyJhbGciOi...; HttpOnly; Path=/; SameSite=Lax; Max-Age=604800"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/AuthSession"
+              example:
+                success: true
+                data:
+                  user_id: "550e8400-e29b-41d4-a716-446655440000"
+                  email: "padre@ejemplo.com"
+                  username: "papajuan"
+                  display_name: "Juan"
+                  role: "sponsor"
+                  locale: "es"
+        "400":
+          description: Faltan campos requeridos
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseError"
+              example:
+                success: false
+                error: "Faltan campos requeridos"
+        "401":
+          description: Credenciales invalidas
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseError"
+              example:
+                success: false
+                error: "Credenciales invalidas"
+        "500":
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseError"
+
+  /auth/logout:
+    post:
+      tags:
+        - Auth
+      summary: Cerrar sesion
+      description: Elimina la cookie de sesion del usuario.
+      operationId: logoutUser
+      responses:
+        "200":
+          description: Sesion cerrada exitosamente
+          headers:
+            Set-Cookie:
+              description: Cookie de sesion eliminada
+              schema:
+                type: string
+                example: "session=; HttpOnly; Path=/; SameSite=Lax; Max-Age=0"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+              example:
+                success: true
+
+  /auth/session:
+    get:
+      tags:
+        - Auth
+      summary: Obtener sesion actual
+      description: Devuelve los datos de la sesion del usuario autenticado.
+      operationId: getSession
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: Sesion activa encontrada
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/AuthSession"
+              example:
+                success: true
+                data:
+                  user_id: "550e8400-e29b-41d4-a716-446655440000"
+                  email: "padre@ejemplo.com"
+                  username: "papajuan"
+                  display_name: "Juan"
+                  role: "sponsor"
+                  locale: "es"
+        "401":
+          description: No autenticado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseError"
+              example:
+                success: false
+                error: "No autenticado"
+
+  /habits:
+    get:
+      tags:
+        - Habits
+      summary: Listar habitos del usuario
+      description: |
+        Devuelve los habitos relevantes para el usuario autenticado.
+
+        - **Kid**: habitos asignados a el dentro de sus familias.
+        - **Sponsor**: habitos creados por el dentro de sus familias.
+
+        Cada habito incluye el campo `completed_today` indicando si ya fue completado hoy.
+      operationId: getHabits
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: Lista de habitos obtenida exitosamente
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/HabitWithCompletion"
+              example:
+                success: true
+                data:
+                  - id: "660e8400-e29b-41d4-a716-446655440001"
+                    family_id: "770e8400-e29b-41d4-a716-446655440002"
+                    created_by: "550e8400-e29b-41d4-a716-446655440000"
+                    assigned_to: "880e8400-e29b-41d4-a716-446655440003"
+                    name: "Tender la cama"
+                    description: "Tender la cama todas las mananas"
+                    color: "#4CAF7D"
+                    icon: "bed"
+                    sat_reward: 50
+                    schedule_type: "daily"
+                    verification_type: "sponsor_approval"
+                    active: true
+                    completed_today: false
+                    created_at: "2026-03-01T10:00:00.000Z"
+                    updated_at: "2026-03-01T10:00:00.000Z"
+        "401":
+          description: No autenticado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseError"
+              example:
+                success: false
+                error: "No autenticado"
+        "500":
+          description: Error al obtener los habitos
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseError"
+              example:
+                success: false
+                error: "Error al obtener los habitos"
+
+  /completions:
+    get:
+      tags:
+        - Completions
+      summary: Listar completaciones del usuario
+      description: |
+        Devuelve las completaciones del usuario autenticado.
+        Se puede filtrar por rango de fechas usando los query parameters `from` y `to`.
+      operationId: getCompletions
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: from
+          in: query
+          description: Fecha de inicio del rango (formato YYYY-MM-DD)
+          required: false
+          schema:
+            type: string
+            format: date
+            example: "2026-03-01"
+        - name: to
+          in: query
+          description: Fecha de fin del rango (formato YYYY-MM-DD)
+          required: false
+          schema:
+            type: string
+            format: date
+            example: "2026-03-07"
+      responses:
+        "200":
+          description: Lista de completaciones obtenida exitosamente
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/Completion"
+              example:
+                success: true
+                data:
+                  - id: "990e8400-e29b-41d4-a716-446655440004"
+                    habit_id: "660e8400-e29b-41d4-a716-446655440001"
+                    user_id: "880e8400-e29b-41d4-a716-446655440003"
+                    date: "2026-03-07"
+                    status: "approved"
+                    note: "Listo!"
+                    completed_at: "2026-03-07T08:30:00.000Z"
+                    reviewed_by: "550e8400-e29b-41d4-a716-446655440000"
+                    reviewed_at: "2026-03-07T09:00:00.000Z"
+        "401":
+          description: No autenticado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseError"
+              example:
+                success: false
+                error: "No autenticado"
+        "500":
+          description: Error al obtener las completaciones
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseError"
+              example:
+                success: false
+                error: "Error al obtener las completaciones"
+
+    post:
+      tags:
+        - Completions
+      summary: Registrar completacion de un habito
+      description: |
+        Registra que un kid completo un habito para el dia de hoy.
+        Solo usuarios con rol `kid` pueden usar este endpoint.
+
+        - Si el habito tiene `verification_type: "self_verify"`, la completacion se aprueba automaticamente.
+        - Si tiene `verification_type: "sponsor_approval"`, queda en estado `pending`.
+        - No se puede completar el mismo habito mas de una vez por dia.
+      operationId: createCompletion
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CompletionRequest"
+            example:
+              habit_id: "660e8400-e29b-41d4-a716-446655440001"
+              note: "Listo!"
+              evidence_url: "https://ejemplo.com/foto.jpg"
+      responses:
+        "201":
+          description: Completacion registrada exitosamente
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/Completion"
+              example:
+                success: true
+                data:
+                  id: "990e8400-e29b-41d4-a716-446655440004"
+                  habit_id: "660e8400-e29b-41d4-a716-446655440001"
+                  user_id: "880e8400-e29b-41d4-a716-446655440003"
+                  date: "2026-03-07"
+                  status: "pending"
+                  note: "Listo!"
+                  evidence_url: "https://ejemplo.com/foto.jpg"
+                  completed_at: "2026-03-07T08:30:00.000Z"
+        "400":
+          description: Falta el campo habit_id
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseError"
+              example:
+                success: false
+                error: "El campo habit_id es obligatorio"
+        "401":
+          description: No autenticado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseError"
+              example:
+                success: false
+                error: "No autenticado"
+        "403":
+          description: Solo los kids pueden completar habitos
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseError"
+              example:
+                success: false
+                error: "Solo los kids pueden completar habitos"
+        "404":
+          description: Habito no encontrado o no asignado al usuario
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseError"
+              example:
+                success: false
+                error: "Habito no encontrado o no asignado a vos"
+        "409":
+          description: Ya se completo este habito hoy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseError"
+              example:
+                success: false
+                error: "Ya completaste este habito hoy"
+        "500":
+          description: Error al registrar la completacion
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseError"
+              example:
+                success: false
+                error: "Error al registrar la completacion"
+
+  /families:
+    get:
+      tags:
+        - Families
+      summary: Listar familias del usuario
+      description: |
+        Devuelve todas las familias a las que pertenece el usuario autenticado,
+        incluyendo los miembros de cada familia con sus datos basicos.
+      operationId: getFamilies
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: Lista de familias obtenida exitosamente
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/FamilyWithMembers"
+              example:
+                success: true
+                data:
+                  - id: "770e8400-e29b-41d4-a716-446655440002"
+                    name: "Familia Rodriguez"
+                    invite_code: "ABC123"
+                    created_by: "550e8400-e29b-41d4-a716-446655440000"
+                    created_at: "2026-03-01T10:00:00.000Z"
+                    members:
+                      - id: "aaa00000-0000-0000-0000-000000000001"
+                        role: "sponsor"
+                        joined_at: "2026-03-01T10:00:00.000Z"
+                        user_id: "550e8400-e29b-41d4-a716-446655440000"
+                        display_name: "Juan"
+                        username: "papajuan"
+                        avatar_url: null
+                      - id: "aaa00000-0000-0000-0000-000000000002"
+                        role: "kid"
+                        joined_at: "2026-03-02T10:00:00.000Z"
+                        user_id: "880e8400-e29b-41d4-a716-446655440003"
+                        display_name: "Lucia"
+                        username: "luciarodriguez"
+                        avatar_url: null
+        "401":
+          description: No autenticado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseError"
+              example:
+                success: false
+                error: "No autenticado"
+        "500":
+          description: Error al obtener las familias
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseError"
+              example:
+                success: false
+                error: "Error al obtener las familias"
+
+    post:
+      tags:
+        - Families
+      summary: Crear una nueva familia
+      description: |
+        Crea una nueva familia y agrega al usuario como miembro sponsor.
+        Solo usuarios con rol `sponsor` pueden crear familias.
+        Se genera automaticamente un codigo de invitacion de 6 caracteres.
+      operationId: createFamily
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateFamilyRequest"
+            example:
+              name: "Familia Rodriguez"
+      responses:
+        "201":
+          description: Familia creada exitosamente
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/Family"
+              example:
+                success: true
+                data:
+                  id: "770e8400-e29b-41d4-a716-446655440002"
+                  name: "Familia Rodriguez"
+                  invite_code: "ABC123"
+                  created_by: "550e8400-e29b-41d4-a716-446655440000"
+                  created_at: "2026-03-01T10:00:00.000Z"
+        "400":
+          description: Nombre de familia faltante
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseError"
+              example:
+                success: false
+                error: "El nombre de la familia es obligatorio"
+        "401":
+          description: No autenticado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseError"
+              example:
+                success: false
+                error: "No autenticado"
+        "403":
+          description: Solo los sponsors pueden crear familias
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseError"
+              example:
+                success: false
+                error: "Solo los sponsors pueden crear familias"
+        "500":
+          description: Error al crear la familia
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseError"
+              example:
+                success: false
+                error: "Error al crear la familia"
+
+  /families/join:
+    post:
+      tags:
+        - Families
+      summary: Unirse a una familia con codigo de invitacion
+      description: |
+        Permite a un usuario unirse a una familia existente usando el codigo de invitacion.
+        El usuario se agrega como miembro con su rol actual (sponsor o kid).
+        No se puede unir a una familia de la que ya es miembro.
+      operationId: joinFamily
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/JoinFamilyRequest"
+            example:
+              invite_code: "ABC123"
+      responses:
+        "201":
+          description: Union exitosa a la familia
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          family:
+                            $ref: "#/components/schemas/Family"
+                          member:
+                            $ref: "#/components/schemas/FamilyMember"
+              example:
+                success: true
+                data:
+                  family:
+                    id: "770e8400-e29b-41d4-a716-446655440002"
+                    name: "Familia Rodriguez"
+                    invite_code: "ABC123"
+                    created_by: "550e8400-e29b-41d4-a716-446655440000"
+                    created_at: "2026-03-01T10:00:00.000Z"
+                  member:
+                    id: "bbb00000-0000-0000-0000-000000000001"
+                    family_id: "770e8400-e29b-41d4-a716-446655440002"
+                    user_id: "880e8400-e29b-41d4-a716-446655440003"
+                    role: "kid"
+                    joined_at: "2026-03-07T10:00:00.000Z"
+        "400":
+          description: Codigo de invitacion faltante
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseError"
+              example:
+                success: false
+                error: "El codigo de invitacion es obligatorio"
+        "401":
+          description: No autenticado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseError"
+              example:
+                success: false
+                error: "No autenticado"
+        "404":
+          description: Codigo de invitacion invalido
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseError"
+              example:
+                success: false
+                error: "Codigo de invitacion invalido"
+        "409":
+          description: Ya es miembro de esta familia
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseError"
+              example:
+                success: false
+                error: "Ya sos miembro de esta familia"
+        "500":
+          description: Error al unirse a la familia
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseError"
+              example:
+                success: false
+                error: "Error al unirse a la familia"
+
+  /stats:
+    get:
+      tags:
+        - Stats
+      summary: Obtener estadisticas del usuario
+      description: |
+        Devuelve estadisticas del usuario autenticado incluyendo:
+        - Total de sats ganados (pagos con estado `paid`)
+        - Rachas actuales por habito (dias consecutivos completados y aprobados)
+        - Cantidad de completaciones pendientes de aprobacion
+      operationId: getStats
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: Estadisticas obtenidas exitosamente
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/KidStats"
+              example:
+                success: true
+                data:
+                  total_sats_earned: 1500
+                  streaks:
+                    - habit_id: "660e8400-e29b-41d4-a716-446655440001"
+                      habit_name: "Tender la cama"
+                      current_streak: 5
+                    - habit_id: "660e8400-e29b-41d4-a716-446655440099"
+                      habit_name: "Leer 30 minutos"
+                      current_streak: 3
+                  pending_completions: 2
+        "401":
+          description: No autenticado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseError"
+              example:
+                success: false
+                error: "No autenticado"
+        "500":
+          description: Error al obtener las estadisticas
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseError"
+              example:
+                success: false
+                error: "Error al obtener las estadisticas"
+
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: session
+      description: Cookie de sesion httpOnly seteada por el endpoint de login
+
+  schemas:
+    # ---- Request schemas ----
+
+    RegisterRequest:
+      type: object
+      required:
+        - email
+        - username
+        - password
+        - display_name
+        - role
+      properties:
+        email:
+          type: string
+          format: email
+          description: Email del usuario (se convierte a minusculas)
+        username:
+          type: string
+          description: Nombre de usuario unico (se convierte a minusculas)
+        password:
+          type: string
+          format: password
+          description: Contrasena del usuario
+        display_name:
+          type: string
+          description: Nombre para mostrar
+        role:
+          type: string
+          enum:
+            - sponsor
+            - kid
+          description: Rol del usuario (sponsor = padre/tutor, kid = hijo/a)
+        locale:
+          type: string
+          enum:
+            - es
+            - en
+          default: es
+          description: Idioma preferido del usuario
+
+    LoginRequest:
+      type: object
+      required:
+        - login
+        - password
+      properties:
+        login:
+          type: string
+          description: Email o nombre de usuario (case-insensitive)
+        password:
+          type: string
+          format: password
+          description: Contrasena del usuario
+
+    CompletionRequest:
+      type: object
+      required:
+        - habit_id
+      properties:
+        habit_id:
+          type: string
+          format: uuid
+          description: ID del habito a completar
+        note:
+          type: string
+          description: Nota opcional sobre la completacion
+        evidence_url:
+          type: string
+          format: uri
+          description: URL de evidencia opcional (foto, etc.)
+
+    CreateFamilyRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          description: Nombre de la familia
+
+    JoinFamilyRequest:
+      type: object
+      required:
+        - invite_code
+      properties:
+        invite_code:
+          type: string
+          description: Codigo de invitacion de 6 caracteres (case-insensitive)
+          example: "ABC123"
+
+    # ---- Response / Model schemas ----
+
+    ApiResponse:
+      type: object
+      required:
+        - success
+      properties:
+        success:
+          type: boolean
+          description: Indica si la operacion fue exitosa
+        data:
+          description: Datos de la respuesta (presente cuando success es true)
+        error:
+          type: string
+          description: Mensaje de error (presente cuando success es false)
+
+    ApiResponseError:
+      type: object
+      required:
+        - success
+        - error
+      properties:
+        success:
+          type: boolean
+          enum:
+            - false
+        error:
+          type: string
+          description: Mensaje de error descriptivo
+
+    User:
+      type: object
+      description: Modelo completo de usuario (incluye password_hash, solo uso interno)
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        username:
+          type: string
+        password_hash:
+          type: string
+        display_name:
+          type: string
+        role:
+          type: string
+          enum:
+            - sponsor
+            - kid
+        avatar_url:
+          type: string
+          format: uri
+          nullable: true
+        locale:
+          type: string
+          enum:
+            - es
+            - en
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    UserPublic:
+      type: object
+      description: Datos publicos del usuario (sin password_hash)
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        username:
+          type: string
+        display_name:
+          type: string
+        role:
+          type: string
+          enum:
+            - sponsor
+            - kid
+        locale:
+          type: string
+          enum:
+            - es
+            - en
+        created_at:
+          type: string
+          format: date-time
+
+    AuthSession:
+      type: object
+      description: Datos de la sesion del usuario autenticado
+      properties:
+        user_id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        username:
+          type: string
+        display_name:
+          type: string
+        role:
+          type: string
+          enum:
+            - sponsor
+            - kid
+        locale:
+          type: string
+          enum:
+            - es
+            - en
+
+    Habit:
+      type: object
+      description: Habito creado por un sponsor y asignado a un kid
+      properties:
+        id:
+          type: string
+          format: uuid
+        family_id:
+          type: string
+          format: uuid
+          description: ID de la familia a la que pertenece
+        created_by:
+          type: string
+          format: uuid
+          description: ID del sponsor que lo creo
+        assigned_to:
+          type: string
+          format: uuid
+          description: ID del kid al que esta asignado
+        name:
+          type: string
+          description: Nombre del habito
+        description:
+          type: string
+          nullable: true
+          description: Descripcion opcional del habito
+        color:
+          type: string
+          description: Color del habito (hex)
+          example: "#4CAF7D"
+        icon:
+          type: string
+          nullable: true
+          description: Icono opcional del habito
+        sat_reward:
+          type: integer
+          description: Recompensa en sats al completar
+        schedule_type:
+          type: string
+          enum:
+            - daily
+            - specific_days
+            - times_per_week
+          description: Tipo de programacion del habito
+        schedule_days:
+          type: array
+          items:
+            type: integer
+          nullable: true
+          description: Dias especificos (0=domingo, 6=sabado). Solo para schedule_type specific_days.
+        schedule_times_per_week:
+          type: integer
+          nullable: true
+          description: Veces por semana. Solo para schedule_type times_per_week.
+        verification_type:
+          type: string
+          enum:
+            - sponsor_approval
+            - self_verify
+            - bot_verify
+          description: Como se verifica la completacion
+        active:
+          type: boolean
+          description: Si el habito esta activo
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    HabitWithCompletion:
+      allOf:
+        - $ref: "#/components/schemas/Habit"
+        - type: object
+          properties:
+            completed_today:
+              type: boolean
+              description: Si el habito ya fue completado hoy
+
+    Completion:
+      type: object
+      description: Registro de completacion de un habito por un kid
+      properties:
+        id:
+          type: string
+          format: uuid
+        habit_id:
+          type: string
+          format: uuid
+          description: ID del habito completado
+        user_id:
+          type: string
+          format: uuid
+          description: ID del kid que completo
+        date:
+          type: string
+          format: date
+          description: Fecha de la completacion (YYYY-MM-DD)
+        status:
+          type: string
+          enum:
+            - pending
+            - approved
+            - rejected
+          description: Estado de la completacion
+        evidence_url:
+          type: string
+          format: uri
+          nullable: true
+          description: URL de evidencia
+        note:
+          type: string
+          nullable: true
+          description: Nota del kid
+        completed_at:
+          type: string
+          format: date-time
+          description: Timestamp de cuando se registro la completacion
+        reviewed_by:
+          type: string
+          format: uuid
+          nullable: true
+          description: ID del sponsor que reviso
+        reviewed_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: Timestamp de la revision
+
+    Payment:
+      type: object
+      description: Registro de pago Lightning por una completacion aprobada
+      properties:
+        id:
+          type: string
+          format: uuid
+        completion_id:
+          type: string
+          format: uuid
+          description: ID de la completacion asociada
+        from_user_id:
+          type: string
+          format: uuid
+          description: ID del sponsor que paga
+        to_user_id:
+          type: string
+          format: uuid
+          description: ID del kid que recibe
+        amount_sats:
+          type: integer
+          description: Monto en satoshis
+        payment_request:
+          type: string
+          nullable: true
+          description: Invoice Lightning (BOLT11)
+        payment_hash:
+          type: string
+          nullable: true
+          description: Hash del pago Lightning
+        status:
+          type: string
+          enum:
+            - pending
+            - paid
+            - failed
+          description: Estado del pago
+        paid_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: Timestamp de cuando se pago
+        created_at:
+          type: string
+          format: date-time
+
+    Family:
+      type: object
+      description: Grupo familiar
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          description: Nombre de la familia
+        invite_code:
+          type: string
+          description: Codigo de invitacion de 6 caracteres
+        created_by:
+          type: string
+          format: uuid
+          description: ID del sponsor que la creo
+        created_at:
+          type: string
+          format: date-time
+
+    FamilyMember:
+      type: object
+      description: Miembro de una familia
+      properties:
+        id:
+          type: string
+          format: uuid
+        family_id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        role:
+          type: string
+          enum:
+            - sponsor
+            - kid
+        joined_at:
+          type: string
+          format: date-time
+
+    FamilyMemberWithUser:
+      type: object
+      description: Miembro de familia con datos del usuario
+      properties:
+        id:
+          type: string
+          format: uuid
+        role:
+          type: string
+          enum:
+            - sponsor
+            - kid
+        joined_at:
+          type: string
+          format: date-time
+        user_id:
+          type: string
+          format: uuid
+        display_name:
+          type: string
+        username:
+          type: string
+        avatar_url:
+          type: string
+          format: uri
+          nullable: true
+
+    FamilyWithMembers:
+      allOf:
+        - $ref: "#/components/schemas/Family"
+        - type: object
+          properties:
+            members:
+              type: array
+              items:
+                $ref: "#/components/schemas/FamilyMemberWithUser"
+
+    Wallet:
+      type: object
+      description: Conexion NWC (Nostr Wallet Connect) de un sponsor
+      properties:
+        id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+          description: ID del sponsor propietario
+        family_id:
+          type: string
+          format: uuid
+          description: ID de la familia asociada
+        nwc_url:
+          type: string
+          description: URL de conexion NWC
+        label:
+          type: string
+          nullable: true
+          description: Etiqueta opcional para la wallet
+        active:
+          type: boolean
+          description: Si la wallet esta activa
+        created_at:
+          type: string
+          format: date-time
+
+    HabitStreak:
+      type: object
+      description: Racha actual de un habito
+      properties:
+        habit_id:
+          type: string
+          format: uuid
+        habit_name:
+          type: string
+        current_streak:
+          type: integer
+          description: Dias consecutivos completados
+
+    KidStats:
+      type: object
+      description: Estadisticas del kid
+      properties:
+        total_sats_earned:
+          type: integer
+          description: Total de sats ganados (pagos con estado paid)
+        streaks:
+          type: array
+          items:
+            $ref: "#/components/schemas/HabitStreak"
+          description: Rachas actuales por habito
+        pending_completions:
+          type: integer
+          description: Completaciones pendientes de aprobacion
