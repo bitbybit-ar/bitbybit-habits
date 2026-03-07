@@ -66,7 +66,7 @@ export default function RegisterPage() {
       const loginData = await loginRes.json();
 
       if (loginData.success) {
-        router.push("/dashboard");
+        router.push("/onboard");
       } else {
         router.push("/login");
       }

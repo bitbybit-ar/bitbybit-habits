@@ -1,0 +1,177 @@
+@use "@/styles/colors" as *;
+@use "@/styles/spacing" as *;
+@use "@/styles/typography" as *;
+@use "@/styles/common-mixins" as *;
+@use "@/styles/media-mixins" as *;
+
+.container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-24;
+  background: $color-bg-dark;
+}
+
+.card {
+  width: 100%;
+  max-width: 520px;
+  background: $color-bg-dark-2;
+  border-radius: $border-radius-xl;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  padding: $spacing-40;
+
+  @include mobile {
+    padding: $spacing-24;
+  }
+}
+
+.title {
+  font-size: $font-size-2xl;
+  font-weight: $font-weight-extrabold;
+  text-align: center;
+  @include gradient-text;
+  margin-bottom: $spacing-8;
+}
+
+.subtitle {
+  text-align: center;
+  color: $color-text-secondary;
+  margin-bottom: $spacing-32;
+  font-size: $font-size-base;
+}
+
+.roleCards {
+  display: flex;
+  gap: $spacing-16;
+  margin-bottom: $spacing-24;
+
+  @include mobile {
+    flex-direction: column;
+  }
+}
+
+.roleCard {
+  flex: 1;
+  padding: $spacing-24;
+  border-radius: $border-radius-lg;
+  border: 2px solid rgba(255, 255, 255, 0.08);
+  background: $color-bg-dark-3;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+
+  &:hover {
+    border-color: rgba($color-primary, 0.4);
+    background: rgba($color-primary, 0.05);
+  }
+}
+
+.roleCardSelected {
+  border-color: $color-primary;
+  background: rgba($color-primary, 0.1);
+}
+
+.roleEmoji {
+  font-size: 2.5rem;
+  margin-bottom: $spacing-12;
+}
+
+.roleName {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-4;
+}
+
+.roleDesc {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-16;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-8;
+
+  label {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-semibold;
+    color: $color-text-secondary;
+  }
+
+  input {
+    padding: $spacing-12 $spacing-16;
+    border-radius: $border-radius-md;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: $color-bg-dark-3;
+    color: $color-text-primary;
+    font-size: $font-size-base;
+    transition: border-color 0.2s;
+
+    &:focus {
+      outline: none;
+      border-color: $color-primary;
+    }
+  }
+}
+
+.submitButton {
+  padding: $spacing-12 $spacing-24;
+  border-radius: $border-radius-md;
+  border: none;
+  background: $color-primary;
+  color: $color-bg-dark;
+  font-size: $font-size-base;
+  font-weight: $font-weight-bold;
+  cursor: pointer;
+  transition: opacity 0.2s;
+
+  &:hover {
+    opacity: 0.9;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.inviteCodeDisplay {
+  text-align: center;
+  margin: $spacing-24 0;
+
+  code {
+    display: block;
+    font-size: $font-size-2xl;
+    font-weight: $font-weight-bold;
+    color: $color-primary;
+    letter-spacing: 0.15em;
+    background: $color-bg-dark-3;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: $border-radius-md;
+    padding: $spacing-16;
+    margin-top: $spacing-12;
+  }
+}
+
+.successSection {
+  text-align: center;
+}
+
+.successEmoji {
+  font-size: 3rem;
+  margin-bottom: $spacing-16;
+}
+
+.error {
+  color: $color-accent;
+  font-size: $font-size-sm;
+  text-align: center;
+}
