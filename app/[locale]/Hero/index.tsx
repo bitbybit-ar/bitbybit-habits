@@ -29,19 +29,20 @@ export const Hero: React.FC = () => {
     <header className={styles.hero} data-hero>
       <div ref={particlesRef} className={styles.particles} aria-hidden="true" />
       <div className={styles.badge}>{t("badge")}</div>
-      <h1>BitByBit</h1>
+      <h1 className={styles.title}>BitByBit</h1>
       <p className={styles.subtitle}>
         {t("tagline")}
         <br />
         {t("subtitle")}
       </p>
       <div className={styles.buttons}>
-        <Button href="#use-cases" size="lg">
-          {t("cta")} ↓
-        </Button>
-        <Link href="/preview" className={styles.previewButton}>
-          {t("preview")}
+        <Link href="/preview" className={styles.demoLink}>
+          <Button size="lg">{t("demo")}</Button>
         </Link>
+        <Button href="#use-cases" size="lg" variant="outline" className={styles.ctaButton}>
+          <span>{t("cta")}</span>
+          <span className={styles.ctaArrow}>↓</span>
+        </Button>
       </div>
     </header>
   );

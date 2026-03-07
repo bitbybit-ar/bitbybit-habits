@@ -4,7 +4,7 @@
 
 .button {
   display: inline-block;
-  border: none;
+  border: 2px solid transparent;
   border-radius: $border-radius-md;
   font-weight: $font-weight-bold;
   cursor: pointer;

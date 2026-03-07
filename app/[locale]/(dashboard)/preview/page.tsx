@@ -1,25 +1,32 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
+import { useRouter } from "@/i18n/routing";
 import { Onboarding } from "@/components/dashboard/onboarding";
 import styles from "../dashboard.module.scss";
 
 export default function OnboardingPreview() {
   const [dismissed, setDismissed] = useState(false);
+  const router = useRouter();
 
-  const handleDismiss = useCallback(() => {
-    setDismissed(true);
-  }, []);
+  useEffect(() => {
+    if (!dismissed) return;
+
+    async function checkSession() {
+      const res = await fetch("/api/auth/session");
+      const data = await res.json();
+      if (data.success && data.data) {
+        router.push("/dashboard");
+      } else {
+        router.push("/login");
+      }
+    }
+    checkSession();
+  }, [dismissed, router]);
 
   return (
     <div className={styles.container}>
-      {dismissed ? (
-        <p style={{ textAlign: "center", color: "#B8A898", marginTop: 80 }}>
-          Onboarding completado. En producción acá verías el dashboard.
-        </p>
-      ) : (
-        <Onboarding displayName="Satoshi" onDismiss={handleDismiss} />
-      )}
+      <Onboarding displayName="Satoshi" onDismiss={() => setDismissed(true)} />
     </div>
   );
 }

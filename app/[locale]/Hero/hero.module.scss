@@ -3,6 +3,44 @@
 @use "@/styles/spacing" as *;
 @use "@/styles/common-mixins" as *;
 
+// --- Staggered entrance ---
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// --- Title shimmer ---
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+// --- Demo button glow pulse ---
+@keyframes glowPulse {
+  0%, 100% { box-shadow: 0 0 12px rgba($color-primary, 0.3); }
+  50% { box-shadow: 0 0 24px rgba($color-primary, 0.5), 0 0 48px rgba($color-primary, 0.15); }
+}
+
+// --- Arrow bounce ---
+@keyframes arrowBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(4px); }
+}
+
+// --- Lightning bolts ---
+@keyframes lightningFall {
+  0% { opacity: 0; transform: translateY(-60px); }
+  10% { opacity: 0.7; }
+  90% { opacity: 0.7; }
+  100% { opacity: 0; transform: translateY(calc(90vh + 60px)); }
+}
+
 .hero {
   min-height: 90vh;
   display: flex;
@@ -25,15 +63,6 @@
                 radial-gradient(ellipse at 70% 50%, rgba($color-primary, 0.06) 0%, transparent 50%);
     pointer-events: none;
   }
-
-  h1 {
-    font-size: $font-size-hero;
-    font-weight: $font-weight-extrabold;
-    @include gradient-text;
-    margin-bottom: $spacing-24;
-    line-height: $line-height-tight;
-    position: relative;
-  }
 }
 
 .particles {
@@ -52,11 +81,13 @@
   animation: lightningFall linear infinite;
 }
 
-@keyframes lightningFall {
-  0% { opacity: 0; transform: translateY(-60px); }
-  10% { opacity: 0.7; }
-  90% { opacity: 0.7; }
-  100% { opacity: 0; transform: translateY(calc(90vh + 60px)); }
+// --- Staggered entrance: each element fades in sequentially ---
+.badge,
+.title,
+.subtitle,
+.buttons {
+  opacity: 0;
+  animation: fadeInUp 0.4s ease-out forwards;
 }
 
 .badge {
@@ -71,6 +102,36 @@
   margin-bottom: $spacing-32;
   letter-spacing: 0.5px;
   position: relative;
+  animation-delay: 0s;
+}
+
+.title {
+  font-size: $font-size-hero;
+  font-weight: $font-weight-extrabold;
+  line-height: $line-height-tight;
+  margin-bottom: $spacing-24;
+  position: relative;
+  animation-delay: 0.2s;
+
+  // Gradient text with shimmer
+  background: linear-gradient(
+    90deg,
+    $color-primary 0%,
+    $color-primary-light 25%,
+    #fff 50%,
+    $color-primary-light 75%,
+    $color-secondary 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: fadeInUp 0.4s ease-out forwards, shimmer 6s linear infinite;
+  animation-delay: 0.2s, 1.2s;
+
+  // Glow behind the text
+  text-shadow: none; // text-shadow doesn't work with background-clip
+  filter: drop-shadow(0 0 30px rgba($color-primary, 0.25));
 }
 
 .subtitle {
@@ -79,28 +140,53 @@
   max-width: 600px;
   margin-bottom: $spacing-48;
   position: relative;
+  animation-delay: 0.5s;
 }
 
 .buttons {
   display: flex;
-  align-items: center;
+  align-items: stretch;
   gap: $spacing-16;
   position: relative;
+  animation-delay: 0.8s;
 }
 
-.previewButton {
-  display: inline-block;
-  padding: $spacing-12 $spacing-32;
-  border-radius: $border-radius-full;
-  font-size: $font-size-base;
-  font-weight: $font-weight-semibold;
-  color: $color-text-primary;
+// --- Demo button: pulsing glow ---
+.demoLink {
+  display: flex;
   text-decoration: none;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  transition: all 0.2s;
+  border-radius: $border-radius-md;
+  animation: glowPulse 3s ease-in-out infinite;
+
+  > * {
+    min-width: 200px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+// --- CTA outline button ---
+.ctaButton {
+  min-width: 200px;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-8;
+  transition: all 0.25s ease;
 
   &:hover {
-    border-color: rgba($color-primary, 0.4);
-    color: $color-primary;
+    background: rgba($color-primary, 0.15) !important;
+    box-shadow: 0 0 20px rgba($color-primary, 0.2);
+
+    .ctaArrow {
+      animation: arrowBounce 0.6s ease-in-out infinite;
+    }
   }
+}
+
+.ctaArrow {
+  display: inline-block;
+  transition: transform 0.25s ease;
 }
