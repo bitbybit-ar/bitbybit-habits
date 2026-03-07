@@ -27,18 +27,26 @@
   }
 }
 
+.cardBot {
+  border-color: rgba($color-accent-alt, 0.15);
+
+  &:hover {
+    border-color: rgba($color-accent-alt, 0.3);
+    box-shadow: 0 8px 25px rgba($color-accent-alt, 0.08);
+  }
+}
+
 .avatar {
-  width: 64px;
-  height: 64px;
+  width: 72px;
+  height: 72px;
   border-radius: 50%;
-  background: $gradient-primary;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: $color-bg-dark;
+  object-fit: cover;
+  border: 2px solid rgba($color-primary, 0.3);
   flex-shrink: 0;
+}
+
+.avatarBot {
+  border-color: rgba($color-accent-alt, 0.4);
 }
 
 .info {

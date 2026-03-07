@@ -2,20 +2,22 @@
 
 import React, { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/routing";
+import { LogInIcon, UserPlusIcon } from "@/components/icons";
 import styles from "./navbar.module.scss";
 import { cn } from "@/lib/utils";
 
 export const Navbar: React.FC = () => {
-  const t = useTranslations("landing.nav");
+  const t = useTranslations();
   const [visible, setVisible] = useState(false);
 
   const NAV_LINKS = [
-    { href: "#how-it-works", label: t("howItWorks") },
-    { href: "#use-cases", label: t("useCases") },
-    { href: "#why-lightning", label: t("whyLightning") },
-    { href: "#tech-stack", label: t("techStack") },
-    { href: "#roadmap", label: t("roadmap") },
-    { href: "#team", label: t("team") },
+    { href: "#how-it-works", label: t("landing.nav.howItWorks") },
+    { href: "#use-cases", label: t("landing.nav.useCases") },
+    { href: "#why-lightning", label: t("landing.nav.whyLightning") },
+    { href: "#tech-stack", label: t("landing.nav.techStack") },
+    { href: "#roadmap", label: t("landing.nav.roadmap") },
+    { href: "#team", label: t("landing.nav.team") },
   ];
 
   useEffect(() => {
@@ -47,6 +49,16 @@ export const Navbar: React.FC = () => {
             </li>
           ))}
         </ul>
+        <div className={styles.authButtons}>
+          <Link href="/login" className={styles.loginButton}>
+            <LogInIcon size={16} />
+            <span>{t("auth.login")}</span>
+          </Link>
+          <Link href="/register" className={styles.signupButton}>
+            <UserPlusIcon size={16} />
+            <span>{t("auth.register")}</span>
+          </Link>
+        </div>
       </div>
     </nav>
   );

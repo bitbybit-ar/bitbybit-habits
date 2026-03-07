@@ -202,7 +202,7 @@
     },
     "team": {
       "title": "The Team",
-      "subtitle": "Four humans, one mission: make kids earn their sats",
+      "subtitle": "Four humans, two bots, one mission: make kids earn their sats",
       "anixRole": "Dev & team wrangler",
       "anixDesc": "Keeps the code clean and the team on track. Probably debugging at 3am.",
       "llopoRole": "The bitcoiner of the family. Licensed vibe coder",
@@ -210,7 +210,11 @@
       "wanderRole": "Licensed in 'My grandma can use it' & tester",
       "wanderDesc": "If Wander can't break it, nobody can. Chief UX critic and bug whisperer.",
       "leonRole": "Consultant & pitch specialist",
-      "leonDesc": "Can sell ice to penguins. Turns our spaghetti ideas into 3-minute magic."
+      "leonDesc": "Can sell ice to penguins. Turns our spaghetti ideas into 3-minute magic.",
+      "annaloppoRole": "Claw Bot — Code & Docs",
+      "annaloppoDesc": "The team's OpenClaw bot. Generates PRs, reviews code, and writes docs. Doesn't sleep, doesn't eat, doesn't get paid.",
+      "topolinoRole": "Claw Bot — Research & Testing",
+      "topolinoDesc": "The second artificial brain. Researches, tests, and finds bugs before Wander does. Almost."
     },
     "builtWith": {
       "title": "Built With"
@@ -218,7 +222,6 @@
     "footer": {
       "builtFor": "Built for",
       "hackathonName": "La Crypta Lightning Hackathons 2026",
-      "poweredBy": "Powered by Lightning Network · Nostr · OpenClaw · NWC",
       "motto": "Bitcoin o Muerte"
     }
   },
@@ -237,5 +240,26 @@
     "rejectSuccess": "Completion rejected",
     "createSuccess": "Habit created successfully",
     "copied": "Copied"
+  },
+  "onboarding": {
+    "welcome": "Hey {name}!",
+    "subtitle": "Here's how BitByBit works in 4 steps",
+    "step": "Step",
+    "step1Title": "BitByBit rewards you with real sats",
+    "step1Desc": "Every time you complete a task, you can earn sats (Bitcoin's smallest unit) straight to your wallet.",
+    "step1Detail": "Sats are sent via Lightning Network — instant, feeless, and no bank needed.",
+    "step2Title": "Join or create a family",
+    "step2Desc": "Families are groups where sponsors create rewarded tasks for other members.",
+    "step2Detail": "Ask your sponsor for the invite code, or create your own family and invite others. You can be in multiple families.",
+    "step3Title": "Create your first task",
+    "step3Desc": "You can create tasks for yourself (no reward) or, as a sponsor, assign them to other members with sat rewards.",
+    "step3Detail": "Example: 'Make the bed' — 50 sats per day. Set frequency, color, and verification type.",
+    "step4Title": "Complete and earn",
+    "step4Desc": "Mark your tasks as done. If they have a reward, the sponsor approves and sats arrive instantly.",
+    "step4Detail": "Build streaks, stack sats, and become the best version of yourself — one habit at a time.",
+    "next": "Next",
+    "back": "Back",
+    "start": "Let's go!",
+    "skip": "Skip intro"
   }
 }

@@ -60,10 +60,52 @@
   }
 
   @include mobile {
-    gap: 12px;
+    display: none;
+  }
+}
 
-    a {
-      font-size: $font-size-xs;
+.authButtons {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.loginButton,
+.signupButton {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  padding: 6px 14px;
+  border-radius: $border-radius-md;
+  transition: all 0.2s;
+}
+
+.loginButton {
+  color: $color-text-secondary;
+
+  &:hover,
+  &:focus {
+    color: $color-text-primary;
+  }
+}
+
+.signupButton {
+  background: $color-primary;
+  color: $color-bg-dark;
+
+  &:hover,
+  &:focus {
+    background: lighten($color-primary, 5%);
+  }
+
+  @include mobile {
+    span {
+      display: none;
     }
+
+    padding: 6px;
   }
 }

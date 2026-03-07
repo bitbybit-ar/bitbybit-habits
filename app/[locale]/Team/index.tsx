@@ -4,7 +4,16 @@ import React from "react";
 import { useTranslations } from "next-intl";
 import Section from "@/components/ui/section";
 import SectionTitle from "@/components/ui/section-title";
+import { cn } from "@/lib/utils";
 import styles from "./team.module.scss";
+
+interface TeamMember {
+  name: string;
+  github: string;
+  role: string;
+  description: string;
+  isBot?: boolean;
+}
 
 export const Team: React.FC = () => {
   const t = useTranslations("landing.team");
@@ -34,6 +43,20 @@ export const Team: React.FC = () => {
       role: t("leonRole"),
       description: t("leonDesc"),
     },
+    {
+      name: "Annaloppo",
+      github: "annaloppo",
+      role: t("annaloppoRole"),
+      description: t("annaloppoDesc"),
+      isBot: true,
+    },
+    {
+      name: "Topolino",
+      github: "topolino-claw",
+      role: t("topolinoRole"),
+      description: t("topolinoDesc"),
+      isBot: true,
+    },
   ];
 
   return (
@@ -44,11 +67,13 @@ export const Team: React.FC = () => {
         subtitle={t("subtitle")}
       />
       <div className={styles.grid}>
-        {TEAM.map((member) => (
-          <article key={member.name} className={styles.card}>
-            <div className={styles.avatar}>
-              {member.name.charAt(0)}
-            </div>
+        {(TEAM as TeamMember[]).map((member) => (
+          <article key={member.name} className={cn(styles.card, member.isBot && styles.cardBot)}>
+            <img
+              src={`https://github.com/${member.github}.png?size=128`}
+              alt={member.name}
+              className={cn(styles.avatar, member.isBot && styles.avatarBot)}
+            />
             <div className={styles.info}>
               <h4 className={styles.name}>{member.name}</h4>
               <span className={styles.role}>{member.role}</span>

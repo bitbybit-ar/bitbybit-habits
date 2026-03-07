@@ -12,8 +12,6 @@ export const Footer: React.FC = () => {
       <p>
         {t("builtFor")} <strong>{t("hackathonName")}</strong>
       </p>
-      <p>{t("poweredBy")}</p>
-      <br />
       <p className={styles.motto}>{t("motto")}</p>
     </footer>
   );

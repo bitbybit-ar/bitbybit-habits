@@ -10,6 +10,7 @@ import { CreateHabitForm } from "@/components/dashboard/create-habit-form";
 import type { CreateHabitData } from "@/components/dashboard/create-habit-form";
 import { FamilyCard } from "@/components/dashboard/family-card";
 import { HabitCard } from "@/components/dashboard/habit-card";
+import { Onboarding } from "@/components/dashboard/onboarding";
 import { cn } from "@/lib/utils";
 import type { Habit, Completion, AuthSession } from "@/lib/types";
 import styles from "./sponsor.module.scss";
@@ -41,6 +42,7 @@ export default function SponsorDashboard() {
   const [families, setFamilies] = useState<FamilyWithMembers[]>([]);
   const [totalPaid, setTotalPaid] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
   const fetchData = useCallback(async () => {
     try {
@@ -84,6 +86,18 @@ export default function SponsorDashboard() {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  useEffect(() => {
+    if (!loading && habits.length === 0 && families.length === 0) {
+      const dismissed = localStorage.getItem("bitbybit_onboarding_done");
+      if (!dismissed) setShowOnboarding(true);
+    }
+  }, [loading, habits.length, families.length]);
+
+  const handleDismissOnboarding = useCallback(() => {
+    localStorage.setItem("bitbybit_onboarding_done", "1");
+    setShowOnboarding(false);
+  }, []);
 
   const handleApprove = useCallback(async (completionId: string) => {
     try {
@@ -198,6 +212,13 @@ export default function SponsorDashboard() {
         </button>
       </div>
 
+      {showOnboarding ? (
+        <Onboarding
+          displayName={displayName}
+          onDismiss={handleDismissOnboarding}
+        />
+      ) : (
+        <>
       <StatsBar
         items={[
           {
@@ -297,6 +318,8 @@ export default function SponsorDashboard() {
             ))
           )}
         </div>
+      )}
+        </>
       )}
     </div>
   );

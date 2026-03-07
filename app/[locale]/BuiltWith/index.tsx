@@ -7,9 +7,9 @@ import SectionTitle from "@/components/ui/section-title";
 import styles from "./built-with.module.scss";
 
 const PARTNERS = [
-  { icon: "🏛️", name: "La Crypta", href: "https://lacrypta.ar" },
-  { icon: "🤖", name: "OpenClaw", href: "https://openclaw.com" },
-  { icon: "₿", name: "Bitcoin", href: "https://bitcoin.org" },
+  { name: "La Crypta", href: "https://lacrypta.ar", logo: "https://github.com/lacrypta.png?size=64" },
+  { name: "OpenClaw", href: "https://openclaw.com", logo: "https://github.com/openclaw.png?size=64" },
+  { name: "Bitcoin", href: "https://bitcoin.org", logo: "https://github.com/bitcoin.png?size=64" },
 ];
 
 export const BuiltWith: React.FC = () => {
@@ -26,7 +26,7 @@ export const BuiltWith: React.FC = () => {
             target="_blank"
             rel="noopener noreferrer"
           >
-            <span className={styles.icon} aria-hidden="true">{partner.icon}</span>
+            <img src={partner.logo} alt={partner.name} className={styles.logo} />
             {partner.name}
           </a>
         ))}

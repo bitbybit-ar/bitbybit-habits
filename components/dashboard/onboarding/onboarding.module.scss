@@ -1,0 +1,189 @@
+@use "@/styles/colors" as *;
+@use "@/styles/typography" as *;
+@use "@/styles/spacing" as *;
+@use "@/styles/media-mixins" as *;
+
+.onboarding {
+  max-width: 520px;
+  margin: $spacing-40 auto;
+  text-align: center;
+}
+
+.header {
+  margin-bottom: $spacing-32;
+}
+
+.welcome {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-8;
+}
+
+.subtitle {
+  color: $color-text-secondary;
+  font-size: $font-size-base;
+}
+
+// Progress dots
+.progress {
+  display: flex;
+  justify-content: center;
+  gap: $spacing-8;
+  margin-bottom: $spacing-32;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: $border-radius-full;
+  border: 2px solid $color-bg-dark-3;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.3s;
+
+  &:hover {
+    border-color: $color-text-secondary;
+  }
+}
+
+.dotActive {
+  border-color: $color-primary;
+  background: $color-primary;
+  transform: scale(1.2);
+}
+
+.dotDone {
+  border-color: $color-secondary;
+  background: $color-secondary;
+}
+
+// Step card
+.stepCard {
+  background: $color-bg-dark-2;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: $border-radius-lg;
+  padding: $spacing-32;
+  margin-bottom: $spacing-24;
+  position: relative;
+}
+
+.stepNumber {
+  position: absolute;
+  top: $spacing-16;
+  right: $spacing-16;
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  font-weight: $font-weight-medium;
+}
+
+.stepIcon {
+  margin-bottom: $spacing-16;
+}
+
+.stepTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-8;
+}
+
+.stepDescription {
+  color: $color-text-secondary;
+  font-size: $font-size-base;
+  line-height: $line-height-base;
+  margin-bottom: $spacing-16;
+}
+
+.stepDetail {
+  background: rgba($color-primary, 0.08);
+  border-left: 3px solid $color-primary;
+  border-radius: 0 $border-radius-sm $border-radius-sm 0;
+  padding: $spacing-12 $spacing-16;
+  text-align: left;
+
+  p {
+    color: $color-text-primary;
+    font-size: $font-size-sm;
+    line-height: $line-height-base;
+    margin: 0;
+  }
+}
+
+// Actions
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: $spacing-12;
+  margin-bottom: $spacing-16;
+}
+
+.backButton,
+.nextButton,
+.startButton {
+  display: flex;
+  align-items: center;
+  gap: $spacing-8;
+  padding: $spacing-12 $spacing-24;
+  border-radius: $border-radius-md;
+  font-size: $font-size-base;
+  font-weight: $font-weight-semibold;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+}
+
+.backButton {
+  background: transparent;
+  color: $color-text-secondary;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+
+  &:hover {
+    color: $color-text-primary;
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+}
+
+.nextButton {
+  background: $color-bg-dark-3;
+  color: $color-text-primary;
+
+  &:hover {
+    background: lighten($color-bg-dark-3, 5%);
+  }
+}
+
+.startButton {
+  background: $color-primary;
+  color: $color-bg-dark;
+
+  &:hover {
+    background: lighten($color-primary, 5%);
+  }
+}
+
+.skipButton {
+  background: none;
+  border: none;
+  color: $color-text-secondary;
+  font-size: $font-size-sm;
+  cursor: pointer;
+  padding: $spacing-8;
+  transition: color 0.2s;
+
+  &:hover {
+    color: $color-text-primary;
+  }
+}
+
+@include mobile {
+  .onboarding {
+    margin: $spacing-24 auto;
+    padding: 0 $spacing-8;
+  }
+
+  .stepCard {
+    padding: $spacing-24;
+  }
+}

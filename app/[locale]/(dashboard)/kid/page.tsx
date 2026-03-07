@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { LogOutIcon } from "@/components/icons";
 import { StatsBar } from "@/components/dashboard/stats-bar";
 import { HabitList } from "@/components/dashboard/habit-list";
+import { Onboarding } from "@/components/dashboard/onboarding";
 import type { Habit, Completion, AuthSession } from "@/lib/types";
 import styles from "./kid.module.scss";
 
@@ -25,6 +26,7 @@ export default function KidDashboard() {
     pendingCount: 0,
   });
   const [loading, setLoading] = useState(true);
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
@@ -69,6 +71,18 @@ export default function KidDashboard() {
     }
 
     fetchData();
+  }, []);
+
+  useEffect(() => {
+    if (!loading && habits.length === 0) {
+      const dismissed = localStorage.getItem("bitbybit_onboarding_done");
+      if (!dismissed) setShowOnboarding(true);
+    }
+  }, [loading, habits.length]);
+
+  const handleDismissOnboarding = useCallback(() => {
+    localStorage.setItem("bitbybit_onboarding_done", "1");
+    setShowOnboarding(false);
   }, []);
 
   const handleComplete = useCallback(async (habitId: string) => {
@@ -125,19 +139,28 @@ export default function KidDashboard() {
         </button>
       </div>
 
-      <StatsBar
-        totalSats={stats.totalSats}
-        bestStreak={stats.bestStreak}
-        pendingCount={stats.pendingCount}
-      />
+      {showOnboarding ? (
+        <Onboarding
+          displayName={displayName}
+          onDismiss={handleDismissOnboarding}
+        />
+      ) : (
+        <>
+          <StatsBar
+            totalSats={stats.totalSats}
+            bestStreak={stats.bestStreak}
+            pendingCount={stats.pendingCount}
+          />
 
-      <h2 className={styles.sectionTitle}>{t("dashboard.myHabits")}</h2>
+          <h2 className={styles.sectionTitle}>{t("dashboard.myHabits")}</h2>
 
-      <HabitList
-        habits={habits}
-        completions={completions}
-        onComplete={handleComplete}
-      />
+          <HabitList
+            habits={habits}
+            completions={completions}
+            onComplete={handleComplete}
+          />
+        </>
+      )}
     </div>
   );
 }
