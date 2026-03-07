@@ -73,3 +73,103 @@
   padding-top: $spacing-80;
   font-size: $font-size-base;
 }
+
+.tabs {
+  display: flex;
+  gap: $spacing-4;
+  margin-bottom: $spacing-24;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  overflow-x: auto;
+}
+
+.tab {
+  padding: $spacing-12 $spacing-20;
+  border: none;
+  background: transparent;
+  color: $color-text-secondary;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+  white-space: nowrap;
+
+  &:hover {
+    color: $color-text-primary;
+  }
+}
+
+.tabActive {
+  color: $color-primary;
+  border-bottom-color: $color-primary;
+}
+
+.joinSection {
+  margin-top: $spacing-24;
+  padding: $spacing-24;
+  background: $color-bg-dark-2;
+  border-radius: $border-radius-lg;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.joinTitle {
+  font-size: $font-size-base;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin: 0 0 $spacing-16;
+}
+
+.joinForm {
+  display: flex;
+  gap: $spacing-12;
+
+  @include mobile {
+    flex-direction: column;
+  }
+}
+
+.joinInput {
+  flex: 1;
+  padding: $spacing-12 $spacing-16;
+  border-radius: $border-radius-md;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: $color-bg-dark-3;
+  color: $color-text-primary;
+  font-size: $font-size-base;
+  text-align: center;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+
+  &:focus {
+    outline: none;
+    border-color: $color-primary;
+  }
+}
+
+.joinButton {
+  padding: $spacing-12 $spacing-24;
+  border-radius: $border-radius-md;
+  border: none;
+  background: $color-primary;
+  color: $color-bg-dark;
+  font-size: $font-size-base;
+  font-weight: $font-weight-bold;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  white-space: nowrap;
+
+  &:hover {
+    opacity: 0.9;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.joinError {
+  color: $color-accent;
+  font-size: $font-size-sm;
+  margin-top: $spacing-8;
+}

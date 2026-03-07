@@ -76,7 +76,20 @@
     "familyName": "Family name",
     "inviteCode": "Invite code",
     "members": "Members",
-    "copyCode": "Copy code"
+    "copyCode": "Copy code",
+    "leaveFamily": "Leave family",
+    "deleteFamily": "Delete family",
+    "confirmLeave": "Are you sure you want to leave this family?",
+    "confirmDelete": "Are you sure you want to delete this family? This will deactivate all related habits.",
+    "leaveSuccess": "You left the family",
+    "deleteSuccess": "Family deleted",
+    "changeRole": "Change role",
+    "roleChanged": "Role changed",
+    "lastSponsorError": "Cannot leave: you are the last sponsor",
+    "joinSuccess": "Joined family successfully",
+    "enterInviteCode": "Enter invite code",
+    "join": "Join",
+    "noFamilies": "You are not in any family yet"
   },
   "wallet": {
     "connectWallet": "Connect wallet",
@@ -339,6 +352,21 @@
     "next": "Next",
     "back": "Back",
     "start": "Let's go!",
-    "skip": "Skip intro"
+    "skip": "Skip intro",
+    "postReg": {
+      "chooseRole": "What are you?",
+      "iAmSponsor": "I'm a Sponsor",
+      "iAmKid": "I'm a Kid",
+      "sponsorDesc": "Parent or guardian who creates tasks and rewards",
+      "kidDesc": "Complete tasks and earn sats",
+      "createYourFamily": "Create your family",
+      "familyCreated": "Family created!",
+      "shareCode": "Share this code with your kids to join:",
+      "joinAFamily": "Join a family",
+      "enterCode": "Enter the invite code from your sponsor",
+      "allSet": "You're all set!",
+      "allSetDesc": "Your account is ready. Head to the dashboard to get started.",
+      "goToDashboard": "Go to dashboard"
+    }
   }
 }

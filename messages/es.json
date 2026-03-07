@@ -76,7 +76,20 @@
     "familyName": "Nombre de la familia",
     "inviteCode": "Código de invitación",
     "members": "Miembros",
-    "copyCode": "Copiar código"
+    "copyCode": "Copiar código",
+    "leaveFamily": "Dejar familia",
+    "deleteFamily": "Eliminar familia",
+    "confirmLeave": "¿Estás seguro de que querés dejar esta familia?",
+    "confirmDelete": "¿Estás seguro de que querés eliminar esta familia? Se desactivarán todos los hábitos relacionados.",
+    "leaveSuccess": "Dejaste la familia",
+    "deleteSuccess": "Familia eliminada",
+    "changeRole": "Cambiar rol",
+    "roleChanged": "Rol cambiado",
+    "lastSponsorError": "No podés irte: sos el último sponsor",
+    "joinSuccess": "Te uniste a la familia",
+    "enterInviteCode": "Ingresá el código de invitación",
+    "join": "Unirse",
+    "noFamilies": "Todavía no estás en ninguna familia"
   },
   "wallet": {
     "connectWallet": "Conectar wallet",
@@ -339,6 +352,21 @@
     "next": "Siguiente",
     "back": "Atrás",
     "start": "¡Empezar!",
-    "skip": "Saltar intro"
+    "skip": "Saltar intro",
+    "postReg": {
+      "chooseRole": "¿Qué sos?",
+      "iAmSponsor": "Soy Sponsor",
+      "iAmKid": "Soy Kid",
+      "sponsorDesc": "Padre o tutor que crea tareas y recompensas",
+      "kidDesc": "Completá tareas y ganá sats",
+      "createYourFamily": "Creá tu familia",
+      "familyCreated": "¡Familia creada!",
+      "shareCode": "Compartí este código con tus kids para que se unan:",
+      "joinAFamily": "Unite a una familia",
+      "enterCode": "Ingresá el código de invitación de tu sponsor",
+      "allSet": "¡Todo listo!",
+      "allSetDesc": "Tu cuenta está lista. Andá al dashboard para empezar.",
+      "goToDashboard": "Ir al dashboard"
+    }
   }
 }
