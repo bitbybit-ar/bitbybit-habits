@@ -1,0 +1,79 @@
+@use "@/styles/colors" as *;
+@use "@/styles/typography" as *;
+@use "@/styles/spacing" as *;
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: $spacing-24;
+}
+
+.card {
+  background: $color-bg-dark-3;
+  border-radius: $border-radius-lg;
+  padding: $spacing-24;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: $spacing-16;
+  transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+
+  &:hover {
+    transform: translateY(-3px);
+    border-color: rgba($color-primary, 0.3);
+    box-shadow: 0 8px 25px rgba($color-primary, 0.08);
+  }
+}
+
+.avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: $gradient-primary;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: $color-bg-dark;
+  flex-shrink: 0;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $spacing-4;
+}
+
+.name {
+  font-size: $font-size-lg;
+  font-weight: 600;
+}
+
+.role {
+  color: $color-primary;
+  font-size: $font-size-sm;
+  font-weight: 500;
+  font-style: italic;
+}
+
+.description {
+  color: $color-text-secondary;
+  font-size: $font-size-sm;
+  margin-top: $spacing-4;
+}
+
+.github {
+  color: $color-accent-alt;
+  font-size: $font-size-xs;
+  text-decoration: none;
+  margin-top: $spacing-8;
+  transition: color 0.2s;
+
+  &:hover {
+    color: $color-primary;
+  }
+}

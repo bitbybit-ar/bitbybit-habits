@@ -5,6 +5,7 @@ import UseCases from "./UseCases";
 import WhyLightning from "./WhyLightning";
 import TechStack from "./TechStack";
 import Roadmap from "./Roadmap";
+import Team from "./Team";
 import BuiltWith from "./BuiltWith";
 import Footer from "@/components/layout/footer";
 
@@ -22,6 +23,7 @@ export default function Home() {
         <WhyLightning />
         <TechStack />
         <Roadmap />
+        <Team />
         <BuiltWith />
       </main>
       <Footer />
