@@ -64,7 +64,10 @@
     "markComplete": "Marcar como completado",
     "approve": "Aprobar",
     "reject": "Rechazar",
-    "color": "Color"
+    "color": "Color",
+    "confirmDelete": "¿Estás seguro de que querés eliminar este hábito?",
+    "deleteSuccess": "Hábito eliminado",
+    "editSuccess": "Hábito actualizado"
   },
   "family": {
     "myFamily": "Mi familia",
@@ -80,6 +83,8 @@
     "walletConnected": "Wallet conectada",
     "balance": "Balance",
     "nwcUrl": "URL de NWC",
+    "label": "Etiqueta (opcional)",
+    "labelPlaceholder": "ej. Mi wallet de Alby",
     "disconnect": "Desconectar"
   },
   "sats": {
@@ -87,6 +92,12 @@
     "earned": "ganados",
     "paid": "pagados",
     "pending": "pendientes"
+  },
+  "settings": {
+    "title": "Configuración",
+    "avatarUrl": "URL del avatar",
+    "language": "Idioma",
+    "saved": "¡Guardado!"
   },
   "kidDashboard": {
     "noHabits": "Todavía no tenés hábitos asignados. Pedile a tu sponsor que te cree uno.",

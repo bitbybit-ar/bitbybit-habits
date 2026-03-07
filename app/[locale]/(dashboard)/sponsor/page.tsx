@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
-import { LogOutIcon, BoltIcon, ClockIcon, PencilIcon } from "@/components/icons";
+import { LogOutIcon, BoltIcon, ClockIcon, PencilIcon, SettingsIcon } from "@/components/icons";
 import { NotificationBell } from "@/components/dashboard/notification-bell";
 import { StatsBar } from "@/components/dashboard/stats-bar";
 import { PendingList } from "@/components/dashboard/pending-list";
@@ -11,6 +11,7 @@ import { CreateHabitForm } from "@/components/dashboard/create-habit-form";
 import type { CreateHabitData } from "@/components/dashboard/create-habit-form";
 import { FamilyCard } from "@/components/dashboard/family-card";
 import { HabitCard } from "@/components/dashboard/habit-card";
+import { WalletConnect } from "@/components/dashboard/wallet-connect";
 import { Onboarding } from "@/components/dashboard/onboarding";
 import { cn } from "@/lib/utils";
 import type { Habit, Completion, AuthSession, PaymentWithDetails } from "@/lib/types";
@@ -31,7 +32,7 @@ interface FamilyWithMembers {
   }[];
 }
 
-type TabType = "pending" | "habits" | "create" | "family" | "payments";
+type TabType = "pending" | "habits" | "create" | "family" | "payments" | "wallet";
 
 const STATUS_COLORS: Record<string, string> = {
   pending: "#FF9F43",
@@ -247,6 +248,7 @@ export default function SponsorDashboard() {
     { key: "create", label: t("habits.createHabit") },
     { key: "family", label: t("family.myFamily") },
     { key: "payments", label: t("payments.title") },
+    { key: "wallet", label: t("wallet.connectWallet") },
   ];
 
   return (
@@ -257,6 +259,9 @@ export default function SponsorDashboard() {
         </h1>
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
           <NotificationBell />
+          <a href="/settings" className={styles.logoutButton} style={{ textDecoration: "none" }}>
+            <SettingsIcon size={18} />
+          </a>
           <button className={styles.logoutButton} onClick={handleLogout}>
             <LogOutIcon size={18} />
             <span>{t("auth.logout")}</span>
@@ -423,6 +428,13 @@ export default function SponsorDashboard() {
               </table>
             </div>
           )}
+        </div>
+      )}
+
+      {activeTab === "wallet" && (
+        <div className={styles.section}>
+          <h2 className={styles.sectionTitle}>{t("wallet.connectWallet")}</h2>
+          <WalletConnect />
         </div>
       )}
         </>

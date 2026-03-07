@@ -64,7 +64,10 @@
     "markComplete": "Mark as completed",
     "approve": "Approve",
     "reject": "Reject",
-    "color": "Color"
+    "color": "Color",
+    "confirmDelete": "Are you sure you want to delete this habit?",
+    "deleteSuccess": "Habit deleted",
+    "editSuccess": "Habit updated"
   },
   "family": {
     "myFamily": "My family",
@@ -80,6 +83,8 @@
     "walletConnected": "Wallet connected",
     "balance": "Balance",
     "nwcUrl": "NWC URL",
+    "label": "Label (optional)",
+    "labelPlaceholder": "e.g. My Alby wallet",
     "disconnect": "Disconnect"
   },
   "sats": {
@@ -87,6 +92,12 @@
     "earned": "earned",
     "paid": "paid",
     "pending": "pending"
+  },
+  "settings": {
+    "title": "Settings",
+    "avatarUrl": "Avatar URL",
+    "language": "Language",
+    "saved": "Saved!"
   },
   "kidDashboard": {
     "noHabits": "You don't have any habits yet. Ask your sponsor to create one for you.",

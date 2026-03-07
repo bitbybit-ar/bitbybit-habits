@@ -1,0 +1,139 @@
+@use "@/styles/colors" as *;
+@use "@/styles/spacing" as *;
+@use "@/styles/typography" as *;
+
+.card {
+  background: $color-bg-dark-2;
+  border-radius: $border-radius-lg;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  padding: $spacing-20;
+}
+
+.loadingText {
+  color: $color-text-secondary;
+  font-size: $font-size-sm;
+}
+
+.statusRow {
+  display: flex;
+  align-items: center;
+  gap: $spacing-8;
+  margin-bottom: $spacing-16;
+}
+
+.statusIndicator {
+  width: 10px;
+  height: 10px;
+  border-radius: $border-radius-full;
+
+  &[data-connected="true"] {
+    background: $color-success;
+    box-shadow: 0 0 8px rgba($color-success, 0.4);
+  }
+
+  &[data-connected="false"] {
+    background: $color-text-secondary;
+    opacity: 0.5;
+  }
+}
+
+.statusText {
+  font-size: $font-size-base;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.label {
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+  margin: 0 0 $spacing-4;
+}
+
+.maskedUrl {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  font-family: monospace;
+  margin: 0 0 $spacing-16;
+  word-break: break-all;
+}
+
+.disconnectButton {
+  padding: $spacing-8 $spacing-16;
+  border-radius: $border-radius-md;
+  border: 1px solid rgba($color-error, 0.3);
+  background: rgba($color-error, 0.1);
+  color: $color-error;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+
+  &:hover {
+    background: rgba($color-error, 0.2);
+    border-color: $color-error;
+  }
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-16;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-4;
+}
+
+.fieldLabel {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  font-weight: $font-weight-semibold;
+}
+
+.input {
+  padding: $spacing-12;
+  border-radius: $border-radius-md;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: $color-bg-dark;
+  color: $color-text-primary;
+  font-size: $font-size-sm;
+  outline: none;
+  transition: border-color 0.2s;
+
+  &::placeholder {
+    color: $color-text-secondary;
+    opacity: 0.5;
+  }
+
+  &:focus {
+    border-color: $color-primary;
+  }
+}
+
+.connectButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-8;
+  padding: $spacing-12 $spacing-16;
+  border-radius: $border-radius-md;
+  border: none;
+  background: $gradient-primary;
+  color: white;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-bold;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba($color-primary, 0.3);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
