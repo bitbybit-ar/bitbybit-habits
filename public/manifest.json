@@ -1,0 +1,19 @@
+{
+  "name": "BitByBit — Earn sats. Build habits.",
+  "short_name": "BitByBit",
+  "description": "A habit tracker powered by Bitcoin Lightning that rewards task completion with real sats.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1A1A2E",
+  "theme_color": "#F7A825",
+  "orientation": "portrait-primary",
+  "categories": ["finance", "productivity", "lifestyle"],
+  "icons": [
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
