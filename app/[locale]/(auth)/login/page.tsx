@@ -16,6 +16,11 @@ export default function LoginPage() {
 
         <AuthView path="sign-in" callbackURL="/dashboard" />
 
+        <button className={styles.nostrButton} disabled>
+          {t("auth.loginWithNostr")}
+          <span className={styles.comingSoon}>{t("common.comingSoon")}</span>
+        </button>
+
         <p className={styles.switchAuth}>
           {t("auth.noAccount")}{" "}
           <Link href="/register">{t("auth.register")}</Link>
