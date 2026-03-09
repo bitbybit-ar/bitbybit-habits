@@ -1,118 +1,63 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getSession } from "@/lib/auth";
-import { getDb } from "@/lib/db";
-import type { ApiResponse, Habit } from "@/lib/types";
+import { apiHandler, NotFoundError } from "@/lib/api";
+import type { Habit } from "@/lib/types";
 
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  const session = await getSession();
+export const PUT = apiHandler(async (request, { session, db, params }) => {
+  const { id } = params;
 
-  if (!session) {
-    return NextResponse.json<ApiResponse>(
-      { success: false, error: "No autenticado" },
-      { status: 401 }
-    );
+  // Verify ownership
+  const existing = await db`
+    SELECT * FROM habits WHERE id = ${id} AND created_by = ${session.user_id}
+  `;
+
+  if (existing.length === 0) {
+    throw new NotFoundError("Hábito no encontrado o no tenés permiso para editarlo");
   }
 
-  const { id } = await params;
-  const db = getDb();
+  const body = await request.json();
+  const {
+    name,
+    description,
+    color,
+    sat_reward,
+    schedule_type,
+    schedule_days,
+    schedule_times_per_week,
+    verification_type,
+    active,
+  } = body as Partial<Habit>;
 
-  try {
-    // Verify ownership
-    const existing = await db`
-      SELECT * FROM habits WHERE id = ${id} AND created_by = ${session.user_id}
-    `;
+  const updated = await db`
+    UPDATE habits SET
+      name = COALESCE(${name ?? null}, name),
+      description = COALESCE(${description ?? null}, description),
+      color = COALESCE(${color ?? null}, color),
+      sat_reward = COALESCE(${sat_reward ?? null}, sat_reward),
+      schedule_type = COALESCE(${schedule_type ?? null}, schedule_type),
+      schedule_days = COALESCE(${schedule_days ? JSON.stringify(schedule_days) : null}, schedule_days),
+      schedule_times_per_week = COALESCE(${schedule_times_per_week ?? null}, schedule_times_per_week),
+      verification_type = COALESCE(${verification_type ?? null}, verification_type),
+      active = COALESCE(${active ?? null}, active)
+    WHERE id = ${id}
+    RETURNING *
+  ` as Habit[];
 
-    if (existing.length === 0) {
-      return NextResponse.json<ApiResponse>(
-        { success: false, error: "Hábito no encontrado o no tenés permiso para editarlo" },
-        { status: 404 }
-      );
-    }
+  return updated[0];
+});
 
-    const body = await request.json();
-    const {
-      name,
-      description,
-      color,
-      sat_reward,
-      schedule_type,
-      schedule_days,
-      schedule_times_per_week,
-      verification_type,
-      active,
-    } = body as Partial<Habit>;
+export const DELETE = apiHandler(async (_req, { session, db, params }) => {
+  const { id } = params;
 
-    const updated = await db`
-      UPDATE habits SET
-        name = COALESCE(${name ?? null}, name),
-        description = COALESCE(${description ?? null}, description),
-        color = COALESCE(${color ?? null}, color),
-        sat_reward = COALESCE(${sat_reward ?? null}, sat_reward),
-        schedule_type = COALESCE(${schedule_type ?? null}, schedule_type),
-        schedule_days = COALESCE(${schedule_days ? JSON.stringify(schedule_days) : null}, schedule_days),
-        schedule_times_per_week = COALESCE(${schedule_times_per_week ?? null}, schedule_times_per_week),
-        verification_type = COALESCE(${verification_type ?? null}, verification_type),
-        active = COALESCE(${active ?? null}, active)
-      WHERE id = ${id}
-      RETURNING *
-    ` as Habit[];
+  const existing = await db`
+    SELECT * FROM habits WHERE id = ${id} AND created_by = ${session.user_id}
+  `;
 
-    return NextResponse.json<ApiResponse<Habit>>({
-      success: true,
-      data: updated[0],
-    });
-  } catch (error) {
-    console.error("Error al editar hábito:", error);
-    return NextResponse.json<ApiResponse>(
-      { success: false, error: "Error al editar el hábito" },
-      { status: 500 }
-    );
-  }
-}
-
-export async function DELETE(
-  _request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  const session = await getSession();
-
-  if (!session) {
-    return NextResponse.json<ApiResponse>(
-      { success: false, error: "No autenticado" },
-      { status: 401 }
-    );
+  if (existing.length === 0) {
+    throw new NotFoundError("Hábito no encontrado o no tenés permiso para eliminarlo");
   }
 
-  const { id } = await params;
-  const db = getDb();
+  await db`
+    UPDATE habits SET active = false WHERE id = ${id}
+  `;
 
-  try {
-    const existing = await db`
-      SELECT * FROM habits WHERE id = ${id} AND created_by = ${session.user_id}
-    `;
-
-    if (existing.length === 0) {
-      return NextResponse.json<ApiResponse>(
-        { success: false, error: "Hábito no encontrado o no tenés permiso para eliminarlo" },
-        { status: 404 }
-      );
-    }
-
-    await db`
-      UPDATE habits SET active = false WHERE id = ${id}
-    `;
-
-    return NextResponse.json<ApiResponse>({
-      success: true,
-    });
-  } catch (error) {
-    console.error("Error al eliminar hábito:", error);
-    return NextResponse.json<ApiResponse>(
-      { success: false, error: "Error al eliminar el hábito" },
-      { status: 500 }
-    );
-  }
-}
+  return undefined;
+});
