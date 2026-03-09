@@ -6,7 +6,8 @@ export interface User {
   id: string;
   email: string;
   username: string;
-  password_hash: string;
+  /** @deprecated Managed by Neon Auth now */
+  password_hash?: string;
   display_name: string;
   avatar_url?: string;
   locale: "es" | "en";

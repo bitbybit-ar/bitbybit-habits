@@ -1,52 +1,62 @@
-import { hash, compare } from "bcryptjs";
-import { cookies } from "next/headers";
-import type { AuthSession } from "./types";
-
-const SALT_ROUNDS = 10;
-
-export async function hashPassword(password: string): Promise<string> {
-  return hash(password, SALT_ROUNDS);
-}
-
-export async function verifyPassword(
-  password: string,
-  hashedPassword: string
-): Promise<boolean> {
-  return compare(password, hashedPassword);
-}
-
-export async function createSession(session: AuthSession): Promise<string> {
-  const secret = process.env.AUTH_SECRET;
-  if (!secret) throw new Error("AUTH_SECRET is not set");
-
-  // Simple base64-encoded JSON token (upgrade to JWT if needed)
-  const payload = JSON.stringify({
-    ...session,
-    exp: Date.now() + 7 * 24 * 60 * 60 * 1000, // 7 dias
-  });
-
-  return Buffer.from(payload).toString("base64");
-}
+import { auth } from '@/lib/auth/server';
+import { getDb } from '@/lib/db';
+import type { AuthSession } from './types';
 
 export async function getSession(): Promise<AuthSession | null> {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("session")?.value;
+  const { data: session } = await auth.getSession();
+  if (!session?.user) return null;
 
-  if (!token) return null;
+  const db = getDb();
 
-  try {
-    const payload = JSON.parse(Buffer.from(token, "base64").toString());
+  // Try to find existing app user by Neon Auth user ID
+  const users = await db`
+    SELECT id, email, username, display_name, locale
+    FROM users WHERE id = ${session.user.id}
+  `;
 
-    if (payload.exp < Date.now()) return null;
-
+  if (users.length > 0) {
+    const u = users[0];
     return {
-      user_id: payload.user_id,
-      email: payload.email,
-      username: payload.username,
-      display_name: payload.display_name,
-      locale: payload.locale,
+      user_id: u.id as string,
+      email: u.email as string,
+      username: u.username as string,
+      display_name: u.display_name as string,
+      locale: (u.locale as 'es' | 'en') || 'es',
     };
-  } catch {
-    return null;
   }
+
+  // Auto-create app user on first Neon Auth login
+  const username = session.user.name || session.user.email.split('@')[0];
+  const newUsers = await db`
+    INSERT INTO users (id, email, username, display_name, locale)
+    VALUES (
+      ${session.user.id},
+      ${session.user.email},
+      ${username},
+      ${session.user.name || ''},
+      'es'
+    )
+    ON CONFLICT (id) DO NOTHING
+    RETURNING id, email, username, display_name, locale
+  `;
+
+  if (newUsers.length > 0) {
+    const u = newUsers[0];
+    return {
+      user_id: u.id as string,
+      email: u.email as string,
+      username: u.username as string,
+      display_name: u.display_name as string,
+      locale: (u.locale as 'es' | 'en') || 'es',
+    };
+  }
+
+  // Fallback: return from Neon Auth session directly
+  return {
+    user_id: session.user.id,
+    email: session.user.email,
+    username: session.user.name || session.user.email.split('@')[0],
+    display_name: session.user.name || '',
+    locale: 'es' as const,
+  };
 }
