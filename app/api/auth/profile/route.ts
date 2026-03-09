@@ -3,6 +3,8 @@ import { getSession } from "@/lib/auth";
 import { getDb } from "@/lib/db";
 import type { ApiResponse, User } from "@/lib/types";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   const session = await getSession();
 
