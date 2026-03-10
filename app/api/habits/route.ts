@@ -84,14 +84,14 @@ export const POST = apiHandler(async (request, { session, db }) => {
     }
   }
 
-  const scheduleDaysJson = schedule_days ? JSON.stringify(schedule_days) : null;
   const finalAssignedTo = isSelfAssigned ? session.user_id : assigned_to;
   const finalSatReward = isSelfAssigned ? 0 : (sat_reward ?? 0);
   const finalFamilyId = family_id ?? null;
+  const finalScheduleDays = schedule_days ?? null;
 
   const habits = await db`
     INSERT INTO habits (family_id, created_by, assigned_to, name, description, color, sat_reward, schedule_type, schedule_days, schedule_times_per_week, verification_type)
-    VALUES (${finalFamilyId}, ${session.user_id}, ${finalAssignedTo}, ${name.trim()}, ${description?.trim() ?? null}, ${color}, ${finalSatReward}, ${schedule_type}, ${scheduleDaysJson}, ${schedule_times_per_week ?? null}, ${verification_type})
+    VALUES (${finalFamilyId}, ${session.user_id}, ${finalAssignedTo}, ${name.trim()}, ${description?.trim() ?? null}, ${color}, ${finalSatReward}, ${schedule_type}, ${finalScheduleDays}, ${schedule_times_per_week ?? null}, ${verification_type})
     RETURNING *
   ` as Habit[];
 
