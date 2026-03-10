@@ -16,7 +16,7 @@ export const GET = apiHandler(async (_req, { session, db }) => {
     LEFT JOIN completions c ON c.habit_id = h.id AND c.user_id = h.assigned_to AND c.date = ${today}
     WHERE (
       (h.family_id IS NULL AND (h.assigned_to = ${session.user_id} OR h.created_by = ${session.user_id}))
-      OR (h.family_id IS NOT NULL AND fm.id IS NOT NULL AND (h.assigned_to = ${session.user_id} OR h.created_by = ${session.user_id}))
+      OR (h.family_id IS NOT NULL AND fm.id IS NOT NULL)
     )
       AND h.active = true
     ORDER BY h.created_at DESC
