@@ -1,4 +1,4 @@
-import { apiHandler, NotFoundError } from "@/lib/api";
+import { apiHandler, NotFoundError, BadRequestError } from "@/lib/api";
 import type { Habit } from "@/lib/types";
 
 export const PUT = apiHandler(async (request, { session, db, params }) => {
@@ -27,6 +27,20 @@ export const PUT = apiHandler(async (request, { session, db, params }) => {
     active,
   } = body as Partial<Habit>;
 
+  // Validate assigned_to is a member of the habit's family (if changing)
+  if (assigned_to && assigned_to !== existing[0].assigned_to && existing[0].family_id) {
+    const membership = await db`
+      SELECT id FROM family_members
+      WHERE family_id = ${existing[0].family_id} AND user_id = ${assigned_to}
+    `;
+    if (membership.length === 0) {
+      throw new BadRequestError("El usuario asignado no es miembro de esta familia");
+    }
+  }
+
+  const today = new Date().toISOString().split("T")[0];
+  const finalAssignedTo = assigned_to ?? existing[0].assigned_to;
+
   const updated = await db`
     UPDATE habits SET
       name = COALESCE(${name?.trim() ?? null}, name),
@@ -43,7 +57,14 @@ export const PUT = apiHandler(async (request, { session, db, params }) => {
     RETURNING *
   ` as Habit[];
 
-  return updated[0];
+  // Include completed_today to match GET response shape
+  const completion = await db`
+    SELECT id FROM completions
+    WHERE habit_id = ${id} AND user_id = ${finalAssignedTo} AND date = ${today}
+    LIMIT 1
+  `;
+
+  return { ...updated[0], completed_today: completion.length > 0 };
 });
 
 export const DELETE = apiHandler(async (_req, { session, db, params }) => {

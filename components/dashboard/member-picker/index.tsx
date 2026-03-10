@@ -12,15 +12,18 @@ interface KidMember {
 
 interface MemberPickerProps {
   kids: KidMember[];
-  selectedId: string;
-  onSelect: (userId: string) => void;
+  selectedId?: string;
+  selectedIds?: string[];
+  onSelect?: (userId: string) => void;
+  onToggle?: (userId: string) => void;
+  multiple?: boolean;
 }
 
 function getInitial(name: string): string {
   return name.charAt(0).toUpperCase();
 }
 
-export function MemberPicker({ kids, selectedId, onSelect }: MemberPickerProps) {
+export function MemberPicker({ kids, selectedId, selectedIds = [], onSelect, onToggle, multiple }: MemberPickerProps) {
   const t = useTranslations();
 
   if (kids.length === 0) {
@@ -31,22 +34,37 @@ export function MemberPicker({ kids, selectedId, onSelect }: MemberPickerProps) 
     );
   }
 
+  const handleClick = (userId: string) => {
+    if (multiple && onToggle) {
+      onToggle(userId);
+    } else if (onSelect) {
+      onSelect(userId);
+    }
+  };
+
+  const isSelected = (userId: string) => {
+    if (multiple) {
+      return selectedIds.includes(userId);
+    }
+    return userId === selectedId;
+  };
+
   return (
     <div className={styles.memberPicker}>
       {kids.map((kid) => {
-        const isSelected = kid.user_id === selectedId;
+        const selected = isSelected(kid.user_id);
         return (
           <button
             key={kid.user_id}
             type="button"
             className={cn(
               styles.memberChip,
-              isSelected && styles.memberChipSelected
+              selected && styles.memberChipSelected
             )}
-            onClick={() => onSelect(kid.user_id)}
+            onClick={() => handleClick(kid.user_id)}
           >
             <div className={styles.avatar}>
-              {isSelected ? (
+              {selected ? (
                 <div className={styles.checkOverlay}>
                   <CheckIcon size={14} color="currentColor" />
                 </div>
