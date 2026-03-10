@@ -16,12 +16,12 @@ export async function POST(request: Request) {
 
     await initDb();
     const db = getDb();
-    const loginLower = login.toLowerCase();
+    const loginLower = login.trim().toLowerCase();
 
     const result = await db`
       SELECT id, email, username, password_hash, display_name, locale
       FROM users
-      WHERE email = ${loginLower} OR username = ${loginLower}
+      WHERE LOWER(TRIM(email)) = ${loginLower} OR LOWER(TRIM(username)) = ${loginLower}
     `;
 
     if (result.length === 0) {
