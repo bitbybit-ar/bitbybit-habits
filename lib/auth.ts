@@ -16,10 +16,7 @@ export async function verifyPassword(
 }
 
 export async function createSession(session: AuthSession): Promise<string> {
-  const secret = process.env.AUTH_SECRET;
-  if (!secret) throw new Error("AUTH_SECRET is not set");
-
-  // Simple base64-encoded JSON token (upgrade to JWT if needed)
+  // Simple base64-encoded JSON token (upgrade to signed JWT if needed)
   const payload = JSON.stringify({
     ...session,
     exp: Date.now() + 7 * 24 * 60 * 60 * 1000, // 7 dias
