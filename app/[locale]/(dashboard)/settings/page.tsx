@@ -62,30 +62,29 @@ export default function SettingsPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           display_name: displayName,
-          username: username,
-          email: email,
+          username,
+          email,
           avatar_url: avatarUrl || null,
           locale,
         }),
       });
       const data = await res.json();
-      if (data.success) {
+      if (res.ok && data.success) {
         setSaved(true);
         setProfile(data.data);
         // If locale changed, redirect to new locale
         if (profile && locale !== profile.locale) {
-          document.cookie = `NEXT_LOCALE=${locale};path=/;max-age=${60 * 60 * 24 * 365}`;
           router.push(`/${locale}/settings`);
         }
       } else {
-        setError(data.error || t("common.error"));
+        setError(data.error || "Error saving profile");
       }
     } catch {
-      setError(t("auth.connectionError"));
+      setError("Connection error");
     } finally {
       setSaving(false);
     }
-  }, [displayName, username, email, avatarUrl, locale, profile, router, t]);
+  }, [displayName, username, email, avatarUrl, locale, profile, router]);
 
   if (loading) {
     return (
@@ -111,7 +110,6 @@ export default function SettingsPage() {
             className={styles.input}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            type="email"
           />
         </div>
 
@@ -156,12 +154,12 @@ export default function SettingsPage() {
         </div>
 
         <div className={styles.actions}>
-          {error && <span className={styles.errorText}>{error}</span>}
           {saved && <span className={styles.savedText}>{t("settings.saved")}</span>}
+          {error && <span className={styles.errorText}>{error}</span>}
           <button
             className={styles.saveButton}
             onClick={handleSave}
-            disabled={saving}
+            disabled={saving || !displayName.trim() || !username.trim() || !email.trim()}
           >
             {saving ? t("common.loading") : t("common.save")}
           </button>

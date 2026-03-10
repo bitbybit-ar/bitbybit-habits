@@ -30,24 +30,12 @@ export const PATCH = apiHandler(async (request, { session, db }) => {
     throw new BadRequestError("Locale inválido");
   }
 
-  // Check username uniqueness if changing
-  if (username?.trim()) {
-    const existing = await db`
-      SELECT id FROM users WHERE LOWER(TRIM(username)) = ${username.trim().toLowerCase()} AND id != ${session.user_id}
-    `;
-    if (existing.length > 0) {
-      throw new BadRequestError("Ese nombre de usuario ya está en uso");
-    }
+  if (username !== undefined && username.trim().length < 3) {
+    throw new BadRequestError("El nombre de usuario debe tener al menos 3 caracteres");
   }
 
-  // Check email uniqueness if changing
-  if (email?.trim()) {
-    const existing = await db`
-      SELECT id FROM users WHERE LOWER(TRIM(email)) = ${email.trim().toLowerCase()} AND id != ${session.user_id}
-    `;
-    if (existing.length > 0) {
-      throw new BadRequestError("Ese email ya está en uso");
-    }
+  if (email !== undefined && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+    throw new BadRequestError("Email inválido");
   }
 
   const updated = await db`
