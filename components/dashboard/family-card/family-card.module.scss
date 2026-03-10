@@ -215,3 +215,25 @@
   font-size: $font-size-xs;
   color: $color-text-secondary;
 }
+
+.removeBtn {
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: $border-radius-full;
+  background: rgba(255, 255, 255, 0.05);
+  color: $color-text-secondary;
+  cursor: pointer;
+  font-size: 12px;
+  flex-shrink: 0;
+  margin-left: auto;
+  transition: background 0.2s, color 0.2s;
+
+  &:hover {
+    background: rgba($color-accent, 0.15);
+    color: $color-accent;
+  }
+}

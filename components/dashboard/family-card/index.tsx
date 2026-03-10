@@ -24,6 +24,7 @@ interface FamilyCardProps {
   onLeave?: (familyId: string) => void;
   onDelete?: (familyId: string) => void;
   onRoleChange?: (familyId: string, userId: string, newRole: string) => void;
+  onRemoveMember?: (familyId: string, userId: string) => void;
 }
 
 export function FamilyCard({
@@ -37,6 +38,7 @@ export function FamilyCard({
   onLeave,
   onDelete,
   onRoleChange,
+  onRemoveMember,
 }: FamilyCardProps) {
   const t = useTranslations();
   const [copied, setCopied] = useState(false);
@@ -157,6 +159,19 @@ export function FamilyCard({
                   title={t("family.changeRole")}
                 >
                   {member.role === "sponsor" ? "→ Kid" : "→ Sponsor"}
+                </button>
+              )}
+              {isSponsor && onRemoveMember && member.user_id !== currentUserId && (
+                <button
+                  className={styles.removeBtn}
+                  onClick={() => {
+                    if (confirm(t("family.confirmRemoveMember"))) {
+                      onRemoveMember(familyId, member.user_id);
+                    }
+                  }}
+                  title={t("family.removeMember")}
+                >
+                  ✕
                 </button>
               )}
             </div>
