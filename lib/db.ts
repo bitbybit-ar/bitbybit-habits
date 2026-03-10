@@ -138,7 +138,7 @@ async function ensureSchema() {
     throw new Error("DATABASE_URL is not set");
   }
   const sql = neon(process.env.DATABASE_URL);
-  await sql(SCHEMA_SQL);
+  await sql.unsafe(SCHEMA_SQL);
   console.log("[db] Schema initialized");
 }
 
