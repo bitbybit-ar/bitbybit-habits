@@ -18,11 +18,12 @@ export async function POST(request: Request) {
     const db = getDb();
     const loginLower = login.trim().toLowerCase();
 
-    // Try email first, then username — avoids OR parameterization edge cases with Neon
+    // Try email first, then username
     let result = await db`
       SELECT id, email, username, password_hash, display_name, locale
       FROM users
       WHERE LOWER(TRIM(email)) = ${loginLower}
+      LIMIT 1
     `;
 
     if (result.length === 0) {
@@ -30,6 +31,7 @@ export async function POST(request: Request) {
         SELECT id, email, username, password_hash, display_name, locale
         FROM users
         WHERE LOWER(TRIM(username)) = ${loginLower}
+        LIMIT 1
       `;
     }
 
