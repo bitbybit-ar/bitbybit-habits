@@ -1,4 +1,4 @@
-import { neon } from "@neondatabase/serverless";
+import { neon, Pool } from "@neondatabase/serverless";
 
 let initPromise: Promise<void> | null = null;
 
@@ -137,9 +137,19 @@ async function ensureSchema() {
   if (!process.env.DATABASE_URL) {
     throw new Error("DATABASE_URL is not set");
   }
-  const sql = neon(process.env.DATABASE_URL);
-  await sql.unsafe(SCHEMA_SQL);
-  console.log("[db] Schema initialized");
+  // Use Pool (WebSocket) — supports raw SQL strings with multiple statements
+  const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+  try {
+    const client = await pool.connect();
+    try {
+      await client.query(SCHEMA_SQL);
+      console.log("[db] Schema initialized");
+    } finally {
+      client.release();
+    }
+  } finally {
+    await pool.end();
+  }
 }
 
 export function getDb() {
