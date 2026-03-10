@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getDb } from "@/lib/db";
+import { getDb, initDb } from "@/lib/db";
 import { verifyPassword, createSession } from "@/lib/auth";
 import type { ApiResponse, User } from "@/lib/types";
 
@@ -14,6 +14,7 @@ export async function POST(request: Request) {
       );
     }
 
+    await initDb();
     const db = getDb();
     const loginLower = login.toLowerCase();
 

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getDb } from "@/lib/db";
+import { getDb, initDb } from "@/lib/db";
 import { hashPassword } from "@/lib/auth";
 import type { ApiResponse, User } from "@/lib/types";
 
@@ -15,6 +15,7 @@ export async function POST(request: Request) {
       );
     }
 
+    await initDb();
     const db = getDb();
     const password_hash = await hashPassword(password);
 
