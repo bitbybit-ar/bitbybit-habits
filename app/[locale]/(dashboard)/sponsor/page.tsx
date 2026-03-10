@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { LogOutIcon, BoltIcon, ClockIcon, PencilIcon, SettingsIcon, ListIcon, PlusIcon, UsersIcon, WalletIcon } from "@/components/icons";
 import { NotificationBell } from "@/components/dashboard/notification-bell";
+import { LanguageSwitcher } from "@/components/layout/language-switcher";
 import { StatsBar } from "@/components/dashboard/stats-bar";
 import { PendingList } from "@/components/dashboard/pending-list";
 import type { PendingCompletion } from "@/components/dashboard/pending-list";
@@ -357,6 +358,7 @@ export default function SponsorDashboard() {
           {t("dashboard.welcome")}, {displayName}
         </h1>
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          <LanguageSwitcher />
           <NotificationBell />
           <a href="/settings" className={styles.logoutButton} style={{ textDecoration: "none" }}>
             <SettingsIcon size={18} />

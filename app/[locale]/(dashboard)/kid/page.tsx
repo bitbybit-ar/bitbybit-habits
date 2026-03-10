@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { LogOutIcon, SettingsIcon, BoltIcon, FlameIcon, ListIcon, UsersIcon } from "@/components/icons";
 import { NotificationBell } from "@/components/dashboard/notification-bell";
+import { LanguageSwitcher } from "@/components/layout/language-switcher";
 import { StatsBar } from "@/components/dashboard/stats-bar";
 import { HabitList } from "@/components/dashboard/habit-list";
 import { FamilyCard } from "@/components/dashboard/family-card";
@@ -263,6 +264,7 @@ export default function KidDashboard() {
           </div>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          <LanguageSwitcher />
           <NotificationBell />
           <a href="/settings" className={styles.logoutButton} style={{ textDecoration: "none" }}>
             <SettingsIcon size={18} />

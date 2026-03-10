@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
 import { LogInIcon, UserPlusIcon } from "@/components/icons";
+import { LanguageSwitcher } from "@/components/layout/language-switcher";
 import styles from "./navbar.module.scss";
 import { cn } from "@/lib/utils";
 
@@ -49,6 +50,7 @@ export const Navbar: React.FC = () => {
           ))}
         </ul>
         <div className={styles.authButtons}>
+          <LanguageSwitcher />
           <Link href="/login" className={styles.loginButton}>
             <LogInIcon size={16} />
             <span>{t("auth.login")}</span>
