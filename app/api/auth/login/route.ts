@@ -18,11 +18,20 @@ export async function POST(request: Request) {
     const db = getDb();
     const loginLower = login.trim().toLowerCase();
 
-    const result = await db`
+    // Try email first, then username — avoids OR parameterization edge cases with Neon
+    let result = await db`
       SELECT id, email, username, password_hash, display_name, locale
       FROM users
-      WHERE LOWER(TRIM(email)) = ${loginLower} OR LOWER(TRIM(username)) = ${loginLower}
+      WHERE LOWER(TRIM(email)) = ${loginLower}
     `;
+
+    if (result.length === 0) {
+      result = await db`
+        SELECT id, email, username, password_hash, display_name, locale
+        FROM users
+        WHERE LOWER(TRIM(username)) = ${loginLower}
+      `;
+    }
 
     if (result.length === 0) {
       return NextResponse.json<ApiResponse>(
