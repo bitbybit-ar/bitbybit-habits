@@ -109,6 +109,11 @@
   color: $color-success;
 }
 
+.errorText {
+  font-size: $font-size-sm;
+  color: #ff6b6b;
+}
+
 .saveButton {
   padding: $spacing-12 $spacing-24;
   border-radius: $border-radius-md;

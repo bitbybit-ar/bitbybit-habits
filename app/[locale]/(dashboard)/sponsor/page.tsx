@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/routing";
 import { LogOutIcon, BoltIcon, ClockIcon, PencilIcon, SettingsIcon, ListIcon, PlusIcon, UsersIcon, WalletIcon } from "@/components/icons";
 import { NotificationBell } from "@/components/dashboard/notification-bell";
 import { LanguageSwitcher } from "@/components/layout/language-switcher";
@@ -360,9 +361,9 @@ export default function SponsorDashboard() {
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
           <LanguageSwitcher />
           <NotificationBell />
-          <a href="/settings" className={styles.logoutButton} style={{ textDecoration: "none" }}>
+          <Link href="/settings" className={styles.logoutButton} style={{ textDecoration: "none" }}>
             <SettingsIcon size={18} />
-          </a>
+          </Link>
           <button className={styles.logoutButton} onClick={handleLogout}>
             <LogOutIcon size={18} />
             <span>{t("auth.logout")}</span>
