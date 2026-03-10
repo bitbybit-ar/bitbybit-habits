@@ -2,11 +2,18 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { MemberPicker } from "@/components/dashboard/member-picker";
 import type { Habit } from "@/lib/types";
 import styles from "./edit-habit-modal.module.scss";
 
+interface KidMember {
+  user_id: string;
+  display_name: string;
+}
+
 interface EditHabitModalProps {
   habit: Habit;
+  kids?: KidMember[];
   onSave: (updated: Habit) => void;
   onClose: () => void;
 }
@@ -23,7 +30,7 @@ const DAY_KEYS = [
   "kidDashboard.daySat",
 ] as const;
 
-export function EditHabitModal({ habit, onSave, onClose }: EditHabitModalProps) {
+export function EditHabitModal({ habit, kids, onSave, onClose }: EditHabitModalProps) {
   const t = useTranslations();
   const [name, setName] = useState(habit.name);
   const [description, setDescription] = useState(habit.description ?? "");
@@ -35,6 +42,7 @@ export function EditHabitModal({ habit, onSave, onClose }: EditHabitModalProps) 
   const [verificationType, setVerificationType] = useState<"sponsor_approval" | "self_verify">(
     habit.verification_type === "bot_verify" ? "sponsor_approval" : habit.verification_type as "sponsor_approval" | "self_verify"
   );
+  const [assignedTo, setAssignedTo] = useState(habit.assigned_to);
   const [saving, setSaving] = useState(false);
 
   const handleDayToggle = (day: number) => {
@@ -58,6 +66,7 @@ export function EditHabitModal({ habit, onSave, onClose }: EditHabitModalProps) 
           schedule_days: scheduleDays,
           schedule_times_per_week: timesPerWeek,
           verification_type: verificationType,
+          assigned_to: assignedTo,
         }),
       });
       if (res.ok) {
@@ -177,6 +186,18 @@ export function EditHabitModal({ habit, onSave, onClose }: EditHabitModalProps) 
             <option value="self_verify">{t("habits.selfVerify")}</option>
           </select>
         </div>
+
+        {/* Assign to — visual member picker */}
+        {kids && kids.length > 0 && (
+          <div className={styles.field}>
+            <label className={styles.label}>{t("habits.assignTo")}</label>
+            <MemberPicker
+              kids={kids}
+              selectedId={assignedTo}
+              onSelect={setAssignedTo}
+            />
+          </div>
+        )}
 
         <div className={styles.actions}>
           <button className={styles.cancelButton} onClick={onClose}>

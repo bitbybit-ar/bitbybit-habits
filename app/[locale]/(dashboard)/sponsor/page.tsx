@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
-import { LogOutIcon, BoltIcon, ClockIcon, PencilIcon, SettingsIcon } from "@/components/icons";
+import { LogOutIcon, BoltIcon, ClockIcon, PencilIcon, SettingsIcon, ListIcon, PlusIcon, UsersIcon, WalletIcon } from "@/components/icons";
 import { NotificationBell } from "@/components/dashboard/notification-bell";
 import { StatsBar } from "@/components/dashboard/stats-bar";
 import { PendingList } from "@/components/dashboard/pending-list";
@@ -13,6 +13,8 @@ import { FamilyCard } from "@/components/dashboard/family-card";
 import { HabitCard } from "@/components/dashboard/habit-card";
 import { WalletConnect } from "@/components/dashboard/wallet-connect";
 import { Onboarding } from "@/components/dashboard/onboarding";
+import { BottomNav } from "@/components/dashboard/bottom-nav";
+import { useToast } from "@/components/ui/toast";
 import { cn } from "@/lib/utils";
 import type { Habit, Completion, AuthSession, PaymentWithDetails } from "@/lib/types";
 import styles from "./sponsor.module.scss";
@@ -42,6 +44,7 @@ const STATUS_COLORS: Record<string, string> = {
 
 export default function SponsorDashboard() {
   const t = useTranslations();
+  const { showToast } = useToast();
   const [session, setSession] = useState<AuthSession | null>(null);
   const [activeTab, setActiveTab] = useState<TabType>("pending");
   const [habits, setHabits] = useState<Habit[]>([]);
@@ -82,7 +85,6 @@ export default function SponsorDashboard() {
         const pendingData = await pendingRes.json();
         if (pendingData.success) {
           setPendingCompletions(pendingData.data ?? []);
-          // Calculate total paid from the response or default
           setTotalPaid(pendingData.data?.totalPaid ?? 0);
         }
       }
@@ -121,12 +123,13 @@ export default function SponsorDashboard() {
           setPayments((prev) =>
             prev.map((p) => (p.id === paymentId ? { ...p, status: "pending" } : p))
           );
+          showToast(t("payments.retrySuccess"), "info");
         }
       }
     } catch {
-      // Silently handle
+      showToast(t("payments.retryError"), "error");
     }
-  }, []);
+  }, [showToast, t]);
 
   useEffect(() => {
     fetchData();
@@ -160,12 +163,13 @@ export default function SponsorDashboard() {
         const data = await res.json();
         if (data.success) {
           setPendingCompletions((prev) => prev.filter((c) => c.id !== completionId));
+          showToast(t("sponsorDashboard.approveSuccess"), "success");
         }
       }
     } catch {
-      // Silently handle errors
+      showToast(t("auth.connectionError"), "error");
     }
-  }, []);
+  }, [showToast, t]);
 
   const handleReject = useCallback(async (completionId: string) => {
     try {
@@ -179,12 +183,13 @@ export default function SponsorDashboard() {
         const data = await res.json();
         if (data.success) {
           setPendingCompletions((prev) => prev.filter((c) => c.id !== completionId));
+          showToast(t("sponsorDashboard.rejectSuccess"), "info");
         }
       }
     } catch {
-      // Silently handle errors
+      showToast(t("auth.connectionError"), "error");
     }
-  }, []);
+  }, [showToast, t]);
 
   const handleCreateHabit = useCallback(async (data: CreateHabitData) => {
     try {
@@ -199,12 +204,13 @@ export default function SponsorDashboard() {
         if (result.success && result.data) {
           setHabits((prev) => [result.data, ...prev]);
           setActiveTab("habits");
+          showToast(t("sponsorDashboard.createSuccess"), "success");
         }
       }
     } catch {
-      // Silently handle errors
+      showToast(t("auth.connectionError"), "error");
     }
-  }, []);
+  }, [showToast, t]);
 
   const handleLeaveFamily = useCallback(async (familyId: string) => {
     try {
@@ -215,22 +221,24 @@ export default function SponsorDashboard() {
       });
       if (res.ok) {
         setFamilies((prev) => prev.filter((f) => f.id !== familyId));
+        showToast(t("family.leaveSuccess"), "info");
       }
     } catch {
       // Silently handle
     }
-  }, []);
+  }, [showToast, t]);
 
   const handleDeleteFamily = useCallback(async (familyId: string) => {
     try {
       const res = await fetch(`/api/families/${familyId}`, { method: "DELETE" });
       if (res.ok) {
         setFamilies((prev) => prev.filter((f) => f.id !== familyId));
+        showToast(t("family.deleteSuccess"), "info");
       }
     } catch {
       // Silently handle
     }
-  }, []);
+  }, [showToast, t]);
 
   const handleRoleChange = useCallback(async (familyId: string, userId: string, newRole: string) => {
     try {
@@ -247,11 +255,12 @@ export default function SponsorDashboard() {
               : f
           )
         );
+        showToast(t("family.roleChanged"), "success");
       }
     } catch {
       // Silently handle
     }
-  }, []);
+  }, [showToast, t]);
 
   const handleLogout = useCallback(async () => {
     try {
@@ -264,18 +273,20 @@ export default function SponsorDashboard() {
 
   const handleEditHabit = useCallback((updated: Habit) => {
     setHabits((prev) => prev.map((h) => (h.id === updated.id ? updated : h)));
-  }, []);
+    showToast(t("habits.editSuccess"), "success");
+  }, [showToast, t]);
 
   const handleDeleteHabit = useCallback(async (habitId: string) => {
     try {
       const res = await fetch(`/api/habits/${habitId}`, { method: "DELETE" });
       if (res.ok) {
         setHabits((prev) => prev.filter((h) => h.id !== habitId));
+        showToast(t("habits.deleteSuccess"), "info");
       }
     } catch {
       // Silently handle
     }
-  }, []);
+  }, [showToast, t]);
 
   const handleRemoveMember = useCallback(async (familyId: string, userId: string) => {
     try {
@@ -288,11 +299,12 @@ export default function SponsorDashboard() {
               : f
           )
         );
+        showToast(t("family.memberRemoved"), "info");
       }
     } catch {
       // Silently handle
     }
-  }, []);
+  }, [showToast, t]);
 
   // No-op for HabitCard onComplete (sponsors don't complete habits)
   const noopComplete = useCallback(() => {}, []);
@@ -330,6 +342,14 @@ export default function SponsorDashboard() {
     { key: "wallet", label: t("wallet.connectWallet") },
   ];
 
+  const bottomNavTabs = [
+    { key: "pending", label: t("sponsorDashboard.pendingApprovals"), icon: <ClockIcon size={20} />, badge: pendingCompletions.length },
+    { key: "habits", label: t("dashboard.myHabits"), icon: <ListIcon size={20} /> },
+    { key: "create", label: t("habits.createHabit"), icon: <PlusIcon size={20} /> },
+    { key: "family", label: t("family.myFamily"), icon: <UsersIcon size={20} /> },
+    { key: "wallet", label: t("wallet.connectWallet"), icon: <WalletIcon size={20} /> },
+  ];
+
   return (
     <div className={styles.container}>
       <div className={styles.header}>
@@ -362,6 +382,7 @@ export default function SponsorDashboard() {
             value: totalPaid.toLocaleString(),
             label: `${t("sats.sats")} ${t("sats.paid")}`,
             iconClass: statsStyles.iconSats,
+            highlight: true,
           },
           {
             icon: <PencilIcon size={22} />,
@@ -378,7 +399,7 @@ export default function SponsorDashboard() {
         ]}
       />
 
-      {/* Tabs */}
+      {/* Desktop tabs */}
       <div className={styles.tabs}>
         {tabs.map((tab) => (
           <button
@@ -411,7 +432,17 @@ export default function SponsorDashboard() {
           <h2 className={styles.sectionTitle}>{t("dashboard.myHabits")}</h2>
           <div className={styles.habitGrid}>
             {habits.length === 0 ? (
-              <p className={styles.loadingText}>{t("sponsorDashboard.noHabits")}</p>
+              <div className={styles.emptyState}>
+                <span className={styles.emptyIcon}>🎯</span>
+                <h3 className={styles.emptyTitle}>{t("emptyState.noHabitsTitle")}</h3>
+                <p className={styles.emptySubtext}>{t("emptyState.sponsorNoHabitsDesc")}</p>
+                <button
+                  className={styles.emptyCtaButton}
+                  onClick={() => setActiveTab("create")}
+                >
+                  {t("emptyState.createFirstHabit")}
+                </button>
+              </div>
             ) : (
               habits.map((habit) => (
                 <HabitCard
@@ -423,6 +454,7 @@ export default function SponsorDashboard() {
                   currentUserId={session?.user_id}
                   onEdit={handleEditHabit}
                   onDelete={handleDeleteHabit}
+                  kids={uniqueKids}
                 />
               ))
             )}
@@ -530,6 +562,12 @@ export default function SponsorDashboard() {
           <WalletConnect />
         </div>
       )}
+
+      <BottomNav
+        tabs={bottomNavTabs}
+        activeTab={activeTab}
+        onTabChange={(key) => setActiveTab(key as TabType)}
+      />
         </>
       )}
     </div>

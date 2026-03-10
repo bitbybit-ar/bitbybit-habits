@@ -1,0 +1,113 @@
+@use "@/styles/colors" as *;
+@use "@/styles/spacing" as *;
+@use "@/styles/typography" as *;
+@use "@/styles/media-mixins" as *;
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOut {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+.toastContainer {
+  position: fixed;
+  bottom: $spacing-24;
+  right: $spacing-24;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: $spacing-8;
+  pointer-events: none;
+
+  @include mobile {
+    bottom: 80px;
+    right: $spacing-12;
+    left: $spacing-12;
+  }
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: $spacing-12;
+  padding: $spacing-12 $spacing-20;
+  border-radius: $border-radius-md;
+  background: $color-bg-dark-2;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+  pointer-events: auto;
+  animation: slideIn 0.3s ease-out forwards;
+  min-width: 280px;
+  max-width: 420px;
+
+  @include mobile {
+    min-width: unset;
+    max-width: unset;
+    width: 100%;
+  }
+}
+
+.toastExiting {
+  animation: slideOut 0.3s ease-in forwards;
+}
+
+.toastIcon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: $border-radius-full;
+}
+
+.toastMessage {
+  flex: 1;
+  line-height: 1.4;
+}
+
+.toastSuccess {
+  border-color: rgba($color-success, 0.3);
+
+  .toastIcon {
+    background: rgba($color-success, 0.15);
+    color: $color-success;
+  }
+}
+
+.toastError {
+  border-color: rgba($color-error, 0.3);
+
+  .toastIcon {
+    background: rgba($color-error, 0.15);
+    color: $color-error;
+  }
+}
+
+.toastInfo {
+  border-color: rgba($color-primary, 0.3);
+
+  .toastIcon {
+    background: rgba($color-primary, 0.15);
+    color: $color-primary;
+  }
+}

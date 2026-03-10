@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { PlusIcon } from "@/components/icons";
+import { MemberPicker } from "@/components/dashboard/member-picker";
 import styles from "./create-habit-form.module.scss";
 
 interface KidOption {
@@ -241,22 +242,14 @@ export function CreateHabitForm({ families, kids, onSubmit }: CreateHabitFormPro
         </select>
       </div>
 
-      {/* Assign to */}
+      {/* Assign to — visual member picker */}
       <div className={styles.field}>
         <label className={styles.label}>{t("habits.assignTo")}</label>
-        <select
-          className={styles.select}
-          value={assignedTo}
-          onChange={(e) => setAssignedTo(e.target.value)}
-          required
-        >
-          <option value="">{t("sponsorDashboard.selectKid")}</option>
-          {kids.map((kid) => (
-            <option key={kid.user_id} value={kid.user_id}>
-              {kid.display_name}
-            </option>
-          ))}
-        </select>
+        <MemberPicker
+          kids={kids}
+          selectedId={assignedTo}
+          onSelect={setAssignedTo}
+        />
       </div>
 
       {/* Submit */}

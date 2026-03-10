@@ -1,0 +1,92 @@
+@use "@/styles/colors" as *;
+@use "@/styles/spacing" as *;
+@use "@/styles/typography" as *;
+@use "@/styles/media-mixins" as *;
+
+.memberPicker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-12;
+}
+
+.memberChip {
+  display: flex;
+  align-items: center;
+  gap: $spacing-8;
+  padding: $spacing-8 $spacing-16 $spacing-8 $spacing-8;
+  border-radius: $border-radius-full;
+  border: 2px solid rgba(255, 255, 255, 0.08);
+  background: $color-bg-dark-3;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, transform 0.15s;
+
+  &:hover {
+    border-color: rgba($color-primary, 0.3);
+    background: rgba($color-primary, 0.05);
+  }
+}
+
+.memberChipSelected {
+  border-color: $color-primary;
+  background: rgba($color-primary, 0.1);
+
+  .avatar {
+    background: $color-primary;
+    color: $color-bg-dark;
+  }
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: $border-radius-full;
+  background: $color-bg-dark-2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-bold;
+  color: $color-text-secondary;
+  flex-shrink: 0;
+  position: relative;
+  transition: background 0.2s, color 0.2s;
+}
+
+.checkOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $color-primary;
+  border-radius: $border-radius-full;
+  color: $color-bg-dark;
+}
+
+.memberName {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+  white-space: nowrap;
+}
+
+.roleBadge {
+  font-size: 10px;
+  font-weight: $font-weight-bold;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 2px 6px;
+  border-radius: $border-radius-full;
+  background: rgba($color-secondary, 0.15);
+  color: $color-secondary;
+}
+
+.emptyMessage {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  padding: $spacing-16;
+  text-align: center;
+  background: $color-bg-dark-3;
+  border-radius: $border-radius-md;
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+}

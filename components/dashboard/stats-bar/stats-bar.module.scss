@@ -25,6 +25,11 @@
   padding: $spacing-16 $spacing-20;
 }
 
+.statCardHighlight {
+  border-color: rgba($color-primary, 0.2);
+  background: linear-gradient(135deg, rgba($color-primary, 0.08) 0%, $color-bg-dark-2 100%);
+}
+
 .iconWrapper {
   display: flex;
   align-items: center;
@@ -66,6 +71,11 @@
   font-weight: $font-weight-bold;
   color: $color-text-primary;
   line-height: $line-height-tight;
+}
+
+.statValueHighlight {
+  font-size: clamp(1.6rem, 3vw, 2rem);
+  color: $color-primary;
 }
 
 .statLabel {

@@ -3,15 +3,29 @@
 @use "@/styles/typography" as *;
 @use "@/styles/media-mixins" as *;
 
+@keyframes fadeUpOut {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+}
+
 .card {
   background: $color-bg-dark-2;
   border-radius: $border-radius-lg;
   border: 1px solid rgba(255, 255, 255, 0.05);
+  border-left: 3px solid transparent;
   padding: $spacing-20;
   transition: border-color 0.2s ease;
+  position: relative;
 
   &:hover {
     border-color: rgba(255, 255, 255, 0.1);
+    border-left-color: inherit;
   }
 }
 
@@ -212,6 +226,21 @@
 // Action area
 .action {
   margin-top: $spacing-4;
+  position: relative;
+}
+
+.completedFeedback {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-12 $spacing-16;
+  border-radius: $border-radius-md;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-bold;
+  color: $color-success;
+  background: rgba($color-success, 0.12);
+  animation: fadeUpOut 1.5s ease-out forwards;
 }
 
 .completeButton {

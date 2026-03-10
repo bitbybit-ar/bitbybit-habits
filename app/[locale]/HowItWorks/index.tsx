@@ -25,14 +25,21 @@ export const HowItWorks: React.FC = () => {
         subtitle={t("subtitle")}
       />
       <div className={styles.steps}>
-        {STEPS.map((step) => (
-          <Card key={step.number} variant="hover" className={styles.step}>
-            <div className={styles.stepNumber} aria-hidden="true">
-              {step.number}
-            </div>
-            <h3>{step.title}</h3>
-            <p>{step.description}</p>
-          </Card>
+        {STEPS.map((step, index) => (
+          <div key={step.number} className={styles.stepWrapper}>
+            <Card variant="hover" className={styles.step}>
+              <div className={styles.stepNumber} aria-hidden="true">
+                {step.number}
+              </div>
+              <h3>{step.title}</h3>
+              <p>{step.description}</p>
+            </Card>
+            {index < STEPS.length - 1 && (
+              <div className={styles.stepConnector} aria-hidden="true">
+                <span className={styles.connectorArrow}>→</span>
+              </div>
+            )}
+          </div>
         ))}
       </div>
     </Section>

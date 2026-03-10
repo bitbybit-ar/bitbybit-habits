@@ -5,6 +5,7 @@ import { getMessages, getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { SwRegister } from "@/components/sw-register";
+import { ToastProvider } from "@/components/ui/toast";
 import "@/styles/globals.scss";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -54,8 +55,10 @@ export default async function LocaleLayout({
       </head>
       <body className={inter.className}>
         <NextIntlClientProvider locale={locale} messages={messages}>
-          <SwRegister />
-          {children}
+          <ToastProvider>
+            <SwRegister />
+            {children}
+          </ToastProvider>
         </NextIntlClientProvider>
       </body>
     </html>

@@ -8,6 +8,11 @@ import { cn } from "@/lib/utils";
 import type { Habit, Completion } from "@/lib/types";
 import styles from "./habit-card.module.scss";
 
+interface KidMember {
+  user_id: string;
+  display_name: string;
+}
+
 interface HabitCardProps {
   habit: Habit;
   completions: Completion[];
@@ -16,6 +21,8 @@ interface HabitCardProps {
   currentUserId?: string;
   onEdit?: (habit: Habit) => void;
   onDelete?: (habitId: string) => void;
+  streak?: number;
+  kids?: KidMember[];
 }
 
 function getScheduleText(habit: Habit, t: ReturnType<typeof useTranslations>): string {
@@ -112,21 +119,28 @@ function getTodayStatus(habitId: string, completions: Completion[]): TodayStatus
   return "incomplete";
 }
 
-export function HabitCard({ habit, completions, onComplete, hideAction, currentUserId, onEdit, onDelete }: HabitCardProps) {
+export function HabitCard({ habit, completions, onComplete, hideAction, currentUserId, onEdit, onDelete, streak, kids }: HabitCardProps) {
   const t = useTranslations();
   const [editing, setEditing] = useState(false);
+  const [justCompleted, setJustCompleted] = useState(false);
   const isCreator = currentUserId === habit.created_by;
   const last7Days = getLast7Days();
   const scheduleText = getScheduleText(habit, t);
-  const currentStreak = calculateCurrentStreak(habit.id, completions);
+  const currentStreak = streak ?? calculateCurrentStreak(habit.id, completions);
   const todayStatus = getTodayStatus(habit.id, completions);
 
   const habitCompletionDates = completions
     .filter((c) => c.habit_id === habit.id && (c.status === "approved" || c.status === "pending"))
     .map((c) => c.date);
 
+  const handleComplete = (habitId: string) => {
+    setJustCompleted(true);
+    onComplete(habitId);
+    setTimeout(() => setJustCompleted(false), 1500);
+  };
+
   return (
-    <div className={styles.card}>
+    <div className={styles.card} style={{ borderLeftColor: habit.color }}>
       {/* Header: name, description, sat badge */}
       <div className={styles.header}>
         <div className={styles.headerLeft}>
@@ -169,10 +183,18 @@ export function HabitCard({ habit, completions, onComplete, hideAction, currentU
       {/* Schedule and streak */}
       <div className={styles.meta}>
         <span className={styles.schedule}>{scheduleText}</span>
-        <div className={cn(styles.streak, currentStreak > 0 ? styles.streakActive : styles.streakInactive)}>
-          <FlameIcon size={14} />
-          <span className={styles.streakCount}>{currentStreak}</span>
-        </div>
+        {currentStreak > 0 && (
+          <div className={cn(styles.streak, styles.streakActive)}>
+            <FlameIcon size={14} />
+            <span className={styles.streakCount}>{currentStreak}</span>
+          </div>
+        )}
+        {currentStreak === 0 && (
+          <div className={cn(styles.streak, styles.streakInactive)}>
+            <FlameIcon size={14} />
+            <span className={styles.streakCount}>0</span>
+          </div>
+        )}
       </div>
 
       {/* Last 7 days circles */}
@@ -206,22 +228,27 @@ export function HabitCard({ habit, completions, onComplete, hideAction, currentU
       {/* Action button */}
       {!hideAction && (
         <div className={styles.action}>
-          {todayStatus === "incomplete" && (
+          {justCompleted && (
+            <div className={styles.completedFeedback}>
+              +{t("dashboard.completed")}! ⚡
+            </div>
+          )}
+          {!justCompleted && todayStatus === "incomplete" && (
             <button
               className={styles.completeButton}
-              onClick={() => onComplete(habit.id)}
+              onClick={() => handleComplete(habit.id)}
             >
               <CheckIcon size={16} />
               {t("habits.markComplete")}
             </button>
           )}
-          {todayStatus === "pending" && (
+          {!justCompleted && todayStatus === "pending" && (
             <div className={cn(styles.statusBadge, styles.statusPending)}>
               <ClockIcon size={16} />
               {t("dashboard.pendingApproval")}
             </div>
           )}
-          {todayStatus === "completed" && (
+          {!justCompleted && todayStatus === "completed" && (
             <div className={cn(styles.statusBadge, styles.statusCompleted)}>
               <CheckIcon size={16} />
               {t("dashboard.completed")}
@@ -232,6 +259,7 @@ export function HabitCard({ habit, completions, onComplete, hideAction, currentU
       {editing && (
         <EditHabitModal
           habit={habit}
+          kids={kids}
           onSave={(updated) => {
             setEditing(false);
             if (onEdit) onEdit(updated);

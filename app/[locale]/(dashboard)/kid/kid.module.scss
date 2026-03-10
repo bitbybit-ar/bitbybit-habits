@@ -4,15 +4,45 @@
 @use "@/styles/common-mixins" as *;
 @use "@/styles/media-mixins" as *;
 
+@keyframes floatUp {
+  0% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-80px) scale(1.3);
+  }
+}
+
 .container {
   @include container;
   min-height: 100vh;
   padding-top: $spacing-32;
   padding-bottom: $spacing-40;
+  position: relative;
+
+  @include mobile {
+    padding-bottom: 100px;
+  }
 
   @include desktop {
     padding-top: $spacing-48;
   }
+}
+
+.satsAnimation {
+  position: fixed;
+  top: 40%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  font-size: clamp(1.5rem, 5vw, 2.5rem);
+  font-weight: $font-weight-extrabold;
+  color: $color-primary;
+  text-shadow: 0 2px 12px rgba($color-primary, 0.5);
+  pointer-events: none;
+  animation: floatUp 2s ease-out forwards;
 }
 
 .header {
@@ -28,6 +58,13 @@
   }
 }
 
+.headerInfo {
+  display: flex;
+  align-items: center;
+  gap: $spacing-12;
+  flex-wrap: wrap;
+}
+
 .title {
   font-size: $font-size-xl;
   font-weight: $font-weight-bold;
@@ -37,6 +74,19 @@
   @include desktop {
     font-size: $font-size-2xl;
   }
+}
+
+.levelBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: $spacing-4 $spacing-12;
+  border-radius: $border-radius-full;
+  background: rgba($color-primary, 0.15);
+  color: $color-primary;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
+  white-space: nowrap;
 }
 
 .logoutButton {
@@ -60,6 +110,64 @@
   }
 }
 
+// Hero sats today
+.heroSats {
+  display: flex;
+  align-items: center;
+  gap: $spacing-16;
+  padding: $spacing-20 $spacing-24;
+  margin-bottom: $spacing-24;
+  background: linear-gradient(135deg, rgba($color-primary, 0.1) 0%, rgba($color-secondary, 0.05) 100%);
+  border: 1px solid rgba($color-primary, 0.2);
+  border-radius: $border-radius-lg;
+}
+
+.heroSatsIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: $border-radius-md;
+  background: rgba($color-primary, 0.15);
+  color: $color-primary;
+  flex-shrink: 0;
+}
+
+.heroSatsInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.heroSatsValue {
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: $font-weight-extrabold;
+  color: $color-primary;
+  line-height: 1;
+}
+
+.heroSatsLabel {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.heroStreak {
+  display: flex;
+  align-items: center;
+  gap: $spacing-4;
+  padding: $spacing-8 $spacing-16;
+  background: rgba($color-warning, 0.12);
+  border-radius: $border-radius-full;
+  color: $color-warning;
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  flex-shrink: 0;
+}
+
 .sectionTitle {
   font-size: $font-size-lg;
   font-weight: $font-weight-semibold;
@@ -74,12 +182,44 @@
   font-size: $font-size-base;
 }
 
+// Empty state
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: $spacing-64 $spacing-24;
+}
+
+.emptyIcon {
+  font-size: 3rem;
+  margin-bottom: $spacing-16;
+}
+
+.emptyTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  margin: 0 0 $spacing-8;
+}
+
+.emptySubtext {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  margin: 0;
+  max-width: 320px;
+}
+
 .tabs {
   display: flex;
   gap: $spacing-4;
   margin-bottom: $spacing-24;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   overflow-x: auto;
+
+  @include mobile {
+    display: none;
+  }
 }
 
 .tab {

@@ -4,6 +4,7 @@ import React, { useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
 import Button from "@/components/ui/button";
+import { ArrowRightIcon } from "@/components/icons";
 import styles from "./hero.module.scss";
 
 export const Hero: React.FC = () => {
@@ -30,19 +31,22 @@ export const Hero: React.FC = () => {
       <div ref={particlesRef} className={styles.particles} aria-hidden="true" />
       <div className={styles.badge}>{t("badge")}</div>
       <h1 className={styles.title}>BitByBit</h1>
+      <p className={styles.pitch}>{t("pitch")}</p>
       <p className={styles.subtitle}>
         {t("tagline")}
         <br />
         {t("subtitle")}
       </p>
       <div className={styles.buttons}>
-        <Link href="/preview" className={styles.demoLink}>
-          <Button size="lg">{t("demo")}</Button>
+        <Link href="/register" className={styles.tryItLink}>
+          <Button size="lg">
+            <span>{t("tryItNow")}</span>
+            <ArrowRightIcon size={18} />
+          </Button>
         </Link>
-        <Button href="#use-cases" size="lg" variant="outline" className={styles.ctaButton}>
-          <span>{t("cta")}</span>
-          <span className={styles.ctaArrow}>↓</span>
-        </Button>
+        <Link href="/preview" className={styles.demoLink}>
+          <Button size="lg" variant="outline">{t("demo")}</Button>
+        </Link>
       </div>
     </header>
   );

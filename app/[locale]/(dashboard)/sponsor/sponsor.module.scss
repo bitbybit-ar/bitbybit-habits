@@ -11,6 +11,10 @@
   padding-top: $spacing-32;
   padding-bottom: $spacing-40;
 
+  @include mobile {
+    padding-bottom: 100px;
+  }
+
   @include desktop {
     padding-top: $spacing-48;
   }
@@ -71,6 +75,10 @@
   &::-webkit-scrollbar {
     display: none;
   }
+
+  @include mobile {
+    display: none;
+  }
 }
 
 .tab {
@@ -120,6 +128,51 @@
   text-align: center;
   padding-top: $spacing-80;
   font-size: $font-size-base;
+}
+
+// Empty state
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: $spacing-64 $spacing-24;
+}
+
+.emptyIcon {
+  font-size: 3rem;
+  margin-bottom: $spacing-16;
+}
+
+.emptyTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  margin: 0 0 $spacing-8;
+}
+
+.emptySubtext {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  margin: 0 0 $spacing-24;
+  max-width: 320px;
+}
+
+.emptyCtaButton {
+  padding: $spacing-12 $spacing-24;
+  border-radius: $border-radius-md;
+  border: none;
+  background: $gradient-primary;
+  color: white;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-bold;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba($color-primary, 0.3);
+  }
 }
 
 .paymentTable {

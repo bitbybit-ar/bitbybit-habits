@@ -10,6 +10,7 @@ interface StatItem {
   value: number | string;
   label: string;
   iconClass: string;
+  highlight?: boolean;
 }
 
 interface StatsBarDefaultProps {
@@ -37,6 +38,7 @@ export function StatsBar(props: StatsBarProps) {
       value: props.totalSats!.toLocaleString(),
       label: `${t("sats.sats")} ${t("sats.earned")}`,
       iconClass: styles.iconSats,
+      highlight: true,
     },
     {
       icon: <FlameIcon size={22} />,
@@ -55,12 +57,12 @@ export function StatsBar(props: StatsBarProps) {
   return (
     <div className={styles.statsBar}>
       {items.map((item, index) => (
-        <div key={index} className={styles.statCard}>
+        <div key={index} className={cn(styles.statCard, item.highlight && styles.statCardHighlight)}>
           <div className={cn(styles.iconWrapper, item.iconClass)}>
             {item.icon}
           </div>
           <div className={styles.statContent}>
-            <span className={styles.statValue}>
+            <span className={cn(styles.statValue, item.highlight && styles.statValueHighlight)}>
               {typeof item.value === "number" ? item.value.toLocaleString() : item.value}
             </span>
             <span className={styles.statLabel}>{item.label}</span>

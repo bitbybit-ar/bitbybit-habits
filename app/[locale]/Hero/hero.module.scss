@@ -27,12 +27,6 @@
   50% { box-shadow: 0 0 24px rgba($color-primary, 0.5), 0 0 48px rgba($color-primary, 0.15); }
 }
 
-// --- Arrow bounce ---
-@keyframes arrowBounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(4px); }
-}
-
 // --- Lightning bolts ---
 @keyframes lightningFall {
   0% { opacity: 0; transform: translateY(-60px); }
@@ -84,6 +78,7 @@
 // --- Staggered entrance: each element fades in sequentially ---
 .badge,
 .title,
+.pitch,
 .subtitle,
 .buttons {
   opacity: 0;
@@ -109,7 +104,7 @@
   font-size: $font-size-hero;
   font-weight: $font-weight-extrabold;
   line-height: $line-height-tight;
-  margin-bottom: $spacing-24;
+  margin-bottom: $spacing-16;
   position: relative;
   animation-delay: 0.2s;
 
@@ -130,8 +125,18 @@
   animation-delay: 0.2s, 1.2s;
 
   // Glow behind the text
-  text-shadow: none; // text-shadow doesn't work with background-clip
+  text-shadow: none;
   filter: drop-shadow(0 0 30px rgba($color-primary, 0.25));
+}
+
+.pitch {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-12;
+  position: relative;
+  animation-delay: 0.4s;
+  max-width: 600px;
 }
 
 .subtitle {
@@ -151,8 +156,8 @@
   animation-delay: 0.8s;
 }
 
-// --- Demo button: pulsing glow ---
-.demoLink {
+// --- Try it now button: pulsing glow ---
+.tryItLink {
   display: flex;
   text-decoration: none;
   border-radius: $border-radius-md;
@@ -164,29 +169,20 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: $spacing-8;
   }
 }
 
-// --- CTA outline button ---
-.ctaButton {
-  min-width: 200px;
-  display: flex !important;
-  align-items: center;
-  justify-content: center;
-  gap: $spacing-8;
-  transition: all 0.25s ease;
+// --- Demo outline button ---
+.demoLink {
+  display: flex;
+  text-decoration: none;
 
-  &:hover {
-    background: rgba($color-primary, 0.15) !important;
-    box-shadow: 0 0 20px rgba($color-primary, 0.2);
-
-    .ctaArrow {
-      animation: arrowBounce 0.6s ease-in-out infinite;
-    }
+  > * {
+    min-width: 160px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
-}
-
-.ctaArrow {
-  display: inline-block;
-  transition: transform 0.25s ease;
 }

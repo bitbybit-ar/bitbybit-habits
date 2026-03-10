@@ -77,6 +77,8 @@
     "inviteCode": "Código de invitación",
     "members": "Miembros",
     "copyCode": "Copiar código",
+    "showQR": "Mostrar QR",
+    "hideQR": "Ocultar QR",
     "leaveFamily": "Dejar familia",
     "deleteFamily": "Eliminar familia",
     "confirmLeave": "¿Estás seguro de que querés dejar esta familia?",
@@ -115,8 +117,19 @@
     "language": "Idioma",
     "saved": "¡Guardado!"
   },
+  "emptyState": {
+    "noHabitsTitle": "Todavía no hay hábitos",
+    "sponsorNoHabitsDesc": "Creá hábitos con recompensa en sats para que tus kids completen.",
+    "createFirstHabit": "Crear tu primer hábito",
+    "kidNoHabitsDesc": "Pedile a tu sponsor que agregue hábitos para ganar sats!"
+  },
+  "memberPicker": {
+    "noKids": "No hay kids en la familia — compartí tu código de invitación"
+  },
   "kidDashboard": {
     "noHabits": "Todavía no tenés hábitos asignados. Pedile a tu sponsor que te cree uno.",
+    "level": "Nivel",
+    "satsToday": "sats hoy",
     "week": "semana",
     "daySun": "Dom",
     "dayMon": "Lun",
@@ -140,7 +153,9 @@
       "tagline": "Ganá sats. Formá hábitos. Cambiá vidas.",
       "subtitle": "Un habit tracker potenciado por Bitcoin Lightning que recompensa completar tareas con sats reales.",
       "cta": "Explorá la Visión",
-      "demo": "Demo"
+      "demo": "Demo",
+      "tryItNow": "Probalo ahora",
+      "pitch": "Los padres crean hábitos. Los chicos ganan Bitcoin."
     },
     "howItWorks": {
       "title": "Cómo funciona",

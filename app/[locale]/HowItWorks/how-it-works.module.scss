@@ -6,12 +6,23 @@
 .steps {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: $spacing-32;
+  gap: $spacing-16;
+
+  @include desktop {
+    gap: 0;
+  }
+}
+
+.stepWrapper {
+  display: flex;
+  align-items: stretch;
+  position: relative;
 }
 
 .step {
   text-align: center;
   padding: $spacing-32 $spacing-24;
+  flex: 1;
 
   h3 {
     font-size: $font-size-md;
@@ -35,4 +46,22 @@
   font-size: 1.3rem;
   font-weight: $font-weight-extrabold;
   margin-bottom: $spacing-20;
+}
+
+.stepConnector {
+  display: none;
+
+  @include desktop {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    flex-shrink: 0;
+  }
+}
+
+.connectorArrow {
+  font-size: 1.5rem;
+  color: $color-primary;
+  opacity: 0.5;
 }
