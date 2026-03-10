@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import styles from "./settings.module.scss";
@@ -27,6 +27,12 @@ export default function SettingsPage() {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState("");
+
+  const initials = useMemo(() => {
+    if (displayName.trim()) return displayName.trim().charAt(0).toUpperCase();
+    if (username.trim()) return username.trim().charAt(0).toUpperCase();
+    return "A";
+  }, [displayName, username]);
 
   useEffect(() => {
     async function fetchProfile() {
@@ -72,7 +78,6 @@ export default function SettingsPage() {
       if (res.ok && data.success) {
         setSaved(true);
         setProfile(data.data);
-        // If locale changed, redirect to new locale
         if (profile && locale !== profile.locale) {
           router.push(`/${locale}/settings`);
         }
@@ -97,72 +102,91 @@ export default function SettingsPage() {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h1 className={styles.title}>{t("settings.title")}</h1>
         <button className={styles.backButton} onClick={() => router.back()}>
+          <span className={styles.backArrow}>←</span>
           {t("common.back")}
         </button>
+        <h1 className={styles.title}>{t("settings.title")}</h1>
+        <div className={styles.headerSpacer} />
       </div>
 
-      <div className={styles.card}>
-        <div className={styles.field}>
-          <label className={styles.label}>{t("auth.email")}</label>
-          <input
-            className={styles.input}
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </div>
+      <div className={styles.separator} />
 
-        <div className={styles.field}>
-          <label className={styles.label}>{t("auth.username")}</label>
-          <input
-            className={styles.input}
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
-        </div>
+      <div className={styles.cardWrapper}>
+        <div className={styles.card}>
+          <div className={styles.field}>
+            <label className={styles.label}>{t("auth.email")}</label>
+            <input
+              className={styles.input}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
 
-        <div className={styles.field}>
-          <label className={styles.label}>{t("auth.displayName")}</label>
-          <input
-            className={styles.input}
-            value={displayName}
-            onChange={(e) => setDisplayName(e.target.value)}
-          />
-        </div>
+          <div className={styles.field}>
+            <label className={styles.label}>{t("auth.username")}</label>
+            <input
+              className={styles.input}
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
+          </div>
 
-        <div className={styles.field}>
-          <label className={styles.label}>{t("settings.avatarUrl")}</label>
-          <input
-            className={styles.input}
-            value={avatarUrl}
-            onChange={(e) => setAvatarUrl(e.target.value)}
-            placeholder="https://..."
-          />
-        </div>
+          <div className={styles.field}>
+            <label className={styles.label}>{t("auth.displayName")}</label>
+            <input
+              className={styles.input}
+              value={displayName}
+              onChange={(e) => setDisplayName(e.target.value)}
+            />
+          </div>
 
-        <div className={styles.field}>
-          <label className={styles.label}>{t("settings.language")}</label>
-          <select
-            className={styles.select}
-            value={locale}
-            onChange={(e) => setLocale(e.target.value as "es" | "en")}
-          >
-            <option value="es">Español</option>
-            <option value="en">English</option>
-          </select>
-        </div>
+          <div className={styles.field}>
+            <label className={styles.label}>{t("settings.avatarUrl")}</label>
+            <div className={styles.avatarField}>
+              <div className={styles.avatarPreview}>
+                {avatarUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={avatarUrl} alt="Avatar" className={styles.avatarImg} />
+                ) : (
+                  <span className={styles.avatarInitials}>{initials}</span>
+                )}
+              </div>
+              <input
+                className={styles.input}
+                value={avatarUrl}
+                onChange={(e) => setAvatarUrl(e.target.value)}
+                placeholder="https://..."
+              />
+            </div>
+          </div>
 
-        <div className={styles.actions}>
-          {saved && <span className={styles.savedText}>{t("settings.saved")}</span>}
-          {error && <span className={styles.errorText}>{error}</span>}
-          <button
-            className={styles.saveButton}
-            onClick={handleSave}
-            disabled={saving || !displayName.trim() || !username.trim() || !email.trim()}
-          >
-            {saving ? t("common.loading") : t("common.save")}
-          </button>
+          <div className={styles.field}>
+            <label className={styles.label}>{t("settings.language")}</label>
+            <div className={styles.selectWrapper}>
+              <select
+                className={styles.select}
+                value={locale}
+                onChange={(e) => setLocale(e.target.value as "es" | "en")}
+              >
+                <option value="es">Español</option>
+                <option value="en">English</option>
+              </select>
+              <span className={styles.selectChevron}>▾</span>
+            </div>
+          </div>
+
+          <div className={styles.actions}>
+            {saved && <span className={styles.savedText}>{t("settings.saved")}</span>}
+            {error && <span className={styles.errorText}>{error}</span>}
+            <button
+              className={styles.saveButton}
+              onClick={handleSave}
+              disabled={saving || !displayName.trim() || !username.trim() || !email.trim()}
+            >
+              {saving ? t("common.loading") : t("common.save")}
+            </button>
+          </div>
         </div>
       </div>
     </div>

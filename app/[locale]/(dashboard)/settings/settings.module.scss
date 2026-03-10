@@ -9,38 +9,78 @@
   min-height: 100vh;
   padding-top: $spacing-32;
   padding-bottom: $spacing-40;
+  background:
+    radial-gradient(ellipse at 50% 40%, rgba(26, 26, 46, 0.6) 0%, transparent 70%),
+    transparent;
 
   @include desktop {
     padding-top: $spacing-48;
   }
 }
 
+// ---------- Header ----------
+
 .header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: $spacing-24;
-}
-
-.title {
-  font-size: $font-size-xl;
-  font-weight: $font-weight-bold;
-  color: $color-text-primary;
-  margin: 0;
+  margin-bottom: $spacing-16;
 }
 
 .backButton {
-  padding: $spacing-8 $spacing-16;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: $border-radius-md;
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-4;
+  padding: $spacing-8 $spacing-12;
+  border: none;
+  border-radius: $border-radius-sm;
   background: transparent;
   color: $color-text-secondary;
   font-size: $font-size-sm;
   cursor: pointer;
+  transition: color 0.2s, background 0.2s;
 
   &:hover {
     color: $color-text-primary;
-    border-color: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.04);
+  }
+}
+
+.backArrow {
+  font-size: 1.1em;
+  line-height: 1;
+}
+
+.title {
+  font-size: $font-size-xl;
+  font-weight: 600;
+  color: $color-text-primary;
+  margin: 0;
+  text-align: center;
+  flex: 1;
+
+  @include mobile {
+    text-align: left;
+    flex: unset;
+  }
+}
+
+.headerSpacer {
+  // balances the back button width so title stays centered on desktop
+  width: 90px;
+
+  @include mobile {
+    display: none;
+  }
+}
+
+.separator {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.06);
+  margin-bottom: $spacing-32;
+
+  @include desktop {
+    margin-bottom: $spacing-40;
   }
 }
 
@@ -49,72 +89,170 @@
   font-size: $font-size-sm;
 }
 
-.card {
-  background: $color-bg-dark-2;
-  border-radius: $border-radius-lg;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  padding: $spacing-24;
-  max-width: 500px;
+// ---------- Card ----------
+
+.cardWrapper {
+  display: flex;
+  justify-content: center;
 }
 
+.card {
+  width: 100%;
+  max-width: 520px;
+  background: $color-bg-dark-2;
+  border-radius: $border-radius-lg;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  padding: $spacing-32 $spacing-32 $spacing-24;
+  backdrop-filter: blur(12px);
+  box-shadow:
+    0 0 40px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+
+  @include tablet {
+    width: 70%;
+    max-width: none;
+    padding: $spacing-24;
+  }
+
+  @include mobile {
+    max-width: none;
+    width: 100%;
+    margin: 0 auto;
+    padding: $spacing-20 $spacing-16;
+    border-radius: $border-radius-md;
+  }
+}
+
+// ---------- Fields ----------
+
 .field {
-  margin-bottom: $spacing-16;
+  margin-bottom: $spacing-20;
+
+  @include desktop {
+    margin-bottom: $spacing-24;
+  }
 }
 
 .label {
   display: block;
-  font-size: $font-size-xs;
-  color: $color-text-secondary;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.45);
   font-weight: $font-weight-semibold;
-  margin-bottom: $spacing-4;
+  margin-bottom: $spacing-8;
 }
 
 .input,
 .select {
   width: 100%;
-  padding: $spacing-12;
-  border-radius: $border-radius-md;
+  padding: $spacing-12 $spacing-16;
+  border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   background: $color-bg-dark;
   color: $color-text-primary;
   font-size: $font-size-sm;
+  line-height: 1.5;
   outline: none;
   box-sizing: border-box;
+  transition: border-color 0.2s, box-shadow 0.2s;
 
   &:focus {
-    border-color: $color-primary;
+    border-color: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.04);
   }
 
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
   }
+
+  @include mobile {
+    font-size: 16px; // prevent iOS zoom
+    min-height: 44px;
+  }
+}
+
+// ---------- Avatar ----------
+
+.avatarField {
+  display: flex;
+  align-items: center;
+  gap: $spacing-12;
+}
+
+.avatarPreview {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: $gradient-primary;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.avatarImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.avatarInitials {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-bold;
+  color: #fff;
+  user-select: none;
+}
+
+// ---------- Select ----------
+
+.selectWrapper {
+  position: relative;
 }
 
 .select {
   appearance: none;
   cursor: pointer;
+  padding-right: $spacing-40;
 }
+
+.selectChevron {
+  position: absolute;
+  right: $spacing-16;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 0.9rem;
+  pointer-events: none;
+}
+
+// ---------- Actions ----------
 
 .actions {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: stretch;
   gap: $spacing-12;
-  justify-content: flex-end;
-  margin-top: $spacing-20;
+  margin-top: $spacing-24;
 }
 
 .savedText {
   font-size: $font-size-sm;
   color: $color-success;
+  text-align: center;
 }
 
 .errorText {
   font-size: $font-size-sm;
   color: #ff6b6b;
+  text-align: center;
 }
 
 .saveButton {
+  width: 100%;
   padding: $spacing-12 $spacing-24;
   border-radius: $border-radius-md;
   border: none;
@@ -126,12 +264,17 @@
   transition: transform 0.2s, box-shadow 0.2s;
 
   &:hover:not(:disabled) {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 16px rgba($color-primary, 0.3);
+    transform: scale(1.02);
+    box-shadow: 0 4px 20px rgba($color-primary, 0.35);
   }
 
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+  }
+
+  @include mobile {
+    min-height: 44px;
+    font-size: 16px;
   }
 }
