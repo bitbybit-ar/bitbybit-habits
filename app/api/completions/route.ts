@@ -12,12 +12,14 @@ export const POST = apiHandler(async (request, { session, db }) => {
 
   requireFields({ habit_id }, ["habit_id"]);
 
-  // Verify the habit exists and is assigned to this kid
+  // Verify the habit exists and is assigned to this kid (via habit_assignments or assigned_to)
   const habits = await db`
-    SELECT * FROM habits
-    WHERE id = ${habit_id}
-      AND assigned_to = ${session.user_id}
-      AND active = true
+    SELECT h.* FROM habits h
+    LEFT JOIN habit_assignments ha ON ha.habit_id = h.id AND ha.user_id = ${session.user_id}
+    LEFT JOIN family_members fm ON fm.family_id = h.family_id AND fm.user_id = ${session.user_id}
+    WHERE h.id = ${habit_id}
+      AND h.active = true
+      AND (h.assigned_to = ${session.user_id} OR ha.id IS NOT NULL OR fm.id IS NOT NULL)
   ` as Habit[];
 
   if (habits.length === 0) {
