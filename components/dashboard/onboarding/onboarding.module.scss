@@ -1,3 +1,4 @@
+@use "sass:color";
 @use "@/styles/colors" as *;
 @use "@/styles/typography" as *;
 @use "@/styles/spacing" as *;
@@ -150,7 +151,7 @@
   color: $color-text-primary;
 
   &:hover {
-    background: lighten($color-bg-dark-3, 5%);
+    background: color.adjust($color-bg-dark-3, $lightness: 5%);
   }
 }
 
@@ -159,7 +160,7 @@
   color: $color-bg-dark;
 
   &:hover {
-    background: lighten($color-primary, 5%);
+    background: color.adjust($color-primary, $lightness: 5%);
   }
 }
 

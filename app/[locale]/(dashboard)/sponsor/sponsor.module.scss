@@ -1,3 +1,4 @@
+@use "sass:color";
 @use "@/styles/colors" as *;
 @use "@/styles/spacing" as *;
 @use "@/styles/typography" as *;
@@ -167,7 +168,7 @@
   transition: background 0.15s;
 
   &:hover {
-    background: darken($color-error, 10%);
+    background: color.adjust($color-error, $lightness: -10%);
   }
 }
 

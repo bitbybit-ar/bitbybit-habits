@@ -1,3 +1,4 @@
+@use "sass:color";
 @use "@/styles/colors" as *;
 @use "@/styles/typography" as *;
 @use "@/styles/spacing" as *;
@@ -61,7 +62,7 @@
   color: $color-bg-dark;
 
   &:hover {
-    background: lighten($color-primary, 5%);
+    background: color.adjust($color-primary, $lightness: 5%);
     transform: translateY(-2px);
   }
 }
