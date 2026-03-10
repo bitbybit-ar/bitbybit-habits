@@ -33,7 +33,7 @@ export const PUT = apiHandler(async (request, { session, db, params }) => {
       color = COALESCE(${color ?? null}, color),
       sat_reward = COALESCE(${sat_reward ?? null}, sat_reward),
       schedule_type = COALESCE(${schedule_type ?? null}, schedule_type),
-      schedule_days = COALESCE(${schedule_days ? JSON.stringify(schedule_days) : null}, schedule_days),
+      schedule_days = COALESCE(${schedule_days ?? null}, schedule_days),
       schedule_times_per_week = COALESCE(${schedule_times_per_week ?? null}, schedule_times_per_week),
       verification_type = COALESCE(${verification_type ?? null}, verification_type),
       active = COALESCE(${active ?? null}, active)
