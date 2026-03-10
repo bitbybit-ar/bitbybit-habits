@@ -23,12 +23,13 @@ export const PUT = apiHandler(async (request, { session, db, params }) => {
     schedule_days,
     schedule_times_per_week,
     verification_type,
+    assigned_to,
     active,
   } = body as Partial<Habit>;
 
   const updated = await db`
     UPDATE habits SET
-      name = COALESCE(${name ?? null}, name),
+      name = COALESCE(${name?.trim() ?? null}, name),
       description = COALESCE(${description ?? null}, description),
       color = COALESCE(${color ?? null}, color),
       sat_reward = COALESCE(${sat_reward ?? null}, sat_reward),
@@ -36,6 +37,7 @@ export const PUT = apiHandler(async (request, { session, db, params }) => {
       schedule_days = COALESCE(${schedule_days ?? null}, schedule_days),
       schedule_times_per_week = COALESCE(${schedule_times_per_week ?? null}, schedule_times_per_week),
       verification_type = COALESCE(${verification_type ?? null}, verification_type),
+      assigned_to = COALESCE(${assigned_to ?? null}, assigned_to),
       active = COALESCE(${active ?? null}, active)
     WHERE id = ${id}
     RETURNING *
