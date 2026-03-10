@@ -262,6 +262,38 @@ export default function SponsorDashboard() {
     }
   }, []);
 
+  const handleEditHabit = useCallback((updated: Habit) => {
+    setHabits((prev) => prev.map((h) => (h.id === updated.id ? updated : h)));
+  }, []);
+
+  const handleDeleteHabit = useCallback(async (habitId: string) => {
+    try {
+      const res = await fetch(`/api/habits/${habitId}`, { method: "DELETE" });
+      if (res.ok) {
+        setHabits((prev) => prev.filter((h) => h.id !== habitId));
+      }
+    } catch {
+      // Silently handle
+    }
+  }, []);
+
+  const handleRemoveMember = useCallback(async (familyId: string, userId: string) => {
+    try {
+      const res = await fetch(`/api/families/${familyId}/members/${userId}`, { method: "DELETE" });
+      if (res.ok) {
+        setFamilies((prev) =>
+          prev.map((f) =>
+            f.id === familyId
+              ? { ...f, members: f.members.filter((m) => m.user_id !== userId) }
+              : f
+          )
+        );
+      }
+    } catch {
+      // Silently handle
+    }
+  }, []);
+
   // No-op for HabitCard onComplete (sponsors don't complete habits)
   const noopComplete = useCallback(() => {}, []);
 
@@ -388,6 +420,9 @@ export default function SponsorDashboard() {
                   completions={completions}
                   onComplete={noopComplete}
                   hideAction
+                  currentUserId={session?.user_id}
+                  onEdit={handleEditHabit}
+                  onDelete={handleDeleteHabit}
                 />
               ))
             )}
@@ -427,6 +462,7 @@ export default function SponsorDashboard() {
                   onLeave={handleLeaveFamily}
                   onDelete={handleDeleteFamily}
                   onRoleChange={handleRoleChange}
+                  onRemoveMember={handleRemoveMember}
                 />
               );
             })
