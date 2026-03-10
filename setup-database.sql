@@ -136,6 +136,20 @@ CREATE INDEX idx_notifications_user ON notifications(user_id);
 CREATE INDEX idx_notifications_unread ON notifications(user_id, read) WHERE read = false;
 
 -- ============================================================
+-- ASIGNACIONES DE HABITOS (múltiples miembros por hábito)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS habit_assignments (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    habit_id UUID NOT NULL REFERENCES habits(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    created_at TIMESTAMP DEFAULT NOW(),
+    UNIQUE(habit_id, user_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_habit_assignments_habit ON habit_assignments(habit_id);
+CREATE INDEX IF NOT EXISTS idx_habit_assignments_user ON habit_assignments(user_id);
+
+-- ============================================================
 -- FUNCION: actualizar updated_at automaticamente
 -- ============================================================
 CREATE OR REPLACE FUNCTION update_updated_at()

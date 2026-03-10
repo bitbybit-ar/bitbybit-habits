@@ -1,4 +1,4 @@
-import { apiHandler, NotFoundError, BadRequestError } from "@/lib/api";
+import { apiHandler, NotFoundError } from "@/lib/api";
 import type { Habit } from "@/lib/types";
 
 export const PUT = apiHandler(async (request, { session, db, params }) => {
@@ -24,22 +24,9 @@ export const PUT = apiHandler(async (request, { session, db, params }) => {
     schedule_times_per_week,
     verification_type,
     assigned_to,
+    assigned_members,
     active,
-  } = body as Partial<Habit>;
-
-  // Validate assigned_to is a member of the habit's family (if changing)
-  if (assigned_to && assigned_to !== existing[0].assigned_to && existing[0].family_id) {
-    const membership = await db`
-      SELECT id FROM family_members
-      WHERE family_id = ${existing[0].family_id} AND user_id = ${assigned_to}
-    `;
-    if (membership.length === 0) {
-      throw new BadRequestError("El usuario asignado no es miembro de esta familia");
-    }
-  }
-
-  const today = new Date().toISOString().split("T")[0];
-  const finalAssignedTo = assigned_to ?? existing[0].assigned_to;
+  } = body as Partial<Habit> & { assigned_members?: string[] };
 
   const updated = await db`
     UPDATE habits SET
@@ -57,14 +44,37 @@ export const PUT = apiHandler(async (request, { session, db, params }) => {
     RETURNING *
   ` as Habit[];
 
-  // Include completed_today to match GET response shape
-  const completion = await db`
-    SELECT id FROM completions
-    WHERE habit_id = ${id} AND user_id = ${finalAssignedTo} AND date = ${today}
-    LIMIT 1
-  `;
+  // Save member assignments if provided
+  if (assigned_members && assigned_members.length > 0) {
+    try {
+      // Ensure habit_assignments table exists
+      await db`
+        CREATE TABLE IF NOT EXISTS habit_assignments (
+          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+          habit_id UUID NOT NULL REFERENCES habits(id) ON DELETE CASCADE,
+          user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+          created_at TIMESTAMP DEFAULT NOW(),
+          UNIQUE(habit_id, user_id)
+        )
+      `;
 
-  return { ...updated[0], completed_today: completion.length > 0 };
+      // Clear existing assignments for this habit
+      await db`DELETE FROM habit_assignments WHERE habit_id = ${id}`;
+
+      // Insert new assignments
+      for (const userId of assigned_members) {
+        await db`
+          INSERT INTO habit_assignments (habit_id, user_id)
+          VALUES (${id}, ${userId})
+          ON CONFLICT (habit_id, user_id) DO NOTHING
+        `;
+      }
+    } catch (err) {
+      console.error("Error saving habit assignments:", err);
+    }
+  }
+
+  return updated[0];
 });
 
 export const DELETE = apiHandler(async (_req, { session, db, params }) => {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { MemberPicker } from "@/components/dashboard/member-picker";
 import type { Habit } from "@/lib/types";
@@ -43,7 +43,34 @@ export function EditHabitModal({ habit, kids, onSave, onClose }: EditHabitModalP
     habit.verification_type === "bot_verify" ? "sponsor_approval" : habit.verification_type as "sponsor_approval" | "self_verify"
   );
   const [assignedTo, setAssignedTo] = useState(habit.assigned_to);
+  const [assignedMembers, setAssignedMembers] = useState<string[]>([]);
   const [saving, setSaving] = useState(false);
+  const [loadingAssignments, setLoadingAssignments] = useState(true);
+
+  // Fetch current member assignments when modal opens
+  useEffect(() => {
+    async function fetchAssignments() {
+      try {
+        const res = await fetch(`/api/habits/${habit.id}/assignments`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && data.data && data.data.length > 0) {
+            setAssignedMembers(data.data.map((a: { user_id: string }) => a.user_id));
+          } else {
+            // Fall back to the habit's assigned_to field
+            setAssignedMembers(habit.assigned_to ? [habit.assigned_to] : []);
+          }
+        } else {
+          setAssignedMembers(habit.assigned_to ? [habit.assigned_to] : []);
+        }
+      } catch {
+        setAssignedMembers(habit.assigned_to ? [habit.assigned_to] : []);
+      } finally {
+        setLoadingAssignments(false);
+      }
+    }
+    fetchAssignments();
+  }, [habit.id, habit.assigned_to]);
 
   const handleDayToggle = (day: number) => {
     setScheduleDays((prev) =>
@@ -51,9 +78,31 @@ export function EditHabitModal({ habit, kids, onSave, onClose }: EditHabitModalP
     );
   };
 
+  const handleMemberToggle = (userId: string) => {
+    setAssignedMembers((prev) => {
+      if (prev.includes(userId)) {
+        // Don't allow deselecting the last member
+        if (prev.length <= 1) return prev;
+        return prev.filter((id) => id !== userId);
+      }
+      return [...prev, userId];
+    });
+    // Keep assigned_to in sync (primary assignee = first selected)
+    setAssignedTo((prev) => {
+      if (assignedMembers.includes(userId)) {
+        // Removing this user, update primary if needed
+        const remaining = assignedMembers.filter((id) => id !== userId);
+        return remaining.length > 0 ? remaining[0] : prev;
+      }
+      // Adding this user
+      return assignedMembers.length === 0 ? userId : prev;
+    });
+  };
+
   const handleSave = async () => {
     setSaving(true);
     try {
+      const primaryAssignee = assignedMembers.length > 0 ? assignedMembers[0] : assignedTo;
       const res = await fetch(`/api/habits/${habit.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -66,7 +115,8 @@ export function EditHabitModal({ habit, kids, onSave, onClose }: EditHabitModalP
           schedule_days: scheduleDays,
           schedule_times_per_week: timesPerWeek,
           verification_type: verificationType,
-          assigned_to: assignedTo,
+          assigned_to: primaryAssignee,
+          assigned_members: assignedMembers,
         }),
       });
       if (res.ok) {
@@ -187,15 +237,20 @@ export function EditHabitModal({ habit, kids, onSave, onClose }: EditHabitModalP
           </select>
         </div>
 
-        {/* Assign to — visual member picker */}
+        {/* Assign to — visual member picker with multi-select */}
         {kids && kids.length > 0 && (
           <div className={styles.field}>
             <label className={styles.label}>{t("habits.assignTo")}</label>
-            <MemberPicker
-              kids={kids}
-              selectedId={assignedTo}
-              onSelect={setAssignedTo}
-            />
+            {loadingAssignments ? (
+              <p>{t("common.loading")}</p>
+            ) : (
+              <MemberPicker
+                kids={kids}
+                selectedIds={assignedMembers}
+                onToggle={handleMemberToggle}
+                multiple
+              />
+            )}
           </div>
         )}
 
