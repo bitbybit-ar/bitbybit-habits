@@ -133,7 +133,15 @@ const KidDemo: React.FC = () => {
     </div>,
   ];
 
-  return <DemoStepper steps={steps} />;
+  const finishNode = (
+    <Link href="/demo/sponsor">
+      <Button variant="outline">
+        {tc("viewSponsorDemo")} →
+      </Button>
+    </Link>
+  );
+
+  return <DemoStepper steps={steps} finishNode={finishNode} />;
 };
 
 export default KidDemo;

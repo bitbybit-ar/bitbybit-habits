@@ -13,7 +13,8 @@
     "search": "Search",
     "noResults": "No results",
     "comingSoon": "Coming soon",
-    "viewKidDemo": "View Kid Demo"
+    "viewKidDemo": "View Kid Demo",
+    "viewSponsorDemo": "View Sponsor Demo"
   },
   "auth": {
     "login": "Log in",

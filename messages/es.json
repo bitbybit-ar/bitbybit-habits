@@ -13,7 +13,8 @@
     "search": "Buscar",
     "noResults": "Sin resultados",
     "comingSoon": "Próximamente",
-    "viewKidDemo": "Ver demo como Kid"
+    "viewKidDemo": "Ver demo como Kid",
+    "viewSponsorDemo": "Ver demo como Sponsor"
   },
   "auth": {
     "login": "Iniciar sesión",
