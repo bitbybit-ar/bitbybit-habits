@@ -9,13 +9,28 @@
   background: $color-bg-dark;
   color: $color-text-primary;
   padding: $spacing-32 $spacing-24;
+  padding-top: calc(60px + #{$spacing-32});
   max-width: $container-max-width;
   margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  @include mobile {
+    padding-top: calc(60px + #{$spacing-16});
+    padding-left: $spacing-16;
+    padding-right: $spacing-16;
+    padding-bottom: $spacing-16;
+  }
 }
 
 .header {
   text-align: center;
   margin-bottom: $spacing-48;
+
+  @include mobile {
+    margin-bottom: $spacing-16;
+  }
 }
 
 .title {
@@ -29,6 +44,11 @@
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
+
+  @include mobile {
+    font-size: $font-size-xl;
+    margin-bottom: $spacing-8;
+  }
 }
 
 .subtitle {
@@ -36,7 +56,12 @@
   font-size: $font-size-md;
   line-height: $line-height-base;
   max-width: 600px;
-  margin: 0 auto $spacing-16;
+  margin: 0 auto;
+
+  @include mobile {
+    font-size: $font-size-sm;
+    max-width: none;
+  }
 }
 
 .roles {
@@ -44,47 +69,172 @@
   grid-template-columns: 1fr 1fr;
   gap: $spacing-24;
   max-width: 700px;
-  margin: 0 auto;
+  width: 100%;
 
   @include mobile {
     grid-template-columns: 1fr;
+    gap: $spacing-12;
   }
 }
 
-.roleCard {
+// 3D Flip Card
+.flipCard {
+  perspective: 1000px;
+  height: 320px;
+
+  @include mobile {
+    perspective: none;
+    height: auto;
+    max-height: 45vh;
+  }
+}
+
+.flipCardInner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.6s ease;
+  transform-style: preserve-3d;
+
+  @include mobile {
+    transform-style: flat;
+  }
+}
+
+// Desktop-only flip
+@media (hover: hover) and (min-width: 769px) {
+  .flipCard:hover .flipCardInner {
+    transform: rotateY(180deg);
+  }
+}
+
+.flipFront,
+.flipBack {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: $border-radius-lg;
+  overflow: hidden;
+
+  @include mobile {
+    position: relative;
+    backface-visibility: visible;
+  }
+}
+
+.flipFront {
   @include glass-card;
+  @include glass-hover;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   padding: $spacing-32;
   text-align: center;
-  cursor: pointer;
   transition: all 0.3s ease;
-  text-decoration: none;
-  display: block;
 
-  &:hover {
-    transform: translateY(-4px);
-    border-color: rgba(255, 255, 255, 0.12);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
-  }
-
-  .roleIcon {
-    font-size: 3rem;
-    margin-bottom: $spacing-16;
-  }
-
-  .roleName {
-    font-size: $font-size-lg;
-    font-weight: $font-weight-bold;
-    color: $color-text-primary;
-    margin-bottom: $spacing-8;
-  }
-
-  .roleDesc {
-    color: $color-text-secondary;
-    font-size: $font-size-sm;
-    line-height: $line-height-base;
+  @include mobile {
+    padding: $spacing-16 $spacing-20;
   }
 }
 
+.flipBack {
+  transform: rotateY(180deg);
+  border-radius: $border-radius-lg;
+
+  @include mobile {
+    display: none;
+  }
+}
+
+.previewImage {
+  object-fit: cover;
+  border-radius: $border-radius-lg;
+}
+
+.backOverlay {
+  position: absolute;
+  inset: 0;
+  background: rgba($color-surface-dark, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: $border-radius-lg;
+}
+
+// Role-specific hover glows (desktop)
+@media (hover: hover) and (min-width: 769px) {
+  .sponsorCard .flipFront:hover {
+    border-color: rgba($color-primary, 0.2);
+    box-shadow: 0 8px 30px rgba($color-primary, 0.1);
+  }
+
+  .kidCard .flipFront:hover {
+    border-color: rgba($color-accent-alt, 0.2);
+    box-shadow: 0 8px 30px rgba($color-accent-alt, 0.1);
+  }
+}
+
+.iconWrapper {
+  margin-bottom: $spacing-16;
+
+  @include mobile {
+    margin-bottom: $spacing-8;
+  }
+}
+
+.roleName {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  margin: 0 0 $spacing-8;
+
+  @include mobile {
+    font-size: $font-size-md;
+    margin-bottom: $spacing-4;
+  }
+}
+
+.roleDesc {
+  color: $color-text-secondary;
+  font-size: $font-size-sm;
+  line-height: $line-height-base;
+  margin-bottom: $spacing-20;
+
+  @include mobile {
+    font-size: $font-size-xs;
+    margin-bottom: $spacing-12;
+  }
+}
+
+.ctaButton {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-8;
+  background: $gradient-primary;
+  color: $color-bg-dark;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-bold;
+  padding: $spacing-8 $spacing-24;
+  border-radius: $border-radius-full;
+  text-decoration: none;
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 20px rgba($color-primary, 0.3);
+  }
+
+  @include mobile {
+    padding: $spacing-8 $spacing-16;
+    font-size: $font-size-xs;
+  }
+}
+
+// Keep backLink for sub-pages
 .backLink {
   display: inline-flex;
   align-items: center;
@@ -103,37 +253,4 @@
 .demoContainer {
   max-width: 600px;
   margin: 0 auto;
-}
-
-.rolesExplainer {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: $spacing-16;
-  margin-bottom: $spacing-32;
-
-  @include mobile {
-    grid-template-columns: 1fr;
-  }
-}
-
-.roleExplain {
-  @include glass-subtle;
-  padding: $spacing-16;
-  text-align: center;
-
-  .roleIcon {
-    font-size: 2rem;
-    margin-bottom: $spacing-8;
-  }
-
-  h4 {
-    color: $color-primary;
-    margin: 0 0 $spacing-4;
-  }
-
-  p {
-    color: $color-text-secondary;
-    font-size: $font-size-sm;
-    margin: 0;
-  }
 }

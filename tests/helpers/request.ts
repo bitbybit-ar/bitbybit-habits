@@ -24,7 +24,8 @@ export function createRequest(
     init.headers = { "Content-Type": "application/json" };
   }
 
-  return new NextRequest(url, init);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return new NextRequest(url, init as any);
 }
 
 export const testSession: AuthSession = {
