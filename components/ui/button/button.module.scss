@@ -38,10 +38,10 @@
 
 .variant-ghost {
   background: transparent;
-  color: $color-text-secondary;
+  color: var(--color-text-secondary);
 
   &:hover {
-    color: $color-text-primary;
+    color: var(--color-text-primary);
   }
 }
 

@@ -12,7 +12,7 @@
   right: 0;
   z-index: 1000;
   @include glass-nav;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid rgba(var(--glass-color), 0.06);
   transform: translateY(-100%);
   transition: transform 0.3s ease;
 }
@@ -47,7 +47,7 @@
   list-style: none;
 
   a {
-    color: $color-text-secondary;
+    color: var(--color-text-secondary);
     text-decoration: none;
     font-size: $font-size-sm;
     font-weight: $font-weight-medium;
@@ -55,7 +55,7 @@
 
     &:hover,
     &:focus {
-      color: $color-text-primary;
+      color: var(--color-text-primary);
     }
   }
 
@@ -84,17 +84,17 @@
 }
 
 .loginButton {
-  color: $color-text-secondary;
+  color: var(--color-text-secondary);
 
   &:hover,
   &:focus {
-    color: $color-text-primary;
+    color: var(--color-text-primary);
   }
 }
 
 .signupButton {
   background: $color-primary;
-  color: $color-bg-dark;
+  color: var(--color-bg);
 
   &:hover,
   &:focus {

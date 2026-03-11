@@ -16,16 +16,16 @@
 
 .label {
   font-size: $font-size-sm;
-  color: $color-text-secondary;
+  color: var(--color-text-secondary);
   font-weight: $font-weight-medium;
 }
 
 .input {
-  background: $color-bg-dark-3;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--color-bg-3);
+  border: 1px solid rgba(var(--glass-color), 0.1);
   border-radius: $border-radius-md;
   padding: $spacing-12 $spacing-16;
-  color: $color-text-primary;
+  color: var(--color-text-primary);
   font-size: $font-size-base;
   outline: none;
   transition: border-color 0.2s;
@@ -47,7 +47,7 @@
   justify-content: center;
   gap: $spacing-12;
   padding: $spacing-24;
-  background: $color-bg-dark-3;
+  background: var(--color-bg-3);
   border-radius: $border-radius-lg;
   border: 2px dashed rgba($color-primary, 0.3);
 
@@ -60,7 +60,7 @@
 }
 
 .notification {
-  background: $color-bg-dark-3;
+  background: var(--color-bg-3);
   border-radius: $border-radius-lg;
   padding: $spacing-16;
   border-left: 4px solid $color-primary;
@@ -76,12 +76,12 @@
     flex: 1;
 
     strong {
-      color: $color-text-primary;
+      color: var(--color-text-primary);
       display: block;
     }
 
     span {
-      color: $color-text-secondary;
+      color: var(--color-text-secondary);
       font-size: $font-size-sm;
     }
   }
@@ -110,10 +110,10 @@
 }
 
 .habitCard {
-  background: $color-bg-dark-3;
+  background: var(--color-bg-3);
   border-radius: $border-radius-lg;
   padding: $spacing-16;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(var(--glass-color), 0.05);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -121,12 +121,12 @@
 
   .habitInfo {
     h4 {
-      color: $color-text-primary;
+      color: var(--color-text-primary);
       margin: 0 0 $spacing-4;
     }
 
     p {
-      color: $color-text-secondary;
+      color: var(--color-text-secondary);
       font-size: $font-size-sm;
       margin: 0;
     }
@@ -181,7 +181,7 @@
   }
 
   p {
-    color: $color-text-secondary;
+    color: var(--color-text-secondary);
   }
 }
 
@@ -193,12 +193,12 @@
 .stepTitle {
   font-size: $font-size-xl;
   font-weight: $font-weight-bold;
-  color: $color-text-primary;
+  color: var(--color-text-primary);
   margin-bottom: $spacing-8;
 }
 
 .stepDesc {
-  color: $color-text-secondary;
+  color: var(--color-text-secondary);
   margin-bottom: $spacing-24;
   line-height: $line-height-base;
 }

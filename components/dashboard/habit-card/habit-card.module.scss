@@ -23,9 +23,9 @@
   position: relative;
 
   &:hover {
-    border-color: rgba(255, 255, 255, 0.12);
+    border-color: rgba(var(--glass-color), 0.12);
     border-left-color: inherit;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 8px 32px rgba(var(--shadow-color), 0.2);
   }
 }
 
@@ -59,7 +59,7 @@
 .habitName {
   font-size: $font-size-base;
   font-weight: $font-weight-semibold;
-  color: $color-text-primary;
+  color: var(--color-text-primary);
   margin: 0;
   white-space: nowrap;
   overflow: hidden;
@@ -68,7 +68,7 @@
 
 .habitDescription {
   font-size: $font-size-xs;
-  color: $color-text-secondary;
+  color: var(--color-text-secondary);
   margin: 2px 0 0;
   white-space: nowrap;
   overflow: hidden;
@@ -110,15 +110,15 @@
   justify-content: center;
   border: none;
   border-radius: $border-radius-full;
-  background: rgba(255, 255, 255, 0.05);
-  color: $color-text-secondary;
+  background: rgba(var(--glass-color), 0.05);
+  color: var(--color-text-secondary);
   cursor: pointer;
   font-size: 12px;
   transition: background 0.2s, color 0.2s;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.1);
-    color: $color-text-primary;
+    background: rgba(var(--glass-color), 0.1);
+    color: var(--color-text-primary);
   }
 }
 
@@ -136,7 +136,7 @@
 }
 
 .schedule {
-  color: $color-text-secondary;
+  color: var(--color-text-secondary);
 }
 
 .streak {
@@ -150,7 +150,7 @@
 }
 
 .streakInactive {
-  color: $color-text-secondary;
+  color: var(--color-text-secondary);
   opacity: 0.5;
 }
 
@@ -176,7 +176,7 @@
 
 .dayLabel {
   font-size: 10px;
-  color: $color-text-secondary;
+  color: var(--color-text-secondary);
   text-transform: uppercase;
 }
 
@@ -192,7 +192,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(var(--glass-color), 0.1);
   background: transparent;
   transition: all 0.2s ease;
 
@@ -214,12 +214,12 @@
 }
 
 .circleMissed {
-  border-color: rgba(255, 255, 255, 0.05);
-  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(var(--glass-color), 0.05);
+  background: rgba(var(--glass-color), 0.03);
 }
 
 .circleFuture {
-  border-color: rgba(255, 255, 255, 0.05);
+  border-color: rgba(var(--glass-color), 0.05);
   opacity: 0.4;
 }
 

@@ -6,8 +6,8 @@
 
 .demoPage {
   min-height: 100vh;
-  background: $color-bg-dark;
-  color: $color-text-primary;
+  background: var(--color-bg);
+  color: var(--color-text-primary);
   padding: $spacing-32 $spacing-24;
   padding-top: calc(60px + #{$spacing-32});
   max-width: $container-max-width;
@@ -52,7 +52,7 @@
 }
 
 .subtitle {
-  color: $color-text-secondary;
+  color: var(--color-text-secondary);
   font-size: $font-size-md;
   line-height: $line-height-base;
   max-width: 600px;
@@ -156,7 +156,7 @@
 .backOverlay {
   position: absolute;
   inset: 0;
-  background: rgba($color-surface-dark, 0.6);
+  background: rgba(var(--color-surface), 0.6);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
   display: flex;
@@ -189,7 +189,7 @@
 .roleName {
   font-size: $font-size-lg;
   font-weight: $font-weight-bold;
-  color: $color-text-primary;
+  color: var(--color-text-primary);
   margin: 0 0 $spacing-8;
 
   @include mobile {
@@ -199,7 +199,7 @@
 }
 
 .roleDesc {
-  color: $color-text-secondary;
+  color: var(--color-text-secondary);
   font-size: $font-size-sm;
   line-height: $line-height-base;
   margin-bottom: $spacing-20;
@@ -215,7 +215,7 @@
   align-items: center;
   gap: $spacing-8;
   background: $gradient-primary;
-  color: $color-bg-dark;
+  color: var(--color-bg);
   font-size: $font-size-sm;
   font-weight: $font-weight-bold;
   padding: $spacing-8 $spacing-24;
@@ -239,7 +239,7 @@
   display: inline-flex;
   align-items: center;
   gap: $spacing-8;
-  color: $color-text-secondary;
+  color: var(--color-text-secondary);
   text-decoration: none;
   margin-bottom: $spacing-24;
   font-size: $font-size-sm;

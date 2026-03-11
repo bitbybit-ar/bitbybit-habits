@@ -15,8 +15,8 @@
   gap: $spacing-8;
   padding: $spacing-8 $spacing-16 $spacing-8 $spacing-8;
   border-radius: $border-radius-full;
-  border: 2px solid rgba(255, 255, 255, 0.08);
-  background: $color-bg-dark-3;
+  border: 2px solid rgba(var(--glass-color), 0.08);
+  background: var(--color-bg-3);
   cursor: pointer;
   transition: border-color 0.2s, background 0.2s, transform 0.15s;
 
@@ -32,7 +32,7 @@
 
   .avatar {
     background: $color-primary;
-    color: $color-bg-dark;
+    color: var(--color-bg);
   }
 }
 
@@ -40,13 +40,13 @@
   width: 32px;
   height: 32px;
   border-radius: $border-radius-full;
-  background: $color-bg-dark-2;
+  background: var(--color-bg-2);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: $font-size-sm;
   font-weight: $font-weight-bold;
-  color: $color-text-secondary;
+  color: var(--color-text-secondary);
   flex-shrink: 0;
   position: relative;
   transition: background 0.2s, color 0.2s;
@@ -60,13 +60,13 @@
   justify-content: center;
   background: $color-primary;
   border-radius: $border-radius-full;
-  color: $color-bg-dark;
+  color: var(--color-bg);
 }
 
 .memberName {
   font-size: $font-size-sm;
   font-weight: $font-weight-medium;
-  color: $color-text-primary;
+  color: var(--color-text-primary);
   white-space: nowrap;
 }
 
@@ -83,10 +83,10 @@
 
 .emptyMessage {
   font-size: $font-size-sm;
-  color: $color-text-secondary;
+  color: var(--color-text-secondary);
   padding: $spacing-16;
   text-align: center;
-  background: $color-bg-dark-3;
+  background: var(--color-bg-3);
   border-radius: $border-radius-md;
-  border: 1px dashed rgba(255, 255, 255, 0.1);
+  border: 1px dashed rgba(var(--glass-color), 0.1);
 }

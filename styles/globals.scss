@@ -1,6 +1,7 @@
 @use "./colors" as *;
 @use "./typography" as *;
 @use "./spacing" as *;
+@use "./theme";
 
 *, *::before, *::after {
   margin: 0;
@@ -14,12 +15,13 @@ html {
 
 body {
   font-family: $font-family-base;
-  background: $color-bg-dark;
-  color: $color-text-primary;
+  background: var(--color-bg);
+  color: var(--color-text-primary);
   line-height: $line-height-base;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 a {

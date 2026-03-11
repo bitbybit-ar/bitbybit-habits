@@ -18,12 +18,12 @@
 .welcome {
   font-size: $font-size-xl;
   font-weight: $font-weight-bold;
-  color: $color-text-primary;
+  color: var(--color-text-primary);
   margin-bottom: $spacing-8;
 }
 
 .subtitle {
-  color: $color-text-secondary;
+  color: var(--color-text-secondary);
   font-size: $font-size-base;
 }
 
@@ -39,14 +39,14 @@
   width: 10px;
   height: 10px;
   border-radius: $border-radius-full;
-  border: 2px solid $color-bg-dark-3;
+  border: 2px solid var(--color-bg-3);
   background: transparent;
   cursor: pointer;
   padding: 0;
   transition: all 0.3s;
 
   &:hover {
-    border-color: $color-text-secondary;
+    border-color: var(--color-text-secondary);
   }
 }
 
@@ -70,7 +70,7 @@
   transition: all 0.3s ease;
 
   &:hover {
-    border-color: rgba(255, 255, 255, 0.12);
+    border-color: rgba(var(--glass-color), 0.12);
   }
 }
 
@@ -79,7 +79,7 @@
   top: $spacing-16;
   right: $spacing-16;
   font-size: $font-size-xs;
-  color: $color-text-secondary;
+  color: var(--color-text-secondary);
   font-weight: $font-weight-medium;
 }
 
@@ -90,12 +90,12 @@
 .stepTitle {
   font-size: $font-size-lg;
   font-weight: $font-weight-semibold;
-  color: $color-text-primary;
+  color: var(--color-text-primary);
   margin-bottom: $spacing-8;
 }
 
 .stepDescription {
-  color: $color-text-secondary;
+  color: var(--color-text-secondary);
   font-size: $font-size-base;
   line-height: $line-height-base;
   margin-bottom: $spacing-16;
@@ -109,7 +109,7 @@
   text-align: left;
 
   p {
-    color: $color-text-primary;
+    color: var(--color-text-primary);
     font-size: $font-size-sm;
     line-height: $line-height-base;
     margin: 0;
@@ -141,27 +141,27 @@
 
 .backButton {
   background: transparent;
-  color: $color-text-secondary;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--color-text-secondary);
+  border: 1px solid rgba(var(--glass-color), 0.1);
 
   &:hover {
-    color: $color-text-primary;
-    border-color: rgba(255, 255, 255, 0.2);
+    color: var(--color-text-primary);
+    border-color: rgba(var(--glass-color), 0.2);
   }
 }
 
 .nextButton {
-  background: $color-bg-dark-3;
-  color: $color-text-primary;
+  background: var(--color-bg-3);
+  color: var(--color-text-primary);
 
   &:hover {
-    background: color.adjust($color-bg-dark-3, $lightness: 5%);
+    background: var(--color-bg-2);
   }
 }
 
 .startButton {
   background: $color-primary;
-  color: $color-bg-dark;
+  color: var(--color-bg);
 
   &:hover {
     background: color.adjust($color-primary, $lightness: 5%);
@@ -171,14 +171,14 @@
 .skipButton {
   background: none;
   border: none;
-  color: $color-text-secondary;
+  color: var(--color-text-secondary);
   font-size: $font-size-sm;
   cursor: pointer;
   padding: $spacing-8;
   transition: color 0.2s;
 
   &:hover {
-    color: $color-text-primary;
+    color: var(--color-text-primary);
   }
 }
 

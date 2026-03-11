@@ -9,7 +9,7 @@
 }
 
 .loadingText {
-  color: $color-text-secondary;
+  color: var(--color-text-secondary);
   font-size: $font-size-sm;
 }
 
@@ -31,7 +31,7 @@
   }
 
   &[data-connected="false"] {
-    background: $color-text-secondary;
+    background: var(--color-text-secondary);
     opacity: 0.5;
   }
 }
@@ -39,18 +39,18 @@
 .statusText {
   font-size: $font-size-base;
   font-weight: $font-weight-semibold;
-  color: $color-text-primary;
+  color: var(--color-text-primary);
 }
 
 .label {
   font-size: $font-size-sm;
-  color: $color-text-primary;
+  color: var(--color-text-primary);
   margin: 0 0 $spacing-4;
 }
 
 .maskedUrl {
   font-size: $font-size-xs;
-  color: $color-text-secondary;
+  color: var(--color-text-secondary);
   font-family: monospace;
   margin: 0 0 $spacing-16;
   word-break: break-all;
@@ -87,22 +87,22 @@
 
 .fieldLabel {
   font-size: $font-size-xs;
-  color: $color-text-secondary;
+  color: var(--color-text-secondary);
   font-weight: $font-weight-semibold;
 }
 
 .input {
   padding: $spacing-12;
   border-radius: $border-radius-md;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: $color-bg-dark;
-  color: $color-text-primary;
+  border: 1px solid rgba(var(--glass-color), 0.1);
+  background: var(--color-bg);
+  color: var(--color-text-primary);
   font-size: $font-size-sm;
   outline: none;
   transition: border-color 0.2s;
 
   &::placeholder {
-    color: $color-text-secondary;
+    color: var(--color-text-secondary);
     opacity: 0.5;
   }
 

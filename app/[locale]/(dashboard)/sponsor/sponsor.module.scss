@@ -28,7 +28,7 @@
 .sectionTitle {
   font-size: $font-size-lg;
   font-weight: $font-weight-semibold;
-  color: $color-text-primary;
+  color: var(--color-text-primary);
   margin: 0 0 $spacing-16;
 }
 
@@ -39,7 +39,7 @@
 }
 
 .loadingText {
-  color: $color-text-secondary;
+  color: var(--color-text-secondary);
   text-align: center;
   padding-top: $spacing-80;
   font-size: $font-size-base;
@@ -62,13 +62,13 @@
 .emptyTitle {
   font-size: $font-size-lg;
   font-weight: $font-weight-bold;
-  color: $color-text-primary;
+  color: var(--color-text-primary);
   margin: 0 0 $spacing-8;
 }
 
 .emptySubtext {
   font-size: $font-size-sm;
-  color: $color-text-secondary;
+  color: var(--color-text-secondary);
   margin: 0 0 $spacing-24;
   max-width: 320px;
 }
@@ -103,16 +103,16 @@
       padding: $spacing-8 $spacing-12;
       text-align: left;
       font-size: 0.875rem;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      border-bottom: 1px solid rgba(var(--glass-color), 0.06);
     }
 
     th {
       font-weight: 600;
-      color: $color-text-primary;
+      color: var(--color-text-primary);
     }
 
     td {
-      color: $color-text-secondary;
+      color: var(--color-text-secondary);
     }
   }
 }

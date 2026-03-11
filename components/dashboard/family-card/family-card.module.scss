@@ -10,8 +10,8 @@
   transition: all 0.3s ease;
 
   &:hover {
-    border-color: rgba(255, 255, 255, 0.12);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    border-color: rgba(var(--glass-color), 0.12);
+    box-shadow: 0 8px 32px rgba(var(--shadow-color), 0.2);
   }
 }
 
@@ -36,9 +36,9 @@
 .actionButton {
   padding: $spacing-4 $spacing-12;
   border-radius: $border-radius-md;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(var(--glass-color), 0.1);
   background: transparent;
-  color: $color-text-secondary;
+  color: var(--color-text-secondary);
   font-size: $font-size-xs;
   font-weight: $font-weight-semibold;
   cursor: pointer;
@@ -46,7 +46,7 @@
   white-space: nowrap;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(var(--glass-color), 0.05);
   }
 }
 
@@ -78,7 +78,7 @@
 .familyName {
   font-size: $font-size-lg;
   font-weight: $font-weight-bold;
-  color: $color-text-primary;
+  color: var(--color-text-primary);
   margin: 0;
 }
 
@@ -108,7 +108,7 @@
 .codeLabel {
   font-size: $font-size-xs;
   font-weight: $font-weight-semibold;
-  color: $color-text-secondary;
+  color: var(--color-text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   display: block;
@@ -127,8 +127,8 @@
 }
 
 .code {
-  background: $color-bg-dark-3;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--color-bg-3);
+  border: 1px solid rgba(var(--glass-color), 0.1);
   border-radius: $border-radius-md;
   padding: $spacing-12 $spacing-20;
   font-size: $font-size-xl;
@@ -168,9 +168,9 @@
   margin-top: $spacing-12;
   padding: $spacing-8 $spacing-16;
   border-radius: $border-radius-md;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(var(--glass-color), 0.1);
   background: transparent;
-  color: $color-text-secondary;
+  color: var(--color-text-secondary);
   font-size: $font-size-xs;
   font-weight: $font-weight-semibold;
   cursor: pointer;
@@ -187,7 +187,7 @@
   justify-content: center;
   margin-top: $spacing-16;
   padding: $spacing-16;
-  background: $color-bg-dark-3;
+  background: var(--color-bg-3);
   border-radius: $border-radius-md;
 }
 
@@ -196,14 +196,14 @@
 }
 
 .membersSection {
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: 1px solid rgba(var(--glass-color), 0.05);
   padding-top: $spacing-20;
 }
 
 .membersLabel {
   font-size: $font-size-xs;
   font-weight: $font-weight-semibold;
-  color: $color-text-secondary;
+  color: var(--color-text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   display: block;
@@ -222,18 +222,18 @@
   gap: $spacing-12;
   padding: $spacing-8 $spacing-12;
   border-radius: $border-radius-md;
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(var(--glass-color), 0.02);
 }
 
 .avatar {
   width: 32px;
   height: 32px;
   border-radius: $border-radius-full;
-  background: $color-bg-dark-3;
+  background: var(--color-bg-3);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: $color-text-secondary;
+  color: var(--color-text-secondary);
   flex-shrink: 0;
 }
 
@@ -247,12 +247,12 @@
 .memberName {
   font-size: $font-size-sm;
   font-weight: $font-weight-medium;
-  color: $color-text-primary;
+  color: var(--color-text-primary);
 }
 
 .memberRole {
   font-size: $font-size-xs;
-  color: $color-text-secondary;
+  color: var(--color-text-secondary);
 }
 
 .removeBtn {
@@ -263,8 +263,8 @@
   justify-content: center;
   border: none;
   border-radius: $border-radius-full;
-  background: rgba(255, 255, 255, 0.05);
-  color: $color-text-secondary;
+  background: rgba(var(--glass-color), 0.05);
+  color: var(--color-text-secondary);
   cursor: pointer;
   font-size: 12px;
   flex-shrink: 0;

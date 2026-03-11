@@ -132,7 +132,7 @@
 .pitch {
   font-size: $font-size-xl;
   font-weight: $font-weight-bold;
-  color: $color-text-primary;
+  color: var(--color-text-primary);
   margin-bottom: $spacing-12;
   position: relative;
   animation-delay: 0.4s;
@@ -141,7 +141,7 @@
 
 .subtitle {
   font-size: $font-size-subtitle;
-  color: $color-text-secondary;
+  color: var(--color-text-secondary);
   max-width: 600px;
   margin-bottom: $spacing-48;
   position: relative;

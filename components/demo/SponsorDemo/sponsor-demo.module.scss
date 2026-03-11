@@ -12,12 +12,12 @@
 .stepTitle {
   font-size: $font-size-xl;
   font-weight: $font-weight-bold;
-  color: $color-text-primary;
+  color: var(--color-text-primary);
   margin: 0;
 }
 
 .stepDesc {
-  color: $color-text-secondary;
+  color: var(--color-text-secondary);
   line-height: $line-height-base;
   margin: 0;
 }
@@ -38,16 +38,16 @@
 
 .label {
   font-size: $font-size-sm;
-  color: $color-text-secondary;
+  color: var(--color-text-secondary);
   font-weight: $font-weight-medium;
 }
 
 .input {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(var(--glass-color), 0.04);
+  border: 1px solid rgba(var(--glass-color), 0.1);
   border-radius: $border-radius-md;
   padding: $spacing-12 $spacing-16;
-  color: $color-text-primary;
+  color: var(--color-text-primary);
   font-size: $font-size-base;
   outline: none;
   transition: border-color 0.2s;
@@ -87,7 +87,7 @@
   }
 
   p {
-    color: $color-text-secondary;
+    color: var(--color-text-secondary);
   }
 }
 
@@ -124,12 +124,12 @@
   gap: $spacing-4;
 
   strong {
-    color: $color-text-primary;
+    color: var(--color-text-primary);
     font-size: $font-size-sm;
   }
 
   span {
-    color: $color-text-secondary;
+    color: var(--color-text-secondary);
     font-size: $font-size-xs;
   }
 }

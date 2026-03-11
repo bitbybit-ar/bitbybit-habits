@@ -25,13 +25,13 @@
   transition: all 0.3s ease;
 
   &:hover {
-    border-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(var(--glass-color), 0.1);
   }
 }
 
 .statCardHighlight {
   border-color: rgba($color-primary, 0.2);
-  background: linear-gradient(135deg, rgba($color-primary, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%);
+  background: linear-gradient(135deg, rgba($color-primary, 0.08) 0%, rgba(var(--glass-color), 0.03) 100%);
 }
 
 .iconWrapper {
@@ -73,7 +73,7 @@
 .statValue {
   font-size: $font-size-xl;
   font-weight: $font-weight-bold;
-  color: $color-text-primary;
+  color: var(--color-text-primary);
   line-height: $line-height-tight;
 }
 
@@ -84,7 +84,7 @@
 
 .statLabel {
   font-size: $font-size-xs;
-  color: $color-text-secondary;
+  color: var(--color-text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }

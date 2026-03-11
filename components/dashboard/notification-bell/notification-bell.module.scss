@@ -40,17 +40,17 @@
   width: 320px;
   max-height: 400px;
   overflow-y: auto;
-  background: $color-bg-dark-2;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--color-bg-2);
+  border: 1px solid rgba(var(--glass-color), 0.1);
   border-radius: 8px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 8px 24px rgba(var(--shadow-color), 0.4);
   z-index: 100;
 }
 
 .empty {
   padding: $spacing-16;
   text-align: center;
-  color: $color-text-secondary;
+  color: var(--color-text-secondary);
   font-size: 0.875rem;
 }
 
@@ -62,7 +62,7 @@
 
 .item {
   padding: $spacing-12 $spacing-16;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(var(--glass-color), 0.05);
   cursor: pointer;
   transition: background 0.15s;
 
@@ -71,24 +71,24 @@
   }
 
   &:hover {
-    background: rgba(255, 255, 255, 0.03);
+    background: rgba(var(--glass-color), 0.03);
   }
 
   strong {
     display: block;
     font-size: 0.85rem;
-    color: $color-text-primary;
+    color: var(--color-text-primary);
   }
 
   p {
     margin: $spacing-4 0;
     font-size: 0.8rem;
-    color: $color-text-secondary;
+    color: var(--color-text-secondary);
   }
 
   time {
     font-size: 0.7rem;
-    color: $color-text-secondary;
+    color: var(--color-text-secondary);
   }
 }
 

@@ -49,10 +49,10 @@
   gap: $spacing-12;
   padding: $spacing-12 $spacing-20;
   @include glass-toast;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 8px 32px rgba(var(--shadow-color), 0.4);
   font-size: $font-size-sm;
   font-weight: $font-weight-medium;
-  color: $color-text-primary;
+  color: var(--color-text-primary);
   pointer-events: auto;
   animation: slideIn 0.3s ease-out forwards;
   min-width: 280px;

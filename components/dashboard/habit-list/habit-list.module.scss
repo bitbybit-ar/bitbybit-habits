@@ -12,7 +12,7 @@
 .sectionTitle {
   font-size: $font-size-sm;
   font-weight: $font-weight-semibold;
-  color: $color-text-secondary;
+  color: var(--color-text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin-bottom: $spacing-4;
@@ -30,6 +30,6 @@
 }
 
 .emptyText {
-  color: $color-text-secondary;
+  color: var(--color-text-secondary);
   font-size: $font-size-sm;
 }

@@ -6,14 +6,14 @@
 
 // Base glass mixin
 @mixin glass($opacity: 0.06, $blur: 12px, $border-opacity: 0.08, $radius: 16px) {
-  background: rgba(255, 255, 255, $opacity);
+  background: rgba(var(--glass-color), $opacity);
   backdrop-filter: blur($blur);
   -webkit-backdrop-filter: blur($blur);
-  border: 1px solid rgba(255, 255, 255, $border-opacity);
+  border: 1px solid rgba(var(--glass-color), $border-opacity);
   border-radius: $radius;
 
   @supports not (backdrop-filter: blur(1px)) {
-    background: rgba(26, 26, 46, 0.85 + $opacity * 2);
+    background: var(--glass-fallback-bg);
   }
 }
 
@@ -43,21 +43,21 @@
   transition: all 0.3s ease;
 
   &:hover {
-    border-color: rgba(255, 255, 255, 0.12);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.06);
+    border-color: rgba(var(--glass-color), 0.12);
+    box-shadow: 0 8px 32px rgba(var(--shadow-color), 0.2), 0 0 0 1px rgba(var(--glass-color), 0.06);
   }
 }
 
 // Glass active/selected state
 @mixin glass-active {
-  border-color: rgba(255, 255, 255, 0.15);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.08);
+  border-color: rgba(var(--glass-color), 0.15);
+  box-shadow: 0 8px 32px rgba(var(--shadow-color), 0.25), 0 0 0 1px rgba(var(--glass-color), 0.08);
 }
 
 // Glass highlight (primary-tinted border + shadow)
 @mixin glass-highlight {
   border: 1px solid rgba($color-primary, 0.15);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 8px 32px rgba(var(--shadow-color), 0.3);
 }
 
 // Modal overlay with blur

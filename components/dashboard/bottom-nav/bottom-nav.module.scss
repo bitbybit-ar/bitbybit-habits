@@ -15,7 +15,7 @@
     right: 0;
     z-index: 100;
     @include glass-nav;
-    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    border-top: 1px solid rgba(var(--glass-color), 0.06);
     border-bottom: none;
     padding: $spacing-4 0;
     padding-bottom: env(safe-area-inset-bottom, $spacing-4);
@@ -32,7 +32,7 @@
   padding: $spacing-8 $spacing-12;
   background: none;
   border: none;
-  color: $color-text-secondary;
+  color: var(--color-text-secondary);
   font-size: 10px;
   font-weight: $font-weight-medium;
   cursor: pointer;
@@ -41,7 +41,7 @@
   min-width: 56px;
 
   &:hover {
-    color: $color-text-primary;
+    color: var(--color-text-primary);
   }
 }
 
@@ -72,7 +72,7 @@
   height: 16px;
   border-radius: $border-radius-full;
   background: $color-warning;
-  color: $color-bg-dark;
+  color: var(--color-bg);
   font-size: 9px;
   font-weight: $font-weight-bold;
   display: flex;

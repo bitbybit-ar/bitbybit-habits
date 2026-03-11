@@ -24,7 +24,7 @@
 .title {
   font-size: $font-size-lg;
   font-weight: $font-weight-bold;
-  color: $color-text-primary;
+  color: var(--color-text-primary);
   margin: 0 0 $spacing-20;
 }
 
@@ -35,7 +35,7 @@
 .label {
   display: block;
   font-size: $font-size-xs;
-  color: $color-text-secondary;
+  color: var(--color-text-secondary);
   font-weight: $font-weight-semibold;
   margin-bottom: $spacing-4;
 }
@@ -44,9 +44,9 @@
   width: 100%;
   padding: $spacing-12;
   border-radius: $border-radius-md;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: $color-bg-dark;
-  color: $color-text-primary;
+  border: 1px solid rgba(var(--glass-color), 0.1);
+  background: var(--color-bg);
+  color: var(--color-text-primary);
   font-size: $font-size-sm;
   outline: none;
   box-sizing: border-box;
@@ -84,9 +84,9 @@
   width: 100%;
   padding: $spacing-12;
   border-radius: $border-radius-md;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: $color-bg-dark;
-  color: $color-text-primary;
+  border: 1px solid rgba(var(--glass-color), 0.1);
+  background: var(--color-bg);
+  color: var(--color-text-primary);
   font-size: $font-size-sm;
   outline: none;
   box-sizing: border-box;
@@ -102,8 +102,8 @@
   }
 
   option {
-    background: $color-bg-dark;
-    color: $color-text-primary;
+    background: var(--color-bg);
+    color: var(--color-text-primary);
   }
 }
 
@@ -119,9 +119,9 @@
   gap: $spacing-4;
   cursor: pointer;
   padding: $spacing-4 $spacing-8;
-  background: $color-bg-dark;
+  background: var(--color-bg);
   border-radius: $border-radius-md;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(var(--glass-color), 0.1);
   transition: background 0.2s, border-color 0.2s;
 
   &:has(.checkbox:checked) {
@@ -137,7 +137,7 @@
 
 .dayLabel {
   font-size: $font-size-xs;
-  color: $color-text-primary;
+  color: var(--color-text-primary);
   font-weight: $font-weight-medium;
 }
 
@@ -151,16 +151,16 @@
 .cancelButton {
   padding: $spacing-8 $spacing-16;
   border-radius: $border-radius-md;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(var(--glass-color), 0.1);
   background: transparent;
-  color: $color-text-secondary;
+  color: var(--color-text-secondary);
   font-size: $font-size-sm;
   cursor: pointer;
   transition: color 0.2s, border-color 0.2s;
 
   &:hover {
-    color: $color-text-primary;
-    border-color: rgba(255, 255, 255, 0.2);
+    color: var(--color-text-primary);
+    border-color: rgba(var(--glass-color), 0.2);
   }
 }
 

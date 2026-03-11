@@ -1,0 +1,35 @@
+.toggle {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: none;
+  background: rgba(var(--glass-color), 0.1);
+  border-radius: 8px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: background 0.2s;
+  color: var(--color-text-secondary);
+
+  &:hover {
+    background: rgba(var(--glass-color), 0.18);
+    color: var(--color-text-primary);
+  }
+}
+
+.icon {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: scale(0.5) rotate(-90deg);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.visible {
+  opacity: 1;
+  transform: scale(1) rotate(0deg);
+}

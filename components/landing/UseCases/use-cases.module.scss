@@ -9,10 +9,10 @@
 }
 
 .useCase {
-  background: $color-bg-dark-3;
+  background: var(--color-bg-3);
   border-radius: $border-radius-xl;
   padding: $spacing-48;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(var(--glass-color), 0.05);
   display: grid;
   grid-template-columns: 80px 1fr;
   gap: $spacing-32;
@@ -36,7 +36,7 @@
   }
 
   p {
-    color: $color-text-secondary;
+    color: var(--color-text-secondary);
     font-size: $font-size-base;
     line-height: 1.7;
   }
@@ -47,7 +47,7 @@
   }
 
   li {
-    color: $color-text-secondary;
+    color: var(--color-text-secondary);
     padding: 6px 0;
     padding-left: $spacing-24;
     position: relative;

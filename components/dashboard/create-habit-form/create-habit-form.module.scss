@@ -21,7 +21,7 @@
 .label {
   font-size: $font-size-sm;
   font-weight: $font-weight-semibold;
-  color: $color-text-secondary;
+  color: var(--color-text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -29,12 +29,12 @@
 .input,
 .textarea,
 .select {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(var(--glass-color), 0.04);
+  border: 1px solid rgba(var(--glass-color), 0.1);
   border-radius: $border-radius-md;
   padding: $spacing-12 $spacing-16;
   font-size: $font-size-base;
-  color: $color-text-primary;
+  color: var(--color-text-primary);
   font-family: $font-family-base;
   outline: none;
   transition: border-color 0.2s ease;
@@ -44,7 +44,7 @@
   }
 
   &::placeholder {
-    color: $color-text-secondary;
+    color: var(--color-text-secondary);
     opacity: 0.5;
   }
 }
@@ -63,8 +63,8 @@
   padding-right: $spacing-40;
 
   option {
-    background: $color-bg-dark-3;
-    color: $color-text-primary;
+    background: var(--color-bg-3);
+    color: var(--color-text-primary);
   }
 }
 
@@ -89,8 +89,8 @@
 }
 
 .colorSelected {
-  border-color: $color-text-primary;
-  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
+  border-color: var(--color-text-primary);
+  box-shadow: 0 0 0 2px rgba(var(--glass-color), 0.2);
   transform: scale(1.15);
 }
 
@@ -106,9 +106,9 @@
   gap: $spacing-4;
   cursor: pointer;
   padding: $spacing-8 $spacing-12;
-  background: $color-bg-dark-3;
+  background: var(--color-bg-3);
   border-radius: $border-radius-md;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(var(--glass-color), 0.1);
   transition: background 0.2s, border-color 0.2s;
 
   &:has(.checkbox:checked) {
@@ -124,7 +124,7 @@
 
 .dayLabel {
   font-size: $font-size-sm;
-  color: $color-text-primary;
+  color: var(--color-text-primary);
   font-weight: $font-weight-medium;
 }
 

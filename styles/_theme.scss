@@ -1,0 +1,49 @@
+// Theme CSS Custom Properties
+// Dark mode is the default. Light mode is toggled via data-theme="light" on <html>.
+
+:root,
+[data-theme="dark"] {
+  // Backgrounds
+  --color-bg: #0f0f18;
+  --color-bg-2: #1A1A2E;
+  --color-bg-3: #242442;
+  --color-surface: #242442;
+
+  // Text
+  --color-text-primary: #F0E6D8;
+  --color-text-secondary: #B8A898;
+
+  // Glass / overlay channels
+  --glass-color: 255, 255, 255;
+  --shadow-color: 0, 0, 0;
+  --glass-fallback-bg: rgba(26, 26, 46, 0.9);
+
+  // Scrollbar
+  --scrollbar-thumb: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="light"] {
+  // Backgrounds
+  --color-bg: #FFF8F0;
+  --color-bg-2: #FFF2E6;
+  --color-bg-3: #FFE8D6;
+  --color-surface: #FFF2E6;
+
+  // Text
+  --color-text-primary: #2D2416;
+  --color-text-secondary: #6B5D4F;
+
+  // Glass / overlay channels
+  --glass-color: 255, 255, 255;
+  --shadow-color: 0, 0, 0;
+  --glass-fallback-bg: rgba(255, 248, 240, 0.92);
+
+  // Scrollbar
+  --scrollbar-thumb: rgba(0, 0, 0, 0.1);
+
+  // Light mode: increase glass opacity for readability, add soft shadows
+  .glass,
+  [class*="glass"] {
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06);
+  }
+}

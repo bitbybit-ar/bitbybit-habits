@@ -25,7 +25,7 @@
   }
 
   p {
-    color: $color-text-secondary;
+    color: var(--color-text-secondary);
     font-size: $font-size-sm;
   }
 

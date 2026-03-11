@@ -49,7 +49,7 @@
 .habitName {
   font-size: $font-size-base;
   font-weight: $font-weight-semibold;
-  color: $color-text-primary;
+  color: var(--color-text-primary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -82,7 +82,7 @@
 }
 
 .date {
-  color: $color-text-secondary;
+  color: var(--color-text-secondary);
 }
 
 .actions {
@@ -162,7 +162,7 @@
   text-align: center;
   padding: $spacing-40 $spacing-24;
   @include glass-subtle;
-  color: $color-text-secondary;
+  color: var(--color-text-secondary);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -170,7 +170,7 @@
 }
 
 .emptyText {
-  color: $color-text-secondary;
+  color: var(--color-text-secondary);
   font-size: $font-size-sm;
   margin: 0;
 }

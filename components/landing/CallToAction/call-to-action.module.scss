@@ -26,7 +26,7 @@
 }
 
 .subtitle {
-  color: $color-text-secondary;
+  color: var(--color-text-secondary);
   font-size: $font-size-md;
   line-height: $line-height-base;
   margin-bottom: $spacing-32;
@@ -59,7 +59,7 @@
 
 .primaryButton {
   background: $color-primary;
-  color: $color-bg-dark;
+  color: var(--color-bg);
 
   &:hover {
     background: color.adjust($color-primary, $lightness: 5%);
@@ -69,8 +69,8 @@
 
 .secondaryButton {
   background: transparent;
-  color: $color-text-primary;
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--color-text-primary);
+  border: 1px solid rgba(var(--glass-color), 0.15);
 
   &:hover {
     border-color: rgba($color-primary, 0.4);
@@ -80,7 +80,7 @@
 }
 
 .previewLink {
-  color: $color-text-secondary;
+  color: var(--color-text-secondary);
   font-size: $font-size-sm;
   text-decoration: none;
   transition: color 0.2s;

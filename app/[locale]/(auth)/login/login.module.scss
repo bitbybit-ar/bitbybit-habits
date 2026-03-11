@@ -10,7 +10,7 @@
   align-items: center;
   justify-content: center;
   padding: $spacing-24;
-  background: $color-bg-dark;
+  background: var(--color-bg);
   @include glass-background-orbs;
   position: relative;
 }
@@ -36,7 +36,7 @@
 
 .subtitle {
   text-align: center;
-  color: $color-text-secondary;
+  color: var(--color-text-secondary);
   margin-bottom: $spacing-32;
 }
 
@@ -53,16 +53,16 @@
 
   label {
     font-size: $font-size-sm;
-    color: $color-text-secondary;
+    color: var(--color-text-secondary);
     font-weight: $font-weight-medium;
   }
 
   input {
     padding: $spacing-12 $spacing-16;
     border-radius: $border-radius-sm;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    background: $color-bg-dark-3;
-    color: $color-text-primary;
+    border: 1px solid rgba(var(--glass-color), 0.1);
+    background: var(--color-bg-3);
+    color: var(--color-text-primary);
     font-size: $font-size-base;
     font-family: $font-family-base;
     @include transition;
@@ -109,9 +109,9 @@
   width: 100%;
   padding: $spacing-12 $spacing-24;
   border-radius: $border-radius-sm;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(var(--glass-color), 0.1);
   background: transparent;
-  color: $color-text-secondary;
+  color: var(--color-text-secondary);
   font-size: $font-size-sm;
   font-family: $font-family-base;
   cursor: not-allowed;
@@ -134,9 +134,9 @@
 .select {
   padding: $spacing-12 $spacing-16;
   border-radius: $border-radius-sm;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: $color-bg-dark-3;
-  color: $color-text-primary;
+  border: 1px solid rgba(var(--glass-color), 0.1);
+  background: var(--color-bg-3);
+  color: var(--color-text-primary);
   font-size: $font-size-base;
   font-family: $font-family-base;
   @include transition;
@@ -153,7 +153,7 @@
   text-align: center;
   margin-top: $spacing-24;
   font-size: $font-size-sm;
-  color: $color-text-secondary;
+  color: var(--color-text-secondary);
 
   a {
     color: $color-primary;

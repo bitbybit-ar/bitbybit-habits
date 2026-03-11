@@ -99,7 +99,7 @@
 
 .heroSatsLabel {
   font-size: $font-size-sm;
-  color: $color-text-secondary;
+  color: var(--color-text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -120,12 +120,12 @@
 .sectionTitle {
   font-size: $font-size-lg;
   font-weight: $font-weight-semibold;
-  color: $color-text-primary;
+  color: var(--color-text-primary);
   margin: 0 0 $spacing-16;
 }
 
 .loadingText {
-  color: $color-text-secondary;
+  color: var(--color-text-secondary);
   text-align: center;
   padding-top: $spacing-80;
   font-size: $font-size-base;
@@ -148,13 +148,13 @@
 .emptyTitle {
   font-size: $font-size-lg;
   font-weight: $font-weight-bold;
-  color: $color-text-primary;
+  color: var(--color-text-primary);
   margin: 0 0 $spacing-8;
 }
 
 .emptySubtext {
   font-size: $font-size-sm;
-  color: $color-text-secondary;
+  color: var(--color-text-secondary);
   margin: 0;
   max-width: 320px;
 }
@@ -168,7 +168,7 @@
 .joinTitle {
   font-size: $font-size-base;
   font-weight: $font-weight-semibold;
-  color: $color-text-primary;
+  color: var(--color-text-primary);
   margin: 0 0 $spacing-16;
 }
 
@@ -185,9 +185,9 @@
   flex: 1;
   padding: $spacing-12 $spacing-16;
   border-radius: $border-radius-md;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(255, 255, 255, 0.04);
-  color: $color-text-primary;
+  border: 1px solid rgba(var(--glass-color), 0.1);
+  background: rgba(var(--glass-color), 0.04);
+  color: var(--color-text-primary);
   font-size: $font-size-base;
   text-align: center;
   letter-spacing: 0.15em;
@@ -204,7 +204,7 @@
   border-radius: $border-radius-md;
   border: none;
   background: $color-primary;
-  color: $color-bg-dark;
+  color: var(--color-bg);
   font-size: $font-size-base;
   font-weight: $font-weight-bold;
   cursor: pointer;

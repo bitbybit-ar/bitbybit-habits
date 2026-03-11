@@ -13,7 +13,7 @@
   }
 
   p {
-    color: $color-text-secondary;
+    color: var(--color-text-secondary);
     font-size: $font-size-lg;
     max-width: 600px;
     margin: 0 auto;
