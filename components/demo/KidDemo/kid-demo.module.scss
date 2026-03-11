@@ -108,3 +108,16 @@
   text-align: center;
   margin-top: $spacing-16;
 }
+
+
+.fallbackMsg {
+  @include glass-subtle;
+  display: flex;
+  align-items: center;
+  gap: $spacing-12;
+  padding: $spacing-16 $spacing-20;
+  border-left: 3px solid $color-warning;
+  color: $color-warning;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+}

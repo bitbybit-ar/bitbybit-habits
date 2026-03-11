@@ -11,7 +11,7 @@ import type { CreateHabitData } from "@/components/dashboard/create-habit-form";
 import PendingList from "@/components/dashboard/pending-list";
 import type { PendingCompletion } from "@/components/dashboard/pending-list";
 import HabitCard from "@/components/dashboard/habit-card";
-import { CheckIcon, BoltIcon, ArrowRightIcon, BellIcon } from "@/components/icons";
+import { CheckIcon, BoltIcon, ArrowRightIcon, BellIcon, ArrowLeftIcon } from "@/components/icons";
 import type { Habit, Completion } from "@/lib/types";
 import styles from "./sponsor-demo.module.scss";
 
@@ -135,7 +135,11 @@ const SponsorDemo: React.FC = () => {
     <div key="s2" className={styles.stepInner}>
       <h3 className={styles.stepTitle}>{t("step2Title")}</h3>
       <p className={styles.stepDesc}>{t("step2Desc")}</p>
-      {!kidJoined ? (
+      {!familyCreated ? (
+        <div className={styles.fallbackMsg}>
+          <ArrowLeftIcon size={16} /> Volvé al paso anterior y creá una familia primero.
+        </div>
+      ) : !kidJoined ? (
         <>
           <FamilyCard
             familyId={MOCK_FAMILY_ID}
@@ -174,7 +178,11 @@ const SponsorDemo: React.FC = () => {
     <div key="s3" className={styles.stepInner}>
       <h3 className={styles.stepTitle}>{t("step3Title")}</h3>
       <p className={styles.stepDesc}>{t("step3Desc")}</p>
-      {!createdHabit ? (
+      {!kidJoined ? (
+        <div className={styles.fallbackMsg}>
+          <ArrowLeftIcon size={16} /> Volvé al paso anterior e invitá a un kid primero.
+        </div>
+      ) : !createdHabit ? (
         <CreateHabitForm
           families={[{ id: MOCK_FAMILY_ID, name: "Familia Nakamoto" }]}
           kids={[{ user_id: MOCK_KID_ID, display_name: "Satoshi Jr." }]}
@@ -199,6 +207,12 @@ const SponsorDemo: React.FC = () => {
     <div key="s4" className={styles.stepInner}>
       <h3 className={styles.stepTitle}>{t("step4Title")}</h3>
       <p className={styles.stepDesc}>{t("step4Desc")}</p>
+      {!createdHabit ? (
+        <div className={styles.fallbackMsg}>
+          <ArrowLeftIcon size={16} /> Volvé al paso anterior y creá un hábito primero.
+        </div>
+      ) : (
+      <>
       <div className={styles.notification}>
         <div className={styles.notifIcon}>
           <BellIcon size={20} />
@@ -227,6 +241,8 @@ const SponsorDemo: React.FC = () => {
         <div className={styles.successBadge}>
           <CheckIcon size={16} /> {t("approvedMsg")}
         </div>
+      )}
+      </>
       )}
     </div>,
 

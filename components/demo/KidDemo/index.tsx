@@ -8,7 +8,7 @@ import DemoStepper from "@/components/demo/DemoStepper";
 import FamilyCard from "@/components/dashboard/family-card";
 import HabitCard from "@/components/dashboard/habit-card";
 import StatsBar from "@/components/dashboard/stats-bar";
-import { CheckIcon, BoltIcon, StarIcon, ArrowRightIcon } from "@/components/icons";
+import { CheckIcon, BoltIcon, StarIcon, ArrowRightIcon, ArrowLeftIcon } from "@/components/icons";
 import type { Habit, Completion } from "@/lib/types";
 import styles from "./kid-demo.module.scss";
 
@@ -157,6 +157,11 @@ const KidDemo: React.FC = () => {
     <div key="k2" className={styles.stepInner}>
       <h3 className={styles.stepTitle}>{t("step2Title")}</h3>
       <p className={styles.stepDesc}>{t("step2Desc")}</p>
+      {!joined ? (
+        <div className={styles.fallbackMsg}>
+          <ArrowLeftIcon size={16} /> Volvé al paso anterior y unite a una familia primero.
+        </div>
+      ) : (
       <div className={styles.habitList}>
         {habits.map((habit) => (
           <HabitCard
@@ -168,6 +173,7 @@ const KidDemo: React.FC = () => {
           />
         ))}
       </div>
+      )}
     </div>,
 
     // Step 3: Complete Habits
@@ -207,7 +213,9 @@ const KidDemo: React.FC = () => {
             ))}
         </div>
       ) : (
-        <p className={styles.stepDesc}>{t("noneCompleted")}</p>
+        <div className={styles.fallbackMsg}>
+          <ArrowLeftIcon size={16} /> Volvé al paso anterior y completá al menos un hábito.
+        </div>
       )}
     </div>,
 
