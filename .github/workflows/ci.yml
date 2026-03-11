@@ -28,5 +28,8 @@ jobs:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           AUTH_SECRET: ci-build-secret
 
+      - name: Test
+        run: npm run test
+
       - name: Lint
         run: npm run lint
