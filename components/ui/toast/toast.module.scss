@@ -2,6 +2,7 @@
 @use "@/styles/spacing" as *;
 @use "@/styles/typography" as *;
 @use "@/styles/media-mixins" as *;
+@use "@/styles/glass" as *;
 
 @keyframes slideIn {
   from {
@@ -47,9 +48,7 @@
   align-items: center;
   gap: $spacing-12;
   padding: $spacing-12 $spacing-20;
-  border-radius: $border-radius-md;
-  background: $color-bg-dark-2;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  @include glass-toast;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
   font-size: $font-size-sm;
   font-weight: $font-weight-medium;
@@ -86,7 +85,7 @@
 }
 
 .toastSuccess {
-  border-color: rgba($color-success, 0.3);
+  border-left: 3px solid $color-primary;
 
   .toastIcon {
     background: rgba($color-success, 0.15);
@@ -95,7 +94,7 @@
 }
 
 .toastError {
-  border-color: rgba($color-error, 0.3);
+  border-left: 3px solid $color-error;
 
   .toastIcon {
     background: rgba($color-error, 0.15);
@@ -104,7 +103,7 @@
 }
 
 .toastInfo {
-  border-color: rgba($color-primary, 0.3);
+  border-left: 3px solid $color-primary;
 
   .toastIcon {
     background: rgba($color-primary, 0.15);

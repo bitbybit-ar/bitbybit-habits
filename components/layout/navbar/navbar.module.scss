@@ -3,6 +3,7 @@
 @use "@/styles/typography" as *;
 @use "@/styles/spacing" as *;
 @use "@/styles/media-mixins" as *;
+@use "@/styles/glass" as *;
 
 .navbar {
   position: fixed;
@@ -10,10 +11,8 @@
   left: 0;
   right: 0;
   z-index: 1000;
-  background: rgba(10, 10, 15, 0.8);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  @include glass-nav;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   transform: translateY(-100%);
   transition: transform 0.3s ease;
 }

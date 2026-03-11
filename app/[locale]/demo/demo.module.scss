@@ -2,6 +2,7 @@
 @use "@/styles/spacing" as *;
 @use "@/styles/typography" as *;
 @use "@/styles/media-mixins" as *;
+@use "@/styles/glass" as *;
 
 .demoPage {
   min-height: 100vh;
@@ -51,9 +52,7 @@
 }
 
 .roleCard {
-  background: $color-bg-dark-2;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: $border-radius-lg;
+  @include glass-card;
   padding: $spacing-32;
   text-align: center;
   cursor: pointer;
@@ -63,8 +62,8 @@
 
   &:hover {
     transform: translateY(-4px);
-    border-color: rgba($color-primary, 0.4);
-    box-shadow: 0 8px 30px rgba($color-primary, 0.1);
+    border-color: rgba(255, 255, 255, 0.12);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
   }
 
   .roleIcon {
@@ -118,8 +117,7 @@
 }
 
 .roleExplain {
-  background: $color-bg-dark-2;
-  border-radius: $border-radius-md;
+  @include glass-subtle;
   padding: $spacing-16;
   text-align: center;
 

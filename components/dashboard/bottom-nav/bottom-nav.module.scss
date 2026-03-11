@@ -2,6 +2,7 @@
 @use "@/styles/spacing" as *;
 @use "@/styles/typography" as *;
 @use "@/styles/media-mixins" as *;
+@use "@/styles/glass" as *;
 
 .bottomNav {
   display: none;
@@ -13,13 +14,13 @@
     left: 0;
     right: 0;
     z-index: 100;
-    background: $color-bg-dark-2;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    @include glass-nav;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    border-bottom: none;
     padding: $spacing-4 0;
     padding-bottom: env(safe-area-inset-bottom, $spacing-4);
     justify-content: space-around;
     align-items: center;
-    backdrop-filter: blur(12px);
   }
 }
 

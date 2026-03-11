@@ -1,5 +1,6 @@
 @use "./colors" as *;
 @use "./spacing" as *;
+@use "./glass" as *;
 
 @mixin container {
   max-width: $container-max-width;
@@ -15,15 +16,13 @@
 }
 
 @mixin card-base {
-  background: $color-bg-dark-2;
-  border-radius: $border-radius-lg;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+  @include glass-card;
+  transition: all 0.3s ease;
 
   &:hover {
     transform: translateY(-4px);
-    border-color: rgba($color-accent-alt, 0.3);
-    box-shadow: 0 8px 30px rgba($color-accent-alt, 0.1);
+    border-color: rgba(255, 255, 255, 0.12);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
   }
 }
 

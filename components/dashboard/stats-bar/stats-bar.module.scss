@@ -2,6 +2,7 @@
 @use "@/styles/spacing" as *;
 @use "@/styles/typography" as *;
 @use "@/styles/media-mixins" as *;
+@use "@/styles/glass" as *;
 
 .statsBar {
   display: grid;
@@ -19,15 +20,18 @@
   display: flex;
   align-items: center;
   gap: $spacing-12;
-  background: $color-bg-dark-2;
-  border-radius: $border-radius-lg;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  @include glass-subtle;
   padding: $spacing-16 $spacing-20;
+  transition: all 0.3s ease;
+
+  &:hover {
+    border-color: rgba(255, 255, 255, 0.1);
+  }
 }
 
 .statCardHighlight {
   border-color: rgba($color-primary, 0.2);
-  background: linear-gradient(135deg, rgba($color-primary, 0.08) 0%, $color-bg-dark-2 100%);
+  background: linear-gradient(135deg, rgba($color-primary, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%);
 }
 
 .iconWrapper {
