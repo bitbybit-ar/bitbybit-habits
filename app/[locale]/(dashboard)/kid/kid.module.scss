@@ -3,6 +3,7 @@
 @use "@/styles/typography" as *;
 @use "@/styles/common-mixins" as *;
 @use "@/styles/media-mixins" as *;
+@use "@/styles/glass" as *;
 
 @keyframes floatUp {
   0% {
@@ -45,37 +46,6 @@
   animation: floatUp 2s ease-out forwards;
 }
 
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: $spacing-24;
-  gap: $spacing-16;
-
-  @include mobile {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-}
-
-.headerInfo {
-  display: flex;
-  align-items: center;
-  gap: $spacing-12;
-  flex-wrap: wrap;
-}
-
-.title {
-  font-size: $font-size-xl;
-  font-weight: $font-weight-bold;
-  color: $color-text-primary;
-  margin: 0;
-
-  @include desktop {
-    font-size: $font-size-2xl;
-  }
-}
-
 .levelBadge {
   display: inline-flex;
   align-items: center;
@@ -89,37 +59,16 @@
   white-space: nowrap;
 }
 
-.logoutButton {
-  display: flex;
-  align-items: center;
-  gap: $spacing-8;
-  padding: $spacing-8 $spacing-16;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: $border-radius-md;
-  background: transparent;
-  color: $color-text-secondary;
-  font-size: $font-size-sm;
-  cursor: pointer;
-  @include transition;
-  flex-shrink: 0;
-
-  &:hover {
-    color: $color-text-primary;
-    border-color: rgba(255, 255, 255, 0.2);
-    background: rgba(255, 255, 255, 0.03);
-  }
-}
-
 // Hero sats today
 .heroSats {
   display: flex;
   align-items: center;
   gap: $spacing-16;
   padding: $spacing-20 $spacing-24;
-  margin-bottom: $spacing-24;
+  margin-bottom: $spacing-16;
+  @include glass-card;
   background: linear-gradient(135deg, rgba($color-primary, 0.1) 0%, rgba($color-secondary, 0.05) 100%);
   border: 1px solid rgba($color-primary, 0.2);
-  border-radius: $border-radius-lg;
 }
 
 .heroSatsIcon {
@@ -210,46 +159,10 @@
   max-width: 320px;
 }
 
-.tabs {
-  display: flex;
-  gap: $spacing-4;
-  margin-bottom: $spacing-24;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  overflow-x: auto;
-
-  @include mobile {
-    display: none;
-  }
-}
-
-.tab {
-  padding: $spacing-12 $spacing-20;
-  border: none;
-  background: transparent;
-  color: $color-text-secondary;
-  font-size: $font-size-sm;
-  font-weight: $font-weight-semibold;
-  cursor: pointer;
-  border-bottom: 2px solid transparent;
-  transition: all 0.2s;
-  white-space: nowrap;
-
-  &:hover {
-    color: $color-text-primary;
-  }
-}
-
-.tabActive {
-  color: $color-primary;
-  border-bottom-color: $color-primary;
-}
-
 .joinSection {
+  @include glass-card;
   margin-top: $spacing-24;
   padding: $spacing-24;
-  background: $color-bg-dark-2;
-  border-radius: $border-radius-lg;
-  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .joinTitle {
@@ -273,7 +186,7 @@
   padding: $spacing-12 $spacing-16;
   border-radius: $border-radius-md;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  background: $color-bg-dark-3;
+  background: rgba(255, 255, 255, 0.04);
   color: $color-text-primary;
   font-size: $font-size-base;
   text-align: center;

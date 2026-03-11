@@ -2,15 +2,13 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
-import { Link } from "@/i18n/routing";
-import { LogOutIcon, SettingsIcon, BoltIcon, FlameIcon, ListIcon, UsersIcon } from "@/components/icons";
-import { NotificationBell } from "@/components/dashboard/notification-bell";
-import { LanguageSwitcher } from "@/components/layout/language-switcher";
+import { BoltIcon, FlameIcon, ListIcon, UsersIcon } from "@/components/icons";
 import { StatsBar } from "@/components/dashboard/stats-bar";
 import { HabitList } from "@/components/dashboard/habit-list";
 import { FamilyCard } from "@/components/dashboard/family-card";
 import { Onboarding } from "@/components/dashboard/onboarding";
-import { BottomNav } from "@/components/dashboard/bottom-nav";
+import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
+import type { DashboardTab } from "@/components/dashboard/dashboard-layout";
 import { useToast } from "@/components/ui/toast";
 import type { Habit, Completion, AuthSession } from "@/lib/types";
 import styles from "./kid.module.scss";
@@ -113,7 +111,6 @@ export default function KidDashboard() {
   useEffect(() => {
     const approvedCount = completions.filter((c) => c.status === "approved").length;
     if (prevApprovedCount !== null && approvedCount > prevApprovedCount) {
-      // Find newly approved completion to get the sat amount
       const lastApproved = completions
         .filter((c) => c.status === "approved")
         .sort((a, b) => new Date(b.completed_at).getTime() - new Date(a.completed_at).getTime())[0];
@@ -154,7 +151,6 @@ export default function KidDashboard() {
       if (data.success) {
         setJoinCode("");
         showToast(t("family.joinSuccess"), "success");
-        // Refresh families
         const famRes = await fetch("/api/families");
         if (famRes.ok) {
           const famData = await famRes.json();
@@ -240,13 +236,114 @@ export default function KidDashboard() {
     return sum + (habit?.sat_reward ?? 0);
   }, 0);
 
-  const bottomNavTabs = [
-    { key: "habits", label: t("dashboard.myHabits"), icon: <ListIcon size={20} /> },
-    { key: "family", label: t("family.myFamily"), icon: <UsersIcon size={20} /> },
+  const tabs: DashboardTab[] = [
+    { key: "habits", icon: <ListIcon size={20} />, label: t("dashboard.myHabits") },
+    { key: "family", icon: <UsersIcon size={20} />, label: t("family.myFamily") },
   ];
 
+  const headerExtra = (
+    <div className={styles.levelBadge}>
+      <BoltIcon size={14} />
+      {t("kidDashboard.level")} {level}
+    </div>
+  );
+
+  const statsBar = (
+    <>
+      {/* Hero sats today */}
+      <div className={styles.heroSats}>
+        <div className={styles.heroSatsIcon}>
+          <BoltIcon size={32} />
+        </div>
+        <div className={styles.heroSatsInfo}>
+          <span className={styles.heroSatsValue}>{todaySats}</span>
+          <span className={styles.heroSatsLabel}>{t("kidDashboard.satsToday")}</span>
+        </div>
+        {stats.bestStreak > 0 && (
+          <div className={styles.heroStreak}>
+            <FlameIcon size={20} />
+            <span>{stats.bestStreak}</span>
+          </div>
+        )}
+      </div>
+      <StatsBar
+        totalSats={stats.totalSats}
+        bestStreak={stats.bestStreak}
+        pendingCount={stats.pendingCount}
+      />
+    </>
+  );
+
+  const layoutContent = (
+    <>
+      {activeTab === "habits" && (
+        <>
+          <h2 className={styles.sectionTitle}>{t("dashboard.myHabits")}</h2>
+          {habits.length === 0 ? (
+            <div className={styles.emptyState}>
+              <span className={styles.emptyIcon}>⚡</span>
+              <h3 className={styles.emptyTitle}>{t("emptyState.noHabitsTitle")}</h3>
+              <p className={styles.emptySubtext}>{t("emptyState.kidNoHabitsDesc")}</p>
+            </div>
+          ) : (
+            <HabitList
+              habits={habits}
+              completions={completions}
+              onComplete={handleComplete}
+            />
+          )}
+        </>
+      )}
+
+      {activeTab === "family" && (
+        <>
+          <h2 className={styles.sectionTitle}>{t("family.myFamily")}</h2>
+          {families.length === 0 ? (
+            <p className={styles.loadingText}>{t("family.noFamilies")}</p>
+          ) : (
+            families.map((family) => (
+              <FamilyCard
+                key={family.id}
+                familyId={family.id}
+                name={family.name}
+                inviteCode={family.invite_code}
+                members={family.members}
+                createdBy={family.created_by}
+                currentUserId={session?.user_id ?? ""}
+                currentUserRole={family.members.find((m) => m.user_id === session?.user_id)?.role}
+                onLeave={handleLeaveFamily}
+              />
+            ))
+          )}
+
+          <div className={styles.joinSection}>
+            <h3 className={styles.joinTitle}>{t("family.joinFamily")}</h3>
+            <form onSubmit={handleJoinFamily} className={styles.joinForm}>
+              <input
+                type="text"
+                value={joinCode}
+                onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
+                placeholder={t("family.enterInviteCode")}
+                maxLength={6}
+                className={styles.joinInput}
+              />
+              <button
+                type="submit"
+                className={styles.joinButton}
+                disabled={joinLoading || !joinCode.trim()}
+              >
+                {joinLoading ? t("common.loading") : t("family.join")}
+              </button>
+            </form>
+            {joinError && <p className={styles.joinError}>{joinError}</p>}
+          </div>
+        </>
+      )}
+    </>
+  );
+
   return (
-    <div className={styles.container}>
+    <div style={{ position: "relative" }}>
       {/* Sats animation overlay */}
       {satsAnimation && (
         <div key={satsAnimation.key} className={styles.satsAnimation}>
@@ -254,144 +351,33 @@ export default function KidDashboard() {
         </div>
       )}
 
-      <div className={styles.header}>
-        <div className={styles.headerInfo}>
-          <h1 className={styles.title}>
-            {t("dashboard.welcome")}, {displayName}
-          </h1>
-          <div className={styles.levelBadge}>
-            <BoltIcon size={14} />
-            {t("kidDashboard.level")} {level}
-          </div>
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <LanguageSwitcher />
-          <NotificationBell />
-          <Link href="/settings" className={styles.logoutButton} style={{ textDecoration: "none" }}>
-            <SettingsIcon size={18} />
-          </Link>
-          <button className={styles.logoutButton} onClick={handleLogout}>
-            <LogOutIcon size={18} />
-            <span>{t("auth.logout")}</span>
-          </button>
-        </div>
-      </div>
-
       {showOnboarding ? (
-        <Onboarding
-          displayName={displayName}
-          onDismiss={handleDismissOnboarding}
-        />
+        <DashboardLayout
+          displayName={`${t("dashboard.welcome")}, ${displayName}`}
+          headerExtra={headerExtra}
+          statsBar={statsBar}
+          tabs={tabs}
+          activeTab={activeTab}
+          onTabChange={(key) => setActiveTab(key as TabType)}
+          onLogout={handleLogout}
+        >
+          <Onboarding
+            displayName={displayName}
+            onDismiss={handleDismissOnboarding}
+          />
+        </DashboardLayout>
       ) : (
-        <>
-          {/* Hero sats today */}
-          <div className={styles.heroSats}>
-            <div className={styles.heroSatsIcon}>
-              <BoltIcon size={32} />
-            </div>
-            <div className={styles.heroSatsInfo}>
-              <span className={styles.heroSatsValue}>{todaySats}</span>
-              <span className={styles.heroSatsLabel}>{t("kidDashboard.satsToday")}</span>
-            </div>
-            {stats.bestStreak > 0 && (
-              <div className={styles.heroStreak}>
-                <FlameIcon size={20} />
-                <span>{stats.bestStreak}</span>
-              </div>
-            )}
-          </div>
-
-          <StatsBar
-            totalSats={stats.totalSats}
-            bestStreak={stats.bestStreak}
-            pendingCount={stats.pendingCount}
-          />
-
-          <div className={styles.tabs}>
-            <button
-              className={`${styles.tab} ${activeTab === "habits" ? styles.tabActive : ""}`}
-              onClick={() => setActiveTab("habits")}
-            >
-              {t("dashboard.myHabits")}
-            </button>
-            <button
-              className={`${styles.tab} ${activeTab === "family" ? styles.tabActive : ""}`}
-              onClick={() => setActiveTab("family")}
-            >
-              {t("family.myFamily")}
-            </button>
-          </div>
-
-          {activeTab === "habits" && (
-            <>
-              <h2 className={styles.sectionTitle}>{t("dashboard.myHabits")}</h2>
-              {habits.length === 0 ? (
-                <div className={styles.emptyState}>
-                  <span className={styles.emptyIcon}>⚡</span>
-                  <h3 className={styles.emptyTitle}>{t("emptyState.noHabitsTitle")}</h3>
-                  <p className={styles.emptySubtext}>{t("emptyState.kidNoHabitsDesc")}</p>
-                </div>
-              ) : (
-                <HabitList
-                  habits={habits}
-                  completions={completions}
-                  onComplete={handleComplete}
-                />
-              )}
-            </>
-          )}
-
-          {activeTab === "family" && (
-            <>
-              <h2 className={styles.sectionTitle}>{t("family.myFamily")}</h2>
-              {families.length === 0 ? (
-                <p className={styles.loadingText}>{t("family.noFamilies")}</p>
-              ) : (
-                families.map((family) => (
-                  <FamilyCard
-                    key={family.id}
-                    familyId={family.id}
-                    name={family.name}
-                    inviteCode={family.invite_code}
-                    members={family.members}
-                    createdBy={family.created_by}
-                    currentUserId={session?.user_id ?? ""}
-                    currentUserRole={family.members.find((m) => m.user_id === session?.user_id)?.role}
-                    onLeave={handleLeaveFamily}
-                  />
-                ))
-              )}
-
-              <div className={styles.joinSection}>
-                <h3 className={styles.joinTitle}>{t("family.joinFamily")}</h3>
-                <form onSubmit={handleJoinFamily} className={styles.joinForm}>
-                  <input
-                    type="text"
-                    value={joinCode}
-                    onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
-                    placeholder={t("family.enterInviteCode")}
-                    maxLength={6}
-                    className={styles.joinInput}
-                  />
-                  <button
-                    type="submit"
-                    className={styles.joinButton}
-                    disabled={joinLoading || !joinCode.trim()}
-                  >
-                    {joinLoading ? t("common.loading") : t("family.join")}
-                  </button>
-                </form>
-                {joinError && <p className={styles.joinError}>{joinError}</p>}
-              </div>
-            </>
-          )}
-
-          <BottomNav
-            tabs={bottomNavTabs}
-            activeTab={activeTab}
-            onTabChange={(key) => setActiveTab(key as TabType)}
-          />
-        </>
+        <DashboardLayout
+          displayName={`${t("dashboard.welcome")}, ${displayName}`}
+          headerExtra={headerExtra}
+          statsBar={statsBar}
+          tabs={tabs}
+          activeTab={activeTab}
+          onTabChange={(key) => setActiveTab(key as TabType)}
+          onLogout={handleLogout}
+        >
+          {layoutContent}
+        </DashboardLayout>
       )}
     </div>
   );
