@@ -10,7 +10,6 @@ import CreateHabitForm from "@/components/dashboard/create-habit-form";
 import type { CreateHabitData } from "@/components/dashboard/create-habit-form";
 import PendingList from "@/components/dashboard/pending-list";
 import type { PendingCompletion } from "@/components/dashboard/pending-list";
-import StatsBar from "@/components/dashboard/stats-bar";
 import HabitCard from "@/components/dashboard/habit-card";
 import { CheckIcon, BoltIcon, ArrowRightIcon, BellIcon } from "@/components/icons";
 import type { Habit, Completion } from "@/lib/types";
@@ -235,11 +234,6 @@ const SponsorDemo: React.FC = () => {
     <div key="s5" className={styles.stepInner}>
       <h3 className={styles.stepTitle}>{t("step5Title")}</h3>
       <p className={styles.stepDesc}>{t("step5Desc")}</p>
-      <StatsBar
-        totalSats={totalSatsPaid || (createdHabit?.sat_reward ?? 500)}
-        bestStreak={1}
-        pendingCount={0}
-      />
       <div className={styles.celebration}>
         <BoltIcon size={48} color="#F7A825" />
         <div className={styles.satsAmount}>
