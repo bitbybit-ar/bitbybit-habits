@@ -265,6 +265,91 @@
   }
 }
 
+// Walkthrough
+.walkthrough {
+  margin-top: $spacing-32;
+  text-align: center;
+}
+
+.walkthroughTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-24;
+}
+
+.tipCard {
+  @include glass-subtle;
+  display: flex;
+  align-items: flex-start;
+  gap: $spacing-16;
+  padding: $spacing-24;
+  text-align: left;
+  margin-bottom: $spacing-20;
+
+  @include mobile {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+}
+
+.tipIcon {
+  font-size: 2.5rem;
+  flex-shrink: 0;
+}
+
+.tipContent {
+  h4 {
+    font-size: $font-size-base;
+    font-weight: $font-weight-bold;
+    color: $color-primary;
+    margin: 0 0 $spacing-8;
+  }
+
+  p {
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+    margin: 0;
+    line-height: $line-height-base;
+  }
+}
+
+.tipDots {
+  display: flex;
+  justify-content: center;
+  gap: $spacing-8;
+  margin-bottom: $spacing-20;
+}
+
+.tipDot {
+  width: 8px;
+  height: 8px;
+  border-radius: $border-radius-full;
+  background: rgba(255, 255, 255, 0.15);
+  transition: all 0.3s ease;
+}
+
+.tipDotActive {
+  background: $color-primary;
+  width: 24px;
+}
+
+.skipButton {
+  display: block;
+  margin: $spacing-12 auto 0;
+  background: none;
+  border: none;
+  color: $color-text-secondary;
+  font-size: $font-size-sm;
+  cursor: pointer;
+  transition: color 0.2s;
+
+  &:hover {
+    color: $color-primary;
+  }
+}
+
 .loading {
   min-height: 100vh;
   display: flex;

@@ -388,6 +388,23 @@
       "allSet": "¡Todo listo!",
       "allSetDesc": "Tu cuenta está lista. Andá al dashboard para empezar.",
       "goToDashboard": "Ir al dashboard"
+    },
+    "walkthrough": {
+      "title": "Tips rápidos para empezar",
+      "next": "Siguiente tip",
+      "skip": "Ir al dashboard",
+      "sponsorTip1Title": "Creá tu familia",
+      "sponsorTip1Desc": "Compartí el código de invitación con tus kids para que se unan y empiecen a ganar sats.",
+      "sponsorTip2Title": "Configurá hábitos",
+      "sponsorTip2Desc": "Creá hábitos con recompensa en sats. Elegí frecuencia y tipo de verificación para cada uno.",
+      "sponsorTip3Title": "Aprobá y pagá",
+      "sponsorTip3Desc": "Cuando un kid completa un hábito, revisalo y aprobá para enviar sats al instante vía Lightning.",
+      "kidTip1Title": "Revisá tus hábitos",
+      "kidTip1Desc": "Tu sponsor te va a asignar hábitos con recompensa en sats. Los vas a ver en tu dashboard.",
+      "kidTip2Title": "Completá y enviá",
+      "kidTip2Desc": "Tocá el botón de completar cuando termines un hábito. Tu sponsor va a recibir la notificación.",
+      "kidTip3Title": "¡Ganá sats!",
+      "kidTip3Desc": "Una vez aprobado, los sats llegan al instante a tu wallet. ¡Armá rachas para ganar más!"
     }
   },
   "demo": {

@@ -388,6 +388,23 @@
       "allSet": "You're all set!",
       "allSetDesc": "Your account is ready. Head to the dashboard to get started.",
       "goToDashboard": "Go to dashboard"
+    },
+    "walkthrough": {
+      "title": "Quick tips to get started",
+      "next": "Next tip",
+      "skip": "Skip to dashboard",
+      "sponsorTip1Title": "Create your family",
+      "sponsorTip1Desc": "Share the invite code with your kids so they can join and start earning sats.",
+      "sponsorTip2Title": "Set up habits",
+      "sponsorTip2Desc": "Create habits with sat rewards. Choose a schedule and verification type for each one.",
+      "sponsorTip3Title": "Approve & pay",
+      "sponsorTip3Desc": "When a kid completes a habit, review it and approve to send sats instantly via Lightning.",
+      "kidTip1Title": "Check your habits",
+      "kidTip1Desc": "Your sponsor will assign habits with sat rewards. You'll see them on your dashboard.",
+      "kidTip2Title": "Complete & submit",
+      "kidTip2Desc": "Tap the complete button when you finish a habit. Your sponsor will be notified.",
+      "kidTip3Title": "Earn sats!",
+      "kidTip3Desc": "Once approved, sats arrive instantly in your wallet. Build streaks to earn more!"
     }
   },
   "demo": {

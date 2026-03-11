@@ -7,6 +7,13 @@ import Navbar from "@/components/layout/navbar";
 import styles from "./onboard.module.scss";
 
 type Step = "role" | "sponsor" | "kid" | "done";
+type WalkthroughStep = 0 | 1 | 2 | 3;
+
+interface WalkthroughTip {
+  title: string;
+  description: string;
+  icon: string;
+}
 
 export default function OnboardPage() {
   const router = useRouter();
@@ -18,6 +25,8 @@ export default function OnboardPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [checkingFamilies, setCheckingFamilies] = useState(true);
+  const [chosenRole, setChosenRole] = useState<"sponsor" | "kid" | null>(null);
+  const [walkthroughStep, setWalkthroughStep] = useState<WalkthroughStep>(0);
 
   useEffect(() => {
     async function checkFamilies() {
@@ -55,6 +64,7 @@ export default function OnboardPage() {
 
       if (data.success) {
         setCreatedInviteCode(data.data.invite_code);
+        setChosenRole("sponsor");
         setStep("done");
       } else {
         setError(data.error);
@@ -81,6 +91,7 @@ export default function OnboardPage() {
       const data = await res.json();
 
       if (data.success) {
+        setChosenRole("kid");
         setStep("done");
       } else {
         setError(data.error);
@@ -89,6 +100,52 @@ export default function OnboardPage() {
       setError(t("auth.connectionError"));
     } finally {
       setLoading(false);
+    }
+  };
+
+  const sponsorTips: WalkthroughTip[] = [
+    {
+      title: t("onboarding.walkthrough.sponsorTip1Title"),
+      description: t("onboarding.walkthrough.sponsorTip1Desc"),
+      icon: "👨‍👩‍👧",
+    },
+    {
+      title: t("onboarding.walkthrough.sponsorTip2Title"),
+      description: t("onboarding.walkthrough.sponsorTip2Desc"),
+      icon: "📝",
+    },
+    {
+      title: t("onboarding.walkthrough.sponsorTip3Title"),
+      description: t("onboarding.walkthrough.sponsorTip3Desc"),
+      icon: "✅",
+    },
+  ];
+
+  const kidTips: WalkthroughTip[] = [
+    {
+      title: t("onboarding.walkthrough.kidTip1Title"),
+      description: t("onboarding.walkthrough.kidTip1Desc"),
+      icon: "📋",
+    },
+    {
+      title: t("onboarding.walkthrough.kidTip2Title"),
+      description: t("onboarding.walkthrough.kidTip2Desc"),
+      icon: "✅",
+    },
+    {
+      title: t("onboarding.walkthrough.kidTip3Title"),
+      description: t("onboarding.walkthrough.kidTip3Desc"),
+      icon: "⚡",
+    },
+  ];
+
+  const tips = chosenRole === "sponsor" ? sponsorTips : kidTips;
+
+  const handleNextTip = () => {
+    if (walkthroughStep < tips.length - 1) {
+      setWalkthroughStep((walkthroughStep + 1) as WalkthroughStep);
+    } else {
+      router.push("/dashboard");
     }
   };
 
@@ -202,18 +259,52 @@ export default function OnboardPage() {
             <div className={styles.successEmoji}>🎉</div>
             <h2 className={styles.formTitle}>{t("onboarding.postReg.allSet")}</h2>
             <p className={styles.formSubtitle}>{t("onboarding.postReg.allSetDesc")}</p>
+
             {createdInviteCode && (
               <div className={styles.inviteCodeDisplay}>
                 <p>{t("onboarding.postReg.shareCode")}</p>
                 <code>{createdInviteCode}</code>
               </div>
             )}
-            <button
-              className={styles.submitButton}
-              onClick={() => router.push("/dashboard")}
-            >
-              {t("onboarding.postReg.goToDashboard")}
-            </button>
+
+            {/* Walkthrough tips */}
+            <div className={styles.walkthrough}>
+              <h3 className={styles.walkthroughTitle}>
+                {t("onboarding.walkthrough.title")}
+              </h3>
+
+              <div className={styles.tipCard}>
+                <div className={styles.tipIcon}>{tips[walkthroughStep].icon}</div>
+                <div className={styles.tipContent}>
+                  <h4>{tips[walkthroughStep].title}</h4>
+                  <p>{tips[walkthroughStep].description}</p>
+                </div>
+              </div>
+
+              <div className={styles.tipDots}>
+                {tips.map((_, i) => (
+                  <div
+                    key={i}
+                    className={`${styles.tipDot} ${i === walkthroughStep ? styles.tipDotActive : ""}`}
+                  />
+                ))}
+              </div>
+
+              <button className={styles.submitButton} onClick={handleNextTip}>
+                {walkthroughStep < tips.length - 1
+                  ? t("onboarding.walkthrough.next")
+                  : t("onboarding.postReg.goToDashboard")}
+              </button>
+
+              {walkthroughStep < tips.length - 1 && (
+                <button
+                  className={styles.skipButton}
+                  onClick={() => router.push("/dashboard")}
+                >
+                  {t("onboarding.walkthrough.skip")}
+                </button>
+              )}
+            </div>
           </div>
         )}
       </div>
