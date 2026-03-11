@@ -2,6 +2,7 @@
 @use "@/styles/spacing" as *;
 @use "@/styles/typography" as *;
 @use "@/styles/common-mixins" as *;
+@use "@/styles/glass" as *;
 
 .container {
   min-height: 100vh;
@@ -10,15 +11,19 @@
   justify-content: center;
   padding: $spacing-24;
   background: $color-bg-dark;
+  @include glass-background-orbs;
+  position: relative;
 }
 
 .card {
   width: 100%;
   max-width: 420px;
-  background: $color-bg-dark-2;
+  @include glass-card;
   border-radius: $border-radius-xl;
-  border: 1px solid rgba(255, 255, 255, 0.05);
   padding: $spacing-40;
+  @include glass-hover;
+  position: relative;
+  z-index: 1;
 }
 
 .title {

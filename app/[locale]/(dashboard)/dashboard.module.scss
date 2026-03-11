@@ -2,12 +2,20 @@
 @use "@/styles/spacing" as *;
 @use "@/styles/typography" as *;
 @use "@/styles/common-mixins" as *;
+@use "@/styles/glass" as *;
 
 .container {
   @include container;
+  @include glass-background-orbs;
   min-height: 100vh;
   padding-top: $spacing-80;
   padding-bottom: $spacing-40;
+  position: relative;
+
+  > * {
+    position: relative;
+    z-index: 1;
+  }
 
   h1 {
     font-size: $font-size-2xl;
