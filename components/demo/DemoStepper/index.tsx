@@ -3,6 +3,7 @@
 import React, { useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import Button from "@/components/ui/button";
+import { CheckIcon, ArrowLeftIcon, ArrowRightIcon } from "@/components/icons";
 import styles from "./demo-stepper.module.scss";
 
 interface DemoStepperProps {
@@ -25,7 +26,7 @@ export const DemoStepper: React.FC<DemoStepperProps> = ({ steps, onFinish, finis
   }, [current]);
 
   return (
-    <div>
+    <div className={styles.wrapper}>
       <div className={styles.stepper}>
         {steps.map((_, i) => (
           <React.Fragment key={i}>
@@ -35,7 +36,7 @@ export const DemoStepper: React.FC<DemoStepperProps> = ({ steps, onFinish, finis
             <div
               className={`${styles.step} ${i === current ? styles.active : ""} ${i < current ? styles.completed : ""}`}
             >
-              {i < current ? "✓" : i + 1}
+              {i < current ? <CheckIcon size={16} color="currentColor" /> : i + 1}
             </div>
           </React.Fragment>
         ))}
@@ -47,12 +48,12 @@ export const DemoStepper: React.FC<DemoStepperProps> = ({ steps, onFinish, finis
 
       <div className={styles.nav}>
         <Button variant="outline" onClick={prev} disabled={current === 0}>
-          ← {t("back")}
+          <ArrowLeftIcon size={14} /> {t("back")}
         </Button>
         {current === steps.length - 1 ? (
           finishNode ?? <Button onClick={onFinish}>{finishLabel || t("confirm")}</Button>
         ) : (
-          <Button onClick={next}>{t("next")} →</Button>
+          <Button onClick={next}>{t("next")} <ArrowRightIcon size={14} /></Button>
         )}
       </div>
     </div>

@@ -2,6 +2,16 @@
 @use "@/styles/spacing" as *;
 @use "@/styles/typography" as *;
 @use "@/styles/media-mixins" as *;
+@use "@/styles/glass" as *;
+
+.wrapper {
+  @include glass-card;
+  padding: $spacing-32;
+
+  @include mobile {
+    padding: $spacing-16;
+  }
+}
 
 .stepper {
   display: flex;
@@ -20,22 +30,22 @@
   justify-content: center;
   font-size: $font-size-sm;
   font-weight: $font-weight-bold;
-  border: 2px solid rgba(255, 255, 255, 0.1);
-  background: $color-bg-dark-3;
+  @include glass-subtle;
   color: $color-text-secondary;
   transition: all 0.3s ease;
   flex-shrink: 0;
 
   &.active {
-    border-color: $color-primary;
-    background: rgba($color-primary, 0.2);
+    border-color: rgba($color-primary, 0.4);
+    background: rgba($color-primary, 0.15);
     color: $color-primary;
     transform: scale(1.1);
+    box-shadow: 0 0 16px rgba($color-primary, 0.2);
   }
 
   &.completed {
-    border-color: $color-success;
-    background: rgba($color-success, 0.2);
+    border-color: rgba($color-success, 0.4);
+    background: rgba($color-success, 0.15);
     color: $color-success;
   }
 }

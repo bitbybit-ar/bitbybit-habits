@@ -1,128 +1,235 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
 import Button from "@/components/ui/button";
-import Card from "@/components/ui/card";
 import DemoStepper from "@/components/demo/DemoStepper";
-import styles from "../MockForm/mock-form.module.scss";
+import FamilyCard from "@/components/dashboard/family-card";
+import CreateHabitForm from "@/components/dashboard/create-habit-form";
+import type { CreateHabitData } from "@/components/dashboard/create-habit-form";
+import PendingList from "@/components/dashboard/pending-list";
+import type { PendingCompletion } from "@/components/dashboard/pending-list";
+import StatsBar from "@/components/dashboard/stats-bar";
+import HabitCard from "@/components/dashboard/habit-card";
+import { CheckIcon, BoltIcon, ArrowRightIcon } from "@/components/icons";
+import type { Habit, Completion } from "@/lib/types";
+import styles from "./sponsor-demo.module.scss";
+
+const MOCK_USER_ID = "demo-sponsor-1";
+const MOCK_KID_ID = "demo-kid-1";
+const MOCK_FAMILY_ID = "demo-family-1";
 
 const SponsorDemo: React.FC = () => {
   const t = useTranslations("demo.sponsor");
   const tc = useTranslations("common");
 
   const [familyCreated, setFamilyCreated] = useState(false);
-  const [habitCreated, setHabitCreated] = useState(false);
+  const [kidJoined, setKidJoined] = useState(false);
+  const [createdHabit, setCreatedHabit] = useState<Habit | null>(null);
+  const [pendingCompletions, setPendingCompletions] = useState<PendingCompletion[]>([]);
   const [approved, setApproved] = useState(false);
+  const [totalSatsPaid, setTotalSatsPaid] = useState(0);
+
+  const mockMembers = [
+    {
+      user_id: MOCK_USER_ID,
+      display_name: "Mamá",
+      username: "mama_nakamoto",
+      role: "sponsor",
+      avatar_url: null,
+    },
+    ...(kidJoined
+      ? [
+          {
+            user_id: MOCK_KID_ID,
+            display_name: "Satoshi Jr.",
+            username: "satoshi_jr",
+            role: "kid",
+            avatar_url: null,
+          },
+        ]
+      : []),
+  ];
+
+  const handleCreateHabit = useCallback(
+    async (data: CreateHabitData) => {
+      const habit: Habit = {
+        id: "demo-habit-1",
+        family_id: MOCK_FAMILY_ID,
+        created_by: MOCK_USER_ID,
+        assigned_to: MOCK_KID_ID,
+        name: data.name,
+        description: data.description,
+        color: data.color,
+        sat_reward: data.sat_reward,
+        schedule_type: data.schedule_type,
+        schedule_days: data.schedule_days,
+        schedule_times_per_week: data.schedule_times_per_week,
+        verification_type: data.verification_type,
+        active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+      setCreatedHabit(habit);
+
+      // Auto-generate a pending completion for step 4
+      setPendingCompletions([
+        {
+          id: "demo-completion-1",
+          habit_id: habit.id,
+          habit_name: habit.name,
+          habit_color: habit.color,
+          kid_name: "Satoshi Jr.",
+          sat_reward: habit.sat_reward,
+          date: new Date().toISOString().split("T")[0],
+          completed_at: new Date().toISOString(),
+        },
+      ]);
+    },
+    [],
+  );
+
+  const handleApprove = useCallback(
+    async (completionId: string) => {
+      const completion = pendingCompletions.find((c) => c.id === completionId);
+      if (completion) {
+        setTotalSatsPaid((prev) => prev + completion.sat_reward);
+      }
+      setPendingCompletions((prev) => prev.filter((c) => c.id !== completionId));
+      setApproved(true);
+    },
+    [pendingCompletions],
+  );
+
+  const handleReject = useCallback(async (completionId: string) => {
+    setPendingCompletions((prev) => prev.filter((c) => c.id !== completionId));
+  }, []);
 
   const steps = [
-    // Step 1: Create family
-    <div key="s1">
+    // Step 1: Create Family
+    <div key="s1" className={styles.stepInner}>
       <h3 className={styles.stepTitle}>{t("step1Title")}</h3>
       <p className={styles.stepDesc}>{t("step1Desc")}</p>
-      <Card>
-        <div style={{ padding: "24px" }}>
-          <div className={styles.form}>
-            <div className={styles.field}>
-              <label className={styles.label}>{t("familyName")}</label>
-              <input className={styles.input} defaultValue="Familia Nakamoto" readOnly />
-            </div>
-            {!familyCreated ? (
-              <Button onClick={() => setFamilyCreated(true)}>{tc("create")}</Button>
-            ) : (
-              <div className={styles.completedBadge}>✓ {t("familyCreated")}</div>
-            )}
+      {!familyCreated ? (
+        <div className={styles.glassForm}>
+          <div className={styles.field}>
+            <label className={styles.label}>{t("familyName")}</label>
+            <input className={styles.input} defaultValue="Familia Nakamoto" readOnly />
           </div>
+          <Button onClick={() => setFamilyCreated(true)}>{tc("create")}</Button>
         </div>
-      </Card>
+      ) : (
+        <FamilyCard
+          familyId={MOCK_FAMILY_ID}
+          name="Familia Nakamoto"
+          inviteCode="BIT-7K3M"
+          members={mockMembers}
+          createdBy={MOCK_USER_ID}
+          currentUserId={MOCK_USER_ID}
+          currentUserRole="sponsor"
+        />
+      )}
     </div>,
 
-    // Step 2: Invite kid
-    <div key="s2">
+    // Step 2: Invite Kid
+    <div key="s2" className={styles.stepInner}>
       <h3 className={styles.stepTitle}>{t("step2Title")}</h3>
       <p className={styles.stepDesc}>{t("step2Desc")}</p>
-      <div className={styles.inviteCode}>
-        <code>BIT-7K3M</code>
-      </div>
-      <p className={styles.stepDesc} style={{ marginTop: "16px", fontSize: "0.85rem" }}>
-        {t("step2Hint")}
-      </p>
+      {!kidJoined ? (
+        <>
+          <FamilyCard
+            familyId={MOCK_FAMILY_ID}
+            name="Familia Nakamoto"
+            inviteCode="BIT-7K3M"
+            members={mockMembers}
+            createdBy={MOCK_USER_ID}
+            currentUserId={MOCK_USER_ID}
+            currentUserRole="sponsor"
+          />
+          <div className={styles.simulateAction}>
+            <Button variant="outline" onClick={() => setKidJoined(true)}>
+              {t("step2Hint")}
+            </Button>
+          </div>
+        </>
+      ) : (
+        <>
+          <div className={styles.successBadge}>
+            <CheckIcon size={16} /> Satoshi Jr. {t("step2Hint")}
+          </div>
+          <FamilyCard
+            familyId={MOCK_FAMILY_ID}
+            name="Familia Nakamoto"
+            inviteCode="BIT-7K3M"
+            members={mockMembers}
+            createdBy={MOCK_USER_ID}
+            currentUserId={MOCK_USER_ID}
+            currentUserRole="sponsor"
+          />
+        </>
+      )}
     </div>,
 
-    // Step 3: Create habit
-    <div key="s3">
+    // Step 3: Create Habit
+    <div key="s3" className={styles.stepInner}>
       <h3 className={styles.stepTitle}>{t("step3Title")}</h3>
       <p className={styles.stepDesc}>{t("step3Desc")}</p>
-      <Card>
-        <div style={{ padding: "24px" }}>
-          <div className={styles.form}>
-            <div className={styles.field}>
-              <label className={styles.label}>{t("habitName")}</label>
-              <input className={styles.input} defaultValue={t("habitExample")} />
-            </div>
-            <div className={styles.field}>
-              <label className={styles.label}>{t("habitDesc")}</label>
-              <input className={styles.input} defaultValue={t("habitExampleDesc")} />
-            </div>
-            <div className={styles.field}>
-              <label className={styles.label}>{t("reward")}</label>
-              <input className={styles.input} type="number" defaultValue="500" />
-            </div>
-            <div className={styles.field}>
-              <label className={styles.label}>{t("schedule")}</label>
-              <select className={styles.select} defaultValue="daily">
-                <option value="daily">{t("daily")}</option>
-                <option value="weekly">{t("weekly")}</option>
-              </select>
-            </div>
-            <div className={styles.field}>
-              <label className={styles.label}>{t("verification")}</label>
-              <select className={styles.select} defaultValue="sponsor">
-                <option value="sponsor">{t("sponsorApproval")}</option>
-                <option value="self">{t("selfVerify")}</option>
-              </select>
-            </div>
-            {!habitCreated ? (
-              <Button onClick={() => setHabitCreated(true)}>{tc("create")}</Button>
-            ) : (
-              <div className={styles.completedBadge}>✓ {t("habitCreatedMsg")}</div>
-            )}
+      {!createdHabit ? (
+        <CreateHabitForm
+          families={[{ id: MOCK_FAMILY_ID, name: "Familia Nakamoto" }]}
+          kids={[{ user_id: MOCK_KID_ID, display_name: "Satoshi Jr." }]}
+          onSubmit={handleCreateHabit}
+        />
+      ) : (
+        <>
+          <div className={styles.successBadge}>
+            <CheckIcon size={16} /> {t("habitCreatedMsg")}
           </div>
-        </div>
-      </Card>
+          <HabitCard
+            habit={createdHabit}
+            completions={[]}
+            onComplete={() => {}}
+            hideAction
+          />
+        </>
+      )}
     </div>,
 
-    // Step 4: Approve completion
-    <div key="s4">
+    // Step 4: Approve Completion
+    <div key="s4" className={styles.stepInner}>
       <h3 className={styles.stepTitle}>{t("step4Title")}</h3>
       <p className={styles.stepDesc}>{t("step4Desc")}</p>
-      <div className={styles.notification}>
-        <span className={styles.notifIcon}>🔔</span>
-        <div className={styles.notifText}>
-          <strong>{t("completionNotif")}</strong>
-          <span>{t("completionNotifDesc")}</span>
+      {!approved ? (
+        <PendingList
+          completions={pendingCompletions}
+          onApprove={handleApprove}
+          onReject={handleReject}
+        />
+      ) : (
+        <div className={styles.successBadge}>
+          <CheckIcon size={16} /> {t("approvedMsg")}
         </div>
-      </div>
-      <div style={{ marginTop: "16px" }}>
-        {!approved ? (
-          <Button onClick={() => setApproved(true)}>{t("approve")}</Button>
-        ) : (
-          <div className={styles.completedBadge}>✓ {t("approvedMsg")}</div>
-        )}
-      </div>
+      )}
     </div>,
 
-    // Step 5: Sats sent
-    <div key="s5">
+    // Step 5: Sats Sent
+    <div key="s5" className={styles.stepInner}>
       <h3 className={styles.stepTitle}>{t("step5Title")}</h3>
       <p className={styles.stepDesc}>{t("step5Desc")}</p>
-      <div className={styles.satsConfirm}>
-        <div className={styles.lightning}>⚡</div>
-        <div className={styles.satsAmount}>500 sats</div>
+      <StatsBar
+        totalSats={totalSatsPaid || (createdHabit?.sat_reward ?? 500)}
+        bestStreak={1}
+        pendingCount={0}
+      />
+      <div className={styles.celebration}>
+        <BoltIcon size={48} color="#F7A825" />
+        <div className={styles.satsAmount}>
+          {totalSatsPaid || (createdHabit?.sat_reward ?? 500)} sats
+        </div>
         <p>{t("satsSentMsg")}</p>
       </div>
-      <div style={{ textAlign: "center", marginTop: "24px" }}>
+      <div className={styles.ctaCenter}>
         <Link href="/register">
           <Button size="lg">{t("registerCTA")}</Button>
         </Link>
@@ -133,7 +240,7 @@ const SponsorDemo: React.FC = () => {
   const finishNode = (
     <Link href="/demo/kid">
       <Button variant="outline">
-        {tc("viewKidDemo")} →
+        {tc("viewKidDemo")} <ArrowRightIcon size={14} />
       </Button>
     </Link>
   );

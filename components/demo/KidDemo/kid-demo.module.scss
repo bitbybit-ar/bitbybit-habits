@@ -1,0 +1,110 @@
+@use "@/styles/colors" as *;
+@use "@/styles/spacing" as *;
+@use "@/styles/typography" as *;
+@use "@/styles/glass" as *;
+
+.stepInner {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-16;
+}
+
+.stepTitle {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  margin: 0;
+}
+
+.stepDesc {
+  color: $color-text-secondary;
+  line-height: $line-height-base;
+  margin: 0;
+}
+
+.glassForm {
+  @include glass-subtle;
+  padding: $spacing-24;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-16;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-4;
+}
+
+.label {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  font-weight: $font-weight-medium;
+}
+
+.input {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: $border-radius-md;
+  padding: $spacing-12 $spacing-16;
+  color: $color-text-primary;
+  font-size: $font-size-base;
+  outline: none;
+  transition: border-color 0.2s;
+
+  &:focus {
+    border-color: $color-primary;
+  }
+}
+
+.successBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-8;
+  background: rgba($color-success, 0.12);
+  color: $color-success;
+  padding: $spacing-8 $spacing-16;
+  border-radius: $border-radius-full;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+}
+
+.habitList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-12;
+}
+
+.celebration {
+  text-align: center;
+  padding: $spacing-24;
+
+  .celebrationIcons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: $spacing-12;
+    animation: pulse 1.5s infinite;
+  }
+
+  .satsAmount {
+    font-size: $font-size-2xl;
+    font-weight: $font-weight-extrabold;
+    color: $color-primary;
+    margin: $spacing-16 0;
+  }
+
+  p {
+    color: $color-text-secondary;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+.ctaCenter {
+  text-align: center;
+  margin-top: $spacing-16;
+}
