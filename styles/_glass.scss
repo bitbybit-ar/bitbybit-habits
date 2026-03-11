@@ -2,6 +2,8 @@
 // Use these mixins to apply consistent glass effects across components.
 // DO NOT change the color palette — dark navy/charcoal + yellow/gold stays.
 
+@use "./colors" as *;
+
 // Base glass mixin
 @mixin glass($opacity: 0.06, $blur: 12px, $border-opacity: 0.08, $radius: 16px) {
   background: rgba(255, 255, 255, $opacity);

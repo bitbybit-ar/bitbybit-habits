@@ -2,14 +2,13 @@
 @use "@/styles/spacing" as *;
 @use "@/styles/typography" as *;
 @use "@/styles/media-mixins" as *;
+@use "@/styles/glass" as *;
 
 .form {
   display: flex;
   flex-direction: column;
   gap: $spacing-20;
-  background: $color-bg-dark-2;
-  border-radius: $border-radius-lg;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  @include glass-card;
   padding: $spacing-24;
 }
 
@@ -30,7 +29,7 @@
 .input,
 .textarea,
 .select {
-  background: $color-bg-dark-3;
+  background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: $border-radius-md;
   padding: $spacing-12 $spacing-16;

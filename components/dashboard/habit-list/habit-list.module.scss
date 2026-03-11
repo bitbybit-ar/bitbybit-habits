@@ -1,6 +1,7 @@
 @use "@/styles/colors" as *;
 @use "@/styles/spacing" as *;
 @use "@/styles/typography" as *;
+@use "@/styles/glass" as *;
 
 .list {
   display: flex;
@@ -25,9 +26,7 @@
 .emptyState {
   text-align: center;
   padding: $spacing-48 $spacing-24;
-  background: $color-bg-dark-2;
-  border-radius: $border-radius-lg;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  @include glass-subtle;
 }
 
 .emptyText {
