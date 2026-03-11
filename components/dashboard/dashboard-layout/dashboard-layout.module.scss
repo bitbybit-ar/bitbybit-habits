@@ -1,0 +1,239 @@
+@use "@/styles/colors" as *;
+@use "@/styles/spacing" as *;
+@use "@/styles/typography" as *;
+@use "@/styles/common-mixins" as *;
+@use "@/styles/media-mixins" as *;
+@use "@/styles/glass" as *;
+
+$navbar-height: 56px;
+$tabbar-height: 52px;
+
+.layout {
+  min-height: 100vh;
+  @include glass-background-orbs;
+  position: relative;
+}
+
+// ── Navbar ──
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  height: $navbar-height;
+  @include glass(0.08, 20px, 0.06, 0);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.navContent {
+  @include container;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.logo {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $color-primary;
+  text-decoration: none;
+  white-space: nowrap;
+
+  @include mobile {
+    font-size: $font-size-base;
+  }
+}
+
+.navActions {
+  display: flex;
+  align-items: center;
+  gap: $spacing-8;
+
+  @include mobile {
+    gap: $spacing-4;
+  }
+}
+
+.navBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: $border-radius-md;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: transparent;
+  color: $color-text-secondary;
+  cursor: pointer;
+  text-decoration: none;
+  @include transition;
+
+  &:hover {
+    color: $color-text-primary;
+    border-color: rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.04);
+  }
+}
+
+// ── Container ──
+.container {
+  @include container;
+  padding-top: calc($navbar-height + $spacing-24);
+
+  @include mobile {
+    padding-top: calc($navbar-height + $spacing-16);
+  }
+}
+
+// ── Header card ──
+.headerCard {
+  @include glass-card;
+  @include glass-highlight;
+  padding: $spacing-24;
+  margin-bottom: $spacing-16;
+
+  @include mobile {
+    padding: $spacing-16;
+  }
+}
+
+.headerTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-16;
+  gap: $spacing-16;
+
+  @include mobile {
+    flex-direction: column-reverse;
+    align-items: flex-start;
+  }
+}
+
+.headerWelcome {
+  display: flex;
+  align-items: center;
+  gap: $spacing-12;
+  flex-wrap: wrap;
+}
+
+.welcomeText {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  margin: 0;
+
+  @include desktop {
+    font-size: $font-size-2xl;
+  }
+}
+
+.headerAvatar {
+  width: 48px;
+  height: 48px;
+  border-radius: $border-radius-full;
+  background: $gradient-primary;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-bg-dark;
+  flex-shrink: 0;
+}
+
+.headerStats {
+  // StatsBar renders inside here
+}
+
+// ── Tab bar ──
+.tabBar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-4;
+  @include glass(0.08, 20px, 0.06, $border-radius-lg);
+  padding: $spacing-8 $spacing-12;
+  margin-bottom: $spacing-16;
+  overflow-x: auto;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.tabItem {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: $border-radius-md;
+  border: none;
+  background: transparent;
+  color: $color-text-secondary;
+  cursor: pointer;
+  @include transition;
+  flex-shrink: 0;
+
+  &:hover {
+    color: $color-text-primary;
+    background: rgba(255, 255, 255, 0.05);
+  }
+}
+
+.tabItemActive {
+  color: $color-primary;
+  background: rgba($color-primary, 0.12);
+  border-bottom: 2px solid $color-primary;
+}
+
+.tabIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tabBadge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  min-width: 16px;
+  height: 16px;
+  border-radius: $border-radius-full;
+  background: $color-warning;
+  color: $color-bg-dark;
+  font-size: 9px;
+  font-weight: $font-weight-bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 3px;
+}
+
+// ── Content area ──
+.contentArea {
+  overflow-y: auto;
+  padding-bottom: 100px;
+
+  // Custom scrollbar
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+  }
+
+  @include mobile {
+    padding-bottom: 60px;
+  }
+}

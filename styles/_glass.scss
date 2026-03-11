@@ -52,6 +52,12 @@
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.08);
 }
 
+// Glass highlight (primary-tinted border + shadow)
+@mixin glass-highlight {
+  border: 1px solid rgba($color-primary, 0.15);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
 // Modal overlay with blur
 @mixin glass-overlay {
   background: rgba(0, 0, 0, 0.5);
