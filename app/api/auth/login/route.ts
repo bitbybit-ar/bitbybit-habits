@@ -52,12 +52,22 @@ export async function POST(request: Request) {
       );
     }
 
+    // Get user's role from their first family membership
+    const memberResult = await db`
+      SELECT role FROM family_members
+      WHERE user_id = ${user.id}
+      ORDER BY joined_at ASC
+      LIMIT 1
+    `;
+    const role = (memberResult[0]?.role as "sponsor" | "kid") ?? null;
+
     const token = await createSession({
       user_id: user.id,
       email: user.email,
       username: user.username,
       display_name: user.display_name,
       locale: user.locale as "es" | "en",
+      role,
     });
 
     const response = NextResponse.json<ApiResponse>({
@@ -68,6 +78,7 @@ export async function POST(request: Request) {
         username: user.username,
         display_name: user.display_name,
         locale: user.locale,
+        role,
       },
     });
 

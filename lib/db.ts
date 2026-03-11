@@ -95,7 +95,7 @@ CREATE INDEX IF NOT EXISTS idx_payments_status ON payments(status);
 CREATE TABLE IF NOT EXISTS wallets (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID NOT NULL REFERENCES users(id) UNIQUE,
-    nwc_url TEXT NOT NULL,
+    nwc_url_encrypted TEXT NOT NULL,
     label TEXT,
     active BOOLEAN NOT NULL DEFAULT true,
     created_at TIMESTAMP DEFAULT NOW()

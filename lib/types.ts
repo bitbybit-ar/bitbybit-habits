@@ -78,7 +78,7 @@ export interface Payment {
 export interface Wallet {
   id: string;
   user_id: string;
-  nwc_url: string;
+  nwc_url_encrypted: string;
   label?: string;
   active: boolean;
   created_at: string;
@@ -110,6 +110,7 @@ export interface AuthSession {
   username: string;
   display_name: string;
   locale: "es" | "en";
+  role: "sponsor" | "kid" | null;
 }
 
 export interface ApiResponse<T = unknown> {

@@ -3,17 +3,20 @@
 import { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { WalletIcon } from "@/components/icons";
-import type { Wallet } from "@/lib/types";
 import styles from "./wallet-connect.module.scss";
 
-function maskNwcUrl(url: string): string {
-  if (url.length <= 40) return url;
-  return url.slice(0, 28) + "..." + url.slice(-8);
+interface WalletPublic {
+  id: string;
+  user_id: string;
+  label?: string;
+  active: boolean;
+  connected: boolean;
+  created_at: string;
 }
 
 export function WalletConnect() {
   const t = useTranslations();
-  const [wallet, setWallet] = useState<Wallet | null>(null);
+  const [wallet, setWallet] = useState<WalletPublic | null>(null);
   const [nwcUrl, setNwcUrl] = useState("");
   const [label, setLabel] = useState("");
   const [loading, setLoading] = useState(true);
@@ -85,7 +88,6 @@ export function WalletConnect() {
           <span className={styles.statusText}>{t("wallet.walletConnected")}</span>
         </div>
         {wallet.label && <p className={styles.label}>{wallet.label}</p>}
-        <p className={styles.maskedUrl}>{maskNwcUrl(wallet.nwc_url)}</p>
         <button className={styles.disconnectButton} onClick={handleDisconnect}>
           {t("wallet.disconnect")}
         </button>

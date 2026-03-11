@@ -33,7 +33,14 @@ export default function LoginPage() {
         return;
       }
 
-      router.push("/dashboard");
+      const role = data.data?.role;
+      if (role === "kid") {
+        router.push("/kid");
+      } else if (role === "sponsor") {
+        router.push("/sponsor");
+      } else {
+        router.push("/onboard");
+      }
     } catch {
       setError(t("auth.connectionError"));
     } finally {

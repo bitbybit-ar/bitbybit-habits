@@ -42,6 +42,7 @@ export async function getSession(): Promise<AuthSession | null> {
       username: payload.username,
       display_name: payload.display_name,
       locale: payload.locale,
+      role: payload.role ?? null,
     };
   } catch {
     return null;
