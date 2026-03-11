@@ -1,0 +1,81 @@
+@use "@/styles/colors" as *;
+@use "@/styles/spacing" as *;
+@use "@/styles/typography" as *;
+@use "@/styles/media-mixins" as *;
+
+.stepper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-4;
+  margin-bottom: $spacing-32;
+}
+
+.step {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-bold;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  background: $color-bg-dark-3;
+  color: $color-text-secondary;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+
+  &.active {
+    border-color: $color-primary;
+    background: rgba($color-primary, 0.2);
+    color: $color-primary;
+    transform: scale(1.1);
+  }
+
+  &.completed {
+    border-color: $color-success;
+    background: rgba($color-success, 0.2);
+    color: $color-success;
+  }
+}
+
+.connector {
+  width: 24px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.1);
+  transition: background 0.3s ease;
+  flex-shrink: 0;
+
+  &.active {
+    background: $color-primary;
+  }
+
+  @include mobile {
+    width: 16px;
+  }
+}
+
+.nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: $spacing-32;
+  gap: $spacing-16;
+}
+
+.stepContent {
+  animation: fadeSlideIn 0.4s ease;
+  min-height: 300px;
+}
+
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

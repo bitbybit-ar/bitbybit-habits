@@ -44,7 +44,7 @@ export const Hero: React.FC = () => {
             <ArrowRightIcon size={18} />
           </Button>
         </Link>
-        <Link href="/preview" className={styles.demoLink}>
+        <Link href="/demo" className={styles.demoLink}>
           <Button size="lg" variant="outline">{t("demo")}</Button>
         </Link>
       </div>

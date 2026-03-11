@@ -1,0 +1,141 @@
+@use "@/styles/colors" as *;
+@use "@/styles/spacing" as *;
+@use "@/styles/typography" as *;
+@use "@/styles/media-mixins" as *;
+
+.demoPage {
+  min-height: 100vh;
+  background: $color-bg-dark;
+  color: $color-text-primary;
+  padding: $spacing-32 $spacing-24;
+  max-width: $container-max-width;
+  margin: 0 auto;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: $spacing-48;
+}
+
+.title {
+  font-size: $font-size-2xl;
+  font-weight: $font-weight-extrabold;
+  margin-bottom: $spacing-12;
+
+  span {
+    background: $gradient-primary;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+}
+
+.subtitle {
+  color: $color-text-secondary;
+  font-size: $font-size-md;
+  line-height: $line-height-base;
+  max-width: 600px;
+  margin: 0 auto $spacing-16;
+}
+
+.roles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $spacing-24;
+  max-width: 700px;
+  margin: 0 auto;
+
+  @include mobile {
+    grid-template-columns: 1fr;
+  }
+}
+
+.roleCard {
+  background: $color-bg-dark-2;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: $border-radius-lg;
+  padding: $spacing-32;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: block;
+
+  &:hover {
+    transform: translateY(-4px);
+    border-color: rgba($color-primary, 0.4);
+    box-shadow: 0 8px 30px rgba($color-primary, 0.1);
+  }
+
+  .roleIcon {
+    font-size: 3rem;
+    margin-bottom: $spacing-16;
+  }
+
+  .roleName {
+    font-size: $font-size-lg;
+    font-weight: $font-weight-bold;
+    color: $color-text-primary;
+    margin-bottom: $spacing-8;
+  }
+
+  .roleDesc {
+    color: $color-text-secondary;
+    font-size: $font-size-sm;
+    line-height: $line-height-base;
+  }
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-8;
+  color: $color-text-secondary;
+  text-decoration: none;
+  margin-bottom: $spacing-24;
+  font-size: $font-size-sm;
+  transition: color 0.2s;
+
+  &:hover {
+    color: $color-primary;
+  }
+}
+
+.demoContainer {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.rolesExplainer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $spacing-16;
+  margin-bottom: $spacing-32;
+
+  @include mobile {
+    grid-template-columns: 1fr;
+  }
+}
+
+.roleExplain {
+  background: $color-bg-dark-2;
+  border-radius: $border-radius-md;
+  padding: $spacing-16;
+  text-align: center;
+
+  .roleIcon {
+    font-size: 2rem;
+    margin-bottom: $spacing-8;
+  }
+
+  h4 {
+    color: $color-primary;
+    margin: 0 0 $spacing-4;
+  }
+
+  p {
+    color: $color-text-secondary;
+    font-size: $font-size-sm;
+    margin: 0;
+  }
+}

@@ -1,0 +1,208 @@
+@use "@/styles/colors" as *;
+@use "@/styles/spacing" as *;
+@use "@/styles/typography" as *;
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-16;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-4;
+}
+
+.label {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  font-weight: $font-weight-medium;
+}
+
+.input {
+  background: $color-bg-dark-3;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: $border-radius-md;
+  padding: $spacing-12 $spacing-16;
+  color: $color-text-primary;
+  font-size: $font-size-base;
+  outline: none;
+  transition: border-color 0.2s;
+
+  &:focus {
+    border-color: $color-primary;
+  }
+}
+
+.select {
+  @extend .input;
+  appearance: none;
+  cursor: pointer;
+}
+
+.inviteCode {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-12;
+  padding: $spacing-24;
+  background: $color-bg-dark-3;
+  border-radius: $border-radius-lg;
+  border: 2px dashed rgba($color-primary, 0.3);
+
+  code {
+    font-size: $font-size-xl;
+    font-weight: $font-weight-bold;
+    color: $color-primary;
+    letter-spacing: 4px;
+  }
+}
+
+.notification {
+  background: $color-bg-dark-3;
+  border-radius: $border-radius-lg;
+  padding: $spacing-16;
+  border-left: 4px solid $color-primary;
+  display: flex;
+  align-items: center;
+  gap: $spacing-12;
+
+  .notifIcon {
+    font-size: 1.5rem;
+  }
+
+  .notifText {
+    flex: 1;
+
+    strong {
+      color: $color-text-primary;
+      display: block;
+    }
+
+    span {
+      color: $color-text-secondary;
+      font-size: $font-size-sm;
+    }
+  }
+}
+
+.satsConfirm {
+  text-align: center;
+  padding: $spacing-32;
+
+  .satsAmount {
+    font-size: $font-size-2xl;
+    font-weight: $font-weight-extrabold;
+    color: $color-primary;
+    margin: $spacing-16 0;
+  }
+
+  .lightning {
+    font-size: 3rem;
+    animation: pulse 1.5s infinite;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+.habitCard {
+  background: $color-bg-dark-3;
+  border-radius: $border-radius-lg;
+  padding: $spacing-16;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $spacing-12;
+
+  .habitInfo {
+    h4 {
+      color: $color-text-primary;
+      margin: 0 0 $spacing-4;
+    }
+
+    p {
+      color: $color-text-secondary;
+      font-size: $font-size-sm;
+      margin: 0;
+    }
+  }
+
+  .habitReward {
+    color: $color-primary;
+    font-weight: $font-weight-bold;
+    white-space: nowrap;
+  }
+}
+
+.habitList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-12;
+}
+
+.completedBadge {
+  background: rgba($color-success, 0.15);
+  color: $color-success;
+  padding: $spacing-4 $spacing-12;
+  border-radius: $border-radius-full;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+}
+
+.pendingBadge {
+  background: rgba($color-warning, 0.15);
+  color: $color-warning;
+  padding: $spacing-4 $spacing-12;
+  border-radius: $border-radius-full;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+}
+
+.celebration {
+  text-align: center;
+  padding: $spacing-32;
+
+  .confetti {
+    font-size: 3rem;
+    margin-bottom: $spacing-16;
+    animation: bounce 0.6s ease infinite alternate;
+  }
+
+  .counter {
+    font-size: $font-size-2xl;
+    font-weight: $font-weight-extrabold;
+    color: $color-primary;
+    margin: $spacing-16 0;
+  }
+
+  p {
+    color: $color-text-secondary;
+  }
+}
+
+@keyframes bounce {
+  from { transform: translateY(0); }
+  to { transform: translateY(-10px); }
+}
+
+.stepTitle {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-8;
+}
+
+.stepDesc {
+  color: $color-text-secondary;
+  margin-bottom: $spacing-24;
+  line-height: $line-height-base;
+}
+
+.completeBtn {
+  margin-top: $spacing-12;
+}
