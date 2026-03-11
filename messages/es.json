@@ -12,7 +12,8 @@
     "confirm": "Confirmar",
     "search": "Buscar",
     "noResults": "Sin resultados",
-    "comingSoon": "Próximamente"
+    "comingSoon": "Próximamente",
+    "viewKidDemo": "Ver demo como Kid"
   },
   "auth": {
     "login": "Iniciar sesión",

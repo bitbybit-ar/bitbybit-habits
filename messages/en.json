@@ -12,7 +12,8 @@
     "confirm": "Confirm",
     "search": "Search",
     "noResults": "No results",
-    "comingSoon": "Coming soon"
+    "comingSoon": "Coming soon",
+    "viewKidDemo": "View Kid Demo"
   },
   "auth": {
     "login": "Log in",

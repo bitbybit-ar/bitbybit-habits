@@ -9,9 +9,10 @@ interface DemoStepperProps {
   steps: React.ReactNode[];
   onFinish?: () => void;
   finishLabel?: string;
+  finishNode?: React.ReactNode;
 }
 
-export const DemoStepper: React.FC<DemoStepperProps> = ({ steps, onFinish, finishLabel }) => {
+export const DemoStepper: React.FC<DemoStepperProps> = ({ steps, onFinish, finishLabel, finishNode }) => {
   const t = useTranslations("common");
   const [current, setCurrent] = useState(0);
 
@@ -45,13 +46,13 @@ export const DemoStepper: React.FC<DemoStepperProps> = ({ steps, onFinish, finis
       </div>
 
       <div className={styles.nav}>
-        <Button variant="ghost" onClick={prev} disabled={current === 0}>
-          {t("back")}
+        <Button variant="outline" onClick={prev} disabled={current === 0}>
+          ← {t("back")}
         </Button>
         {current === steps.length - 1 ? (
-          <Button onClick={onFinish}>{finishLabel || t("confirm")}</Button>
+          finishNode ?? <Button onClick={onFinish}>{finishLabel || t("confirm")}</Button>
         ) : (
-          <Button onClick={next}>{t("next")}</Button>
+          <Button onClick={next}>{t("next")} →</Button>
         )}
       </div>
     </div>
