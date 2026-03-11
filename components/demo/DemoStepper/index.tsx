@@ -11,9 +11,11 @@ interface DemoStepperProps {
   onFinish?: () => void;
   finishLabel?: string;
   finishNode?: React.ReactNode;
+  /** If provided, Next button is disabled when canAdvance[current] is false */
+  canAdvance?: boolean[];
 }
 
-export const DemoStepper: React.FC<DemoStepperProps> = ({ steps, onFinish, finishLabel, finishNode }) => {
+export const DemoStepper: React.FC<DemoStepperProps> = ({ steps, onFinish, finishLabel, finishNode, canAdvance }) => {
   const t = useTranslations("common");
   const [current, setCurrent] = useState(0);
 
@@ -53,7 +55,7 @@ export const DemoStepper: React.FC<DemoStepperProps> = ({ steps, onFinish, finis
         {current === steps.length - 1 ? (
           finishNode ?? <Button onClick={onFinish}>{finishLabel || t("confirm")}</Button>
         ) : (
-          <Button onClick={next}>{t("next")} <ArrowRightIcon size={14} /></Button>
+          <Button onClick={next} disabled={canAdvance ? !canAdvance[current] : false}>{t("next")} <ArrowRightIcon size={14} /></Button>
         )}
       </div>
     </div>

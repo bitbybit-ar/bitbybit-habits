@@ -257,7 +257,15 @@ const SponsorDemo: React.FC = () => {
     </Link>
   );
 
-  return <DemoStepper steps={steps} finishNode={finishNode} />;
+  const canAdvance = [
+    familyCreated,        // step 1: must create family
+    kidJoined,            // step 2: must simulate kid joining
+    !!createdHabit,       // step 3: must create habit
+    approved,             // step 4: must approve completion
+    true,                 // step 5: always can finish
+  ];
+
+  return <DemoStepper steps={steps} finishNode={finishNode} canAdvance={canAdvance} />;
 };
 
 export default SponsorDemo;

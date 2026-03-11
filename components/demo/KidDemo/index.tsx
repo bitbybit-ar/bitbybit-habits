@@ -247,7 +247,15 @@ const KidDemo: React.FC = () => {
     </Link>
   );
 
-  return <DemoStepper steps={steps} finishNode={finishNode} />;
+  const canAdvance = [
+    joined,                        // step 1: must join family
+    true,                          // step 2: view habits (always ok)
+    completedHabitIds.size > 0,    // step 3: must complete at least 1 habit
+    true,                          // step 4: pending (view only)
+    true,                          // step 5: celebration
+  ];
+
+  return <DemoStepper steps={steps} finishNode={finishNode} canAdvance={canAdvance} />;
 };
 
 export default KidDemo;
