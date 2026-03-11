@@ -12,7 +12,7 @@ import PendingList from "@/components/dashboard/pending-list";
 import type { PendingCompletion } from "@/components/dashboard/pending-list";
 import StatsBar from "@/components/dashboard/stats-bar";
 import HabitCard from "@/components/dashboard/habit-card";
-import { CheckIcon, BoltIcon, ArrowRightIcon } from "@/components/icons";
+import { CheckIcon, BoltIcon, ArrowRightIcon, BellIcon } from "@/components/icons";
 import type { Habit, Completion } from "@/lib/types";
 import styles from "./sponsor-demo.module.scss";
 
@@ -200,9 +200,27 @@ const SponsorDemo: React.FC = () => {
     <div key="s4" className={styles.stepInner}>
       <h3 className={styles.stepTitle}>{t("step4Title")}</h3>
       <p className={styles.stepDesc}>{t("step4Desc")}</p>
+      <div className={styles.notification}>
+        <div className={styles.notifIcon}>
+          <BellIcon size={20} />
+        </div>
+        <div className={styles.notifText}>
+          <strong>{t("completionNotif")}</strong>
+          <span>{t("completionNotifDesc")}</span>
+        </div>
+      </div>
       {!approved ? (
         <PendingList
-          completions={pendingCompletions}
+          completions={pendingCompletions.length > 0 ? pendingCompletions : [{
+            id: "demo-completion-1",
+            habit_id: "demo-habit-1",
+            habit_name: createdHabit?.name ?? "Leer 30 minutos",
+            habit_color: createdHabit?.color ?? "#F7A825",
+            kid_name: "Satoshi Jr.",
+            sat_reward: createdHabit?.sat_reward ?? 500,
+            date: new Date().toISOString().split("T")[0],
+            completed_at: new Date().toISOString(),
+          }]}
           onApprove={handleApprove}
           onReject={handleReject}
         />

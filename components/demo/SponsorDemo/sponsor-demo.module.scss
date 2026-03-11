@@ -95,3 +95,52 @@
   text-align: center;
   margin-top: $spacing-16;
 }
+
+.notification {
+  @include glass-card;
+  display: flex;
+  align-items: center;
+  gap: $spacing-16;
+  padding: $spacing-16 $spacing-20;
+  border-left: 3px solid $color-primary;
+  animation: slideIn 0.4s ease-out;
+}
+
+.notifIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: $border-radius-full;
+  background: rgba($color-primary, 0.15);
+  color: $color-primary;
+  flex-shrink: 0;
+}
+
+.notifText {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-4;
+
+  strong {
+    color: $color-text-primary;
+    font-size: $font-size-sm;
+  }
+
+  span {
+    color: $color-text-secondary;
+    font-size: $font-size-xs;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
