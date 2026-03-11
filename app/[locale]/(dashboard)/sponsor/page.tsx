@@ -2,10 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
-import { Link } from "@/i18n/routing";
-import { LogOutIcon, BoltIcon, ClockIcon, PencilIcon, SettingsIcon, ListIcon, PlusIcon, UsersIcon, WalletIcon } from "@/components/icons";
-import { NotificationBell } from "@/components/dashboard/notification-bell";
-import { LanguageSwitcher } from "@/components/layout/language-switcher";
+import { BoltIcon, ClockIcon, PencilIcon, ListIcon, PlusIcon, UsersIcon, WalletIcon } from "@/components/icons";
 import { StatsBar } from "@/components/dashboard/stats-bar";
 import { PendingList } from "@/components/dashboard/pending-list";
 import type { PendingCompletion } from "@/components/dashboard/pending-list";
@@ -15,7 +12,8 @@ import { FamilyCard } from "@/components/dashboard/family-card";
 import { HabitCard } from "@/components/dashboard/habit-card";
 import { WalletConnect } from "@/components/dashboard/wallet-connect";
 import { Onboarding } from "@/components/dashboard/onboarding";
-import { BottomNav } from "@/components/dashboard/bottom-nav";
+import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
+import type { DashboardTab } from "@/components/dashboard/dashboard-layout";
 import { useToast } from "@/components/ui/toast";
 import { cn } from "@/lib/utils";
 import type { Habit, Completion, AuthSession, PaymentWithDetails } from "@/lib/types";
@@ -335,90 +333,68 @@ export default function SponsorDashboard() {
 
   const familyOptions = families.map((f) => ({ id: f.id, name: f.name }));
 
-  const tabs: { key: TabType; label: string; badge?: number }[] = [
-    { key: "pending", label: t("sponsorDashboard.pendingApprovals"), badge: pendingCompletions.length },
-    { key: "habits", label: t("dashboard.myHabits") },
-    { key: "create", label: t("habits.createHabit") },
-    { key: "family", label: t("family.myFamily") },
-    { key: "payments", label: t("payments.title") },
-    { key: "wallet", label: t("wallet.connectWallet") },
+  const tabs: DashboardTab[] = [
+    { key: "pending", icon: <ClockIcon size={20} />, label: t("sponsorDashboard.pendingApprovals"), badge: pendingCompletions.length },
+    { key: "habits", icon: <ListIcon size={20} />, label: t("dashboard.myHabits") },
+    { key: "create", icon: <PlusIcon size={20} />, label: t("habits.createHabit") },
+    { key: "family", icon: <UsersIcon size={20} />, label: t("family.myFamily") },
+    { key: "payments", icon: <BoltIcon size={20} />, label: t("payments.title") },
+    { key: "wallet", icon: <WalletIcon size={20} />, label: t("wallet.connectWallet") },
   ];
 
-  const bottomNavTabs = [
-    { key: "pending", label: t("sponsorDashboard.pendingApprovals"), icon: <ClockIcon size={20} />, badge: pendingCompletions.length },
-    { key: "habits", label: t("dashboard.myHabits"), icon: <ListIcon size={20} /> },
-    { key: "create", label: t("habits.createHabit"), icon: <PlusIcon size={20} /> },
-    { key: "family", label: t("family.myFamily"), icon: <UsersIcon size={20} /> },
-    { key: "wallet", label: t("wallet.connectWallet"), icon: <WalletIcon size={20} /> },
-  ];
+  const statsBar = (
+    <StatsBar
+      items={[
+        {
+          icon: <BoltIcon size={22} />,
+          value: totalPaid.toLocaleString(),
+          label: `${t("sats.sats")} ${t("sats.paid")}`,
+          iconClass: statsStyles.iconSats,
+          highlight: true,
+        },
+        {
+          icon: <PencilIcon size={22} />,
+          value: habits.length,
+          label: t("sponsorDashboard.habitsCreated"),
+          iconClass: statsStyles.iconHabits,
+        },
+        {
+          icon: <ClockIcon size={22} />,
+          value: pendingCompletions.length,
+          label: t("sponsorDashboard.pendingApprovals"),
+          iconClass: statsStyles.iconPending,
+        },
+      ]}
+    />
+  );
 
-  return (
-    <div className={styles.container}>
-      <div className={styles.header}>
-        <h1 className={styles.title}>
-          {t("dashboard.welcome")}, {displayName}
-        </h1>
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <LanguageSwitcher />
-          <NotificationBell />
-          <Link href="/settings" className={styles.logoutButton} style={{ textDecoration: "none" }}>
-            <SettingsIcon size={18} />
-          </Link>
-          <button className={styles.logoutButton} onClick={handleLogout}>
-            <LogOutIcon size={18} />
-            <span>{t("auth.logout")}</span>
-          </button>
-        </div>
-      </div>
-
-      {showOnboarding ? (
+  if (showOnboarding) {
+    return (
+      <DashboardLayout
+        displayName={`${t("dashboard.welcome")}, ${displayName}`}
+        statsBar={statsBar}
+        tabs={tabs}
+        activeTab={activeTab}
+        onTabChange={(key) => setActiveTab(key as TabType)}
+        onLogout={handleLogout}
+      >
         <Onboarding
           displayName={displayName}
           onDismiss={handleDismissOnboarding}
         />
-      ) : (
-        <>
-      <StatsBar
-        items={[
-          {
-            icon: <BoltIcon size={22} />,
-            value: totalPaid.toLocaleString(),
-            label: `${t("sats.sats")} ${t("sats.paid")}`,
-            iconClass: statsStyles.iconSats,
-            highlight: true,
-          },
-          {
-            icon: <PencilIcon size={22} />,
-            value: habits.length,
-            label: t("sponsorDashboard.habitsCreated"),
-            iconClass: statsStyles.iconHabits,
-          },
-          {
-            icon: <ClockIcon size={22} />,
-            value: pendingCompletions.length,
-            label: t("sponsorDashboard.pendingApprovals"),
-            iconClass: statsStyles.iconPending,
-          },
-        ]}
-      />
+      </DashboardLayout>
+    );
+  }
 
-      {/* Desktop tabs */}
-      <div className={styles.tabs}>
-        {tabs.map((tab) => (
-          <button
-            key={tab.key}
-            className={cn(styles.tab, activeTab === tab.key && styles.tabActive)}
-            onClick={() => setActiveTab(tab.key)}
-          >
-            {tab.label}
-            {tab.badge != null && tab.badge > 0 && (
-              <span className={styles.badge}>{tab.badge}</span>
-            )}
-          </button>
-        ))}
-      </div>
-
-      {/* Tab content */}
+  return (
+    <DashboardLayout
+      displayName={`${t("dashboard.welcome")}, ${displayName}`}
+      statsBar={statsBar}
+      tabs={tabs}
+      activeTab={activeTab}
+      onTabChange={(key) => setActiveTab(key as TabType)}
+      onLogout={handleLogout}
+    >
       {activeTab === "pending" && (
         <div className={styles.section}>
           <h2 className={styles.sectionTitle}>{t("sponsorDashboard.pendingApprovals")}</h2>
@@ -565,14 +541,6 @@ export default function SponsorDashboard() {
           <WalletConnect />
         </div>
       )}
-
-      <BottomNav
-        tabs={bottomNavTabs}
-        activeTab={activeTab}
-        onTabChange={(key) => setActiveTab(key as TabType)}
-      />
-        </>
-      )}
-    </div>
+    </DashboardLayout>
   );
 }
