@@ -265,7 +265,7 @@ const SponsorDemo: React.FC = () => {
     true,                 // step 5: always can finish
   ];
 
-  return <DemoStepper steps={steps} finishNode={finishNode} canAdvance={canAdvance} />;
+  return <DemoStepper steps={steps} finishNode={finishNode} canAdvance={canAdvance} backUrl="/demo" />;
 };
 
 export default SponsorDemo;

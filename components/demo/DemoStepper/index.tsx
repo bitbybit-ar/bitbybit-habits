@@ -2,6 +2,7 @@
 
 import React, { useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
 import Button from "@/components/ui/button";
 import { CheckIcon, ArrowLeftIcon, ArrowRightIcon } from "@/components/icons";
 import styles from "./demo-stepper.module.scss";
@@ -13,10 +14,13 @@ interface DemoStepperProps {
   finishNode?: React.ReactNode;
   /** If provided, Next button is disabled when canAdvance[current] is false */
   canAdvance?: boolean[];
+  /** URL to navigate back to when on step 0 (e.g. /demo) */
+  backUrl?: string;
 }
 
-export const DemoStepper: React.FC<DemoStepperProps> = ({ steps, onFinish, finishLabel, finishNode, canAdvance }) => {
+export const DemoStepper: React.FC<DemoStepperProps> = ({ steps, onFinish, finishLabel, finishNode, canAdvance, backUrl }) => {
   const t = useTranslations("common");
+  const router = useRouter();
   const [current, setCurrent] = useState(0);
 
   const next = useCallback(() => {
@@ -49,7 +53,7 @@ export const DemoStepper: React.FC<DemoStepperProps> = ({ steps, onFinish, finis
       </div>
 
       <div className={styles.nav}>
-        <Button variant="outline" onClick={prev} disabled={current === 0}>
+        <Button variant="outline" onClick={current === 0 && backUrl ? () => router.push(backUrl) : prev} disabled={current === 0 && !backUrl}>
           <ArrowLeftIcon size={14} /> {t("back")}
         </Button>
         {current === steps.length - 1 ? (

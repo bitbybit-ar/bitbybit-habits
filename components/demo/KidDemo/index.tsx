@@ -255,7 +255,7 @@ const KidDemo: React.FC = () => {
     true,                          // step 5: celebration
   ];
 
-  return <DemoStepper steps={steps} finishNode={finishNode} canAdvance={canAdvance} />;
+  return <DemoStepper steps={steps} finishNode={finishNode} canAdvance={canAdvance} backUrl="/demo" />;
 };
 
 export default KidDemo;
