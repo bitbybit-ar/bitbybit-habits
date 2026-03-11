@@ -1,12 +1,12 @@
 import Navbar from "@/components/layout/navbar";
-import Hero from "./Hero";
-import HowItWorks from "./HowItWorks";
-import UseCases from "./UseCases";
-import TechStack from "./TechStack";
-import Roadmap from "./Roadmap";
-import Team from "./Team";
-import CallToAction from "./CallToAction";
-import BuiltWith from "./BuiltWith";
+import Hero from "@/components/landing/Hero";
+import HowItWorks from "@/components/landing/HowItWorks";
+import UseCases from "@/components/landing/UseCases";
+import TechStack from "@/components/landing/TechStack";
+import Roadmap from "@/components/landing/Roadmap";
+import Team from "@/components/landing/Team";
+import CallToAction from "@/components/landing/CallToAction";
+import BuiltWith from "@/components/landing/BuiltWith";
 import Footer from "@/components/layout/footer";
 
 export default function Home() {

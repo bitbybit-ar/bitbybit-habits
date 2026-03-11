@@ -375,6 +375,7 @@
     "skip": "Skip intro",
     "postReg": {
       "chooseRole": "What are you?",
+      "chooseRoleDesc": "Choose your role to set up your account and start using BitByBit",
       "iAmSponsor": "I'm a Sponsor",
       "iAmKid": "I'm a Kid",
       "sponsorDesc": "Parent or guardian who creates tasks and rewards",

@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import Navbar from "@/components/layout/navbar";
 import styles from "./onboard.module.scss";
 
 type Step = "role" | "sponsor" | "kid" | "done";
@@ -18,21 +19,13 @@ export default function OnboardPage() {
   const [error, setError] = useState("");
   const [checkingFamilies, setCheckingFamilies] = useState(true);
 
-  // If user already has families, skip to dashboard
   useEffect(() => {
-    const alreadyOnboarded = localStorage.getItem("bitbybit_onboard_role");
-    if (alreadyOnboarded) {
-      router.replace("/dashboard");
-      return;
-    }
-
     async function checkFamilies() {
       try {
         const res = await fetch("/api/families");
         if (res.ok) {
           const data = await res.json();
           if (data.success && data.data && data.data.length > 0) {
-            localStorage.setItem("bitbybit_onboard_role", "existing");
             router.replace("/dashboard");
             return;
           }
@@ -62,7 +55,6 @@ export default function OnboardPage() {
 
       if (data.success) {
         setCreatedInviteCode(data.data.invite_code);
-        localStorage.setItem("bitbybit_onboard_role", "sponsor");
         setStep("done");
       } else {
         setError(data.error);
@@ -89,7 +81,6 @@ export default function OnboardPage() {
       const data = await res.json();
 
       if (data.success) {
-        localStorage.setItem("bitbybit_onboard_role", "kid");
         setStep("done");
       } else {
         setError(data.error);
@@ -102,34 +93,43 @@ export default function OnboardPage() {
   };
 
   if (checkingFamilies) {
-    return (
-      <div className={styles.container}>
-        <p>{t("common.loading")}</p>
-      </div>
-    );
+    return <div className={styles.loading}><p>{t("common.loading")}</p></div>;
   }
 
   return (
-    <div className={styles.container}>
-      <div className={styles.card}>
+    <>
+      <Navbar />
+      <div className={styles.page}>
         {step === "role" && (
           <>
-            <h1 className={styles.title}>{t("common.appName")}</h1>
-            <p className={styles.subtitle}>{t("onboarding.postReg.chooseRole")}</p>
-            <div className={styles.roleCards}>
-              <div
-                className={styles.roleCard}
-                onClick={() => setStep("sponsor")}
-              >
-                <div className={styles.roleEmoji}>🛡️</div>
+            <div className={styles.header}>
+              <h1 className={styles.title}>
+                <span>{t("onboarding.postReg.chooseRole")}</span>
+              </h1>
+              <p className={styles.subtitle}>{t("onboarding.postReg.chooseRoleDesc")}</p>
+            </div>
+
+            <div className={styles.rolesExplainer}>
+              <div className={styles.roleExplain}>
+                <div className={styles.explainIcon}>👨‍👩‍👧</div>
+                <h4>Sponsor</h4>
+                <p>{t("onboarding.postReg.sponsorDesc")}</p>
+              </div>
+              <div className={styles.roleExplain}>
+                <div className={styles.explainIcon}>🧒</div>
+                <h4>Kid</h4>
+                <p>{t("onboarding.postReg.kidDesc")}</p>
+              </div>
+            </div>
+
+            <div className={styles.roles}>
+              <div className={styles.roleCard} onClick={() => setStep("sponsor")}>
+                <div className={styles.roleIcon}>🛡️</div>
                 <div className={styles.roleName}>{t("onboarding.postReg.iAmSponsor")}</div>
                 <div className={styles.roleDesc}>{t("onboarding.postReg.sponsorDesc")}</div>
               </div>
-              <div
-                className={styles.roleCard}
-                onClick={() => setStep("kid")}
-              >
-                <div className={styles.roleEmoji}>⚡</div>
+              <div className={styles.roleCard} onClick={() => setStep("kid")}>
+                <div className={styles.roleIcon}>⚡</div>
                 <div className={styles.roleName}>{t("onboarding.postReg.iAmKid")}</div>
                 <div className={styles.roleDesc}>{t("onboarding.postReg.kidDesc")}</div>
               </div>
@@ -138,9 +138,12 @@ export default function OnboardPage() {
         )}
 
         {step === "sponsor" && (
-          <>
-            <h1 className={styles.title}>{t("onboarding.postReg.createYourFamily")}</h1>
-            <p className={styles.subtitle}>{t("family.familyName")}</p>
+          <div className={styles.formCard}>
+            <button className={styles.backButton} onClick={() => setStep("role")}>
+              ← {t("common.back")}
+            </button>
+            <h2 className={styles.formTitle}>{t("onboarding.postReg.createYourFamily")}</h2>
+            <p className={styles.formSubtitle}>{t("family.familyName")}</p>
             <form onSubmit={handleCreateFamily} className={styles.form}>
               <div className={styles.field}>
                 <input
@@ -160,13 +163,16 @@ export default function OnboardPage() {
                 {loading ? t("common.loading") : t("family.createFamily")}
               </button>
             </form>
-          </>
+          </div>
         )}
 
         {step === "kid" && (
-          <>
-            <h1 className={styles.title}>{t("onboarding.postReg.joinAFamily")}</h1>
-            <p className={styles.subtitle}>{t("onboarding.postReg.enterCode")}</p>
+          <div className={styles.formCard}>
+            <button className={styles.backButton} onClick={() => setStep("role")}>
+              ← {t("common.back")}
+            </button>
+            <h2 className={styles.formTitle}>{t("onboarding.postReg.joinAFamily")}</h2>
+            <p className={styles.formSubtitle}>{t("onboarding.postReg.enterCode")}</p>
             <form onSubmit={handleJoinFamily} className={styles.form}>
               <div className={styles.field}>
                 <input
@@ -188,14 +194,14 @@ export default function OnboardPage() {
                 {loading ? t("common.loading") : t("family.join")}
               </button>
             </form>
-          </>
+          </div>
         )}
 
         {step === "done" && (
-          <div className={styles.successSection}>
+          <div className={styles.successCard}>
             <div className={styles.successEmoji}>🎉</div>
-            <h1 className={styles.title}>{t("onboarding.postReg.allSet")}</h1>
-            <p className={styles.subtitle}>{t("onboarding.postReg.allSetDesc")}</p>
+            <h2 className={styles.formTitle}>{t("onboarding.postReg.allSet")}</h2>
+            <p className={styles.formSubtitle}>{t("onboarding.postReg.allSetDesc")}</p>
             {createdInviteCode && (
               <div className={styles.inviteCodeDisplay}>
                 <p>{t("onboarding.postReg.shareCode")}</p>
@@ -211,6 +217,6 @@ export default function OnboardPage() {
           </div>
         )}
       </div>
-    </div>
+    </>
   );
 }
