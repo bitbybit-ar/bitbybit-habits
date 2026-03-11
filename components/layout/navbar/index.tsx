@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
+import { usePathname } from "next/navigation";
 import { Link } from "@/i18n/routing";
 import { LogInIcon, UserPlusIcon } from "@/components/icons";
 import { LanguageSwitcher } from "@/components/layout/language-switcher";
@@ -10,17 +11,24 @@ import { cn } from "@/lib/utils";
 
 export const Navbar: React.FC = () => {
   const t = useTranslations();
+  const pathname = usePathname();
   const [visible, setVisible] = useState(false);
 
-  const NAV_LINKS = [
+  // Only show section links on the landing page (/ or /es or /en)
+  const isLanding = /^\/(es|en)?\/?$/.test(pathname);
+
+  const LANDING_LINKS = [
     { href: "#how-it-works", label: t("landing.nav.howItWorks") },
     { href: "#use-cases", label: t("landing.nav.useCases") },
     { href: "#tech-stack", label: t("landing.nav.techStack") },
-    { href: "#roadmap", label: t("landing.nav.roadmap") },
-    { href: "#team", label: t("landing.nav.team") },
   ];
 
   useEffect(() => {
+    if (!isLanding) {
+      setVisible(true);
+      return;
+    }
+
     const hero = document.querySelector("[data-hero]");
     if (!hero) return;
 
@@ -30,7 +38,7 @@ export const Navbar: React.FC = () => {
     );
     observer.observe(hero);
     return () => observer.disconnect();
-  }, []);
+  }, [isLanding]);
 
   return (
     <nav
@@ -39,16 +47,18 @@ export const Navbar: React.FC = () => {
       aria-label="Main navigation"
     >
       <div className={styles.container}>
-        <a href="#" className={styles.brand} aria-label="BitByBit home">
+        <Link href="/" className={styles.brand} aria-label="BitByBit home">
           BitByBit
-        </a>
-        <ul className={styles.links}>
-          {NAV_LINKS.map((link) => (
-            <li key={link.href}>
-              <a href={link.href}>{link.label}</a>
-            </li>
-          ))}
-        </ul>
+        </Link>
+        {isLanding && (
+          <ul className={styles.links}>
+            {LANDING_LINKS.map((link) => (
+              <li key={link.href}>
+                <a href={link.href}>{link.label}</a>
+              </li>
+            ))}
+          </ul>
+        )}
         <div className={styles.authButtons}>
           <LanguageSwitcher />
           <Link href="/login" className={styles.loginButton}>
