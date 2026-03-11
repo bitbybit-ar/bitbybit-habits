@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
-import { getDb, initDb } from "@/lib/db";
+import { getDb, users, familyMembers } from "@/lib/db";
 import { verifyPassword, createSession } from "@/lib/auth";
-import type { ApiResponse, User } from "@/lib/types";
+import { eq, or } from "drizzle-orm";
+import type { ApiResponse } from "@/lib/types";
 
 export async function POST(request: Request) {
   try {
@@ -14,26 +15,21 @@ export async function POST(request: Request) {
       );
     }
 
-    await initDb();
     const db = getDb();
     const loginLower = login.trim().toLowerCase();
 
-    // Try email first, then username
-    let result = await db`
-      SELECT id, email, username, password_hash, display_name, locale
-      FROM users
-      WHERE LOWER(TRIM(email)) = ${loginLower}
-      LIMIT 1
-    `;
-
-    if (result.length === 0) {
-      result = await db`
-        SELECT id, email, username, password_hash, display_name, locale
-        FROM users
-        WHERE LOWER(TRIM(username)) = ${loginLower}
-        LIMIT 1
-      `;
-    }
+    const result = await db
+      .select({
+        id: users.id,
+        email: users.email,
+        username: users.username,
+        password_hash: users.password_hash,
+        display_name: users.display_name,
+        locale: users.locale,
+      })
+      .from(users)
+      .where(or(eq(users.email, loginLower), eq(users.username, loginLower)))
+      .limit(1);
 
     if (result.length === 0) {
       return NextResponse.json<ApiResponse>(
@@ -42,7 +38,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const user = result[0] as User;
+    const user = result[0];
     const valid = await verifyPassword(password, user.password_hash);
 
     if (!valid) {
@@ -53,12 +49,13 @@ export async function POST(request: Request) {
     }
 
     // Get user's role from their first family membership
-    const memberResult = await db`
-      SELECT role FROM family_members
-      WHERE user_id = ${user.id}
-      ORDER BY joined_at ASC
-      LIMIT 1
-    `;
+    const memberResult = await db
+      .select({ role: familyMembers.role })
+      .from(familyMembers)
+      .where(eq(familyMembers.user_id, user.id))
+      .orderBy(familyMembers.joined_at)
+      .limit(1);
+
     const role = (memberResult[0]?.role as "sponsor" | "kid") ?? null;
 
     const token = await createSession({

@@ -1,4 +1,6 @@
 import { apiHandler, requireFields, NotFoundError, BadRequestError } from "@/lib/api";
+import { familyMembers, families, habits } from "@/lib/db";
+import { eq, and, ne } from "drizzle-orm";
 
 export const POST = apiHandler(async (request, { session, db }) => {
   const body = await request.json();
@@ -7,10 +9,10 @@ export const POST = apiHandler(async (request, { session, db }) => {
   requireFields({ family_id }, ["family_id"]);
 
   // Check if user is a member
-  const membership = await db`
-    SELECT fm.id, fm.role FROM family_members fm
-    WHERE fm.family_id = ${family_id} AND fm.user_id = ${session.user_id}
-  `;
+  const membership = await db
+    .select({ id: familyMembers.id, role: familyMembers.role })
+    .from(familyMembers)
+    .where(and(eq(familyMembers.family_id, family_id), eq(familyMembers.user_id, session.user_id)));
 
   if (membership.length === 0) {
     throw new NotFoundError("You are not a member of this family");
@@ -20,19 +22,24 @@ export const POST = apiHandler(async (request, { session, db }) => {
 
   // If sponsor, check that there's at least one other sponsor
   if (userRole === "sponsor") {
-    const otherSponsors = await db`
-      SELECT id FROM family_members
-      WHERE family_id = ${family_id}
-        AND user_id != ${session.user_id}
-        AND role = 'sponsor'
-    `;
+    const otherSponsors = await db
+      .select({ id: familyMembers.id })
+      .from(familyMembers)
+      .where(
+        and(
+          eq(familyMembers.family_id, family_id),
+          ne(familyMembers.user_id, session.user_id),
+          eq(familyMembers.role, "sponsor")
+        )
+      );
 
     if (otherSponsors.length === 0) {
-      const otherMembers = await db`
-        SELECT id FROM family_members
-        WHERE family_id = ${family_id}
-          AND user_id != ${session.user_id}
-      `;
+      const otherMembers = await db
+        .select({ id: familyMembers.id })
+        .from(familyMembers)
+        .where(
+          and(eq(familyMembers.family_id, family_id), ne(familyMembers.user_id, session.user_id))
+        );
 
       if (otherMembers.length > 0) {
         throw new BadRequestError("Cannot leave: you are the last sponsor. Promote another member first or delete the family.");
@@ -41,19 +48,19 @@ export const POST = apiHandler(async (request, { session, db }) => {
   }
 
   // Remove the member
-  await db`
-    DELETE FROM family_members
-    WHERE family_id = ${family_id} AND user_id = ${session.user_id}
-  `;
+  await db
+    .delete(familyMembers)
+    .where(and(eq(familyMembers.family_id, family_id), eq(familyMembers.user_id, session.user_id)));
 
   // Check if family is now empty — if so, delete it
-  const remaining = await db`
-    SELECT id FROM family_members WHERE family_id = ${family_id}
-  `;
+  const remaining = await db
+    .select({ id: familyMembers.id })
+    .from(familyMembers)
+    .where(eq(familyMembers.family_id, family_id));
 
   if (remaining.length === 0) {
-    await db`UPDATE habits SET active = false WHERE family_id = ${family_id}`;
-    await db`DELETE FROM families WHERE id = ${family_id}`;
+    await db.update(habits).set({ active: false }).where(eq(habits.family_id, family_id));
+    await db.delete(families).where(eq(families.id, family_id));
   }
 
   return undefined;

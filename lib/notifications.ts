@@ -1,4 +1,4 @@
-import { getDb } from "@/lib/db";
+import { getDb, notifications } from "@/lib/db";
 
 export type NotificationType =
   | "completion_pending"
@@ -18,8 +18,11 @@ export async function createNotification(
   metadata?: Record<string, unknown>
 ): Promise<void> {
   const db = getDb();
-  await db`
-    INSERT INTO notifications (user_id, type, title, body, metadata)
-    VALUES (${userId}, ${type}, ${title}, ${body}, ${metadata ? JSON.stringify(metadata) : null})
-  `;
+  await db.insert(notifications).values({
+    user_id: userId,
+    type,
+    title,
+    body,
+    metadata: metadata ?? null,
+  });
 }

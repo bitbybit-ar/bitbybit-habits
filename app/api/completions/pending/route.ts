@@ -1,35 +1,28 @@
 import { apiHandler } from "@/lib/api";
-
-interface PendingCompletionRow {
-  id: string;
-  habit_id: string;
-  habit_name: string;
-  habit_color: string;
-  kid_name: string;
-  sat_reward: number;
-  date: string;
-  completed_at: string;
-}
+import { completions, habits, users, familyMembers } from "@/lib/db";
+import { eq, and, desc } from "drizzle-orm";
 
 export const GET = apiHandler(async (_req, { session, db }) => {
-  const pendingCompletions = await db`
-    SELECT
-      c.id,
-      c.habit_id,
-      h.name AS habit_name,
-      h.color AS habit_color,
-      u.display_name AS kid_name,
-      h.sat_reward,
-      c.date,
-      c.completed_at
-    FROM completions c
-    INNER JOIN habits h ON h.id = c.habit_id
-    INNER JOIN users u ON u.id = c.user_id
-    INNER JOIN family_members fm ON fm.family_id = h.family_id AND fm.user_id = ${session.user_id}
-    WHERE c.status = 'pending'
-      AND fm.role = 'sponsor'
-    ORDER BY c.completed_at DESC
-  ` as PendingCompletionRow[];
+  const result = await db
+    .select({
+      id: completions.id,
+      habit_id: completions.habit_id,
+      habit_name: habits.name,
+      habit_color: habits.color,
+      kid_name: users.display_name,
+      sat_reward: habits.sat_reward,
+      date: completions.date,
+      completed_at: completions.completed_at,
+    })
+    .from(completions)
+    .innerJoin(habits, eq(habits.id, completions.habit_id))
+    .innerJoin(users, eq(users.id, completions.user_id))
+    .innerJoin(
+      familyMembers,
+      and(eq(familyMembers.family_id, habits.family_id), eq(familyMembers.user_id, session.user_id))
+    )
+    .where(and(eq(completions.status, "pending"), eq(familyMembers.role, "sponsor")))
+    .orderBy(desc(completions.completed_at));
 
-  return pendingCompletions;
+  return result;
 });

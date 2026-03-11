@@ -1,32 +1,43 @@
 import { apiHandler, NotFoundError } from "@/lib/api";
+import { habits, familyMembers, habitAssignments } from "@/lib/db";
+import { eq, and, or, isNotNull } from "drizzle-orm";
 
 export const GET = apiHandler(async (_req, { session, db, params }) => {
   const { id } = params;
 
   // Verify user has access to this habit
-  const existing = await db`
-    SELECT h.* FROM habits h
-    LEFT JOIN family_members fm ON fm.family_id = h.family_id AND fm.user_id = ${session.user_id}
-    WHERE h.id = ${id}
-      AND (
-        h.created_by = ${session.user_id}
-        OR h.assigned_to = ${session.user_id}
-        OR fm.id IS NOT NULL
+  const existing = await db
+    .select({ id: habits.id, assigned_to: habits.assigned_to })
+    .from(habits)
+    .leftJoin(
+      familyMembers,
+      and(eq(familyMembers.family_id, habits.family_id), eq(familyMembers.user_id, session.user_id))
+    )
+    .where(
+      and(
+        eq(habits.id, id),
+        or(
+          eq(habits.created_by, session.user_id),
+          eq(habits.assigned_to, session.user_id),
+          isNotNull(familyMembers.id)
+        )
       )
-  `;
+    );
 
   if (existing.length === 0) {
     throw new NotFoundError("Habit not found");
   }
 
-  // Try to get from habit_assignments table
-  try {
-    const assignments = await db`
-      SELECT user_id FROM habit_assignments WHERE habit_id = ${id}
-    `;
+  // Get from habit_assignments table
+  const assignments = await db
+    .select({ user_id: habitAssignments.user_id })
+    .from(habitAssignments)
+    .where(eq(habitAssignments.habit_id, id));
+
+  if (assignments.length > 0) {
     return assignments;
-  } catch {
-    // Table doesn't exist yet, fall back to assigned_to
-    return [{ user_id: existing[0].assigned_to }];
   }
+
+  // Fall back to assigned_to
+  return [{ user_id: existing[0].assigned_to }];
 });

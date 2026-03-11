@@ -1,5 +1,6 @@
 import { apiHandler, requireFields, NotFoundError, BadRequestError } from "@/lib/api";
-import type { Payment } from "@/lib/types";
+import { payments } from "@/lib/db";
+import { eq, and } from "drizzle-orm";
 
 /**
  * POST /api/payments/retry
@@ -15,10 +16,10 @@ export const POST = apiHandler(async (request, { session, db }) => {
   requireFields({ payment_id }, ["payment_id"]);
 
   // Verify ownership and failed status
-  const existing = await db`
-    SELECT * FROM payments
-    WHERE id = ${payment_id} AND from_user_id = ${session.user_id}
-  ` as Payment[];
+  const existing = await db
+    .select()
+    .from(payments)
+    .where(and(eq(payments.id, payment_id!), eq(payments.from_user_id, session.user_id)));
 
   if (existing.length === 0) {
     throw new NotFoundError("Pago");
@@ -28,18 +29,11 @@ export const POST = apiHandler(async (request, { session, db }) => {
     throw new BadRequestError("Solo se pueden reintentar pagos fallidos");
   }
 
-  // ── NWC placeholder ──────────────────────────────────────────
-  // TODO: Execute NWC payment here. On success set status='paid',
-  // on failure set status='failed' with error details.
-  // For now we just reset to 'pending'.
-  // ─────────────────────────────────────────────────────────────
-
-  const updated = await db`
-    UPDATE payments
-    SET status = 'pending', payment_hash = NULL, paid_at = NULL
-    WHERE id = ${payment_id}
-    RETURNING *
-  ` as Payment[];
+  const updated = await db
+    .update(payments)
+    .set({ status: "pending", payment_hash: null, paid_at: null })
+    .where(eq(payments.id, payment_id!))
+    .returning();
 
   return updated[0];
 });

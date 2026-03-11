@@ -1,4 +1,6 @@
 import { apiHandler } from "@/lib/api";
+import { payments, completions, habits } from "@/lib/db";
+import { eq, and, sum, count, desc, sql } from "drizzle-orm";
 
 interface HabitStreak {
   habit_id: string;
@@ -14,47 +16,48 @@ interface KidStats {
 
 export const GET = apiHandler(async (_req, { session, db }) => {
   // Total sats earned (sum of paid payments)
-  const satsResult = await db`
-    SELECT COALESCE(SUM(p.amount_sats), 0) AS total_sats
-    FROM payments p
-    WHERE p.to_user_id = ${session.user_id}
-      AND p.status = 'paid'
-  `;
-  const totalSatsEarned = Number(satsResult[0].total_sats);
+  const satsResult = await db
+    .select({ total: sql<number>`COALESCE(${sum(payments.amount_sats)}, 0)` })
+    .from(payments)
+    .where(and(eq(payments.to_user_id, session.user_id), eq(payments.status, "paid")));
+
+  const totalSatsEarned = Number(satsResult[0].total);
 
   // Pending completions count
-  const pendingResult = await db`
-    SELECT COUNT(*) AS pending_count
-    FROM completions c
-    WHERE c.user_id = ${session.user_id}
-      AND c.status = 'pending'
-  `;
+  const pendingResult = await db
+    .select({ pending_count: count() })
+    .from(completions)
+    .where(and(eq(completions.user_id, session.user_id), eq(completions.status, "pending")));
+
   const pendingCompletions = Number(pendingResult[0].pending_count);
 
   // Current streak per habit
-  const habits = await db`
-    SELECT id, name FROM habits
-    WHERE assigned_to = ${session.user_id}
-      AND active = true
-  `;
+  const activeHabits = await db
+    .select({ id: habits.id, name: habits.name })
+    .from(habits)
+    .where(and(eq(habits.assigned_to, session.user_id), eq(habits.active, true)));
 
   const streaks: HabitStreak[] = [];
 
-  for (const habit of habits) {
-    const completions = await db`
-      SELECT date FROM completions
-      WHERE habit_id = ${habit.id}
-        AND user_id = ${session.user_id}
-        AND status = 'approved'
-      ORDER BY date DESC
-    `;
+  for (const habit of activeHabits) {
+    const habitCompletions = await db
+      .select({ date: completions.date })
+      .from(completions)
+      .where(
+        and(
+          eq(completions.habit_id, habit.id),
+          eq(completions.user_id, session.user_id),
+          eq(completions.status, "approved")
+        )
+      )
+      .orderBy(desc(completions.date));
 
     let streak = 0;
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const checkDate = new Date(today);
 
-    for (const completion of completions) {
+    for (const completion of habitCompletions) {
       const completionDate = new Date(completion.date);
       completionDate.setHours(0, 0, 0, 0);
 
@@ -81,8 +84,8 @@ export const GET = apiHandler(async (_req, { session, db }) => {
     }
 
     streaks.push({
-      habit_id: habit.id as string,
-      habit_name: habit.name as string,
+      habit_id: habit.id,
+      habit_name: habit.name,
       current_streak: streak,
     });
   }

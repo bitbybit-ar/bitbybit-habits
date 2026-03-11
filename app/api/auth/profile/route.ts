@@ -1,19 +1,27 @@
 import { apiHandler, NotFoundError, BadRequestError } from "@/lib/api";
-import type { User } from "@/lib/types";
+import { users } from "@/lib/db";
+import { eq } from "drizzle-orm";
 
 export const dynamic = "force-dynamic";
 
 export const GET = apiHandler(async (_req, { session, db }) => {
-  const users = await db`
-    SELECT id, email, username, display_name, avatar_url, locale
-    FROM users WHERE id = ${session.user_id}
-  ` as Partial<User>[];
+  const result = await db
+    .select({
+      id: users.id,
+      email: users.email,
+      username: users.username,
+      display_name: users.display_name,
+      avatar_url: users.avatar_url,
+      locale: users.locale,
+    })
+    .from(users)
+    .where(eq(users.id, session.user_id));
 
-  if (users.length === 0) {
+  if (result.length === 0) {
     throw new NotFoundError("Usuario");
   }
 
-  return users[0];
+  return result[0];
 });
 
 export const PATCH = apiHandler(async (request, { session, db }) => {
@@ -38,16 +46,25 @@ export const PATCH = apiHandler(async (request, { session, db }) => {
     throw new BadRequestError("Email inválido");
   }
 
-  const updated = await db`
-    UPDATE users SET
-      display_name = COALESCE(${display_name?.trim() ?? null}, display_name),
-      username = COALESCE(${username?.trim() ?? null}, username),
-      email = COALESCE(${email?.trim() ?? null}, email),
-      avatar_url = COALESCE(${avatar_url?.trim() ?? null}, avatar_url),
-      locale = COALESCE(${locale ?? null}, locale)
-    WHERE id = ${session.user_id}
-    RETURNING id, email, username, display_name, avatar_url, locale
-  `;
+  const updates: Partial<typeof users.$inferInsert> = {};
+  if (display_name !== undefined) updates.display_name = display_name.trim();
+  if (username !== undefined) updates.username = username.trim();
+  if (email !== undefined) updates.email = email.trim();
+  if (avatar_url !== undefined) updates.avatar_url = avatar_url.trim();
+  if (locale !== undefined) updates.locale = locale;
+
+  const updated = await db
+    .update(users)
+    .set(updates)
+    .where(eq(users.id, session.user_id))
+    .returning({
+      id: users.id,
+      email: users.email,
+      username: users.username,
+      display_name: users.display_name,
+      avatar_url: users.avatar_url,
+      locale: users.locale,
+    });
 
   return updated[0];
 });

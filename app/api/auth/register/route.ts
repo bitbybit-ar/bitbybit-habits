@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { getDb, initDb } from "@/lib/db";
+import { getDb, users } from "@/lib/db";
 import { hashPassword } from "@/lib/auth";
-import type { ApiResponse, User } from "@/lib/types";
+import type { ApiResponse } from "@/lib/types";
 
 export async function POST(request: Request) {
   try {
@@ -15,7 +15,6 @@ export async function POST(request: Request) {
       );
     }
 
-    await initDb();
     const db = getDb();
     const password_hash = await hashPassword(password);
 
@@ -23,17 +22,27 @@ export async function POST(request: Request) {
     const usernameLower = username.toLowerCase();
     const userLocale = locale ?? "es";
 
-    const result = await db`
-      INSERT INTO users (email, username, password_hash, display_name, locale)
-      VALUES (${emailLower}, ${usernameLower}, ${password_hash}, ${display_name}, ${userLocale})
-      RETURNING id, email, username, display_name, locale, created_at
-    `;
-
-    const user = result[0] as Omit<User, "password_hash">;
+    const result = await db
+      .insert(users)
+      .values({
+        email: emailLower,
+        username: usernameLower,
+        password_hash,
+        display_name,
+        locale: userLocale,
+      })
+      .returning({
+        id: users.id,
+        email: users.email,
+        username: users.username,
+        display_name: users.display_name,
+        locale: users.locale,
+        created_at: users.created_at,
+      });
 
     return NextResponse.json<ApiResponse>({
       success: true,
-      data: user,
+      data: result[0],
     });
   } catch (error: unknown) {
     const message =

@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
-import { getDb } from "@/lib/db";
+import { getDb, type Db } from "@/lib/db";
 import { ApiError, UnauthorizedError } from "./errors";
 import type { ApiResponse, AuthSession } from "@/lib/types";
 
 export interface HandlerContext {
   session: AuthSession;
-  db: ReturnType<typeof getDb>;
+  db: Db;
   params: Record<string, string>;
 }
 

@@ -1,29 +1,32 @@
 import { apiHandler, NotFoundError, ForbiddenError } from "@/lib/api";
+import { families, familyMembers, habits } from "@/lib/db";
+import { eq } from "drizzle-orm";
 
 export const DELETE = apiHandler(async (_req, { session, db, params }) => {
   const familyId = params.id;
 
   // Check the user is the creator
-  const families = await db`
-    SELECT * FROM families WHERE id = ${familyId}
-  `;
+  const result = await db
+    .select()
+    .from(families)
+    .where(eq(families.id, familyId));
 
-  if (families.length === 0) {
+  if (result.length === 0) {
     throw new NotFoundError("Family");
   }
 
-  if (families[0].created_by !== session.user_id) {
+  if (result[0].created_by !== session.user_id) {
     throw new ForbiddenError("Only the creator can delete this family");
   }
 
   // Deactivate related habits
-  await db`UPDATE habits SET active = false WHERE family_id = ${familyId}`;
+  await db.update(habits).set({ active: false }).where(eq(habits.family_id, familyId));
 
   // Remove all members
-  await db`DELETE FROM family_members WHERE family_id = ${familyId}`;
+  await db.delete(familyMembers).where(eq(familyMembers.family_id, familyId));
 
   // Delete family
-  await db`DELETE FROM families WHERE id = ${familyId}`;
+  await db.delete(families).where(eq(families.id, familyId));
 
   return undefined;
 });

@@ -1,6 +1,7 @@
 import { apiHandler, requireFields, NotFoundError } from "@/lib/api";
 import { createNotification } from "@/lib/notifications";
-import type { Completion } from "@/lib/types";
+import { completions, habits, familyMembers } from "@/lib/db";
+import { eq, and, sql } from "drizzle-orm";
 
 export const POST = apiHandler(async (request, { session, db }) => {
   const body = await request.json();
@@ -12,28 +13,41 @@ export const POST = apiHandler(async (request, { session, db }) => {
   requireFields({ completion_id }, ["completion_id"]);
 
   // Verify sponsor is in the same family as the habit
-  const completions = await db`
-    SELECT c.*, h.name AS habit_name FROM completions c
-    INNER JOIN habits h ON h.id = c.habit_id
-    INNER JOIN family_members fm ON fm.family_id = h.family_id AND fm.user_id = ${session.user_id}
-    WHERE c.id = ${completion_id}
-      AND c.status = 'pending'
-      AND fm.role = 'sponsor'
-  ` as (Completion & { habit_name: string })[];
+  const result = await db
+    .select({
+      id: completions.id,
+      user_id: completions.user_id,
+      habit_name: habits.name,
+    })
+    .from(completions)
+    .innerJoin(habits, eq(habits.id, completions.habit_id))
+    .innerJoin(
+      familyMembers,
+      and(eq(familyMembers.family_id, habits.family_id), eq(familyMembers.user_id, session.user_id))
+    )
+    .where(
+      and(eq(completions.id, completion_id), eq(completions.status, "pending"), eq(familyMembers.role, "sponsor"))
+    );
 
-  if (completions.length === 0) {
+  if (result.length === 0) {
     throw new NotFoundError("Completacion no encontrada o ya procesada");
   }
 
-  const updated = await db`
-    UPDATE completions
-    SET status = 'rejected', reviewed_by = ${session.user_id}, reviewed_at = NOW(), note = COALESCE(${reason ?? null}, note)
-    WHERE id = ${completion_id}
-    RETURNING *
-  ` as Completion[];
+  const updates: Record<string, unknown> = {
+    status: "rejected",
+    reviewed_by: session.user_id,
+    reviewed_at: sql`NOW()`,
+  };
+  if (reason) updates.note = reason;
+
+  const updated = await db
+    .update(completions)
+    .set(updates)
+    .where(eq(completions.id, completion_id))
+    .returning();
 
   // Notify the kid
-  const completion = completions[0];
+  const completion = result[0];
   try {
     await createNotification(
       completion.user_id,

@@ -1,5 +1,6 @@
 import { apiHandler, requireFields } from "@/lib/api";
-import type { Notification } from "@/lib/types";
+import { notifications } from "@/lib/db";
+import { eq, and, desc } from "drizzle-orm";
 
 /**
  * GET /api/notifications
@@ -9,25 +10,19 @@ import type { Notification } from "@/lib/types";
 export const GET = apiHandler(async (request, { session, db }) => {
   const unreadOnly = new URL(request.url).searchParams.get("unread") === "true";
 
-  let notifications: Notification[];
-
+  const conditions = [eq(notifications.user_id, session.user_id)];
   if (unreadOnly) {
-    notifications = await db`
-      SELECT * FROM notifications
-      WHERE user_id = ${session.user_id} AND read = false
-      ORDER BY created_at DESC
-      LIMIT 50
-    ` as Notification[];
-  } else {
-    notifications = await db`
-      SELECT * FROM notifications
-      WHERE user_id = ${session.user_id}
-      ORDER BY created_at DESC
-      LIMIT 50
-    ` as Notification[];
+    conditions.push(eq(notifications.read, false));
   }
 
-  return notifications;
+  const result = await db
+    .select()
+    .from(notifications)
+    .where(and(...conditions))
+    .orderBy(desc(notifications.created_at))
+    .limit(50);
+
+  return result;
 });
 
 /**
@@ -41,10 +36,10 @@ export const PATCH = apiHandler(async (request, { session, db }) => {
 
   requireFields({ id }, ["id"]);
 
-  await db`
-    UPDATE notifications SET read = true
-    WHERE id = ${id} AND user_id = ${session.user_id}
-  `;
+  await db
+    .update(notifications)
+    .set({ read: true })
+    .where(and(eq(notifications.id, id!), eq(notifications.user_id, session.user_id)));
 
   return undefined;
 });

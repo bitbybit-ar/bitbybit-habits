@@ -1,6 +1,7 @@
 import { apiHandler, requireFields, NotFoundError } from "@/lib/api";
 import { createNotification } from "@/lib/notifications";
-import type { Completion } from "@/lib/types";
+import { completions, habits, familyMembers, payments } from "@/lib/db";
+import { eq, and, sql } from "drizzle-orm";
 
 export const POST = apiHandler(async (request, { session, db }) => {
   const body = await request.json();
@@ -9,36 +10,50 @@ export const POST = apiHandler(async (request, { session, db }) => {
   requireFields({ completion_id }, ["completion_id"]);
 
   // Get the completion and verify sponsor is in the same family
-  const completions = await db`
-    SELECT c.*, h.sat_reward, h.family_id, h.assigned_to, h.name AS habit_name
-    FROM completions c
-    INNER JOIN habits h ON h.id = c.habit_id
-    INNER JOIN family_members fm ON fm.family_id = h.family_id AND fm.user_id = ${session.user_id}
-    WHERE c.id = ${completion_id}
-      AND c.status = 'pending'
-      AND fm.role = 'sponsor'
-  ` as (Completion & { sat_reward: number; family_id: string; assigned_to: string; habit_name: string })[];
+  const result = await db
+    .select({
+      id: completions.id,
+      habit_id: completions.habit_id,
+      user_id: completions.user_id,
+      date: completions.date,
+      status: completions.status,
+      sat_reward: habits.sat_reward,
+      family_id: habits.family_id,
+      assigned_to: habits.assigned_to,
+      habit_name: habits.name,
+    })
+    .from(completions)
+    .innerJoin(habits, eq(habits.id, completions.habit_id))
+    .innerJoin(
+      familyMembers,
+      and(eq(familyMembers.family_id, habits.family_id), eq(familyMembers.user_id, session.user_id))
+    )
+    .where(
+      and(eq(completions.id, completion_id), eq(completions.status, "pending"), eq(familyMembers.role, "sponsor"))
+    );
 
-  if (completions.length === 0) {
+  if (result.length === 0) {
     throw new NotFoundError("Completacion no encontrada o ya procesada");
   }
 
-  const completion = completions[0];
+  const completion = result[0];
 
   // Update completion status
-  const updated = await db`
-    UPDATE completions
-    SET status = 'approved', reviewed_by = ${session.user_id}, reviewed_at = NOW()
-    WHERE id = ${completion_id}
-    RETURNING *
-  ` as Completion[];
+  const updated = await db
+    .update(completions)
+    .set({ status: "approved", reviewed_by: session.user_id, reviewed_at: sql`NOW()` })
+    .where(eq(completions.id, completion_id))
+    .returning();
 
   // If habit has sat_reward > 0, create a pending payment record
   if (completion.sat_reward > 0) {
-    await db`
-      INSERT INTO payments (completion_id, from_user_id, to_user_id, amount_sats, status)
-      VALUES (${completion_id}, ${session.user_id}, ${completion.user_id}, ${completion.sat_reward}, 'pending')
-    `;
+    await db.insert(payments).values({
+      completion_id,
+      from_user_id: session.user_id,
+      to_user_id: completion.user_id,
+      amount_sats: completion.sat_reward,
+      status: "pending",
+    });
   }
 
   // Notify the kid

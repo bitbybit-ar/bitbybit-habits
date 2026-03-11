@@ -1,5 +1,7 @@
 import { apiHandler } from "@/lib/api";
-import type { PaymentWithDetails } from "@/lib/types";
+import { payments, completions, habits, users } from "@/lib/db";
+import { eq, and, or, gte, lte, desc, sql } from "drizzle-orm";
+import type { SQL } from "drizzle-orm";
 
 /**
  * GET /api/payments
@@ -15,52 +17,91 @@ export const GET = apiHandler(async (request, { session, db }) => {
   const from = searchParams.get("from");
   const to = searchParams.get("to");
 
-  let payments: PaymentWithDetails[];
+  const dateConditions: SQL[] = [];
+  if (from) dateConditions.push(gte(payments.created_at, new Date(from)));
+  if (to) dateConditions.push(lte(payments.created_at, new Date(to)));
 
   if (role === "sponsor") {
-    payments = await db`
-      SELECT p.*,
-        h.name AS habit_name,
-        tu.display_name AS other_user_display_name
-      FROM payments p
-      JOIN completions c ON c.id = p.completion_id
-      JOIN habits h ON h.id = c.habit_id
-      JOIN users tu ON tu.id = p.to_user_id
-      WHERE p.from_user_id = ${session.user_id}
-        ${from ? db`AND p.created_at >= ${from}` : db``}
-        ${to ? db`AND p.created_at <= ${to}` : db``}
-      ORDER BY p.created_at DESC
-    ` as PaymentWithDetails[];
-  } else if (role === "kid") {
-    payments = await db`
-      SELECT p.*,
-        h.name AS habit_name,
-        fu.display_name AS other_user_display_name
-      FROM payments p
-      JOIN completions c ON c.id = p.completion_id
-      JOIN habits h ON h.id = c.habit_id
-      JOIN users fu ON fu.id = p.from_user_id
-      WHERE p.to_user_id = ${session.user_id}
-        ${from ? db`AND p.created_at >= ${from}` : db``}
-        ${to ? db`AND p.created_at <= ${to}` : db``}
-      ORDER BY p.created_at DESC
-    ` as PaymentWithDetails[];
-  } else {
-    payments = await db`
-      SELECT p.*,
-        h.name AS habit_name,
-        CASE WHEN p.from_user_id = ${session.user_id} THEN tu.display_name ELSE fu.display_name END AS other_user_display_name
-      FROM payments p
-      JOIN completions c ON c.id = p.completion_id
-      JOIN habits h ON h.id = c.habit_id
-      JOIN users fu ON fu.id = p.from_user_id
-      JOIN users tu ON tu.id = p.to_user_id
-      WHERE (p.from_user_id = ${session.user_id} OR p.to_user_id = ${session.user_id})
-        ${from ? db`AND p.created_at >= ${from}` : db``}
-        ${to ? db`AND p.created_at <= ${to}` : db``}
-      ORDER BY p.created_at DESC
-    ` as PaymentWithDetails[];
+    const result = await db
+      .select({
+        id: payments.id,
+        completion_id: payments.completion_id,
+        from_user_id: payments.from_user_id,
+        to_user_id: payments.to_user_id,
+        amount_sats: payments.amount_sats,
+        payment_request: payments.payment_request,
+        payment_hash: payments.payment_hash,
+        status: payments.status,
+        paid_at: payments.paid_at,
+        created_at: payments.created_at,
+        habit_name: habits.name,
+        other_user_display_name: users.display_name,
+      })
+      .from(payments)
+      .innerJoin(completions, eq(completions.id, payments.completion_id))
+      .innerJoin(habits, eq(habits.id, completions.habit_id))
+      .innerJoin(users, eq(users.id, payments.to_user_id))
+      .where(and(eq(payments.from_user_id, session.user_id), ...dateConditions))
+      .orderBy(desc(payments.created_at));
+
+    return result;
   }
 
-  return payments;
+  if (role === "kid") {
+    const result = await db
+      .select({
+        id: payments.id,
+        completion_id: payments.completion_id,
+        from_user_id: payments.from_user_id,
+        to_user_id: payments.to_user_id,
+        amount_sats: payments.amount_sats,
+        payment_request: payments.payment_request,
+        payment_hash: payments.payment_hash,
+        status: payments.status,
+        paid_at: payments.paid_at,
+        created_at: payments.created_at,
+        habit_name: habits.name,
+        other_user_display_name: users.display_name,
+      })
+      .from(payments)
+      .innerJoin(completions, eq(completions.id, payments.completion_id))
+      .innerJoin(habits, eq(habits.id, completions.habit_id))
+      .innerJoin(users, eq(users.id, payments.from_user_id))
+      .where(and(eq(payments.to_user_id, session.user_id), ...dateConditions))
+      .orderBy(desc(payments.created_at));
+
+    return result;
+  }
+
+  // Both roles — need to alias users table for from and to
+  const fromUser = users;
+  const result = await db
+    .select({
+      id: payments.id,
+      completion_id: payments.completion_id,
+      from_user_id: payments.from_user_id,
+      to_user_id: payments.to_user_id,
+      amount_sats: payments.amount_sats,
+      payment_request: payments.payment_request,
+      payment_hash: payments.payment_hash,
+      status: payments.status,
+      paid_at: payments.paid_at,
+      created_at: payments.created_at,
+      habit_name: habits.name,
+      other_user_display_name: sql<string>`CASE WHEN ${payments.from_user_id} = ${session.user_id} THEN tu.display_name ELSE ${fromUser.display_name} END`,
+    })
+    .from(payments)
+    .innerJoin(completions, eq(completions.id, payments.completion_id))
+    .innerJoin(habits, eq(habits.id, completions.habit_id))
+    .innerJoin(fromUser, eq(fromUser.id, payments.from_user_id))
+    .innerJoin(sql`users tu`, sql`tu.id = ${payments.to_user_id}`)
+    .where(
+      and(
+        or(eq(payments.from_user_id, session.user_id), eq(payments.to_user_id, session.user_id)),
+        ...dateConditions
+      )
+    )
+    .orderBy(desc(payments.created_at));
+
+  return result;
 });

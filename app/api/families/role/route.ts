@@ -1,4 +1,6 @@
 import { apiHandler, BadRequestError, ForbiddenError, NotFoundError } from "@/lib/api";
+import { familyMembers } from "@/lib/db";
+import { eq, and, ne } from "drizzle-orm";
 
 export const PATCH = apiHandler(async (request, { session, db }) => {
   const body = await request.json();
@@ -17,20 +19,20 @@ export const PATCH = apiHandler(async (request, { session, db }) => {
   }
 
   // Check requester is a sponsor in this family
-  const requesterMembership = await db`
-    SELECT role FROM family_members
-    WHERE family_id = ${family_id} AND user_id = ${session.user_id}
-  `;
+  const requesterMembership = await db
+    .select({ role: familyMembers.role })
+    .from(familyMembers)
+    .where(and(eq(familyMembers.family_id, family_id), eq(familyMembers.user_id, session.user_id)));
 
   if (requesterMembership.length === 0 || requesterMembership[0].role !== "sponsor") {
     throw new ForbiddenError("Only sponsors can change roles");
   }
 
   // Check target is a member
-  const targetMembership = await db`
-    SELECT role FROM family_members
-    WHERE family_id = ${family_id} AND user_id = ${user_id}
-  `;
+  const targetMembership = await db
+    .select({ role: familyMembers.role })
+    .from(familyMembers)
+    .where(and(eq(familyMembers.family_id, family_id), eq(familyMembers.user_id, user_id)));
 
   if (targetMembership.length === 0) {
     throw new NotFoundError("User is not a member of this family");
@@ -38,23 +40,26 @@ export const PATCH = apiHandler(async (request, { session, db }) => {
 
   // If demoting from sponsor, check there's at least one other sponsor
   if (targetMembership[0].role === "sponsor" && new_role === "kid") {
-    const otherSponsors = await db`
-      SELECT id FROM family_members
-      WHERE family_id = ${family_id}
-        AND user_id != ${user_id}
-        AND role = 'sponsor'
-    `;
+    const otherSponsors = await db
+      .select({ id: familyMembers.id })
+      .from(familyMembers)
+      .where(
+        and(
+          eq(familyMembers.family_id, family_id),
+          ne(familyMembers.user_id, user_id),
+          eq(familyMembers.role, "sponsor")
+        )
+      );
 
     if (otherSponsors.length === 0) {
       throw new BadRequestError("Cannot demote the last sponsor");
     }
   }
 
-  await db`
-    UPDATE family_members
-    SET role = ${new_role}
-    WHERE family_id = ${family_id} AND user_id = ${user_id}
-  `;
+  await db
+    .update(familyMembers)
+    .set({ role: new_role })
+    .where(and(eq(familyMembers.family_id, family_id), eq(familyMembers.user_id, user_id)));
 
   return undefined;
 });

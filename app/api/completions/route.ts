@@ -1,6 +1,7 @@
 import { apiHandler, created, requireFields, NotFoundError, ConflictError } from "@/lib/api";
 import { createNotification } from "@/lib/notifications";
-import type { Completion, Habit } from "@/lib/types";
+import { habits, familyMembers, completions } from "@/lib/db";
+import { eq, and, or, isNull, isNotNull, desc, gte, lte, sql } from "drizzle-orm";
 
 export const POST = apiHandler(async (request, { session, db }) => {
   const body = await request.json();
@@ -12,29 +13,44 @@ export const POST = apiHandler(async (request, { session, db }) => {
 
   requireFields({ habit_id }, ["habit_id"]);
 
-  // Verify the habit exists and user can complete it (assigned directly or family member)
-  const habits = await db`
-    SELECT h.* FROM habits h
-    LEFT JOIN family_members fm ON fm.family_id = h.family_id AND fm.user_id = ${session.user_id}
-    WHERE h.id = ${habit_id}
-      AND h.active = true
-      AND (h.assigned_to = ${session.user_id} OR h.created_by = ${session.user_id} OR fm.id IS NOT NULL)
-  ` as Habit[];
+  // Verify the habit exists and user can complete it
+  const habitResult = await db
+    .select()
+    .from(habits)
+    .leftJoin(
+      familyMembers,
+      and(eq(familyMembers.family_id, habits.family_id), eq(familyMembers.user_id, session.user_id))
+    )
+    .where(
+      and(
+        eq(habits.id, habit_id),
+        eq(habits.active, true),
+        or(
+          eq(habits.assigned_to, session.user_id),
+          eq(habits.created_by, session.user_id),
+          isNotNull(familyMembers.id)
+        )
+      )
+    );
 
-  if (habits.length === 0) {
+  if (habitResult.length === 0) {
     throw new NotFoundError("Habito no encontrado o no asignado a vos");
   }
 
-  const habit = habits[0];
+  const habit = habitResult[0].habits;
   const today = new Date().toISOString().split("T")[0];
 
   // Check if already completed today
-  const existing = await db`
-    SELECT id FROM completions
-    WHERE habit_id = ${habit_id}
-      AND user_id = ${session.user_id}
-      AND date = ${today}
-  `;
+  const existing = await db
+    .select({ id: completions.id })
+    .from(completions)
+    .where(
+      and(
+        eq(completions.habit_id, habit_id),
+        eq(completions.user_id, session.user_id),
+        eq(completions.date, today)
+      )
+    );
 
   if (existing.length > 0) {
     throw new ConflictError("Ya completaste este habito hoy");
@@ -43,19 +59,26 @@ export const POST = apiHandler(async (request, { session, db }) => {
   // Status depends on verification type
   const status = habit.verification_type === "self_verify" ? "approved" : "pending";
 
-  const completions = await db`
-    INSERT INTO completions (habit_id, user_id, date, status, note, evidence_url)
-    VALUES (${habit_id}, ${session.user_id}, ${today}, ${status}, ${note ?? null}, ${evidence_url ?? null})
-    RETURNING *
-  ` as Completion[];
+  const result = await db
+    .insert(completions)
+    .values({
+      habit_id,
+      user_id: session.user_id,
+      date: today,
+      status,
+      note: note ?? null,
+      evidence_url: evidence_url ?? null,
+    })
+    .returning();
 
   // Notify sponsor(s) in the family if pending approval
   if (status === "pending" && habit.family_id) {
     try {
-      const sponsors = await db`
-        SELECT fm.user_id FROM family_members fm
-        WHERE fm.family_id = ${habit.family_id} AND fm.role = 'sponsor'
-      `;
+      const sponsors = await db
+        .select({ user_id: familyMembers.user_id })
+        .from(familyMembers)
+        .where(and(eq(familyMembers.family_id, habit.family_id), eq(familyMembers.role, "sponsor")));
+
       const displayName = session.display_name || session.username;
       for (const sponsor of sponsors) {
         await createNotification(
@@ -63,7 +86,7 @@ export const POST = apiHandler(async (request, { session, db }) => {
           "completion_pending",
           "Habit completed!",
           `${displayName} completed "${habit.name}" and is waiting for approval.`,
-          { completion_id: completions[0].id, habit_id: habit.id, kid_name: displayName }
+          { completion_id: result[0].id, habit_id: habit.id, kid_name: displayName }
         );
       }
     } catch (notifError) {
@@ -71,7 +94,7 @@ export const POST = apiHandler(async (request, { session, db }) => {
     }
   }
 
-  return created(completions[0]);
+  return created(result[0]);
 });
 
 export const GET = apiHandler(async (request, { session, db }) => {
@@ -79,16 +102,35 @@ export const GET = apiHandler(async (request, { session, db }) => {
   const dateFrom = searchParams.get("from");
   const dateTo = searchParams.get("to");
 
-  const completions = await db`
-    SELECT c.* FROM completions c
-    INNER JOIN habits h ON h.id = c.habit_id
-    LEFT JOIN family_members fm ON fm.family_id = h.family_id AND fm.user_id = ${session.user_id}
-    WHERE c.user_id = ${session.user_id}
-      AND (h.family_id IS NULL OR fm.id IS NOT NULL)
-      ${dateFrom ? db`AND c.date >= ${dateFrom}` : db``}
-      ${dateTo ? db`AND c.date <= ${dateTo}` : db``}
-    ORDER BY c.date DESC, c.completed_at DESC
-  ` as Completion[];
+  const conditions = [
+    eq(completions.user_id, session.user_id),
+    or(isNull(habits.family_id), isNotNull(familyMembers.id)),
+  ];
 
-  return completions;
+  if (dateFrom) conditions.push(gte(completions.date, dateFrom));
+  if (dateTo) conditions.push(lte(completions.date, dateTo));
+
+  const result = await db
+    .select({
+      id: completions.id,
+      habit_id: completions.habit_id,
+      user_id: completions.user_id,
+      date: completions.date,
+      status: completions.status,
+      evidence_url: completions.evidence_url,
+      note: completions.note,
+      completed_at: completions.completed_at,
+      reviewed_by: completions.reviewed_by,
+      reviewed_at: completions.reviewed_at,
+    })
+    .from(completions)
+    .innerJoin(habits, eq(habits.id, completions.habit_id))
+    .leftJoin(
+      familyMembers,
+      and(eq(familyMembers.family_id, habits.family_id), eq(familyMembers.user_id, session.user_id))
+    )
+    .where(and(...conditions))
+    .orderBy(desc(completions.date), desc(completions.completed_at));
+
+  return result;
 });

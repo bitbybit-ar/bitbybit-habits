@@ -1,18 +1,19 @@
 import { apiHandler, created, BadRequestError } from "@/lib/api";
+import { wallets, type Db } from "@/lib/db";
 import { encrypt, decrypt } from "@/lib/crypto";
-import type { Wallet } from "@/lib/types";
+import { eq, and } from "drizzle-orm";
 
 /** Shape returned to the client — never expose the encrypted URL */
 interface WalletPublic {
   id: string;
   user_id: string;
-  label?: string;
+  label: string | null;
   active: boolean;
   connected: boolean;
-  created_at: string;
+  created_at: Date | null;
 }
 
-function toPublic(w: Wallet): WalletPublic {
+function toPublic(w: typeof wallets.$inferSelect): WalletPublic {
   return {
     id: w.id,
     user_id: w.user_id,
@@ -24,14 +25,14 @@ function toPublic(w: Wallet): WalletPublic {
 }
 
 export const GET = apiHandler(async (_req, { session, db }) => {
-  const wallets = await db`
-    SELECT * FROM wallets
-    WHERE user_id = ${session.user_id} AND active = true
-    LIMIT 1
-  ` as Wallet[];
+  const result = await db
+    .select()
+    .from(wallets)
+    .where(and(eq(wallets.user_id, session.user_id), eq(wallets.active, true)))
+    .limit(1);
 
-  if (!wallets[0]) return null;
-  return toPublic(wallets[0]);
+  if (!result[0]) return null;
+  return toPublic(result[0]);
 });
 
 export const POST = apiHandler(async (request, { session, db }) => {
@@ -44,35 +45,34 @@ export const POST = apiHandler(async (request, { session, db }) => {
 
   const encrypted = encrypt(nwc_url);
 
-  const existing = await db`
-    SELECT id FROM wallets WHERE user_id = ${session.user_id}
-  `;
+  const existing = await db
+    .select({ id: wallets.id })
+    .from(wallets)
+    .where(eq(wallets.user_id, session.user_id));
 
-  let wallet: Wallet[];
+  let wallet: (typeof wallets.$inferSelect)[];
 
   if (existing.length > 0) {
-    wallet = await db`
-      UPDATE wallets
-      SET nwc_url_encrypted = ${encrypted}, label = ${label ?? null}, active = true
-      WHERE user_id = ${session.user_id}
-      RETURNING *
-    ` as Wallet[];
+    wallet = await db
+      .update(wallets)
+      .set({ nwc_url_encrypted: encrypted, label: label ?? null, active: true })
+      .where(eq(wallets.user_id, session.user_id))
+      .returning();
   } else {
-    wallet = await db`
-      INSERT INTO wallets (user_id, nwc_url_encrypted, label)
-      VALUES (${session.user_id}, ${encrypted}, ${label ?? null})
-      RETURNING *
-    ` as Wallet[];
+    wallet = await db
+      .insert(wallets)
+      .values({ user_id: session.user_id, nwc_url_encrypted: encrypted, label: label ?? null })
+      .returning();
   }
 
   return created(toPublic(wallet[0]));
 });
 
 export const DELETE = apiHandler(async (_req, { session, db }) => {
-  await db`
-    UPDATE wallets SET active = false
-    WHERE user_id = ${session.user_id}
-  `;
+  await db
+    .update(wallets)
+    .set({ active: false })
+    .where(eq(wallets.user_id, session.user_id));
 
   return undefined;
 });
@@ -83,14 +83,14 @@ export const DELETE = apiHandler(async (_req, { session, db }) => {
  */
 export async function getDecryptedNwcUrl(
   userId: string,
-  db: Parameters<Parameters<typeof apiHandler>[0]>[1]["db"]
+  db: Db
 ): Promise<string | null> {
-  const wallets = await db`
-    SELECT nwc_url_encrypted FROM wallets
-    WHERE user_id = ${userId} AND active = true
-    LIMIT 1
-  ` as Pick<Wallet, "nwc_url_encrypted">[];
+  const result = await db
+    .select({ nwc_url_encrypted: wallets.nwc_url_encrypted })
+    .from(wallets)
+    .where(and(eq(wallets.user_id, userId), eq(wallets.active, true)))
+    .limit(1);
 
-  if (!wallets[0]) return null;
-  return decrypt(wallets[0].nwc_url_encrypted);
+  if (!result[0]) return null;
+  return decrypt(result[0].nwc_url_encrypted);
 }

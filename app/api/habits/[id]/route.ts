@@ -1,13 +1,15 @@
 import { apiHandler, NotFoundError } from "@/lib/api";
-import type { Habit } from "@/lib/types";
+import { habits, habitAssignments } from "@/lib/db";
+import { eq, and } from "drizzle-orm";
 
 export const PUT = apiHandler(async (request, { session, db, params }) => {
   const { id } = params;
 
   // Verify ownership
-  const existing = await db`
-    SELECT * FROM habits WHERE id = ${id} AND created_by = ${session.user_id}
-  `;
+  const existing = await db
+    .select()
+    .from(habits)
+    .where(and(eq(habits.id, id), eq(habits.created_by, session.user_id)));
 
   if (existing.length === 0) {
     throw new NotFoundError("Hábito no encontrado o no tenés permiso para editarlo");
@@ -26,52 +28,47 @@ export const PUT = apiHandler(async (request, { session, db, params }) => {
     assigned_to,
     assigned_members,
     active,
-  } = body as Partial<Habit> & { assigned_members?: string[] };
+  } = body as {
+    name?: string;
+    description?: string;
+    color?: string;
+    sat_reward?: number;
+    schedule_type?: string;
+    schedule_days?: number[];
+    schedule_times_per_week?: number;
+    verification_type?: string;
+    assigned_to?: string;
+    assigned_members?: string[];
+    active?: boolean;
+  };
 
-  const updated = await db`
-    UPDATE habits SET
-      name = COALESCE(${name?.trim() ?? null}, name),
-      description = COALESCE(${description ?? null}, description),
-      color = COALESCE(${color ?? null}, color),
-      sat_reward = COALESCE(${sat_reward ?? null}, sat_reward),
-      schedule_type = COALESCE(${schedule_type ?? null}, schedule_type),
-      schedule_days = COALESCE(${schedule_days ?? null}, schedule_days),
-      schedule_times_per_week = COALESCE(${schedule_times_per_week ?? null}, schedule_times_per_week),
-      verification_type = COALESCE(${verification_type ?? null}, verification_type),
-      assigned_to = COALESCE(${assigned_to ?? null}, assigned_to),
-      active = COALESCE(${active ?? null}, active)
-    WHERE id = ${id}
-    RETURNING *
-  ` as Habit[];
+  const updates: Partial<typeof habits.$inferInsert> = {};
+  if (name !== undefined) updates.name = name.trim();
+  if (description !== undefined) updates.description = description;
+  if (color !== undefined) updates.color = color;
+  if (sat_reward !== undefined) updates.sat_reward = sat_reward;
+  if (schedule_type !== undefined) updates.schedule_type = schedule_type as typeof habits.$inferInsert.schedule_type;
+  if (schedule_days !== undefined) updates.schedule_days = schedule_days;
+  if (schedule_times_per_week !== undefined) updates.schedule_times_per_week = schedule_times_per_week;
+  if (verification_type !== undefined) updates.verification_type = verification_type as typeof habits.$inferInsert.verification_type;
+  if (assigned_to !== undefined) updates.assigned_to = assigned_to;
+  if (active !== undefined) updates.active = active;
+
+  const updated = await db
+    .update(habits)
+    .set(updates)
+    .where(eq(habits.id, id))
+    .returning();
 
   // Save member assignments if provided
   if (assigned_members && assigned_members.length > 0) {
-    try {
-      // Ensure habit_assignments table exists
-      await db`
-        CREATE TABLE IF NOT EXISTS habit_assignments (
-          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-          habit_id UUID NOT NULL REFERENCES habits(id) ON DELETE CASCADE,
-          user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-          created_at TIMESTAMP DEFAULT NOW(),
-          UNIQUE(habit_id, user_id)
-        )
-      `;
+    // Clear existing assignments for this habit
+    await db.delete(habitAssignments).where(eq(habitAssignments.habit_id, id));
 
-      // Clear existing assignments for this habit
-      await db`DELETE FROM habit_assignments WHERE habit_id = ${id}`;
-
-      // Insert new assignments
-      for (const userId of assigned_members) {
-        await db`
-          INSERT INTO habit_assignments (habit_id, user_id)
-          VALUES (${id}, ${userId})
-          ON CONFLICT (habit_id, user_id) DO NOTHING
-        `;
-      }
-    } catch (err) {
-      console.error("Error saving habit assignments:", err);
-    }
+    // Insert new assignments
+    await db.insert(habitAssignments).values(
+      assigned_members.map((userId) => ({ habit_id: id, user_id: userId }))
+    );
   }
 
   return updated[0];
@@ -80,17 +77,16 @@ export const PUT = apiHandler(async (request, { session, db, params }) => {
 export const DELETE = apiHandler(async (_req, { session, db, params }) => {
   const { id } = params;
 
-  const existing = await db`
-    SELECT * FROM habits WHERE id = ${id} AND created_by = ${session.user_id}
-  `;
+  const existing = await db
+    .select()
+    .from(habits)
+    .where(and(eq(habits.id, id), eq(habits.created_by, session.user_id)));
 
   if (existing.length === 0) {
     throw new NotFoundError("Hábito no encontrado o no tenés permiso para eliminarlo");
   }
 
-  await db`
-    UPDATE habits SET active = false WHERE id = ${id}
-  `;
+  await db.update(habits).set({ active: false }).where(eq(habits.id, id));
 
   return undefined;
 });

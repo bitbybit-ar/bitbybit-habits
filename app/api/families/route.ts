@@ -1,19 +1,6 @@
 import { apiHandler, created, BadRequestError } from "@/lib/api";
-import type { Family } from "@/lib/types";
-
-interface FamilyMemberWithUser {
-  id: string;
-  role: string;
-  joined_at: string;
-  user_id: string;
-  display_name: string;
-  username: string;
-  avatar_url: string | null;
-}
-
-interface FamilyWithMembers extends Family {
-  members: FamilyMemberWithUser[];
-}
+import { families, familyMembers, users } from "@/lib/db";
+import { eq, desc, asc } from "drizzle-orm";
 
 function generateInviteCode(): string {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -25,29 +12,33 @@ function generateInviteCode(): string {
 }
 
 export const GET = apiHandler(async (_req, { session, db }) => {
-  const families = await db`
-    SELECT f.* FROM families f
-    INNER JOIN family_members fm ON fm.family_id = f.id
-    WHERE fm.user_id = ${session.user_id}
-    ORDER BY f.created_at DESC
-  ` as Family[];
+  // Get families the user belongs to
+  const userFamilies = await db
+    .select({ family: families })
+    .from(families)
+    .innerJoin(familyMembers, eq(familyMembers.family_id, families.id))
+    .where(eq(familyMembers.user_id, session.user_id))
+    .orderBy(desc(families.created_at));
 
-  const familiesWithMembers: FamilyWithMembers[] = [];
+  const familiesWithMembers = [];
 
-  for (const family of families) {
-    const members = await db`
-      SELECT fm.id, fm.role, fm.joined_at,
-             u.id AS user_id, u.display_name, u.username, u.avatar_url
-      FROM family_members fm
-      INNER JOIN users u ON u.id = fm.user_id
-      WHERE fm.family_id = ${family.id}
-      ORDER BY fm.joined_at ASC
-    `;
+  for (const { family } of userFamilies) {
+    const members = await db
+      .select({
+        id: familyMembers.id,
+        role: familyMembers.role,
+        joined_at: familyMembers.joined_at,
+        user_id: users.id,
+        display_name: users.display_name,
+        username: users.username,
+        avatar_url: users.avatar_url,
+      })
+      .from(familyMembers)
+      .innerJoin(users, eq(users.id, familyMembers.user_id))
+      .where(eq(familyMembers.family_id, family.id))
+      .orderBy(asc(familyMembers.joined_at));
 
-    familiesWithMembers.push({
-      ...family,
-      members: members as FamilyWithMembers["members"],
-    });
+    familiesWithMembers.push({ ...family, members });
   }
 
   return familiesWithMembers;
@@ -63,19 +54,19 @@ export const POST = apiHandler(async (request, { session, db }) => {
 
   const inviteCode = generateInviteCode();
 
-  const families = await db`
-    INSERT INTO families (name, invite_code, created_by)
-    VALUES (${name.trim()}, ${inviteCode}, ${session.user_id})
-    RETURNING *
-  ` as Family[];
+  const result = await db
+    .insert(families)
+    .values({ name: name.trim(), invite_code: inviteCode, created_by: session.user_id })
+    .returning();
 
-  const family = families[0];
+  const family = result[0];
 
   // Add the sponsor as a member
-  await db`
-    INSERT INTO family_members (family_id, user_id, role)
-    VALUES (${family.id}, ${session.user_id}, 'sponsor')
-  `;
+  await db.insert(familyMembers).values({
+    family_id: family.id,
+    user_id: session.user_id,
+    role: "sponsor",
+  });
 
   return created(family);
 });
