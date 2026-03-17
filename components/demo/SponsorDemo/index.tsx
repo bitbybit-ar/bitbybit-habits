@@ -6,10 +6,12 @@ import { Link } from "@/i18n/routing";
 import Button from "@/components/ui/button";
 import DemoStepper from "@/components/demo/DemoStepper";
 import FamilyCard from "@/components/dashboard/family-card";
+import CreateHabitForm from "@/components/dashboard/create-habit-form";
+import type { CreateHabitData } from "@/components/dashboard/create-habit-form";
 import PendingList from "@/components/dashboard/pending-list";
 import type { PendingCompletion } from "@/components/dashboard/pending-list";
 import HabitCard from "@/components/dashboard/habit-card";
-import { CheckIcon, BoltIcon, ArrowRightIcon, BellIcon, ArrowLeftIcon } from "@/components/icons";
+import { CheckIcon, BoltIcon, ArrowRightIcon, BellIcon, ArrowLeftIcon, ClockIcon } from "@/components/icons";
 import type { Habit } from "@/lib/types";
 import styles from "./sponsor-demo.module.scss";
 
@@ -119,39 +121,43 @@ const SponsorDemo: React.FC = () => {
     }
   }, [step2Viewed, familyCreated, kidJoined]);
 
-  const handleCreateDemoHabit = useCallback(() => {
-    const habit: Habit = {
-      id: "demo-habit-1",
-      family_id: MOCK_FAMILY_ID,
-      created_by: MOCK_USER_ID,
-      assigned_to: MOCK_KID_ID,
-      name: t("habitExample"),
-      description: t("habitExampleDesc"),
-      color: "#F7A825",
-      sat_reward: 500,
-      schedule_type: "daily",
-      schedule_days: undefined,
-      schedule_times_per_week: undefined,
-      verification_type: "sponsor_approval",
-      active: true,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    };
-    setCreatedHabit(habit);
+  const handleCreateHabit = useCallback(
+    async (data: CreateHabitData) => {
+      const habit: Habit = {
+        id: "demo-habit-1",
+        family_id: MOCK_FAMILY_ID,
+        created_by: MOCK_USER_ID,
+        assigned_to: MOCK_KID_ID,
+        name: data.name,
+        description: data.description,
+        color: data.color,
+        sat_reward: data.sat_reward,
+        schedule_type: data.schedule_type,
+        schedule_days: data.schedule_days,
+        schedule_times_per_week: data.schedule_times_per_week,
+        verification_type: data.verification_type,
+        active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+      setCreatedHabit(habit);
 
-    setPendingCompletions([
-      {
-        id: "demo-completion-1",
-        habit_id: habit.id,
-        habit_name: habit.name,
-        habit_color: habit.color,
-        kid_name: "Satoshi Jr.",
-        sat_reward: habit.sat_reward,
-        date: new Date().toISOString().split("T")[0],
-        completed_at: new Date().toISOString(),
-      },
-    ]);
-  }, [t]);
+      // Auto-generate a pending completion for step 4
+      setPendingCompletions([
+        {
+          id: "demo-completion-1",
+          habit_id: habit.id,
+          habit_name: habit.name,
+          habit_color: habit.color,
+          kid_name: "Satoshi Jr.",
+          sat_reward: habit.sat_reward,
+          date: new Date().toISOString().split("T")[0],
+          completed_at: new Date().toISOString(),
+        },
+      ]);
+    },
+    [],
+  );
 
   const handleApprove = useCallback(
     async (completionId: string) => {
@@ -207,34 +213,16 @@ const SponsorDemo: React.FC = () => {
       onViewed={() => setStep2Viewed(true)}
     />,
 
-    // Step 3: Create Habit (compact pre-filled)
+    // Step 3: Create Habit
     <div key="s3" className={styles.stepInner}>
       <h3 className={styles.stepTitle}>{t("step3Title")}</h3>
       <p className={styles.stepDesc}>{t("step3Desc")}</p>
       {!createdHabit ? (
-        <div className={styles.glassForm}>
-          <div className={styles.field}>
-            <label className={styles.label}>{t("habitName")}</label>
-            <input className={styles.input} defaultValue={t("habitExample")} readOnly />
-          </div>
-          <div className={styles.compactRow}>
-            <div className={styles.field}>
-              <label className={styles.label}>{t("reward")}</label>
-              <input className={styles.input} defaultValue="500 sats" readOnly />
-            </div>
-            <div className={styles.field}>
-              <label className={styles.label}>{t("schedule")}</label>
-              <input className={styles.input} defaultValue={t("daily")} readOnly />
-            </div>
-          </div>
-          <div className={styles.field}>
-            <label className={styles.label}>{t("habitDesc")}</label>
-            <input className={styles.input} defaultValue={t("habitExampleDesc")} readOnly />
-          </div>
-          <Button className={styles.glowHint} onClick={handleCreateDemoHabit}>
-            {tc("create")} {t("habitName")}
-          </Button>
-        </div>
+        <CreateHabitForm
+          families={[{ id: MOCK_FAMILY_ID, name: "Familia Nakamoto" }]}
+          kids={[{ user_id: MOCK_KID_ID, display_name: "Satoshi Jr." }]}
+          onSubmit={handleCreateHabit}
+        />
       ) : (
         <>
           <div className={styles.successBadge}>
@@ -294,17 +282,29 @@ const SponsorDemo: React.FC = () => {
       )}
     </div>,
 
-    // Step 5: Sats Sent
+    // Step 5: Result
     <div key="s5" className={styles.stepInner}>
-      <h3 className={styles.stepTitle}>{t("step5Title")}</h3>
-      <p className={styles.stepDesc}>{t("step5Desc")}</p>
-      <div className={styles.celebration}>
-        <BoltIcon size={48} color="#F7A825" />
-        <div className={styles.satsAmount}>
-          {totalSatsPaid || (createdHabit?.sat_reward ?? 500)} sats
-        </div>
-        <p>{t("satsSentMsg")}</p>
-      </div>
+      {reviewResult === "rejected" ? (
+        <>
+          <h3 className={styles.stepTitle}>{t("rejectedTitle")}</h3>
+          <div className={styles.rejectedResult}>
+            <ClockIcon size={48} color="#FF6B6B" />
+            <p>{t("rejectedDesc")}</p>
+          </div>
+        </>
+      ) : (
+        <>
+          <h3 className={styles.stepTitle}>{t("step5Title")}</h3>
+          <p className={styles.stepDesc}>{t("step5Desc")}</p>
+          <div className={styles.celebration}>
+            <BoltIcon size={48} color="#F7A825" />
+            <div className={styles.satsAmount}>
+              {totalSatsPaid || (createdHabit?.sat_reward ?? 500)} sats
+            </div>
+            <p>{t("satsSentMsg")}</p>
+          </div>
+        </>
+      )}
       <div className={styles.ctaCenter}>
         <Link href="/register">
           <Button size="lg" className={styles.glowHint}>{t("registerCTA")}</Button>

@@ -215,19 +215,26 @@
 
 .circleClickable {
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+  animation: circleGlow 2s ease-in-out infinite;
 
   &:hover {
     transform: scale(1.15);
     background: rgba($color-primary, 0.15);
     box-shadow: 0 0 0 3px rgba($color-primary, 0.3);
+    animation: none;
   }
 
   &:active {
     transform: scale(0.95);
     background: $color-success;
     border-color: $color-success;
+    animation: none;
   }
+}
+
+@keyframes circleGlow {
+  0%, 100% { box-shadow: 0 0 0 2px rgba($color-primary, 0.2); }
+  50% { box-shadow: 0 0 8px 3px rgba($color-primary, 0.4); }
 }
 
 .circleMissed {

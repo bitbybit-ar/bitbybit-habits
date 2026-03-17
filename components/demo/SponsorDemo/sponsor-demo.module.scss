@@ -177,6 +177,17 @@
   font-style: italic;
 }
 
+.rejectedResult {
+  text-align: center;
+  padding: $spacing-24;
+
+  p {
+    color: var(--color-text-secondary);
+    margin-top: $spacing-16;
+    line-height: $line-height-base;
+  }
+}
+
 .rejectedBadge {
   display: inline-flex;
   align-items: center;

@@ -233,22 +233,13 @@ export function HabitCard({ habit, completions, onComplete, hideAction, currentU
         })}
       </div>
 
-      {/* Action button */}
-      {!hideAction && (
+      {/* Status feedback */}
+      {!hideAction && (todayStatus !== "incomplete" || justCompleted) && (
         <div className={styles.action}>
           {justCompleted && (
             <div className={styles.completedFeedback}>
               +{t("dashboard.completed")}! ⚡
             </div>
-          )}
-          {!justCompleted && todayStatus === "incomplete" && (
-            <button
-              className={styles.completeButton}
-              onClick={() => handleComplete(habit.id)}
-            >
-              <CheckIcon size={16} />
-              {t("habits.markComplete")}
-            </button>
           )}
           {!justCompleted && todayStatus === "pending" && (
             <div className={cn(styles.statusBadge, styles.statusPending)}>

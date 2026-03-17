@@ -454,6 +454,8 @@
       "step5Title": "¡Sats enviados!",
       "step5Desc": "Al aprobar, los sats se envían automáticamente al kid vía Lightning.",
       "satsSentMsg": "enviados a Satoshi Jr. vía Lightning ⚡",
+      "rejectedTitle": "Hábito rechazado",
+      "rejectedDesc": "Le pediste a Satoshi Jr. que rehaga el hábito. Recibirás una nueva notificación cuando lo complete de nuevo.",
       "step2Info": "Tu kid ingresa el código en la app y se une automáticamente.",
       "step3PreviewLabel": "Tu kid verá este hábito así:",
       "registerCTA": "Registrarse como Sponsor"
