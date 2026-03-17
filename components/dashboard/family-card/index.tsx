@@ -130,27 +130,33 @@ export function FamilyCard({
         <span className={styles.codeLabel}>{t("family.inviteCode")}</span>
         <div className={styles.codeRow}>
           <code className={styles.code}>{inviteCode}</code>
-          <button className={styles.copyButton} onClick={handleCopy}>
-            {copied ? <CheckIcon size={14} /> : null}
-            {copied ? t("sponsorDashboard.copied") : t("family.copyCode")}
-          </button>
+          {(!currentUserRole || currentUserRole === "sponsor") && (
+            <button className={styles.copyButton} onClick={handleCopy}>
+              {copied ? <CheckIcon size={14} /> : null}
+              {copied ? t("sponsorDashboard.copied") : t("family.copyCode")}
+            </button>
+          )}
         </div>
-        <button
-          className={styles.qrToggle}
-          onClick={() => setShowQR((prev) => !prev)}
-        >
-          {showQR ? t("family.hideQR") : t("family.showQR")}
-        </button>
-        {showQR && (
-          <div className={styles.qrContainer}>
-            <img
-              src={qrUrl}
-              alt={`QR: ${inviteCode}`}
-              width={150}
-              height={150}
-              className={styles.qrImage}
-            />
-          </div>
+        {(!currentUserRole || currentUserRole === "sponsor") && (
+          <>
+            <button
+              className={styles.qrToggle}
+              onClick={() => setShowQR((prev) => !prev)}
+            >
+              {showQR ? t("family.hideQR") : t("family.showQR")}
+            </button>
+            {showQR && (
+              <div className={styles.qrContainer}>
+                <img
+                  src={qrUrl}
+                  alt={`QR: ${inviteCode}`}
+                  width={150}
+                  height={150}
+                  className={styles.qrImage}
+                />
+              </div>
+            )}
+          </>
         )}
       </div>
 

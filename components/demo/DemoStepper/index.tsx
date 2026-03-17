@@ -59,7 +59,13 @@ export const DemoStepper: React.FC<DemoStepperProps> = ({ steps, onFinish, finis
         {current === steps.length - 1 ? (
           finishNode ?? <Button onClick={onFinish}>{finishLabel || t("confirm")}</Button>
         ) : (
-          <Button onClick={next}>{t("next")} <ArrowRightIcon size={14} /></Button>
+          <Button
+            onClick={next}
+            disabled={canAdvance ? canAdvance[current] === false : false}
+            className={canAdvance && canAdvance[current] ? styles.glowHint : undefined}
+          >
+            {t("next")} <ArrowRightIcon size={14} />
+          </Button>
         )}
       </div>
     </div>

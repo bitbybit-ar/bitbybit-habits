@@ -212,12 +212,20 @@ export function HabitCard({ habit, completions, onComplete, hideAction, currentU
           else if (future) circleClass = styles.circleFuture;
           else if (today) circleClass = styles.circleToday;
 
+          const canClickCircle = today && !completed && !hideAction && todayStatus === "incomplete";
+
           return (
             <div key={dateStr} className={styles.dateCircle}>
               <span className={cn(styles.dayLabel, today && styles.dayLabelToday)}>
                 {dayLabel}
               </span>
-              <div className={cn(styles.circle, circleClass)}>
+              <div
+                className={cn(styles.circle, circleClass, canClickCircle && styles.circleClickable)}
+                onClick={canClickCircle ? () => handleComplete(habit.id) : undefined}
+                role={canClickCircle ? "button" : undefined}
+                tabIndex={canClickCircle ? 0 : undefined}
+                onKeyDown={canClickCircle ? (e) => { if (e.key === "Enter" || e.key === " ") handleComplete(habit.id); } : undefined}
+              >
                 {completed && <CheckIcon size={14} color="white" />}
               </div>
             </div>

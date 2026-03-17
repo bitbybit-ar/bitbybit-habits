@@ -133,7 +133,7 @@ const KidDemo: React.FC = () => {
             <label className={styles.label}>{t("inviteCode")}</label>
             <input className={styles.input} defaultValue="BIT-7K3M" readOnly />
           </div>
-          <Button onClick={() => setJoined(true)}>{t("join")}</Button>
+          <Button className={styles.glowHint} onClick={() => setJoined(true)}>{t("join")}</Button>
         </div>
       ) : (
         <>
@@ -153,13 +153,13 @@ const KidDemo: React.FC = () => {
       )}
     </div>,
 
-    // Step 2: View Habits
+    // Step 2: View Habits (preview)
     <div key="k2" className={styles.stepInner}>
       <h3 className={styles.stepTitle}>{t("step2Title")}</h3>
       <p className={styles.stepDesc}>{t("step2Desc")}</p>
       {!joined ? (
         <div className={styles.fallbackMsg}>
-          <ArrowLeftIcon size={16} /> Volvé al paso anterior y unite a una familia primero.
+          <ArrowLeftIcon size={16} /> {t("step1Title")}
         </div>
       ) : (
       <div className={styles.habitList}>
@@ -241,7 +241,7 @@ const KidDemo: React.FC = () => {
       </div>
       <div className={styles.ctaCenter}>
         <Link href="/register">
-          <Button size="lg">{t("registerCTA")}</Button>
+          <Button size="lg" className={styles.glowHint}>{t("registerCTA")}</Button>
         </Link>
       </div>
     </div>,

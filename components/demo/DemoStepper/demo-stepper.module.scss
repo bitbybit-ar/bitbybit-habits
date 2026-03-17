@@ -89,3 +89,12 @@
     transform: translateY(0);
   }
 }
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 4px rgba($color-primary, 0.3); }
+  50% { box-shadow: 0 0 16px rgba($color-primary, 0.6); }
+}
+
+.glowHint {
+  animation: pulseGlow 2s ease-in-out infinite;
+}

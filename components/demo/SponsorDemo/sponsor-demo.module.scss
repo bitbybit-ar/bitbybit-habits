@@ -156,3 +156,74 @@
     transform: translateY(0);
   }
 }
+
+.slideIn {
+  animation: slideIn 0.4s ease-out;
+}
+
+.compactRow {
+  display: flex;
+  gap: $spacing-16;
+
+  .field {
+    flex: 1;
+  }
+}
+
+.previewLabel {
+  font-size: $font-size-sm;
+  color: var(--color-text-secondary);
+  margin: 0;
+  font-style: italic;
+}
+
+.rejectedBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-8;
+  background: rgba($color-error, 0.12);
+  color: $color-error;
+  padding: $spacing-8 $spacing-16;
+  border-radius: $border-radius-full;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+}
+
+.step2Info {
+  font-size: $font-size-sm;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.loadingDots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: $spacing-16;
+
+  span {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: $color-primary;
+    animation: dotPulse 1.4s ease-in-out infinite;
+
+    &:nth-child(2) { animation-delay: 0.2s; }
+    &:nth-child(3) { animation-delay: 0.4s; }
+  }
+}
+
+@keyframes dotPulse {
+  0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); }
+  40% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 4px rgba($color-primary, 0.3); }
+  50% { box-shadow: 0 0 16px rgba($color-primary, 0.6); }
+}
+
+.glowHint {
+  animation: pulseGlow 2s ease-in-out infinite;
+}

@@ -213,6 +213,23 @@
   box-shadow: 0 0 0 2px rgba($color-primary, 0.2);
 }
 
+.circleClickable {
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+
+  &:hover {
+    transform: scale(1.15);
+    background: rgba($color-primary, 0.15);
+    box-shadow: 0 0 0 3px rgba($color-primary, 0.3);
+  }
+
+  &:active {
+    transform: scale(0.95);
+    background: $color-success;
+    border-color: $color-success;
+  }
+}
+
 .circleMissed {
   border-color: rgba(var(--glass-color), 0.05);
   background: rgba(var(--glass-color), 0.03);
