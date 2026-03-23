@@ -12,7 +12,9 @@ function getSecretKey(): Uint8Array {
   if (!secret) {
     throw new Error("AUTH_SECRET environment variable is not set");
   }
-  return new TextEncoder().encode(secret);
+  const encoded = new TextEncoder().encode(secret);
+  // Ensure proper Uint8Array instance (fixes cross-realm issues in test environments)
+  return new Uint8Array(encoded);
 }
 
 export async function hashPassword(password: string): Promise<string> {

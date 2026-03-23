@@ -1,13 +1,43 @@
 import "@testing-library/jest-dom/vitest";
 import { vi } from "vitest";
-import { TextEncoder, TextDecoder } from "util";
 
 // Set environment variables for tests
 process.env.AUTH_SECRET = "test-secret-key-for-testing-only-do-not-use-in-production";
 
-// Polyfill TextEncoder/TextDecoder for jsdom environment
-global.TextEncoder = TextEncoder;
-global.TextDecoder = TextDecoder as typeof global.TextDecoder;
+// Polyfill TextEncoder/TextDecoder only for jsdom (node already has them natively)
+if (typeof globalThis.TextEncoder === "undefined") {
+  const { TextEncoder, TextDecoder } = require("util");
+  global.TextEncoder = TextEncoder;
+  global.TextDecoder = TextDecoder as typeof global.TextDecoder;
+}
+
+// Mock lib/auth — bypass jose JWT signing/verification in tests
+// Tests that need custom auth mocking (e.g. login.test.ts) will override this
+vi.mock("@/lib/auth", async () => {
+  const actual = await vi.importActual("@/lib/auth");
+  return {
+    ...actual,
+    createSession: vi.fn(async (session: Record<string, unknown>) => {
+      return Buffer.from(JSON.stringify(session)).toString("base64url");
+    }),
+    createTempToken: vi.fn(async () => "mock-temp-token"),
+    getSession: vi.fn(async () => {
+      const { cookies } = await import("next/headers");
+      const cookieStore = await cookies();
+      const token = (
+        cookieStore as unknown as {
+          get: (n: string) => { value: string } | undefined;
+        }
+      ).get("session")?.value;
+      if (!token) return null;
+      try {
+        return JSON.parse(Buffer.from(token, "base64url").toString());
+      } catch {
+        return null;
+      }
+    }),
+  };
+});
 
 // Mock next/headers (cookies)
 vi.mock("next/headers", () => {
