@@ -47,6 +47,11 @@ export function apiHandler<T = unknown>(
       const params = routeCtx ? await routeCtx.params : {};
       const result = await fn(request, { session: session!, db, params });
 
+      // Allow handlers to return raw NextResponse (e.g., for setting cookies)
+      if (result instanceof NextResponse) {
+        return result;
+      }
+
       if (result instanceof CreatedResponse) {
         return NextResponse.json<ApiResponse>({
           success: true,

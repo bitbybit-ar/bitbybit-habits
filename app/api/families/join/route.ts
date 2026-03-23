@@ -4,7 +4,7 @@ import { eq, and } from "drizzle-orm";
 
 export const POST = apiHandler(async (request, { session, db }) => {
   const body = await request.json();
-  const { invite_code, role } = body as { invite_code: string; role?: string };
+  const { invite_code } = body as { invite_code: string };
 
   if (!invite_code || invite_code.trim().length === 0) {
     throw new BadRequestError("El codigo de invitacion es obligatorio");
@@ -32,12 +32,11 @@ export const POST = apiHandler(async (request, { session, db }) => {
     throw new ConflictError("Ya sos miembro de esta familia");
   }
 
-  // Add user as member with selected role (defaults to kid)
-  const memberRole = role === "sponsor" ? "sponsor" : "kid";
-
+  // Users joining via invite code are always kids.
+  // Only the family creator gets sponsor role (assigned at creation time).
   const members = await db
     .insert(familyMembers)
-    .values({ family_id: family.id, user_id: session.user_id, role: memberRole })
+    .values({ family_id: family.id, user_id: session.user_id, role: "kid" })
     .returning();
 
   return created({ family, member: members[0] });

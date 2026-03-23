@@ -180,10 +180,9 @@ export async function POST(request: Request) {
 
     return response;
   } catch (error: unknown) {
-    const message =
-      error instanceof Error ? error.message : "Error al iniciar sesion";
+    console.error("[Login Error]", error);
     return NextResponse.json<ApiResponse>(
-      { success: false, error: message },
+      { success: false, error: "Error al iniciar sesion" },
       { status: 500 }
     );
   }

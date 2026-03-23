@@ -1,3 +1,4 @@
+// @vitest-environment node
 import { describe, it, expect } from "vitest";
 import { parseResponse } from "../../helpers";
 import { POST } from "@/app/api/auth/logout/route";

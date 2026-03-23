@@ -1,7 +1,9 @@
-import { apiHandler, created, requireFields, NotFoundError, ConflictError } from "@/lib/api";
+import { apiHandler, created, requireFields, NotFoundError, ConflictError, BadRequestError } from "@/lib/api";
 import { createNotification } from "@/lib/notifications";
 import { habits, familyMembers, completions } from "@/lib/db";
 import { eq, and, or, isNull, isNotNull, desc, gte, lte, sql } from "drizzle-orm";
+
+const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
 export const POST = apiHandler(async (request, { session, db }) => {
   const body = await request.json();
@@ -12,6 +14,20 @@ export const POST = apiHandler(async (request, { session, db }) => {
   };
 
   requireFields({ habit_id }, ["habit_id"]);
+
+  // Validate evidence_url if provided
+  if (evidence_url !== undefined && evidence_url !== null && evidence_url !== "") {
+    try {
+      new URL(evidence_url);
+    } catch {
+      throw new BadRequestError("evidence_url debe ser una URL valida");
+    }
+  }
+
+  // Validate note length
+  if (note && note.length > 1000) {
+    throw new BadRequestError("La nota no puede superar los 1000 caracteres");
+  }
 
   // Verify the habit exists and user can complete it
   const habitResult = await db
@@ -101,6 +117,17 @@ export const GET = apiHandler(async (request, { session, db }) => {
   const { searchParams } = new URL(request.url);
   const dateFrom = searchParams.get("from");
   const dateTo = searchParams.get("to");
+
+  // Validate date formats
+  if (dateFrom && !ISO_DATE_RE.test(dateFrom)) {
+    throw new BadRequestError("Parametro 'from' debe tener formato YYYY-MM-DD");
+  }
+  if (dateTo && !ISO_DATE_RE.test(dateTo)) {
+    throw new BadRequestError("Parametro 'to' debe tener formato YYYY-MM-DD");
+  }
+  if (dateFrom && dateTo && dateFrom > dateTo) {
+    throw new BadRequestError("'from' no puede ser posterior a 'to'");
+  }
 
   const conditions = [
     eq(completions.user_id, session.user_id),
