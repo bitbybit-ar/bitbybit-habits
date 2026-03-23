@@ -39,6 +39,19 @@ export async function createSession(session: AuthSession): Promise<string> {
   return token;
 }
 
+export async function createTempToken(userId: string, purpose: string): Promise<string> {
+  const secret = getSecretKey();
+  const exp = Math.floor((Date.now() + 5 * 60 * 1000) / 1000); // 5 minutes
+
+  const token = await new SignJWT({ user_id: userId, purpose })
+    .setProtectedHeader({ alg: "HS256" })
+    .setExpirationTime(exp)
+    .setIssuedAt()
+    .sign(secret);
+
+  return token;
+}
+
 export async function getSession(): Promise<AuthSession | null> {
   const cookieStore = await cookies();
   const token = cookieStore.get("session")?.value;

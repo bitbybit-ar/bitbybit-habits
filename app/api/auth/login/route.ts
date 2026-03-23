@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getDb, users, familyMembers } from "@/lib/db";
-import { verifyPassword, createSession } from "@/lib/auth";
+import { verifyPassword, createSession, createTempToken } from "@/lib/auth";
 import { createRateLimiter } from "@/lib/rate-limit";
 import { eq, or } from "drizzle-orm";
 import type { ApiResponse } from "@/lib/types";
@@ -54,6 +54,7 @@ export async function POST(request: Request) {
         locale: users.locale,
         failed_login_attempts: users.failed_login_attempts,
         locked_until: users.locked_until,
+        totp_enabled: users.totp_enabled,
       })
       .from(users)
       .where(or(eq(users.email, loginLower), eq(users.username, loginLower)))
@@ -126,6 +127,21 @@ export async function POST(request: Request) {
 
     const role = (memberResult[0]?.role as "sponsor" | "kid") ?? null;
 
+    // Check if 2FA is enabled
+    if (user.totp_enabled) {
+      // Create temporary token for 2FA validation
+      const tempToken = await createTempToken(user.id, "2fa");
+
+      return NextResponse.json<ApiResponse>({
+        success: true,
+        data: {
+          requires2FA: true,
+          tempToken,
+        },
+      });
+    }
+
+    // Normal login flow (no 2FA)
     const token = await createSession({
       user_id: user.id,
       email: user.email,
@@ -135,16 +151,23 @@ export async function POST(request: Request) {
       role,
     });
 
+    const responseData: Record<string, unknown> = {
+      user_id: user.id,
+      email: user.email,
+      username: user.username,
+      display_name: user.display_name,
+      locale: user.locale,
+      role,
+    };
+
+    // Sponsor enforcement: require 2FA setup
+    if (role === "sponsor" && !user.totp_enabled) {
+      responseData.requires2FASetup = true;
+    }
+
     const response = NextResponse.json<ApiResponse>({
       success: true,
-      data: {
-        user_id: user.id,
-        email: user.email,
-        username: user.username,
-        display_name: user.display_name,
-        locale: user.locale,
-        role,
-      },
+      data: responseData,
     });
 
     response.cookies.set("session", token, {

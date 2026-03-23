@@ -24,6 +24,9 @@ export const users = pgTable("users", {
   locale: text("locale").notNull().default("es"),
   failed_login_attempts: integer("failed_login_attempts").notNull().default(0),
   locked_until: timestamp("locked_until"),
+  totp_secret: text("totp_secret"),
+  totp_enabled: boolean("totp_enabled").notNull().default(false),
+  recovery_codes: text("recovery_codes"),
   created_at: timestamp("created_at").defaultNow(),
   updated_at: timestamp("updated_at").defaultNow(),
 }, (t) => [

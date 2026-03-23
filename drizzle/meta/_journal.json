@@ -15,6 +15,13 @@
       "when": 1774302313621,
       "tag": "0001_needy_random",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1774303551928,
+      "tag": "0002_lethal_silver_centurion",
+      "breakpoints": true
     }
   ]
 }
