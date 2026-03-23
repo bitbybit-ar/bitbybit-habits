@@ -1,8 +1,19 @@
 import { hash, compare } from "bcryptjs";
 import { cookies } from "next/headers";
+import { SignJWT, jwtVerify } from "jose";
 import type { AuthSession } from "./types";
 
 const SALT_ROUNDS = 10;
+const SESSION_DURATION = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
+
+// Get the secret key for JWT signing
+function getSecretKey(): Uint8Array {
+  const secret = process.env.AUTH_SECRET;
+  if (!secret) {
+    throw new Error("AUTH_SECRET environment variable is not set");
+  }
+  return new TextEncoder().encode(secret);
+}
 
 export async function hashPassword(password: string): Promise<string> {
   return hash(password, SALT_ROUNDS);
@@ -16,13 +27,16 @@ export async function verifyPassword(
 }
 
 export async function createSession(session: AuthSession): Promise<string> {
-  // Simple base64-encoded JSON token (upgrade to signed JWT if needed)
-  const payload = JSON.stringify({
-    ...session,
-    exp: Date.now() + 7 * 24 * 60 * 60 * 1000, // 7 dias
-  });
+  const secret = getSecretKey();
+  const exp = Math.floor((Date.now() + SESSION_DURATION) / 1000);
 
-  return Buffer.from(payload).toString("base64");
+  const token = await new SignJWT({ ...session })
+    .setProtectedHeader({ alg: "HS256" })
+    .setExpirationTime(exp)
+    .setIssuedAt()
+    .sign(secret);
+
+  return token;
 }
 
 export async function getSession(): Promise<AuthSession | null> {
@@ -32,17 +46,16 @@ export async function getSession(): Promise<AuthSession | null> {
   if (!token) return null;
 
   try {
-    const payload = JSON.parse(Buffer.from(token, "base64").toString());
-
-    if (payload.exp < Date.now()) return null;
+    const secret = getSecretKey();
+    const { payload } = await jwtVerify(token, secret);
 
     return {
-      user_id: payload.user_id,
-      email: payload.email,
-      username: payload.username,
-      display_name: payload.display_name,
-      locale: payload.locale,
-      role: payload.role ?? null,
+      user_id: payload.user_id as string,
+      email: payload.email as string,
+      username: payload.username as string,
+      display_name: payload.display_name as string,
+      locale: payload.locale as "es" | "en",
+      role: (payload.role as "sponsor" | "kid") ?? null,
     };
   } catch {
     return null;

@@ -22,6 +22,8 @@ export const users = pgTable("users", {
   display_name: text("display_name").notNull(),
   avatar_url: text("avatar_url"),
   locale: text("locale").notNull().default("es"),
+  failed_login_attempts: integer("failed_login_attempts").notNull().default(0),
+  locked_until: timestamp("locked_until"),
   created_at: timestamp("created_at").defaultNow(),
   updated_at: timestamp("updated_at").defaultNow(),
 }, (t) => [

@@ -1,5 +1,13 @@
 import "@testing-library/jest-dom/vitest";
 import { vi } from "vitest";
+import { TextEncoder, TextDecoder } from "util";
+
+// Set environment variables for tests
+process.env.AUTH_SECRET = "test-secret-key-for-testing-only-do-not-use-in-production";
+
+// Polyfill TextEncoder/TextDecoder for jsdom environment
+global.TextEncoder = TextEncoder;
+global.TextDecoder = TextDecoder as typeof global.TextDecoder;
 
 // Mock next/headers (cookies)
 vi.mock("next/headers", () => {

@@ -48,13 +48,14 @@ export const kidSession: AuthSession = {
 
 /**
  * Sets a session cookie so getSession() returns the given session.
+ * Note: This mimics the createSession() function from lib/auth.ts
+ * We import createSession from lib/auth to ensure consistency
  */
 export async function setSessionCookie(session: AuthSession) {
-  const payload = JSON.stringify({
-    ...session,
-    exp: Date.now() + 7 * 24 * 60 * 60 * 1000,
-  });
-  const token = Buffer.from(payload).toString("base64");
+  // Use the actual createSession function from lib/auth
+  const { createSession } = await import("@/lib/auth");
+  const token = await createSession(session);
+
   const cookieStore = await cookies();
   (cookieStore as unknown as { set: (n: string, v: string) => void }).set("session", token);
 }
