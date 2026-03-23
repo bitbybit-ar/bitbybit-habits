@@ -2,6 +2,9 @@ import { apiHandler, created, BadRequestError, ForbiddenError } from "@/lib/api"
 import { habits, familyMembers, completions } from "@/lib/db";
 import { eq, and, or, isNull, isNotNull, sql, desc } from "drizzle-orm";
 
+const VALID_SCHEDULE_TYPES = ["daily", "specific_days", "times_per_week"] as const;
+const VALID_VERIFICATION_TYPES = ["sponsor_approval", "self_verify"] as const;
+
 export const GET = apiHandler(async (_req, { session, db }) => {
   const today = new Date().toISOString().split("T")[0];
 
@@ -81,6 +84,33 @@ export const POST = apiHandler(async (request, { session, db }) => {
 
   if (!name || !color || !schedule_type || !verification_type) {
     throw new BadRequestError("Faltan campos obligatorios");
+  }
+
+  // Validate enums
+  if (!VALID_SCHEDULE_TYPES.includes(schedule_type)) {
+    throw new BadRequestError("schedule_type invalido");
+  }
+  if (!VALID_VERIFICATION_TYPES.includes(verification_type)) {
+    throw new BadRequestError("verification_type invalido");
+  }
+
+  // Validate sat_reward
+  if (sat_reward !== undefined && sat_reward !== null) {
+    if (!Number.isInteger(sat_reward) || sat_reward < 0 || sat_reward > 1_000_000) {
+      throw new BadRequestError("sat_reward debe ser un entero entre 0 y 1.000.000");
+    }
+  }
+
+  // Validate color hex
+  if (!/^#[0-9A-Fa-f]{6}$/.test(color)) {
+    throw new BadRequestError("color debe ser un hex valido (#RRGGBB)");
+  }
+
+  // Validate schedule_days
+  if (schedule_days !== undefined && schedule_days !== null) {
+    if (!Array.isArray(schedule_days) || schedule_days.some((d: number) => !Number.isInteger(d) || d < 0 || d > 6)) {
+      throw new BadRequestError("schedule_days debe contener dias validos (0-6)");
+    }
   }
 
   const isSelfAssigned = !assigned_to || assigned_to === session.user_id;

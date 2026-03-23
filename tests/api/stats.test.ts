@@ -1,3 +1,4 @@
+// @vitest-environment node
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { createRequest, parseResponse, setSessionCookie, clearSessionCookie, testSession, UUID } from "../helpers";
 
@@ -21,7 +22,7 @@ vi.mock("@/lib/db", () => ({
 }));
 
 vi.mock("drizzle-orm", () => ({
-  eq: vi.fn(), and: vi.fn(), sum: vi.fn(), count: vi.fn(), desc: vi.fn(),
+  eq: vi.fn(), and: vi.fn(), sum: vi.fn(), count: vi.fn(), desc: vi.fn(), inArray: vi.fn(),
   sql: Object.assign(vi.fn((v: unknown) => v), { raw: vi.fn() }),
 }));
 
@@ -46,12 +47,12 @@ describe("GET /api/stats", () => {
     selectResults.push([{ total: 500 }]); // sats
     selectResults.push([{ pending_count: 2 }]); // pending
     selectResults.push([{ id: UUID.habit1, name: "Read" }]); // active habits
-    // Completions for streak calc - 3 consecutive days
+    // Completions for streak calc - 3 consecutive days (now batched with habit_id)
     const today = new Date();
     const dates = [0, 1, 2].map(d => {
       const dt = new Date(today);
       dt.setDate(dt.getDate() - d);
-      return { date: dt.toISOString().split("T")[0] };
+      return { habit_id: UUID.habit1, date: dt.toISOString().split("T")[0] };
     });
     selectResults.push(dates);
 

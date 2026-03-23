@@ -72,15 +72,17 @@ export async function POST(request: Request) {
     });
   } catch (error: unknown) {
     const message =
-      error instanceof Error ? error.message : "Error al registrar";
+      error instanceof Error ? error.message : "";
     const isDuplicate = message.includes("duplicate key") || message.includes("unique");
+
+    console.error("[Register Error]", error);
 
     return NextResponse.json<ApiResponse>(
       {
         success: false,
         error: isDuplicate
           ? "El email o nombre de usuario ya existe"
-          : message,
+          : "Error al registrar",
       },
       { status: isDuplicate ? 409 : 500 }
     );

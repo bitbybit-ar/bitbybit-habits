@@ -1,6 +1,6 @@
 import { apiHandler, created, BadRequestError } from "@/lib/api";
 import { families, familyMembers, users } from "@/lib/db";
-import { eq, desc, asc } from "drizzle-orm";
+import { eq, desc, asc, inArray } from "drizzle-orm";
 
 function generateInviteCode(): string {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -12,20 +12,27 @@ function generateInviteCode(): string {
 }
 
 export const GET = apiHandler(async (_req, { session, db }) => {
-  // Get families the user belongs to
-  const userFamilies = await db
-    .select({ family: families })
-    .from(families)
-    .innerJoin(familyMembers, eq(familyMembers.family_id, families.id))
-    .where(eq(familyMembers.user_id, session.user_id))
-    .orderBy(desc(families.created_at));
+  // Get family IDs the user belongs to
+  const userFamilyIds = await db
+    .select({ family_id: familyMembers.family_id })
+    .from(familyMembers)
+    .where(eq(familyMembers.user_id, session.user_id));
 
-  const familiesWithMembers = [];
+  if (userFamilyIds.length === 0) return [];
 
-  for (const { family } of userFamilies) {
-    const members = await db
+  const familyIds = userFamilyIds.map((f) => f.family_id);
+
+  // Fetch all families and their members in two queries (no N+1)
+  const [userFamilies, allMembers] = await Promise.all([
+    db
+      .select()
+      .from(families)
+      .where(inArray(families.id, familyIds))
+      .orderBy(desc(families.created_at)),
+    db
       .select({
         id: familyMembers.id,
+        family_id: familyMembers.family_id,
         role: familyMembers.role,
         joined_at: familyMembers.joined_at,
         user_id: users.id,
@@ -35,13 +42,22 @@ export const GET = apiHandler(async (_req, { session, db }) => {
       })
       .from(familyMembers)
       .innerJoin(users, eq(users.id, familyMembers.user_id))
-      .where(eq(familyMembers.family_id, family.id))
-      .orderBy(asc(familyMembers.joined_at));
+      .where(inArray(familyMembers.family_id, familyIds))
+      .orderBy(asc(familyMembers.joined_at)),
+  ]);
 
-    familiesWithMembers.push({ ...family, members });
+  // Group members by family_id
+  const membersByFamily = new Map<string, typeof allMembers>();
+  for (const member of allMembers) {
+    const list = membersByFamily.get(member.family_id) ?? [];
+    list.push(member);
+    membersByFamily.set(member.family_id, list);
   }
 
-  return familiesWithMembers;
+  return userFamilies.map((family) => ({
+    ...family,
+    members: membersByFamily.get(family.id) ?? [],
+  }));
 });
 
 export const POST = apiHandler(async (request, { session, db }) => {

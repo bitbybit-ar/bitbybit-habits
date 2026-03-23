@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { getDb, users, familyMembers } from "@/lib/db";
+import { apiHandler, requireFields, BadRequestError } from "@/lib/api";
+import { users, familyMembers } from "@/lib/db";
 import { createSession, verifyPassword } from "@/lib/auth";
 import { eq } from "drizzle-orm";
 import { TOTP } from "otpauth";
@@ -14,159 +15,131 @@ function getSecretKey(): Uint8Array {
   return new TextEncoder().encode(secret);
 }
 
-export async function POST(request: Request) {
+export const POST = apiHandler(async (request, { db }) => {
+  const body = await request.json();
+  const { tempToken, code } = body as { tempToken: string; code: string };
+
+  requireFields({ tempToken, code }, ["tempToken", "code"]);
+
+  // Verify temp token
+  let userId: string;
   try {
-    const { tempToken, code } = await request.json();
+    const secret = getSecretKey();
+    const { payload } = await jwtVerify(tempToken, secret);
 
-    if (!tempToken || !code) {
-      return NextResponse.json<ApiResponse>(
-        { success: false, error: "Token temporal y codigo requeridos" },
-        { status: 400 }
-      );
+    if (payload.purpose !== "2fa") {
+      throw new BadRequestError("Token invalido");
     }
 
-    // Verify temp token
-    let userId: string;
-    try {
-      const secret = getSecretKey();
-      const { payload } = await jwtVerify(tempToken, secret);
+    userId = payload.user_id as string;
+  } catch (err) {
+    if (err instanceof BadRequestError) throw err;
+    throw new BadRequestError("Token expirado o invalido");
+  }
 
-      if (payload.purpose !== "2fa") {
-        return NextResponse.json<ApiResponse>(
-          { success: false, error: "Token invalido" },
-          { status: 401 }
-        );
-      }
+  // Get user data
+  const result = await db
+    .select({
+      id: users.id,
+      email: users.email,
+      username: users.username,
+      display_name: users.display_name,
+      locale: users.locale,
+      totp_secret: users.totp_secret,
+      totp_enabled: users.totp_enabled,
+      recovery_codes: users.recovery_codes,
+    })
+    .from(users)
+    .where(eq(users.id, userId))
+    .limit(1);
 
-      userId = payload.user_id as string;
-    } catch {
-      return NextResponse.json<ApiResponse>(
-        { success: false, error: "Token expirado o invalido" },
-        { status: 401 }
-      );
-    }
+  if (result.length === 0 || !result[0].totp_enabled || !result[0].totp_secret) {
+    throw new BadRequestError("2FA no esta habilitado");
+  }
 
-    const db = getDb();
+  const user = result[0];
+  let isValid = false;
+  let isRecoveryCode = false;
 
-    // Get user data
-    const result = await db
-      .select({
-        id: users.id,
-        email: users.email,
-        username: users.username,
-        display_name: users.display_name,
-        locale: users.locale,
-        totp_secret: users.totp_secret,
-        totp_enabled: users.totp_enabled,
-        recovery_codes: users.recovery_codes,
-      })
-      .from(users)
-      .where(eq(users.id, userId))
-      .limit(1);
+  // Try TOTP code first
+  const totp = new TOTP({
+    issuer: "BitByBit",
+    label: user.email,
+    algorithm: "SHA1",
+    digits: 6,
+    period: 30,
+    secret: user.totp_secret!,
+  });
 
-    if (result.length === 0 || !result[0].totp_enabled || !result[0].totp_secret) {
-      return NextResponse.json<ApiResponse>(
-        { success: false, error: "2FA no esta habilitado" },
-        { status: 400 }
-      );
-    }
+  const delta = totp.validate({ token: code, window: 1 });
 
-    const user = result[0];
-    let isValid = false;
-    let isRecoveryCode = false;
+  if (delta !== null) {
+    isValid = true;
+  } else if (user.recovery_codes) {
+    // Try recovery codes
+    const recoveryCodes = JSON.parse(user.recovery_codes) as string[];
 
-    // Try TOTP code first
-    const totp = new TOTP({
-      issuer: "BitByBit",
-      label: user.email,
-      algorithm: "SHA1",
-      digits: 6,
-      period: 30,
-      secret: user.totp_secret!, // Already validated above
-    });
+    for (let i = 0; i < recoveryCodes.length; i++) {
+      const match = await verifyPassword(code, recoveryCodes[i]);
+      if (match) {
+        isValid = true;
+        isRecoveryCode = true;
 
-    const delta = totp.validate({ token: code, window: 1 });
-
-    if (delta !== null) {
-      isValid = true;
-    } else if (user.recovery_codes) {
-      // Try recovery codes
-      const recoveryCodes = JSON.parse(user.recovery_codes) as string[];
-
-      for (let i = 0; i < recoveryCodes.length; i++) {
-        const match = await verifyPassword(code, recoveryCodes[i]);
-        if (match) {
-          isValid = true;
-          isRecoveryCode = true;
-
-          // Remove used recovery code
-          recoveryCodes.splice(i, 1);
-          await db
-            .update(users)
-            .set({
-              recovery_codes: JSON.stringify(recoveryCodes),
-            })
-            .where(eq(users.id, user.id));
-          break;
-        }
+        // Remove used recovery code
+        recoveryCodes.splice(i, 1);
+        await db
+          .update(users)
+          .set({ recovery_codes: JSON.stringify(recoveryCodes) })
+          .where(eq(users.id, user.id));
+        break;
       }
     }
+  }
 
-    if (!isValid) {
-      return NextResponse.json<ApiResponse>(
-        { success: false, error: "Codigo invalido" },
-        { status: 401 }
-      );
-    }
+  if (!isValid) {
+    throw new BadRequestError("Codigo invalido");
+  }
 
-    // Get user's role from their first family membership
-    const memberResult = await db
-      .select({ role: familyMembers.role })
-      .from(familyMembers)
-      .where(eq(familyMembers.user_id, user.id))
-      .orderBy(familyMembers.joined_at)
-      .limit(1);
+  // Get user's role from their first family membership
+  const memberResult = await db
+    .select({ role: familyMembers.role })
+    .from(familyMembers)
+    .where(eq(familyMembers.user_id, user.id))
+    .orderBy(familyMembers.joined_at)
+    .limit(1);
 
-    const role = (memberResult[0]?.role as "sponsor" | "kid") ?? null;
+  const role = (memberResult[0]?.role as "sponsor" | "kid") ?? null;
 
-    // Create full session token
-    const sessionToken = await createSession({
+  // Create full session token
+  const sessionToken = await createSession({
+    user_id: user.id,
+    email: user.email,
+    username: user.username,
+    display_name: user.display_name,
+    locale: user.locale as "es" | "en",
+    role,
+  });
+
+  const response = NextResponse.json<ApiResponse>({
+    success: true,
+    data: {
       user_id: user.id,
       email: user.email,
       username: user.username,
       display_name: user.display_name,
-      locale: user.locale as "es" | "en",
+      locale: user.locale,
       role,
-    });
+      isRecoveryCode,
+    },
+  });
 
-    const response = NextResponse.json<ApiResponse>({
-      success: true,
-      data: {
-        user_id: user.id,
-        email: user.email,
-        username: user.username,
-        display_name: user.display_name,
-        locale: user.locale,
-        role,
-        isRecoveryCode,
-      },
-    });
+  response.cookies.set("session", sessionToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    maxAge: 60 * 60 * 24 * 7, // 7 dias
+    path: "/",
+  });
 
-    response.cookies.set("session", sessionToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: 60 * 60 * 24 * 7, // 7 dias
-      path: "/",
-    });
-
-    return response;
-  } catch (error: unknown) {
-    const message =
-      error instanceof Error ? error.message : "Error al validar 2FA";
-    return NextResponse.json<ApiResponse>(
-      { success: false, error: message },
-      { status: 500 }
-    );
-  }
-}
+  return response;
+}, { auth: false });

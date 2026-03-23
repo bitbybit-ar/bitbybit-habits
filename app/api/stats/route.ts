@@ -1,6 +1,6 @@
 import { apiHandler } from "@/lib/api";
 import { payments, completions, habits } from "@/lib/db";
-import { eq, and, sum, count, desc, sql } from "drizzle-orm";
+import { eq, and, sum, count, desc, sql, inArray } from "drizzle-orm";
 
 interface HabitStreak {
   habit_id: string;
@@ -31,7 +31,7 @@ export const GET = apiHandler(async (_req, { session, db }) => {
 
   const pendingCompletions = Number(pendingResult[0].pending_count);
 
-  // Current streak per habit
+  // Current streak per habit — batch query (no N+1)
   const activeHabits = await db
     .select({ id: habits.id, name: habits.name })
     .from(habits)
@@ -39,55 +39,70 @@ export const GET = apiHandler(async (_req, { session, db }) => {
 
   const streaks: HabitStreak[] = [];
 
-  for (const habit of activeHabits) {
-    const habitCompletions = await db
-      .select({ date: completions.date })
+  if (activeHabits.length > 0) {
+    const habitIds = activeHabits.map((h) => h.id);
+
+    // Single query for all completions across all active habits
+    const allCompletions = await db
+      .select({ habit_id: completions.habit_id, date: completions.date })
       .from(completions)
       .where(
         and(
-          eq(completions.habit_id, habit.id),
+          inArray(completions.habit_id, habitIds),
           eq(completions.user_id, session.user_id),
           eq(completions.status, "approved")
         )
       )
       .orderBy(desc(completions.date));
 
-    let streak = 0;
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const checkDate = new Date(today);
+    // Group by habit_id
+    const completionsByHabit = new Map<string, string[]>();
+    for (const c of allCompletions) {
+      const list = completionsByHabit.get(c.habit_id) ?? [];
+      list.push(c.date);
+      completionsByHabit.set(c.habit_id, list);
+    }
 
-    for (const completion of habitCompletions) {
-      const completionDate = new Date(completion.date);
-      completionDate.setHours(0, 0, 0, 0);
+    for (const habit of activeHabits) {
+      const dates = completionsByHabit.get(habit.id) ?? [];
 
-      const expectedDateStr = checkDate.toISOString().split("T")[0];
-      const completionDateStr = completionDate.toISOString().split("T")[0];
+      let streak = 0;
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const checkDate = new Date(today);
 
-      if (completionDateStr === expectedDateStr) {
-        streak++;
-        checkDate.setDate(checkDate.getDate() - 1);
-      } else if (completionDateStr < expectedDateStr) {
-        if (streak === 0) {
+      for (const dateStr of dates) {
+        const completionDate = new Date(dateStr);
+        completionDate.setHours(0, 0, 0, 0);
+
+        const expectedDateStr = checkDate.toISOString().split("T")[0];
+        const completionDateStr = completionDate.toISOString().split("T")[0];
+
+        if (completionDateStr === expectedDateStr) {
+          streak++;
           checkDate.setDate(checkDate.getDate() - 1);
-          const yesterdayStr = checkDate.toISOString().split("T")[0];
-          if (completionDateStr === yesterdayStr) {
-            streak++;
+        } else if (completionDateStr < expectedDateStr) {
+          if (streak === 0) {
             checkDate.setDate(checkDate.getDate() - 1);
+            const yesterdayStr = checkDate.toISOString().split("T")[0];
+            if (completionDateStr === yesterdayStr) {
+              streak++;
+              checkDate.setDate(checkDate.getDate() - 1);
+            } else {
+              break;
+            }
           } else {
             break;
           }
-        } else {
-          break;
         }
       }
-    }
 
-    streaks.push({
-      habit_id: habit.id,
-      habit_name: habit.name,
-      current_streak: streak,
-    });
+      streaks.push({
+        habit_id: habit.id,
+        habit_name: habit.name,
+        current_streak: streak,
+      });
+    }
   }
 
   const stats: KidStats = {

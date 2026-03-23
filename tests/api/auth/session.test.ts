@@ -1,3 +1,4 @@
+// @vitest-environment node
 import { describe, it, expect, beforeEach } from "vitest";
 import { parseResponse, setSessionCookie, clearSessionCookie, testSession } from "../../helpers";
 import { GET } from "@/app/api/auth/session/route";

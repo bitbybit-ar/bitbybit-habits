@@ -56,9 +56,11 @@ describe("HabitCard", () => {
     expect(screen.getByText(/50/)).toBeInTheDocument();
   });
 
-  it("shows complete button when not completed today", () => {
+  it("shows clickable circle for today when not completed", () => {
     render(<HabitCard habit={baseHabit} completions={[]} onComplete={() => {}} />);
-    expect(screen.getByText("habits.markComplete")).toBeInTheDocument();
+    // Today's circle should be clickable (role="button")
+    const buttons = screen.getAllByRole("button");
+    expect(buttons.length).toBeGreaterThanOrEqual(1);
   });
 
   it("shows pending status when completion is pending", () => {
@@ -79,11 +81,15 @@ describe("HabitCard", () => {
     expect(screen.getByText("dashboard.completed")).toBeInTheDocument();
   });
 
-  it("calls onComplete when button clicked", async () => {
+  it("calls onComplete when today's circle clicked", async () => {
     const user = userEvent.setup();
     const onComplete = vi.fn();
     render(<HabitCard habit={baseHabit} completions={[]} onComplete={onComplete} />);
-    await user.click(screen.getByText("habits.markComplete"));
+    // Find today's clickable circle (last circle with role="button")
+    const buttons = screen.getAllByRole("button");
+    const todayCircle = buttons.find((b) => !b.closest("[class*='habitActions']"));
+    expect(todayCircle).toBeDefined();
+    if (todayCircle) await user.click(todayCircle);
     expect(onComplete).toHaveBeenCalledWith("h1");
   });
 

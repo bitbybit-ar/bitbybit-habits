@@ -1,3 +1,4 @@
+// @vitest-environment node
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { createRequest, parseResponse, setSessionCookie, clearSessionCookie, testSession, UUID } from "../../helpers";
 
@@ -28,7 +29,7 @@ vi.mock("@/lib/db", () => ({
 }));
 
 vi.mock("drizzle-orm", () => ({
-  eq: vi.fn(), and: vi.fn(), or: vi.fn(), ne: vi.fn(), desc: vi.fn(), asc: vi.fn(),
+  eq: vi.fn(), and: vi.fn(), or: vi.fn(), ne: vi.fn(), desc: vi.fn(), asc: vi.fn(), inArray: vi.fn(),
 }));
 
 import { GET, POST } from "@/app/api/families/route";
@@ -50,9 +51,13 @@ describe("/api/families", () => {
 
     it("returns families with members", async () => {
       await setSessionCookie(testSession);
-      selectResults.push([{ family: { id: UUID.family1, name: "Test Family", invite_code: "ABC123" } }]);
+      // Query 1: family IDs for user
+      selectResults.push([{ family_id: UUID.family1 }]);
+      // Query 2: families by IDs (run in Promise.all with query 3)
+      selectResults.push([{ id: UUID.family1, name: "Test Family", invite_code: "ABC123" }]);
+      // Query 3: all members for those families
       selectResults.push([
-        { id: "m1", role: "sponsor", user_id: UUID.user1, display_name: "Parent", username: "parent", avatar_url: null, joined_at: "2026-01-01" },
+        { id: "m1", family_id: UUID.family1, role: "sponsor", user_id: UUID.user1, display_name: "Parent", username: "parent", avatar_url: null, joined_at: "2026-01-01" },
       ]);
 
       const req = createRequest("GET", "/api/families");

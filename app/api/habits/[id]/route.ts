@@ -1,6 +1,9 @@
-import { apiHandler, NotFoundError } from "@/lib/api";
-import { habits, habitAssignments } from "@/lib/db";
-import { eq, and } from "drizzle-orm";
+import { apiHandler, NotFoundError, BadRequestError, ForbiddenError } from "@/lib/api";
+import { habits, habitAssignments, familyMembers } from "@/lib/db";
+import { eq, and, inArray } from "drizzle-orm";
+
+const VALID_SCHEDULE_TYPES = ["daily", "specific_days", "times_per_week"] as const;
+const VALID_VERIFICATION_TYPES = ["sponsor_approval", "self_verify"] as const;
 
 export const PUT = apiHandler(async (request, { session, db, params }) => {
   const { id } = params;
@@ -15,6 +18,7 @@ export const PUT = apiHandler(async (request, { session, db, params }) => {
     throw new NotFoundError("Hábito no encontrado o no tenés permiso para editarlo");
   }
 
+  const habit = existing[0];
   const body = await request.json();
   const {
     name,
@@ -42,6 +46,57 @@ export const PUT = apiHandler(async (request, { session, db, params }) => {
     active?: boolean;
   };
 
+  // Validate enum fields
+  if (schedule_type !== undefined && !VALID_SCHEDULE_TYPES.includes(schedule_type as typeof VALID_SCHEDULE_TYPES[number])) {
+    throw new BadRequestError("schedule_type invalido");
+  }
+  if (verification_type !== undefined && !VALID_VERIFICATION_TYPES.includes(verification_type as typeof VALID_VERIFICATION_TYPES[number])) {
+    throw new BadRequestError("verification_type invalido");
+  }
+
+  // Validate sat_reward
+  if (sat_reward !== undefined) {
+    if (!Number.isInteger(sat_reward) || sat_reward < 0 || sat_reward > 1_000_000) {
+      throw new BadRequestError("sat_reward debe ser un entero entre 0 y 1.000.000");
+    }
+  }
+
+  // Validate color format
+  if (color !== undefined && !/^#[0-9A-Fa-f]{6}$/.test(color)) {
+    throw new BadRequestError("color debe ser un hex valido (#RRGGBB)");
+  }
+
+  // Validate schedule_days
+  if (schedule_days !== undefined) {
+    if (!Array.isArray(schedule_days) || schedule_days.some((d) => !Number.isInteger(d) || d < 0 || d > 6)) {
+      throw new BadRequestError("schedule_days debe contener dias validos (0-6)");
+    }
+  }
+
+  // Validate assigned_to belongs to the habit's family
+  if (assigned_to !== undefined && habit.family_id) {
+    const membership = await db
+      .select({ id: familyMembers.id })
+      .from(familyMembers)
+      .where(and(eq(familyMembers.family_id, habit.family_id), eq(familyMembers.user_id, assigned_to)));
+
+    if (membership.length === 0) {
+      throw new ForbiddenError("El usuario asignado no es miembro de esta familia");
+    }
+  }
+
+  // Validate assigned_members belong to the habit's family
+  if (assigned_members && assigned_members.length > 0 && habit.family_id) {
+    const memberships = await db
+      .select({ user_id: familyMembers.user_id })
+      .from(familyMembers)
+      .where(and(eq(familyMembers.family_id, habit.family_id), inArray(familyMembers.user_id, assigned_members)));
+
+    if (memberships.length !== assigned_members.length) {
+      throw new ForbiddenError("Algunos usuarios asignados no son miembros de esta familia");
+    }
+  }
+
   const updates: Partial<typeof habits.$inferInsert> = {};
   if (name !== undefined) updates.name = name.trim();
   if (description !== undefined) updates.description = description;
@@ -62,10 +117,7 @@ export const PUT = apiHandler(async (request, { session, db, params }) => {
 
   // Save member assignments if provided
   if (assigned_members && assigned_members.length > 0) {
-    // Clear existing assignments for this habit
     await db.delete(habitAssignments).where(eq(habitAssignments.habit_id, id));
-
-    // Insert new assignments
     await db.insert(habitAssignments).values(
       assigned_members.map((userId) => ({ habit_id: id, user_id: userId }))
     );
