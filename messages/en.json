@@ -370,7 +370,14 @@
     "createSuccess": "Habit created successfully",
     "copied": "Copied",
     "familyNotFound": "Family not found",
-    "onlySponsor": "Only sponsors can access this information"
+    "onlySponsor": "Only sponsors can access this information",
+    "byHabit": "By habit",
+    "byKid": "By kid",
+    "noKidsAssigned": "No kids assigned to this habit",
+    "noKids": "No kids in your families",
+    "noKidsDesc": "Share your invite code so your kids can join",
+    "habitsAssigned": "habits assigned",
+    "noHabitsForKid": "This kid has no habits assigned"
   },
   "onboarding": {
     "welcome": "Hey {name}!",
