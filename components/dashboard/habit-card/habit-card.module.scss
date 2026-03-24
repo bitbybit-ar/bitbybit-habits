@@ -103,6 +103,23 @@
   flex-shrink: 0;
 }
 
+.streakBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 4px $spacing-8;
+  border-radius: $border-radius-full;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
+  flex-shrink: 0;
+  line-height: 1;
+
+  &.streakActive {
+    background: rgba($color-warning, 0.12);
+    color: var(--color-warning);
+  }
+}
+
 .satBadge {
   display: inline-flex;
   align-items: center;
@@ -151,33 +168,12 @@
 .meta {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   margin-bottom: $spacing-16;
   font-size: $font-size-xs;
 }
 
 .schedule {
   color: var(--color-text-secondary);
-}
-
-.streak {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.streakActive {
-  color: var(--color-warning);
-}
-
-.streakInactive {
-  color: var(--color-text-secondary);
-  opacity: 0.5;
-}
-
-.streakCount {
-  font-weight: $font-weight-bold;
-  font-size: $font-size-sm;
 }
 
 // Date circles row
@@ -213,7 +209,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid rgba(var(--glass-color), 0.1);
+  border: 2px solid rgba(var(--glass-text-color), 0.12);
   background: transparent;
   transition: all 0.2s ease;
 
@@ -260,13 +256,14 @@
 }
 
 .circleMissed {
-  border-color: rgba(var(--glass-color), 0.05);
-  background: rgba(var(--glass-color), 0.03);
+  border-color: rgba(var(--glass-text-color), 0.15);
+  background: rgba(var(--glass-text-color), 0.05);
 }
 
 .circleFuture {
-  border-color: rgba(var(--glass-color), 0.05);
-  opacity: 0.4;
+  border-color: rgba(var(--glass-text-color), 0.10);
+  background: rgba(var(--glass-text-color), 0.03);
+  opacity: 0.5;
 }
 
 // Action area
@@ -379,6 +376,17 @@
     margin-top: 1px;
   }
 
+  .streakBadge {
+    font-size: 10px;
+    padding: 2px 5px;
+    gap: 2px;
+
+    svg {
+      width: 10px;
+      height: 10px;
+    }
+  }
+
   .satBadge {
     font-size: 11px;
     padding: 2px 6px;
@@ -393,19 +401,6 @@
   .meta {
     margin-bottom: 5px;
     font-size: 10px;
-  }
-
-  .streakCount {
-    font-size: 11px;
-  }
-
-  .streak {
-    gap: 3px;
-
-    svg {
-      width: 12px;
-      height: 12px;
-    }
   }
 
   .dateCircles {
