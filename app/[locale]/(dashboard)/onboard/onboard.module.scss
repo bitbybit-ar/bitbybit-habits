@@ -10,13 +10,29 @@
   background: var(--color-bg);
   color: var(--color-text-primary);
   padding: $spacing-32 $spacing-24;
+  padding-top: calc(60px + #{$spacing-32});
   max-width: $container-max-width;
   margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  @include mobile {
+    padding-top: calc(60px + #{$spacing-16});
+    padding-left: $spacing-16;
+    padding-right: $spacing-16;
+    padding-bottom: $spacing-16;
+  }
 }
 
 .header {
   text-align: center;
   margin-bottom: $spacing-48;
+  width: 100%;
+
+  @include mobile {
+    margin-bottom: $spacing-16;
+  }
 }
 
 .title {
@@ -46,8 +62,7 @@
   gap: $spacing-16;
   margin-bottom: $spacing-32;
   max-width: 700px;
-  margin-left: auto;
-  margin-right: auto;
+  width: 100%;
 
   @include mobile {
     grid-template-columns: 1fr;
@@ -81,10 +96,11 @@
   grid-template-columns: 1fr 1fr;
   gap: $spacing-24;
   max-width: 700px;
-  margin: 0 auto;
+  width: 100%;
 
   @include mobile {
     grid-template-columns: 1fr;
+    gap: $spacing-12;
   }
 }
 

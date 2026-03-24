@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
 export const Navbar: React.FC = () => {
   const t = useTranslations();
   const pathname = usePathname();
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
 
@@ -28,20 +28,7 @@ export const Navbar: React.FC = () => {
   const closeMenu = useCallback(() => setMenuOpen(false), []);
 
   useEffect(() => {
-    if (!isLanding) {
-      setVisible(true);
-      return;
-    }
-
-    const hero = document.querySelector("[data-hero]");
-    if (!hero) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => setVisible(!entry.isIntersecting),
-      { threshold: 0.1 },
-    );
-    observer.observe(hero);
-    return () => observer.disconnect();
+    setVisible(true);
   }, [isLanding]);
 
   // Scroll progress for landing page

@@ -30,7 +30,7 @@ export const CallToAction: React.FC = () => {
             <span>{t("login")}</span>
           </Link>
         </div>
-        <Link href="/preview" className={styles.previewLink}>
+        <Link href="/demo" className={styles.previewLink}>
           {t("preview")}
         </Link>
       </div>

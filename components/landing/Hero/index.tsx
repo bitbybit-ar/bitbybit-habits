@@ -4,7 +4,6 @@ import React, { useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
 import Button from "@/components/ui/button";
-import { ArrowRightIcon } from "@/components/icons";
 import PhoneMockup from "@/components/landing/PhoneMockup";
 import styles from "./hero.module.scss";
 
@@ -48,14 +47,13 @@ export const Hero: React.FC = () => {
             {t("subtitle")}
           </p>
           <div className={styles.buttons}>
-            <Link href="/register" className={styles.tryItLink}>
+            <Link href="/demo" className={styles.tryItLink}>
               <Button size="lg">
                 <span>{t("tryItNow")}</span>
-                <ArrowRightIcon size={18} />
               </Button>
             </Link>
-            <Link href="/demo" className={styles.demoLink}>
-              <Button size="lg" variant="outline">{t("demo")}</Button>
+            <Link href="/login" className={styles.demoLink}>
+              <Button size="lg" variant="outline">{t("login")}</Button>
             </Link>
           </div>
         </div>
