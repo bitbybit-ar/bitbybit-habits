@@ -88,6 +88,7 @@ export function DashboardLayout({
               title={tab.label}
             >
               <span className={styles.tabIcon}>{tab.icon}</span>
+              <span className={styles.tabLabel}>{tab.label}</span>
               {tab.badge != null && tab.badge > 0 && (
                 <span className={styles.tabBadge}>
                   {tab.badge > 9 ? "9+" : tab.badge}

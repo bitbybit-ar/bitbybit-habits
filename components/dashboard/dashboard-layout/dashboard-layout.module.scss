@@ -170,8 +170,9 @@ $tabbar-height: 52px;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
+  gap: $spacing-8;
   height: 44px;
+  padding: 0 $spacing-16;
   border-radius: $border-radius-md;
   border: none;
   background: transparent;
@@ -179,6 +180,12 @@ $tabbar-height: 52px;
   cursor: pointer;
   @include transition;
   flex-shrink: 0;
+
+  @include mobile {
+    width: 44px;
+    padding: 0;
+    gap: 0;
+  }
 
   &:hover {
     color: var(--color-text-primary);
@@ -207,6 +214,16 @@ $tabbar-height: 52px;
   align-items: center;
   justify-content: center;
   transition: transform 0.2s ease;
+}
+
+.tabLabel {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  white-space: nowrap;
+
+  @include mobile {
+    display: none;
+  }
 }
 
 .tabBadge {
