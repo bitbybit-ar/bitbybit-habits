@@ -202,7 +202,9 @@ export default function SponsorDashboard() {
       if (res.ok) {
         const result = await res.json();
         if (result.success && result.data) {
-          setHabits((prev) => [result.data, ...prev]);
+          // API returns single habit or array depending on number of assignees
+          const newHabits = Array.isArray(result.data) ? result.data : [result.data];
+          setHabits((prev) => [...newHabits, ...prev]);
           setActiveTab("habits");
           showToast(t("sponsorDashboard.createSuccess"), "success");
         }
