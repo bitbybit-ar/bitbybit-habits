@@ -15,8 +15,36 @@
   }
 }
 
+.mottoRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-12;
+  margin-top: $spacing-8;
+}
+
+.cryptaLink {
+  display: flex;
+  align-items: center;
+  transition: opacity 0.2s;
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+.cryptaLogo {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
 .motto {
+  font-family: $font-family-display;
   font-size: 1.2rem;
   font-weight: $font-weight-bold;
+  letter-spacing: $letter-spacing-heading;
   @include gradient-text;
+  margin: 0 !important;
 }

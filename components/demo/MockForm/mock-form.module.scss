@@ -31,7 +31,7 @@
   transition: border-color 0.2s;
 
   &:focus {
-    border-color: $color-primary;
+    border-color: var(--color-primary);
   }
 }
 
@@ -54,7 +54,7 @@
   code {
     font-size: $font-size-xl;
     font-weight: $font-weight-bold;
-    color: $color-primary;
+    color: var(--color-primary);
     letter-spacing: 4px;
   }
 }
@@ -63,7 +63,7 @@
   background: var(--color-bg-3);
   border-radius: $border-radius-lg;
   padding: $spacing-16;
-  border-left: 4px solid $color-primary;
+  border-left: 4px solid var(--color-primary);
   display: flex;
   align-items: center;
   gap: $spacing-12;
@@ -94,7 +94,7 @@
   .satsAmount {
     font-size: $font-size-2xl;
     font-weight: $font-weight-extrabold;
-    color: $color-primary;
+    color: var(--color-primary);
     margin: $spacing-16 0;
   }
 
@@ -133,7 +133,7 @@
   }
 
   .habitReward {
-    color: $color-primary;
+    color: var(--color-primary);
     font-weight: $font-weight-bold;
     white-space: nowrap;
   }
@@ -147,7 +147,7 @@
 
 .completedBadge {
   background: rgba($color-success, 0.15);
-  color: $color-success;
+  color: var(--color-success);
   padding: $spacing-4 $spacing-12;
   border-radius: $border-radius-full;
   font-size: $font-size-sm;
@@ -156,7 +156,7 @@
 
 .pendingBadge {
   background: rgba($color-warning, 0.15);
-  color: $color-warning;
+  color: var(--color-warning);
   padding: $spacing-4 $spacing-12;
   border-radius: $border-radius-full;
   font-size: $font-size-sm;
@@ -176,7 +176,7 @@
   .counter {
     font-size: $font-size-2xl;
     font-weight: $font-weight-extrabold;
-    color: $color-primary;
+    color: var(--color-primary);
     margin: $spacing-16 0;
   }
 

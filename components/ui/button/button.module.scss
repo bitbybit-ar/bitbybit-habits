@@ -6,7 +6,9 @@
   display: inline-block;
   border: 2px solid transparent;
   border-radius: $border-radius-md;
+  font-family: $font-family-base;
   font-weight: $font-weight-bold;
+  letter-spacing: 0.01em;
   cursor: pointer;
   text-decoration: none;
   text-align: center;
@@ -14,6 +16,11 @@
 
   &:hover {
     transform: translateY(-2px);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0) scale(0.97);
+    transition-duration: 0.1s;
   }
 }
 
@@ -28,8 +35,8 @@
 
 .variant-outline {
   background: transparent;
-  border: 2px solid $color-primary;
-  color: $color-primary;
+  border: 2px solid var(--color-primary);
+  color: var(--color-primary);
 
   &:hover {
     background: rgba($color-primary, 0.1);

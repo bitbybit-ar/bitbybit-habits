@@ -244,7 +244,7 @@
 
 .savedText {
   font-size: $font-size-sm;
-  color: $color-success;
+  color: var(--color-success);
   text-align: center;
 }
 

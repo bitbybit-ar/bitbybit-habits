@@ -4,10 +4,11 @@ import React, { useState, useCallback, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import Section from "@/components/ui/section";
 import SectionTitle from "@/components/ui/section-title";
+import ScrollReveal from "@/components/ui/scroll-reveal";
 import styles from "./tech-stack.module.scss";
 
 interface TechItem {
-  emoji: string;
+  icon: React.ReactNode;
   title: string;
   description: string;
   linkLabel: string;
@@ -21,7 +22,7 @@ export const TechStack: React.FC = () => {
 
   const TECH: TechItem[] = [
     {
-      emoji: "⚡",
+      icon: <img src="https://upload.wikimedia.org/wikipedia/commons/5/5a/Lightning_Network.svg" alt="Lightning Network" className={styles.logoImg} />,
       title: "Lightning Network",
       description: t("lightningDesc"),
       linkLabel: t("lightningLink"),
@@ -34,7 +35,7 @@ export const TechStack: React.FC = () => {
       ],
     },
     {
-      emoji: "🔐",
+      icon: <img src="https://user-images.githubusercontent.com/99301796/223592277-34058d0e-af30-411d-8dfe-87c42dacdcf2.png" alt="Nostr" className={styles.logoImg} />,
       title: "Nostr",
       description: t("nostrDesc"),
       linkLabel: t("nostrLink"),
@@ -46,7 +47,7 @@ export const TechStack: React.FC = () => {
       ],
     },
     {
-      emoji: "🤖",
+      icon: <img src="https://github.com/openclaw.png?size=64" alt="OpenClaw" className={styles.logoImg} />,
       title: "OpenClaw",
       description: t("openclawDesc"),
       linkLabel: t("openclawLink"),
@@ -57,17 +58,18 @@ export const TechStack: React.FC = () => {
         { stat: t("openclaw3Stat"), title: t("openclaw3Title"), desc: t("openclaw3Desc") },
       ],
     },
-    {
-      emoji: "🗣️",
-      title: "Whisper",
-      description: t("whisperDesc"),
-      linkLabel: t("whisperLink"),
-      detailTitle: t("whisperDetailTitle"),
-      detailItems: [
-        { stat: t("whisper1Stat"), title: t("whisper1Title"), desc: t("whisper1Desc") },
-        { stat: t("whisper2Stat"), title: t("whisper2Title"), desc: t("whisper2Desc") },
-      ],
-    },
+    // Whisper — coming soon
+    // {
+    //   emoji: "🗣️",
+    //   title: "Whisper",
+    //   description: t("whisperDesc"),
+    //   linkLabel: t("whisperLink"),
+    //   detailTitle: t("whisperDetailTitle"),
+    //   detailItems: [
+    //     { stat: t("whisper1Stat"), title: t("whisper1Title"), desc: t("whisper1Desc") },
+    //     { stat: t("whisper2Stat"), title: t("whisper2Title"), desc: t("whisper2Desc") },
+    //   ],
+    // },
   ];
 
   const closeModal = useCallback(() => setActiveModal(null), []);
@@ -83,15 +85,18 @@ export const TechStack: React.FC = () => {
 
   return (
     <Section id="tech-stack" alternate aria-labelledby="tech-title">
-      <SectionTitle
-        id="tech-title"
-        title={t("title")}
-        subtitle={t("subtitle")}
-      />
+      <ScrollReveal>
+        <SectionTitle
+          id="tech-title"
+          title={t("title")}
+          subtitle={t("subtitle")}
+        />
+      </ScrollReveal>
+      <ScrollReveal variant="stagger">
       <div className={styles.grid}>
         {TECH.map((tech, i) => (
           <article key={tech.title} className={styles.card}>
-            <span className={styles.emoji} aria-hidden="true">{tech.emoji}</span>
+            <div className={styles.iconCircle} aria-hidden="true">{tech.icon}</div>
             <div>
               <h4>{tech.title}</h4>
               <p>{tech.description}</p>
@@ -105,6 +110,7 @@ export const TechStack: React.FC = () => {
           </article>
         ))}
       </div>
+      </ScrollReveal>
 
       {activeModal !== null && (
         <div className={styles.overlay} onClick={closeModal}>
@@ -113,7 +119,7 @@ export const TechStack: React.FC = () => {
               ✕
             </button>
             <div className={styles.modalHeader}>
-              <span className={styles.modalEmoji}>{TECH[activeModal].emoji}</span>
+              <div className={styles.modalIcon}>{TECH[activeModal].icon}</div>
               <h3>{TECH[activeModal].detailTitle}</h3>
             </div>
             <div className={styles.modalGrid}>

@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
 import Button from "@/components/ui/button";
 import { ArrowRightIcon } from "@/components/icons";
+import PhoneMockup from "@/components/landing/PhoneMockup";
 import styles from "./hero.module.scss";
 
 export const Hero: React.FC = () => {
@@ -14,6 +15,7 @@ export const Hero: React.FC = () => {
   useEffect(() => {
     const container = particlesRef.current;
     if (!container) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     for (let i = 0; i < 12; i++) {
       const bolt = document.createElement("div");
@@ -29,24 +31,38 @@ export const Hero: React.FC = () => {
   return (
     <header className={styles.hero} data-hero>
       <div ref={particlesRef} className={styles.particles} aria-hidden="true" />
-      <div className={styles.badge}>{t("badge")}</div>
-      <h1 className={styles.title}>BitByBit</h1>
-      <p className={styles.pitch}>{t("pitch")}</p>
-      <p className={styles.subtitle}>
-        {t("tagline")}
-        <br />
-        {t("subtitle")}
-      </p>
-      <div className={styles.buttons}>
-        <Link href="/register" className={styles.tryItLink}>
-          <Button size="lg">
-            <span>{t("tryItNow")}</span>
-            <ArrowRightIcon size={18} />
-          </Button>
-        </Link>
-        <Link href="/demo" className={styles.demoLink}>
-          <Button size="lg" variant="outline">{t("demo")}</Button>
-        </Link>
+
+      {/* Background orbs */}
+      <div className={styles.orbGold} aria-hidden="true" />
+      <div className={styles.orbGreen} aria-hidden="true" />
+      <div className={styles.orbPurple} aria-hidden="true" />
+
+      <div className={styles.content}>
+        <div className={styles.textColumn}>
+          <div className={styles.badge}>{t("badge")}</div>
+          <h1 className={styles.title}>BitByBit</h1>
+          <p className={styles.pitch}>{t("pitch")}</p>
+          <p className={styles.subtitle}>
+            {t("tagline")}
+            <br />
+            {t("subtitle")}
+          </p>
+          <div className={styles.buttons}>
+            <Link href="/register" className={styles.tryItLink}>
+              <Button size="lg">
+                <span>{t("tryItNow")}</span>
+                <ArrowRightIcon size={18} />
+              </Button>
+            </Link>
+            <Link href="/demo" className={styles.demoLink}>
+              <Button size="lg" variant="outline">{t("demo")}</Button>
+            </Link>
+          </div>
+        </div>
+
+        <div className={styles.phoneColumn}>
+          <PhoneMockup />
+        </div>
       </div>
     </header>
   );

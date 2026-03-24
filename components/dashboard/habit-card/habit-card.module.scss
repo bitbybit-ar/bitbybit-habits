@@ -17,15 +17,39 @@
 
 .card {
   @include glass-card;
-  border-left: 3px solid transparent;
+  border-left: 3px solid var(--habit-color, transparent);
   padding: $spacing-20;
   transition: all 0.3s ease;
   position: relative;
+  overflow: visible;
+
+  // Colored glow from the left matching habit color
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100px;
+    height: 100%;
+    background: linear-gradient(90deg, var(--habit-tint, transparent) 0%, transparent 100%);
+    pointer-events: none;
+    z-index: 0;
+    transition: width 0.3s ease;
+  }
+
+  > * {
+    position: relative;
+    z-index: 1;
+  }
 
   &:hover {
     border-color: rgba(var(--glass-color), 0.12);
-    border-left-color: inherit;
+    border-left-color: var(--habit-color, transparent);
     box-shadow: 0 8px 32px rgba(var(--shadow-color), 0.2);
+
+    &::before {
+      width: 140px;
+    }
   }
 }
 
@@ -87,7 +111,7 @@
   align-items: center;
   gap: 4px;
   background: rgba($color-primary, 0.15);
-  color: $color-primary;
+  color: var(--color-primary);
   padding: 4px $spacing-8;
   border-radius: $border-radius-full;
   font-size: $font-size-xs;
@@ -103,8 +127,8 @@
 
 .editBtn,
 .deleteBtn {
-  width: 26px;
-  height: 26px;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -124,7 +148,7 @@
 
 .deleteBtn:hover {
   background: rgba($color-error, 0.15);
-  color: $color-error;
+  color: var(--color-error);
 }
 
 .meta {
@@ -146,7 +170,7 @@
 }
 
 .streakActive {
-  color: $color-warning;
+  color: var(--color-warning);
 }
 
 .streakInactive {
@@ -181,7 +205,7 @@
 }
 
 .dayLabelToday {
-  color: $color-primary;
+  color: var(--color-primary);
   font-weight: $font-weight-bold;
 }
 
@@ -204,12 +228,12 @@
 
 .circleCompleted {
   background: $color-success;
-  border-color: $color-success;
+  border-color: var(--color-success);
   color: white;
 }
 
 .circleToday {
-  border-color: $color-primary;
+  border-color: var(--color-primary);
   box-shadow: 0 0 0 2px rgba($color-primary, 0.2);
 }
 
@@ -225,9 +249,10 @@
   }
 
   &:active {
-    transform: scale(0.95);
+    transform: scale(0.9);
     background: $color-success;
-    border-color: $color-success;
+    border-color: var(--color-success);
+    transition-duration: 0.1s;
     animation: none;
   }
 }
@@ -262,7 +287,7 @@
   border-radius: $border-radius-md;
   font-size: $font-size-sm;
   font-weight: $font-weight-bold;
-  color: $color-success;
+  color: var(--color-success);
   background: rgba($color-success, 0.12);
   animation: fadeUpOut 1.5s ease-out forwards;
 }
@@ -315,10 +340,103 @@
 
 .statusPending {
   background: rgba($color-warning, 0.12);
-  color: $color-warning;
+  color: var(--color-warning);
 }
 
 .statusCompleted {
   background: rgba($color-success, 0.12);
-  color: $color-success;
+  color: var(--color-success);
+}
+
+// --- Compact variant (for phone mockup / small containers) ---
+.compact.compact {
+  padding: 6px 8px;
+  border-radius: 8px;
+  border-left-width: 2px;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+
+  .header {
+    margin-bottom: 3px;
+  }
+
+  .headerLeft {
+    gap: 3px;
+  }
+
+  .headerRight {
+    gap: 4px;
+  }
+
+  .colorDot {
+    width: 6px;
+    height: 6px;
+  }
+
+  .habitName {
+    font-size: 13px;
+  }
+
+  .habitDescription {
+    font-size: 10px;
+    margin-top: 1px;
+  }
+
+  .satBadge {
+    font-size: 11px;
+    padding: 2px 6px;
+    gap: 2px;
+
+    svg {
+      width: 10px;
+      height: 10px;
+    }
+  }
+
+  .meta {
+    margin-bottom: 5px;
+    font-size: 10px;
+  }
+
+  .streakCount {
+    font-size: 11px;
+  }
+
+  .streak {
+    gap: 3px;
+
+    svg {
+      width: 12px;
+      height: 12px;
+    }
+  }
+
+  .dateCircles {
+    gap: 2px;
+    margin-bottom: 0;
+  }
+
+  .dayLabel {
+    font-size: 9px;
+  }
+
+  .dateCircle {
+    gap: 2px;
+  }
+
+  .circle {
+    width: 22px;
+    height: 22px;
+    border-width: 1.5px;
+
+    svg {
+      width: 10px;
+      height: 10px;
+    }
+
+    @include desktop {
+      width: 22px;
+      height: 22px;
+    }
+  }
 }

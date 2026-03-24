@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { CheckIcon, FlameIcon, BoltIcon, ClockIcon, PencilIcon } from "@/components/icons";
 import { EditHabitModal } from "@/components/dashboard/edit-habit-modal";
+import CelebrationBurst from "@/components/ui/celebration-burst";
 import { cn } from "@/lib/utils";
 import type { Habit, Completion } from "@/lib/types";
 import styles from "./habit-card.module.scss";
@@ -23,6 +24,7 @@ interface HabitCardProps {
   onDelete?: (habitId: string) => void;
   streak?: number;
   kids?: KidMember[];
+  compact?: boolean;
 }
 
 function getScheduleText(habit: Habit, t: ReturnType<typeof useTranslations>): string {
@@ -119,10 +121,11 @@ function getTodayStatus(habitId: string, completions: Completion[]): TodayStatus
   return "incomplete";
 }
 
-export function HabitCard({ habit, completions, onComplete, hideAction, currentUserId, onEdit, onDelete, streak, kids }: HabitCardProps) {
+export function HabitCard({ habit, completions, onComplete, hideAction, currentUserId, onEdit, onDelete, streak, kids, compact }: HabitCardProps) {
   const t = useTranslations();
   const [editing, setEditing] = useState(false);
   const [justCompleted, setJustCompleted] = useState(false);
+  const [showBurst, setShowBurst] = useState(false);
   const isCreator = currentUserId === habit.created_by;
   const last7Days = getLast7Days();
   const scheduleText = getScheduleText(habit, t);
@@ -135,12 +138,20 @@ export function HabitCard({ habit, completions, onComplete, hideAction, currentU
 
   const handleComplete = (habitId: string) => {
     setJustCompleted(true);
+    setShowBurst(true);
     onComplete(habitId);
     setTimeout(() => setJustCompleted(false), 1500);
+    setTimeout(() => setShowBurst(false), 1600);
   };
 
   return (
-    <div className={styles.card} style={{ borderLeftColor: habit.color }}>
+    <div
+      className={cn(styles.card, compact && styles.compact)}
+      style={{
+        "--habit-color": habit.color || "transparent",
+        "--habit-tint": habit.color ? `${habit.color}0D` : "transparent",
+      } as React.CSSProperties}
+    >
       {/* Header: name, description, sat badge */}
       <div className={styles.header}>
         <div className={styles.headerLeft}>
@@ -254,6 +265,12 @@ export function HabitCard({ habit, completions, onComplete, hideAction, currentU
             </div>
           )}
         </div>
+      )}
+      {showBurst && !compact && (
+        <CelebrationBurst
+          satReward={habit.sat_reward}
+          color={habit.color}
+        />
       )}
       {editing && (
         <EditHabitModal

@@ -18,7 +18,7 @@
 .card {
   width: 100%;
   max-width: 420px;
-  @include glass-card;
+  @include glass-card-tinted($color-primary, 0.04);
   border-radius: $border-radius-xl;
   padding: $spacing-40;
   @include glass-hover;
@@ -27,8 +27,10 @@
 }
 
 .title {
+  font-family: $font-family-display;
   font-size: $font-size-2xl;
   font-weight: $font-weight-extrabold;
+  letter-spacing: $letter-spacing-tight;
   text-align: center;
   @include gradient-text;
   margin-bottom: $spacing-4;
@@ -69,14 +71,14 @@
 
     &:focus {
       outline: none;
-      border-color: $color-primary;
+      border-color: var(--color-primary);
       box-shadow: 0 0 0 2px rgba($color-primary, 0.2);
     }
   }
 }
 
 .error {
-  color: $color-error;
+  color: var(--color-error);
   font-size: $font-size-sm;
   text-align: center;
 }
@@ -97,6 +99,11 @@
   &:hover:not(:disabled) {
     transform: translateY(-2px);
     box-shadow: 0 4px 20px rgba($color-primary, 0.3);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0) scale(0.97);
+    transition-duration: 0.1s;
   }
 
   &:disabled {
@@ -126,7 +133,7 @@
 .comingSoon {
   font-size: $font-size-xs;
   background: rgba($color-primary, 0.15);
-  color: $color-primary;
+  color: var(--color-primary);
   padding: 2px $spacing-8;
   border-radius: $border-radius-full;
 }
@@ -144,7 +151,7 @@
 
   &:focus {
     outline: none;
-    border-color: $color-primary;
+    border-color: var(--color-primary);
     box-shadow: 0 0 0 2px rgba($color-primary, 0.2);
   }
 }
@@ -156,7 +163,7 @@
   color: var(--color-text-secondary);
 
   a {
-    color: $color-primary;
+    color: var(--color-primary);
     font-weight: $font-weight-semibold;
     text-decoration: underline;
   }

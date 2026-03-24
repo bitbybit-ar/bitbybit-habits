@@ -38,7 +38,7 @@
   &.active {
     border-color: rgba($color-primary, 0.4);
     background: rgba($color-primary, 0.15);
-    color: $color-primary;
+    color: var(--color-primary);
     transform: scale(1.1);
     box-shadow: 0 0 16px rgba($color-primary, 0.2);
   }
@@ -46,7 +46,7 @@
   &.completed {
     border-color: rgba($color-success, 0.4);
     background: rgba($color-success, 0.15);
-    color: $color-success;
+    color: var(--color-success);
   }
 }
 

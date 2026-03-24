@@ -4,7 +4,9 @@ import React from "react";
 import { useTranslations } from "next-intl";
 import Section from "@/components/ui/section";
 import SectionTitle from "@/components/ui/section-title";
+import ScrollReveal from "@/components/ui/scroll-reveal";
 import Tag from "@/components/ui/tag";
+import { FamilyIcon, HeartPulseIcon } from "@/components/icons";
 import styles from "./use-cases.module.scss";
 
 export const UseCases: React.FC = () => {
@@ -12,7 +14,7 @@ export const UseCases: React.FC = () => {
 
   const USE_CASES = [
     {
-      icon: "🧒",
+      icon: <FamilyIcon size={28} />,
       tag: t("case1Tag"),
       tagVariant: "gold" as const,
       title: t("case1Title"),
@@ -20,7 +22,7 @@ export const UseCases: React.FC = () => {
       items: [t("case1Item1"), t("case1Item2"), t("case1Item3"), t("case1Item4")],
     },
     {
-      icon: "💪",
+      icon: <HeartPulseIcon size={28} />,
       tag: t("case2Tag"),
       tagVariant: "green" as const,
       title: t("case2Title"),
@@ -31,15 +33,18 @@ export const UseCases: React.FC = () => {
 
   return (
     <Section id="use-cases" alternate aria-labelledby="cases-title">
-      <SectionTitle
-        id="cases-title"
-        title={t("title")}
-        subtitle={t("subtitle")}
-      />
+      <ScrollReveal>
+        <SectionTitle
+          id="cases-title"
+          title={t("title")}
+          subtitle={t("subtitle")}
+        />
+      </ScrollReveal>
+      <ScrollReveal variant="stagger">
       <div className={styles.useCases}>
         {USE_CASES.map((useCase) => (
           <article key={useCase.title} className={styles.useCase}>
-            <div className={styles.icon} aria-hidden="true">
+            <div className={styles.iconCircle} aria-hidden="true">
               {useCase.icon}
             </div>
             <div>
@@ -55,6 +60,7 @@ export const UseCases: React.FC = () => {
           </article>
         ))}
       </div>
+      </ScrollReveal>
     </Section>
   );
 };

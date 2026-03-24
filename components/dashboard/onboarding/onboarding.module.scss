@@ -51,13 +51,13 @@
 }
 
 .dotActive {
-  border-color: $color-primary;
+  border-color: var(--color-primary);
   background: $color-primary;
   transform: scale(1.2);
 }
 
 .dotDone {
-  border-color: $color-secondary;
+  border-color: var(--color-secondary);
   background: $color-secondary;
 }
 
@@ -103,7 +103,7 @@
 
 .stepDetail {
   background: rgba($color-primary, 0.08);
-  border-left: 3px solid $color-primary;
+  border-left: 3px solid var(--color-primary);
   border-radius: 0 $border-radius-sm $border-radius-sm 0;
   padding: $spacing-12 $spacing-16;
   text-align: left;

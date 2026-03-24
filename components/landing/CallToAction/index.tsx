@@ -4,6 +4,7 @@ import React from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
 import Section from "@/components/ui/section";
+import ScrollReveal from "@/components/ui/scroll-reveal";
 import { BoltIcon, LogInIcon, UserPlusIcon } from "@/components/icons";
 import styles from "./call-to-action.module.scss";
 
@@ -12,6 +13,7 @@ export const CallToAction: React.FC = () => {
 
   return (
     <Section aria-labelledby="cta-title">
+      <ScrollReveal variant="scale">
       <div className={styles.wrapper}>
         <div className={styles.icon} aria-hidden="true">
           <BoltIcon size={48} color="#F7A825" />
@@ -32,6 +34,7 @@ export const CallToAction: React.FC = () => {
           {t("preview")}
         </Link>
       </div>
+      </ScrollReveal>
     </Section>
   );
 };

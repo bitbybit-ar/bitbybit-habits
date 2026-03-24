@@ -2,6 +2,7 @@
 @use "@/styles/typography" as *;
 @use "@/styles/spacing" as *;
 @use "@/styles/media-mixins" as *;
+@use "@/styles/glass" as *;
 
 .roadmap {
   max-width: 800px;
@@ -23,7 +24,7 @@
 .month {
   font-weight: $font-weight-bold;
   font-size: $font-size-sm;
-  color: $color-primary;
+  color: var(--color-primary);
   text-align: right;
   padding-top: 20px;
   padding-right: $spacing-16;
@@ -64,11 +65,9 @@
 }
 
 .content {
-  background: var(--color-bg-2);
-  border-radius: $border-radius-md;
+  @include glass-card;
   padding: $spacing-20 $spacing-24;
   margin-left: $spacing-16;
-  border: 1px solid rgba(var(--glass-color), 0.05);
   transition: border-color 0.3s, box-shadow 0.3s;
 
   h4 {
@@ -85,7 +84,7 @@
 .difficulty {
   display: inline-block;
   font-size: $font-size-xs;
-  color: $color-primary-light;
+  color: var(--color-primary-light);
   margin-top: $spacing-4;
 }
 
@@ -101,12 +100,15 @@
 
   .month {
     font-size: 0.95rem;
-    color: $color-primary-light;
+    color: var(--color-primary-light);
   }
 
   .content {
+    @include glass-card-tinted($color-primary, 0.06);
     border-color: rgba($color-primary, 0.3);
-    box-shadow: 0 4px 20px rgba($color-primary, 0.08);
+    box-shadow:
+      inset 0 1px 0 var(--glass-inner-glow),
+      0 4px 20px rgba($color-primary, 0.08);
   }
 }
 

@@ -1,5 +1,6 @@
 @use "@/styles/colors" as *;
 @use "@/styles/spacing" as *;
+@use "@/styles/media-mixins" as *;
 
 .wrapper {
   position: relative;
@@ -12,8 +13,13 @@
   font-size: 1.4rem;
   cursor: pointer;
   position: relative;
-  padding: $spacing-4;
+  padding: $spacing-8;
   line-height: 1;
+  min-width: 36px;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .badge {
@@ -44,7 +50,16 @@
   border: 1px solid rgba(var(--glass-color), 0.1);
   border-radius: 8px;
   box-shadow: 0 8px 24px rgba(var(--shadow-color), 0.4);
-  z-index: 100;
+  z-index: 1001;
+
+  @include mobile {
+    position: fixed;
+    top: 60px;
+    left: $spacing-8;
+    right: $spacing-8;
+    width: auto;
+    max-height: 60vh;
+  }
 }
 
 .empty {
@@ -87,7 +102,7 @@
   }
 
   time {
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     color: var(--color-text-secondary);
   }
 }

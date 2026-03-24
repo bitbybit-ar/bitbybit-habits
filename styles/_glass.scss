@@ -1,10 +1,10 @@
 // BitByBit Glassmorphism Design System
-// Use these mixins to apply consistent glass effects across components.
+// Multi-level depth system with CSS custom properties for theme-aware glass.
 // DO NOT change the color palette — dark navy/charcoal + yellow/gold stays.
 
 @use "./colors" as *;
 
-// Base glass mixin
+// Base glass mixin — kept for backward-compatibility with custom parameters
 @mixin glass($opacity: 0.06, $blur: 12px, $border-opacity: 0.08, $radius: 16px) {
   background: rgba(var(--glass-color), $opacity);
   backdrop-filter: blur($blur);
@@ -17,47 +17,182 @@
   }
 }
 
-// Variants
-@mixin glass-card {
-  @include glass(0.06, 12px, 0.08, 16px);
-}
+// --- Named variants (theme-aware via CSS custom properties) ---
 
-@mixin glass-nav {
-  @include glass(0.04, 16px, 0.06, 0);
-}
+// Prominent — hero-level elements (dashboard header, CTA)
+@mixin glass-prominent($tint-color: $color-primary, $tint-amount: 0.06) {
+  background:
+    linear-gradient(135deg, rgba($tint-color, $tint-amount) 0%, rgba($tint-color, $tint-amount * 0.3) 100%),
+    var(--glass-prominent-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-prominent-border);
+  border-radius: 20px;
+  box-shadow:
+    inset 0 1px 0 var(--glass-inner-glow),
+    0 8px 32px rgba(var(--shadow-color), 0.25);
 
-@mixin glass-modal {
-  @include glass(0.08, 20px, 0.1, 20px);
-}
-
-@mixin glass-toast {
-  @include glass(0.1, 12px, 0.12, 12px);
-}
-
-@mixin glass-subtle {
-  @include glass(0.03, 8px, 0.05, 12px);
-}
-
-// Glass hover state
-@mixin glass-hover {
-  transition: all 0.3s ease;
-
-  &:hover {
-    border-color: rgba(var(--glass-color), 0.12);
-    box-shadow: 0 8px 32px rgba(var(--shadow-color), 0.2), 0 0 0 1px rgba(var(--glass-color), 0.06);
+  @supports not (backdrop-filter: blur(1px)) {
+    background: var(--glass-fallback-bg);
   }
 }
 
-// Glass active/selected state
+// Card tinted — cards with a color accent (landing sections)
+@mixin glass-card-tinted($tint-color, $tint-amount: 0.05) {
+  background:
+    linear-gradient(135deg, rgba($tint-color, $tint-amount) 0%, transparent 60%),
+    var(--glass-card-bg);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--glass-card-border);
+  border-radius: 16px;
+  box-shadow: inset 0 1px 0 var(--glass-inner-glow-subtle);
+
+  @supports not (backdrop-filter: blur(1px)) {
+    background: var(--glass-fallback-bg);
+  }
+}
+
+// Card — standard glass card
+@mixin glass-card {
+  background: var(--glass-card-bg);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--glass-card-border);
+  border-radius: 16px;
+  box-shadow: inset 0 1px 0 var(--glass-inner-glow-subtle);
+
+  @supports not (backdrop-filter: blur(1px)) {
+    background: var(--glass-fallback-bg);
+  }
+}
+
+// Subtle — stat cards, inner elements
+@mixin glass-subtle {
+  background: var(--glass-subtle-bg);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--glass-subtle-border);
+  border-radius: 12px;
+
+  @supports not (backdrop-filter: blur(1px)) {
+    background: var(--glass-fallback-bg);
+  }
+}
+
+// Nav — navbar, tab bar
+@mixin glass-nav {
+  background: var(--glass-nav-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-nav-border);
+  border-radius: 0;
+
+  @supports not (backdrop-filter: blur(1px)) {
+    background: var(--glass-fallback-bg);
+  }
+}
+
+// Modal — dialogs, overlays
+@mixin glass-modal {
+  background: var(--glass-modal-bg);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--glass-modal-border);
+  border-radius: 20px;
+  box-shadow:
+    inset 0 1px 0 var(--glass-inner-glow),
+    0 16px 48px rgba(var(--shadow-color), 0.4);
+
+  @supports not (backdrop-filter: blur(1px)) {
+    background: var(--glass-fallback-bg);
+  }
+}
+
+// Toast — notifications
+@mixin glass-toast {
+  background: var(--glass-toast-bg);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--glass-toast-border);
+  border-radius: 12px;
+  box-shadow: inset 0 1px 0 var(--glass-inner-glow);
+
+  @supports not (backdrop-filter: blur(1px)) {
+    background: var(--glass-fallback-bg);
+  }
+}
+
+// --- Gradient border (bright top, fades to transparent bottom) ---
+
+@mixin glass-gradient-border {
+  position: relative;
+  border: none !important;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(
+      180deg,
+      rgba(var(--glass-color), 0.20) 0%,
+      rgba(var(--glass-color), 0.08) 40%,
+      rgba(var(--glass-color), 0.02) 100%
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  > * {
+    position: relative;
+    z-index: 1;
+  }
+}
+
+// --- State mixins ---
+
+// Hover state
+@mixin glass-hover {
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+              background 0.3s ease,
+              border-color 0.3s ease,
+              box-shadow 0.3s ease;
+
+  &:hover {
+    transform: translateY(-3px) scale(1.01);
+    background: rgba(var(--glass-color), 0.10);
+    border-color: rgba(var(--glass-color), 0.14);
+    box-shadow:
+      inset 0 1px 0 var(--glass-inner-glow),
+      0 12px 40px rgba(var(--shadow-color), 0.2),
+      0 0 0 1px rgba(var(--glass-color), 0.06);
+  }
+
+  &:active {
+    transform: translateY(0) scale(0.98);
+    transition-duration: 0.1s;
+  }
+}
+
+// Active/selected state
 @mixin glass-active {
   border-color: rgba(var(--glass-color), 0.15);
   box-shadow: 0 8px 32px rgba(var(--shadow-color), 0.25), 0 0 0 1px rgba(var(--glass-color), 0.08);
 }
 
-// Glass highlight (primary-tinted border + shadow)
+// Highlight (primary-tinted border + shadow)
 @mixin glass-highlight {
-  border: 1px solid rgba($color-primary, 0.15);
-  box-shadow: 0 8px 32px rgba(var(--shadow-color), 0.3);
+  border: 1px solid rgba($color-primary, 0.20);
+  box-shadow:
+    inset 0 1px 0 var(--glass-inner-glow),
+    0 8px 32px rgba(var(--shadow-color), 0.3),
+    0 0 0 1px rgba($color-primary, 0.05);
 }
 
 // Modal overlay with blur
@@ -71,7 +206,8 @@
   }
 }
 
-// Animated background orbs for dashboard
+// --- Background orbs ---
+
 @mixin glass-background-orbs {
   &::before,
   &::after {
@@ -86,7 +222,7 @@
   &::before {
     width: 500px;
     height: 500px;
-    background: radial-gradient(circle, rgba(247, 168, 37, 0.06) 0%, transparent 70%);
+    background: radial-gradient(circle, var(--orb-color-1) 0%, transparent 70%);
     top: -100px;
     right: -100px;
     animation: orb-drift-1 25s ease-in-out infinite alternate;
@@ -95,7 +231,7 @@
   &::after {
     width: 400px;
     height: 400px;
-    background: radial-gradient(circle, rgba(76, 175, 125, 0.05) 0%, transparent 70%);
+    background: radial-gradient(circle, var(--orb-color-2) 0%, transparent 70%);
     bottom: -50px;
     left: -80px;
     animation: orb-drift-2 30s ease-in-out infinite alternate;

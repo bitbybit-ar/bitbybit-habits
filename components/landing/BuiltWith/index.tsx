@@ -4,6 +4,7 @@ import React from "react";
 import { useTranslations } from "next-intl";
 import Section from "@/components/ui/section";
 import SectionTitle from "@/components/ui/section-title";
+import ScrollReveal from "@/components/ui/scroll-reveal";
 import styles from "./built-with.module.scss";
 
 const PARTNERS = [
@@ -17,7 +18,10 @@ export const BuiltWith: React.FC = () => {
 
   return (
     <Section alternate aria-labelledby="powered-title" style={{ padding: "60px 0" }}>
-      <SectionTitle id="powered-title" title={t("title")} />
+      <ScrollReveal>
+        <SectionTitle id="powered-title" title={t("title")} />
+      </ScrollReveal>
+      <ScrollReveal>
       <div className={styles.poweredBy}>
         {PARTNERS.map((partner) => (
           <a
@@ -31,6 +35,7 @@ export const BuiltWith: React.FC = () => {
           </a>
         ))}
       </div>
+      </ScrollReveal>
     </Section>
   );
 };

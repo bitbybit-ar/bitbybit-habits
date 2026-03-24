@@ -40,7 +40,7 @@
   z-index: 9999;
   font-size: clamp(1.5rem, 5vw, 2.5rem);
   font-weight: $font-weight-extrabold;
-  color: $color-primary;
+  color: var(--color-primary);
   text-shadow: 0 2px 12px rgba($color-primary, 0.5);
   pointer-events: none;
   animation: floatUp 2s ease-out forwards;
@@ -53,7 +53,7 @@
   padding: $spacing-4 $spacing-12;
   border-radius: $border-radius-full;
   background: rgba($color-primary, 0.15);
-  color: $color-primary;
+  color: var(--color-primary);
   font-size: $font-size-xs;
   font-weight: $font-weight-bold;
   white-space: nowrap;
@@ -79,7 +79,7 @@
   height: 56px;
   border-radius: $border-radius-md;
   background: rgba($color-primary, 0.15);
-  color: $color-primary;
+  color: var(--color-primary);
   flex-shrink: 0;
 }
 
@@ -93,7 +93,7 @@
 .heroSatsValue {
   font-size: clamp(2rem, 5vw, 3rem);
   font-weight: $font-weight-extrabold;
-  color: $color-primary;
+  color: var(--color-primary);
   line-height: 1;
 }
 
@@ -111,7 +111,7 @@
   padding: $spacing-8 $spacing-16;
   background: rgba($color-warning, 0.12);
   border-radius: $border-radius-full;
-  color: $color-warning;
+  color: var(--color-warning);
   font-size: $font-size-lg;
   font-weight: $font-weight-bold;
   flex-shrink: 0;
@@ -195,7 +195,7 @@
 
   &:focus {
     outline: none;
-    border-color: $color-primary;
+    border-color: var(--color-primary);
   }
 }
 
@@ -222,7 +222,7 @@
 }
 
 .joinError {
-  color: $color-accent;
+  color: var(--color-accent);
   font-size: $font-size-sm;
   margin-top: $spacing-8;
 }

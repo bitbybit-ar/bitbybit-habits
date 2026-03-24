@@ -40,7 +40,7 @@
   transition: border-color 0.2s ease;
 
   &:focus {
-    border-color: $color-primary;
+    border-color: var(--color-primary);
   }
 
   &::placeholder {
@@ -118,7 +118,7 @@
 }
 
 .checkbox {
-  accent-color: $color-primary;
+  accent-color: var(--color-primary);
   cursor: pointer;
 }
 

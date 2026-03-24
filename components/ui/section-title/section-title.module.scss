@@ -1,20 +1,29 @@
 @use "@/styles/colors" as *;
 @use "@/styles/typography" as *;
 @use "@/styles/spacing" as *;
+@use "@/styles/media-mixins" as *;
 
 .sectionTitle {
   text-align: center;
   margin-bottom: $spacing-64;
 
+  @include mobile {
+    margin-bottom: $spacing-32;
+  }
+
   h2 {
+    font-family: $font-family-display;
     font-size: $font-size-2xl;
     font-weight: $font-weight-bold;
+    letter-spacing: $letter-spacing-heading;
+    line-height: $line-height-heading;
     margin-bottom: $spacing-16;
   }
 
   p {
     color: var(--color-text-secondary);
     font-size: $font-size-lg;
+    letter-spacing: $letter-spacing-normal;
     max-width: 600px;
     margin: 0 auto;
   }

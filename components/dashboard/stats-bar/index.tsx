@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { BoltIcon, FlameIcon, ClockIcon } from "@/components/icons";
+import AnimatedNumber from "@/components/ui/animated-number";
 import { cn } from "@/lib/utils";
 import styles from "./stats-bar.module.scss";
 
@@ -27,27 +28,30 @@ interface StatsBarCustomProps {
   pendingCount?: never;
 }
 
-type StatsBarProps = StatsBarDefaultProps | StatsBarCustomProps;
+type StatsBarProps = (StatsBarDefaultProps | StatsBarCustomProps) & {
+  compact?: boolean;
+};
 
 export function StatsBar(props: StatsBarProps) {
   const t = useTranslations();
+  const iconSize = props.compact ? 14 : 22;
 
   const items: StatItem[] = props.items ?? [
     {
-      icon: <BoltIcon size={22} />,
+      icon: <BoltIcon size={iconSize} />,
       value: props.totalSats!.toLocaleString(),
       label: `${t("sats.sats")} ${t("sats.earned")}`,
       iconClass: styles.iconSats,
       highlight: true,
     },
     {
-      icon: <FlameIcon size={22} />,
+      icon: <FlameIcon size={iconSize} />,
       value: props.bestStreak!,
       label: t("dashboard.streak"),
       iconClass: styles.iconStreak,
     },
     {
-      icon: <ClockIcon size={22} />,
+      icon: <ClockIcon size={iconSize} />,
       value: props.pendingCount!,
       label: t("dashboard.pendingApproval"),
       iconClass: styles.iconPending,
@@ -55,7 +59,7 @@ export function StatsBar(props: StatsBarProps) {
   ];
 
   return (
-    <div className={styles.statsBar}>
+    <div className={cn(styles.statsBar, props.compact && styles.compact)}>
       {items.map((item, index) => (
         <div key={index} className={cn(styles.statCard, item.highlight && styles.statCardHighlight)}>
           <div className={cn(styles.iconWrapper, item.iconClass)}>
@@ -63,7 +67,15 @@ export function StatsBar(props: StatsBarProps) {
           </div>
           <div className={styles.statContent}>
             <span className={cn(styles.statValue, item.highlight && styles.statValueHighlight)}>
-              {typeof item.value === "number" ? item.value.toLocaleString() : item.value}
+              {typeof item.value === "number" ? (
+                <AnimatedNumber
+                  value={item.value}
+                  duration={item.highlight ? 1500 : 1000}
+                  delay={item.highlight ? 200 : 0}
+                />
+              ) : (
+                item.value
+              )}
             </span>
             <span className={styles.statLabel}>{item.label}</span>
           </div>

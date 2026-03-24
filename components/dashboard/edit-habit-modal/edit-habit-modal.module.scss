@@ -1,6 +1,7 @@
 @use "@/styles/colors" as *;
 @use "@/styles/spacing" as *;
 @use "@/styles/typography" as *;
+@use "@/styles/media-mixins" as *;
 @use "@/styles/glass" as *;
 
 .overlay {
@@ -12,6 +13,22 @@
   justify-content: center;
   z-index: 1000;
   padding: $spacing-16;
+
+  @include mobile {
+    align-items: flex-end;
+    padding: 0;
+  }
+}
+
+@keyframes slideUpSheet {
+  from {
+    transform: translateY(100%);
+    opacity: 0.5;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 .modal {
@@ -19,6 +36,15 @@
   padding: $spacing-24;
   width: 100%;
   max-width: 440px;
+
+  @include mobile {
+    max-width: 100%;
+    border-radius: $border-radius-xl $border-radius-xl 0 0;
+    padding: $spacing-24 $spacing-20;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: slideUpSheet 0.3s ease;
+  }
 }
 
 .title {
@@ -52,7 +78,7 @@
   box-sizing: border-box;
 
   &:focus {
-    border-color: $color-primary;
+    border-color: var(--color-primary);
   }
 }
 
@@ -98,7 +124,7 @@
   padding-right: $spacing-40;
 
   &:focus {
-    border-color: $color-primary;
+    border-color: var(--color-primary);
   }
 
   option {
@@ -131,7 +157,7 @@
 }
 
 .checkbox {
-  accent-color: $color-primary;
+  accent-color: var(--color-primary);
   cursor: pointer;
 }
 

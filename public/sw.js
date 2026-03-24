@@ -1,4 +1,4 @@
-const CACHE_NAME = "bitbybit-v1";
+const CACHE_NAME = "bitbybit-v4";
 const STATIC_ASSETS = ["/", "/manifest.json"];
 
 self.addEventListener("install", (event) => {
