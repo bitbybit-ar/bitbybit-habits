@@ -350,6 +350,7 @@
     "selectSchedule": "Select schedule",
     "selectVerification": "Select verification",
     "approveSuccess": "Completion approved successfully",
+    "approveNoWallet": "Completion approved, but you need to connect a Lightning wallet to send rewards. Go to the Wallet tab to set it up.",
     "rejectSuccess": "Completion rejected",
     "createSuccess": "Habit created successfully",
     "copied": "Copied"
