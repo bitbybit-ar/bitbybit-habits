@@ -338,6 +338,21 @@
       "payment_failed": "Pago fallido"
     }
   },
+  "summaryBar": {
+    "completedToday": "completados hoy",
+    "pending": "pendientes",
+    "satsPaid": "sats pagados"
+  },
+  "weeklyTracker": {
+    "sun": "D",
+    "mon": "L",
+    "tue": "M",
+    "wed": "X",
+    "thu": "J",
+    "fri": "V",
+    "sat": "S",
+    "approve": "Aprobar"
+  },
   "sponsorDashboard": {
     "pendingApprovals": "Pendientes de aprobación",
     "habitsCreated": "Hábitos creados",
