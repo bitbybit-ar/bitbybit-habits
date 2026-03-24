@@ -32,8 +32,10 @@
 }
 
 .brand {
+  font-family: $font-family-display;
   font-weight: $font-weight-extrabold;
   font-size: $font-size-md;
+  letter-spacing: $letter-spacing-tight;
   background: $gradient-primary;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;

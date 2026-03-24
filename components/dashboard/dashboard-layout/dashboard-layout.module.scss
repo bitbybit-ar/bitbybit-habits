@@ -120,6 +120,7 @@ $tabbar-height: 52px;
 }
 
 .welcomeText {
+  font-family: $font-family-display;
   font-size: $font-size-xl;
   font-weight: $font-weight-bold;
   color: var(--color-text-primary);

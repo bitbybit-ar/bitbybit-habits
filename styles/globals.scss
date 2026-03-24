@@ -24,6 +24,12 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+h1, h2, h3, h4 {
+  font-family: $font-family-display;
+  letter-spacing: $letter-spacing-heading;
+  line-height: $line-height-heading;
+}
+
 a {
   color: inherit;
   text-decoration: none;

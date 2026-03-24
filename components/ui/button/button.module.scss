@@ -6,7 +6,9 @@
   display: inline-block;
   border: 2px solid transparent;
   border-radius: $border-radius-md;
+  font-family: $font-family-base;
   font-weight: $font-weight-bold;
+  letter-spacing: 0.01em;
   cursor: pointer;
   text-decoration: none;
   text-align: center;

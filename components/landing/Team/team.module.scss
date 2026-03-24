@@ -57,8 +57,9 @@
 }
 
 .name {
+  font-family: $font-family-display;
   font-size: $font-size-lg;
-  font-weight: 600;
+  font-weight: $font-weight-bold;
 }
 
 .role {

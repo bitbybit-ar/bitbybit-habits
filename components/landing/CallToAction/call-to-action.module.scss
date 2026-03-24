@@ -16,8 +16,10 @@
 }
 
 .title {
+  font-family: $font-family-display;
   font-size: $font-size-2xl;
   font-weight: $font-weight-bold;
+  letter-spacing: $letter-spacing-heading;
   background: $gradient-primary;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;

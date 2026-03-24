@@ -27,8 +27,10 @@
 }
 
 .title {
+  font-family: $font-family-display;
   font-size: $font-size-2xl;
   font-weight: $font-weight-extrabold;
+  letter-spacing: $letter-spacing-tight;
   text-align: center;
   @include gradient-text;
   margin-bottom: $spacing-4;

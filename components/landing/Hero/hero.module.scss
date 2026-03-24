@@ -220,17 +220,20 @@
   color: $color-primary;
   padding: $spacing-8 $spacing-20;
   border-radius: $border-radius-full;
-  font-size: $font-size-sm;
+  font-size: $font-size-xs;
   font-weight: $font-weight-semibold;
   margin-bottom: $spacing-32;
-  letter-spacing: 0.5px;
+  letter-spacing: $letter-spacing-wide;
+  text-transform: uppercase;
   position: relative;
   animation-delay: 0s;
 }
 
 .title {
+  font-family: $font-family-display;
   font-size: $font-size-hero;
   font-weight: $font-weight-extrabold;
+  letter-spacing: $letter-spacing-tight;
   line-height: $line-height-tight;
   margin-bottom: $spacing-16;
   position: relative;
@@ -258,8 +261,10 @@
 }
 
 .pitch {
+  font-family: $font-family-display;
   font-size: $font-size-xl;
   font-weight: $font-weight-bold;
+  letter-spacing: $letter-spacing-heading;
   color: var(--color-text-primary);
   margin-bottom: $spacing-12;
   position: relative;
@@ -269,6 +274,7 @@
 
 .subtitle {
   font-size: $font-size-subtitle;
+  letter-spacing: $letter-spacing-normal;
   color: var(--color-text-secondary);
   max-width: 600px;
   margin-bottom: $spacing-48;
