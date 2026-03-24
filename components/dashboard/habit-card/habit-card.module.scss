@@ -21,7 +21,7 @@
   padding: $spacing-20;
   transition: all 0.3s ease;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
 
   // Colored glow from the left matching habit color
   &::before {
@@ -111,7 +111,7 @@
   align-items: center;
   gap: 4px;
   background: rgba($color-primary, 0.15);
-  color: $color-primary;
+  color: var(--color-primary);
   padding: 4px $spacing-8;
   border-radius: $border-radius-full;
   font-size: $font-size-xs;
@@ -148,7 +148,7 @@
 
 .deleteBtn:hover {
   background: rgba($color-error, 0.15);
-  color: $color-error;
+  color: var(--color-error);
 }
 
 .meta {
@@ -170,7 +170,7 @@
 }
 
 .streakActive {
-  color: $color-warning;
+  color: var(--color-warning);
 }
 
 .streakInactive {
@@ -205,7 +205,7 @@
 }
 
 .dayLabelToday {
-  color: $color-primary;
+  color: var(--color-primary);
   font-weight: $font-weight-bold;
 }
 
@@ -228,12 +228,12 @@
 
 .circleCompleted {
   background: $color-success;
-  border-color: $color-success;
+  border-color: var(--color-success);
   color: white;
 }
 
 .circleToday {
-  border-color: $color-primary;
+  border-color: var(--color-primary);
   box-shadow: 0 0 0 2px rgba($color-primary, 0.2);
 }
 
@@ -249,9 +249,10 @@
   }
 
   &:active {
-    transform: scale(0.95);
+    transform: scale(0.9);
     background: $color-success;
-    border-color: $color-success;
+    border-color: var(--color-success);
+    transition-duration: 0.1s;
     animation: none;
   }
 }
@@ -286,7 +287,7 @@
   border-radius: $border-radius-md;
   font-size: $font-size-sm;
   font-weight: $font-weight-bold;
-  color: $color-success;
+  color: var(--color-success);
   background: rgba($color-success, 0.12);
   animation: fadeUpOut 1.5s ease-out forwards;
 }
@@ -339,12 +340,12 @@
 
 .statusPending {
   background: rgba($color-warning, 0.12);
-  color: $color-warning;
+  color: var(--color-warning);
 }
 
 .statusCompleted {
   background: rgba($color-success, 0.12);
-  color: $color-success;
+  color: var(--color-success);
 }
 
 // --- Compact variant (for phone mockup / small containers) ---

@@ -155,7 +155,7 @@
 .content {
   display: flex;
   align-items: center;
-  gap: 60px;
+  justify-content: space-between;
   position: relative;
   z-index: 1;
   max-width: $container-max-width;
@@ -169,6 +169,7 @@
     flex-direction: column;
     gap: $spacing-32;
     align-items: center;
+    justify-content: center;
   }
 }
 
@@ -176,7 +177,7 @@
 .textColumn {
   flex: 1;
   min-width: 0;
-  max-width: 480px;
+  max-width: 680px;
 
   @include tablet {
     max-width: 380px;
@@ -217,7 +218,7 @@
   display: inline-block;
   background: rgba($color-primary, 0.1);
   border: 1px solid rgba($color-primary, 0.3);
-  color: $color-primary;
+  color: var(--color-primary);
   padding: $spacing-8 $spacing-20;
   border-radius: $border-radius-full;
   font-size: $font-size-xs;
@@ -258,6 +259,23 @@
   // Glow behind the text
   text-shadow: none;
   filter: drop-shadow(0 0 30px rgba($color-primary, 0.25));
+
+  // Light mode: darker gradient for readability
+  [data-theme="light"] & {
+    background: linear-gradient(
+      90deg,
+      #B37209 0%,
+      #C47F0A 25%,
+      #5C4D3F 50%,
+      #C47F0A 75%,
+      #1D7D4A 100%
+    );
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 20px rgba(180, 120, 20, 0.15));
+  }
 }
 
 .pitch {

@@ -85,28 +85,28 @@
 }
 
 .toastSuccess {
-  border-left: 3px solid $color-primary;
+  border-left: 3px solid var(--color-primary);
 
   .toastIcon {
     background: rgba($color-success, 0.15);
-    color: $color-success;
+    color: var(--color-success);
   }
 }
 
 .toastError {
-  border-left: 3px solid $color-error;
+  border-left: 3px solid var(--color-error);
 
   .toastIcon {
     background: rgba($color-error, 0.15);
-    color: $color-error;
+    color: var(--color-error);
   }
 }
 
 .toastInfo {
-  border-left: 3px solid $color-primary;
+  border-left: 3px solid var(--color-primary);
 
   .toastIcon {
     background: rgba($color-primary, 0.15);
-    color: $color-primary;
+    color: var(--color-primary);
   }
 }

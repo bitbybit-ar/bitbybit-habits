@@ -36,6 +36,25 @@
   --glass-inner-glow: rgba(255, 255, 255, 0.06);
   --glass-inner-glow-subtle: rgba(255, 255, 255, 0.04);
 
+  // Accent colors for text and borders (bright on dark backgrounds)
+  --color-primary: #F7A825;
+  --color-primary-light: #FBC96B;
+  --color-primary-hover: #FBC96B;
+  --color-secondary: #4CAF7D;
+  --color-accent: #FF6B6B;
+  --color-accent-alt: #4DB6AC;
+  --color-success: #4CAF7D;
+  --color-warning: #FF9F43;
+  --color-error: #EE5A5A;
+  --color-info: #4DB6AC;
+
+  // Gradient for text (gradient-text mixin)
+  --gradient-primary-text: linear-gradient(135deg, #F7A825, #4CAF7D);
+
+  // Orb colors
+  --orb-color-1: rgba(247, 168, 37, 0.06);
+  --orb-color-2: rgba(76, 175, 125, 0.05);
+
   // Scrollbar
   --scrollbar-thumb: rgba(255, 255, 255, 0.1);
 }
@@ -85,6 +104,25 @@
   // Inner glow — brighter in light mode
   --glass-inner-glow: rgba(255, 255, 255, 0.30);
   --glass-inner-glow-subtle: rgba(255, 255, 255, 0.20);
+
+  // Accent colors — DARKER for readability on light backgrounds
+  --color-primary: #C47F0A;
+  --color-primary-light: #D4950E;
+  --color-primary-hover: #A66800;
+  --color-secondary: #2E7D52;
+  --color-accent: #D04444;
+  --color-accent-alt: #0F6E56;
+  --color-success: #2E7D52;
+  --color-warning: #D47A20;
+  --color-error: #C43030;
+  --color-info: #0F6E56;
+
+  // Gradient for text — darker for readability
+  --gradient-primary-text: linear-gradient(135deg, #B37209, #1D7D4A);
+
+  // Orb colors — stronger, purple instead of green
+  --orb-color-1: rgba(247, 168, 37, 0.12);
+  --orb-color-2: rgba(160, 100, 200, 0.10);
 
   // Scrollbar
   --scrollbar-thumb: rgba(0, 0, 0, 0.1);

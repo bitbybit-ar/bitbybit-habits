@@ -173,6 +173,11 @@
       0 12px 40px rgba(var(--shadow-color), 0.2),
       0 0 0 1px rgba(var(--glass-color), 0.06);
   }
+
+  &:active {
+    transform: translateY(0) scale(0.98);
+    transition-duration: 0.1s;
+  }
 }
 
 // Active/selected state
@@ -217,7 +222,7 @@
   &::before {
     width: 500px;
     height: 500px;
-    background: radial-gradient(circle, rgba(247, 168, 37, 0.06) 0%, transparent 70%);
+    background: radial-gradient(circle, var(--orb-color-1) 0%, transparent 70%);
     top: -100px;
     right: -100px;
     animation: orb-drift-1 25s ease-in-out infinite alternate;
@@ -226,21 +231,10 @@
   &::after {
     width: 400px;
     height: 400px;
-    background: radial-gradient(circle, rgba(76, 175, 125, 0.05) 0%, transparent 70%);
+    background: radial-gradient(circle, var(--orb-color-2) 0%, transparent 70%);
     bottom: -50px;
     left: -80px;
     animation: orb-drift-2 30s ease-in-out infinite alternate;
-  }
-
-  // Light mode orbs — warmer, with purple to match gradient
-  [data-theme="light"] & {
-    &::before {
-      background: radial-gradient(circle, rgba(247, 168, 37, 0.12) 0%, transparent 70%);
-    }
-
-    &::after {
-      background: radial-gradient(circle, rgba(160, 100, 200, 0.08) 0%, transparent 70%);
-    }
   }
 }
 

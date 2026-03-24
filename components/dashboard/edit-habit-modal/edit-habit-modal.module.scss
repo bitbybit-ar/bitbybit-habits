@@ -78,7 +78,7 @@
   box-sizing: border-box;
 
   &:focus {
-    border-color: $color-primary;
+    border-color: var(--color-primary);
   }
 }
 
@@ -124,7 +124,7 @@
   padding-right: $spacing-40;
 
   &:focus {
-    border-color: $color-primary;
+    border-color: var(--color-primary);
   }
 
   option {
@@ -157,7 +157,7 @@
 }
 
 .checkbox {
-  accent-color: $color-primary;
+  accent-color: var(--color-primary);
   cursor: pointer;
 }
 

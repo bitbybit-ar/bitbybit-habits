@@ -46,7 +46,7 @@ a {
 }
 
 :focus-visible {
-  outline: 2px solid $color-primary;
+  outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
 
@@ -113,12 +113,22 @@ a {
   }
 }
 
+// Global reduced motion — disables ALL animations and transitions
+// Uses 0.01ms instead of 0s so animationend events still fire
 @media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
   .scroll-reveal,
   .scroll-reveal-stagger > *,
   .scroll-reveal-scale {
     opacity: 1 !important;
     transform: none !important;
-    transition: none !important;
   }
 }

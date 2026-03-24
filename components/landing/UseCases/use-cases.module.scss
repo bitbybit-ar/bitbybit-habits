@@ -65,11 +65,30 @@
   }
 }
 
-.icon {
-  font-size: 3.5rem;
-  line-height: 1;
+.iconCircle {
+  width: 64px;
+  height: 64px;
+  border-radius: $border-radius-lg;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  @include glass-subtle;
 
   @include mobile {
-    font-size: 2.5rem;
+    width: 48px;
+    height: 48px;
   }
+}
+
+.useCase:nth-child(1) .iconCircle {
+  color: var(--color-primary);
+  background: rgba($color-primary, 0.12);
+  border-color: rgba($color-primary, 0.15);
+}
+
+.useCase:nth-child(2) .iconCircle {
+  color: var(--color-secondary);
+  background: rgba($color-secondary, 0.12);
+  border-color: rgba($color-secondary, 0.15);
 }

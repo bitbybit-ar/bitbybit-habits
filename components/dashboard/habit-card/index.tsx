@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { CheckIcon, FlameIcon, BoltIcon, ClockIcon, PencilIcon } from "@/components/icons";
 import { EditHabitModal } from "@/components/dashboard/edit-habit-modal";
+import CelebrationBurst from "@/components/ui/celebration-burst";
 import { cn } from "@/lib/utils";
 import type { Habit, Completion } from "@/lib/types";
 import styles from "./habit-card.module.scss";
@@ -124,6 +125,7 @@ export function HabitCard({ habit, completions, onComplete, hideAction, currentU
   const t = useTranslations();
   const [editing, setEditing] = useState(false);
   const [justCompleted, setJustCompleted] = useState(false);
+  const [showBurst, setShowBurst] = useState(false);
   const isCreator = currentUserId === habit.created_by;
   const last7Days = getLast7Days();
   const scheduleText = getScheduleText(habit, t);
@@ -136,8 +138,10 @@ export function HabitCard({ habit, completions, onComplete, hideAction, currentU
 
   const handleComplete = (habitId: string) => {
     setJustCompleted(true);
+    setShowBurst(true);
     onComplete(habitId);
     setTimeout(() => setJustCompleted(false), 1500);
+    setTimeout(() => setShowBurst(false), 1600);
   };
 
   return (
@@ -261,6 +265,12 @@ export function HabitCard({ habit, completions, onComplete, hideAction, currentU
             </div>
           )}
         </div>
+      )}
+      {showBurst && !compact && (
+        <CelebrationBurst
+          satReward={habit.sat_reward}
+          color={habit.color}
+        />
       )}
       {editing && (
         <EditHabitModal

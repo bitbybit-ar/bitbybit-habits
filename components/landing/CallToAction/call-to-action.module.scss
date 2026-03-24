@@ -22,7 +22,7 @@
   font-size: $font-size-2xl;
   font-weight: $font-weight-bold;
   letter-spacing: $letter-spacing-heading;
-  background: $gradient-primary;
+  background: var(--gradient-primary-text);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -59,6 +59,11 @@
   font-weight: $font-weight-semibold;
   text-decoration: none;
   transition: all 0.2s;
+
+  &:active {
+    transform: translateY(0) scale(0.97);
+    transition-duration: 0.1s;
+  }
 }
 
 .primaryButton {
@@ -78,7 +83,7 @@
 
   &:hover {
     border-color: rgba($color-primary, 0.4);
-    color: $color-primary;
+    color: var(--color-primary);
     transform: translateY(-2px);
   }
 }
@@ -90,6 +95,6 @@
   transition: color 0.2s;
 
   &:hover {
-    color: $color-primary;
+    color: var(--color-primary);
   }
 }

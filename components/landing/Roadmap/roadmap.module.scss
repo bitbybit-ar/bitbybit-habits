@@ -24,7 +24,7 @@
 .month {
   font-weight: $font-weight-bold;
   font-size: $font-size-sm;
-  color: $color-primary;
+  color: var(--color-primary);
   text-align: right;
   padding-top: 20px;
   padding-right: $spacing-16;
@@ -84,7 +84,7 @@
 .difficulty {
   display: inline-block;
   font-size: $font-size-xs;
-  color: $color-primary-light;
+  color: var(--color-primary-light);
   margin-top: $spacing-4;
 }
 
@@ -100,7 +100,7 @@
 
   .month {
     font-size: 0.95rem;
-    color: $color-primary-light;
+    color: var(--color-primary-light);
   }
 
   .content {

@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { BoltIcon, FlameIcon, ClockIcon } from "@/components/icons";
+import AnimatedNumber from "@/components/ui/animated-number";
 import { cn } from "@/lib/utils";
 import styles from "./stats-bar.module.scss";
 
@@ -66,7 +67,15 @@ export function StatsBar(props: StatsBarProps) {
           </div>
           <div className={styles.statContent}>
             <span className={cn(styles.statValue, item.highlight && styles.statValueHighlight)}>
-              {typeof item.value === "number" ? item.value.toLocaleString() : item.value}
+              {typeof item.value === "number" ? (
+                <AnimatedNumber
+                  value={item.value}
+                  duration={item.highlight ? 1500 : 1000}
+                  delay={item.highlight ? 200 : 0}
+                />
+              ) : (
+                item.value
+              )}
             </span>
             <span className={styles.statLabel}>{item.label}</span>
           </div>

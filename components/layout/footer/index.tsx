@@ -12,7 +12,21 @@ export const Footer: React.FC = () => {
       <p>
         {t("builtFor")} <strong>{t("hackathonName")}</strong>
       </p>
-      <p className={styles.motto}>{t("motto")}</p>
+      <div className={styles.mottoRow}>
+        <p className={styles.motto}>{t("motto")}</p>
+        <a
+          href="https://lacrypta.ar"
+          target="_blank"
+          rel="noopener noreferrer"
+          className={styles.cryptaLink}
+        >
+          <img
+            src="https://github.com/lacrypta.png?size=64"
+            alt="La Crypta"
+            className={styles.cryptaLogo}
+          />
+        </a>
+      </div>
     </footer>
   );
 };

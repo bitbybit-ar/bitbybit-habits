@@ -15,15 +15,15 @@
 
 .variant-gold {
   background: rgba($color-primary-light, 0.15);
-  color: $color-primary-light;
+  color: var(--color-primary-light);
 }
 
 .variant-green {
   background: rgba($color-secondary, 0.15);
-  color: $color-secondary;
+  color: var(--color-secondary);
 }
 
 .variant-coral {
   background: rgba($color-accent, 0.15);
-  color: $color-accent;
+  color: var(--color-accent);
 }

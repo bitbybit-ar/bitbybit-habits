@@ -15,6 +15,7 @@ export const Hero: React.FC = () => {
   useEffect(() => {
     const container = particlesRef.current;
     if (!container) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     for (let i = 0; i < 12; i++) {
       const bolt = document.createElement("div");

@@ -122,7 +122,7 @@
   height: 48px;
   border-radius: $border-radius-md;
   background: rgba($color-primary, 0.1);
-  color: $color-primary;
+  color: var(--color-primary);
   margin: 0 auto $spacing-16;
 
   @include mobile {

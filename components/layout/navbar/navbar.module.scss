@@ -41,7 +41,7 @@
   font-weight: $font-weight-extrabold;
   font-size: $font-size-md;
   letter-spacing: $letter-spacing-tight;
-  background: $gradient-primary;
+  background: var(--gradient-primary-text);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -93,6 +93,11 @@
   border-radius: $border-radius-md;
   transition: all 0.2s;
   min-height: 36px;
+
+  &:active {
+    transform: scale(0.95);
+    transition-duration: 0.1s;
+  }
 }
 
 .loginButton {

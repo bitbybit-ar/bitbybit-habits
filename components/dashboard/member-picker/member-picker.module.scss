@@ -27,7 +27,7 @@
 }
 
 .memberChipSelected {
-  border-color: $color-primary;
+  border-color: var(--color-primary);
   background: rgba($color-primary, 0.1);
 
   .avatar {
@@ -78,7 +78,7 @@
   padding: 2px 6px;
   border-radius: $border-radius-full;
   background: rgba($color-secondary, 0.15);
-  color: $color-secondary;
+  color: var(--color-secondary);
 }
 
 .emptyMessage {

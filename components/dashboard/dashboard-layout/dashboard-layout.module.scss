@@ -37,7 +37,7 @@ $tabbar-height: 52px;
 .logo {
   font-size: $font-size-lg;
   font-weight: $font-weight-bold;
-  color: $color-primary;
+  color: var(--color-primary);
   text-decoration: none;
   white-space: nowrap;
 
@@ -184,12 +184,17 @@ $tabbar-height: 52px;
     color: var(--color-text-primary);
     background: rgba(var(--glass-color), 0.05);
   }
+
+  &:active {
+    transform: scale(0.92);
+    transition-duration: 0.1s;
+  }
 }
 
 .tabItemActive {
-  color: $color-primary;
+  color: var(--color-primary);
   background: rgba($color-primary, 0.18);
-  border-bottom: 2px solid $color-primary;
+  border-bottom: 2px solid var(--color-primary);
   box-shadow: 0 0 12px rgba($color-primary, 0.12);
 
   .tabIcon {

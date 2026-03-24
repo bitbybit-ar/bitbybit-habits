@@ -46,22 +46,22 @@
 
 .iconSats {
   background: rgba($color-primary, 0.15);
-  color: $color-primary;
+  color: var(--color-primary);
 }
 
 .iconStreak {
   background: rgba($color-warning, 0.15);
-  color: $color-warning;
+  color: var(--color-warning);
 }
 
 .iconPending {
   background: rgba($color-accent-alt, 0.15);
-  color: $color-accent-alt;
+  color: var(--color-accent-alt);
 }
 
 .iconHabits {
   background: rgba($color-secondary, 0.15);
-  color: $color-secondary;
+  color: var(--color-secondary);
 }
 
 .statContent {
@@ -79,7 +79,7 @@
 
 .statValueHighlight {
   font-size: clamp(1.6rem, 3vw, 2rem);
-  color: $color-primary;
+  color: var(--color-primary);
 }
 
 .statLabel {

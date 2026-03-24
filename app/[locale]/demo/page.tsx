@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
 import Image from "next/image";
 import Navbar from "@/components/layout/navbar";
-import { UsersIcon, BoltIcon, ArrowRightIcon } from "@/components/icons";
+import { UsersIcon, BoltIcon } from "@/components/icons";
 import styles from "./demo.module.scss";
 
 export default function DemoPage() {
@@ -35,8 +35,7 @@ export default function DemoPage() {
                   {t("sponsorExplain")}
                 </p>
                 <Link href="/demo/sponsor" className={styles.ctaButton}>
-                  {t("trySponsor")} <ArrowRightIcon size={16} />
-                </Link>
+                  {t("trySponsor")}                </Link>
               </div>
               <div className={styles.flipBack}>
                 <Image
@@ -47,8 +46,7 @@ export default function DemoPage() {
                 />
                 <div className={styles.backOverlay}>
                   <Link href="/demo/sponsor" className={styles.ctaButton}>
-                    {t("trySponsor")} <ArrowRightIcon size={16} />
-                  </Link>
+                    {t("trySponsor")}                  </Link>
                 </div>
               </div>
             </div>
@@ -66,8 +64,7 @@ export default function DemoPage() {
                   {t("kidExplain")}
                 </p>
                 <Link href="/demo/kid" className={styles.ctaButton}>
-                  {t("tryKid")} <ArrowRightIcon size={16} />
-                </Link>
+                  {t("tryKid")}                </Link>
               </div>
               <div className={styles.flipBack}>
                 <Image
@@ -78,8 +75,7 @@ export default function DemoPage() {
                 />
                 <div className={styles.backOverlay}>
                   <Link href="/demo/kid" className={styles.ctaButton}>
-                    {t("tryKid")} <ArrowRightIcon size={16} />
-                  </Link>
+                    {t("tryKid")}                  </Link>
                 </div>
               </div>
             </div>

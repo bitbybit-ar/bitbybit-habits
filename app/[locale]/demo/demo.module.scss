@@ -40,7 +40,7 @@
   margin-bottom: $spacing-12;
 
   span {
-    background: $gradient-primary;
+    background: var(--gradient-primary-text);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -126,23 +126,25 @@
 
 .flipFront {
   @include glass-card;
-  @include glass-hover;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: $spacing-32;
+  padding-bottom: calc(#{$spacing-32} + 48px); // reserve space for the fixed CTA
   text-align: center;
   transition: all 0.3s ease;
 
   @include mobile {
     padding: $spacing-16 $spacing-20;
+    padding-bottom: $spacing-16;
   }
 }
 
 .flipBack {
   transform: rotateY(180deg);
   border-radius: $border-radius-lg;
+  background: var(--color-bg-2);
 
   @include mobile {
     display: none;
@@ -157,7 +159,7 @@
 .backOverlay {
   position: absolute;
   inset: 0;
-  background: rgba(var(--color-surface), 0.6);
+  background: rgba(var(--glass-color), 0.4);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
   display: flex;
@@ -223,6 +225,7 @@
   border-radius: $border-radius-full;
   text-decoration: none;
   transition: all 0.2s ease;
+  white-space: nowrap;
 
   &:hover {
     transform: scale(1.05);
@@ -232,6 +235,30 @@
   @include mobile {
     padding: $spacing-8 $spacing-16;
     font-size: $font-size-xs;
+  }
+}
+
+// Position CTA at the same spot on both front and back
+.flipFront .ctaButton,
+.backOverlay .ctaButton {
+  position: absolute;
+  bottom: $spacing-24;
+  left: 50%;
+  transform: translateX(-50%);
+
+  &:hover {
+    transform: translateX(-50%) scale(1.05);
+  }
+
+  @include mobile {
+    position: relative;
+    bottom: auto;
+    left: auto;
+    transform: none;
+
+    &:hover {
+      transform: scale(1.05);
+    }
   }
 }
 
@@ -247,7 +274,7 @@
   transition: color 0.2s;
 
   &:hover {
-    color: $color-primary;
+    color: var(--color-primary);
   }
 }
 

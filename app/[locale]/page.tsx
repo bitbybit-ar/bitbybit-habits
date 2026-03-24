@@ -6,7 +6,6 @@ import TechStack from "@/components/landing/TechStack";
 import Roadmap from "@/components/landing/Roadmap";
 import Team from "@/components/landing/Team";
 import CallToAction from "@/components/landing/CallToAction";
-import BuiltWith from "@/components/landing/BuiltWith";
 import Footer from "@/components/layout/footer";
 
 export default function Home() {
@@ -24,7 +23,6 @@ export default function Home() {
         <Roadmap />
         <Team />
         <CallToAction />
-        <BuiltWith />
       </main>
       <Footer />
     </>
