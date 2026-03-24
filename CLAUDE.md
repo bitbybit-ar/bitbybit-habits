@@ -35,25 +35,44 @@ bitbybit-habits/
     [locale]/                  <- Rutas con i18n (es, en)
       (auth)/                  <- Login, Register
       (dashboard)/             <- Kid dashboard, Sponsor dashboard
+      demo/                    <- Demo interactiva sin registro
       layout.tsx               <- Layout principal con NextIntlClientProvider
       page.tsx                 <- Landing page
     api/                       <- API routes (NO dentro de [locale])
-      auth/                    <- login, register, logout, session
+      auth/                    <- login, register, logout, session, profile, 2fa/*
+      completions/             <- CRUD, approve, reject, pending
+      families/                <- CRUD, join, leave, role, stats, completions
+      habits/                  <- CRUD, assignments
+      payments/                <- list, invoice, [id]/pay, [id]/status, retry
+      wallets/                 <- CRUD, balance
+      notifications/           <- list
+      stats/                   <- estadisticas y rachas
     layout.tsx                 <- Root layout (solo pasa children)
   components/
     icons/                     <- SVG icons como React components
     layout/                    <- Navbar, Footer
-    ui/                        <- Componentes reutilizables (Button, Card, etc.)
+    ui/                        <- Componentes reutilizables (Button, Card, InvoiceModal, etc.)
+    dashboard/                 <- Componentes de dashboard (StatsBar, WeeklyTracker, WalletConnect, etc.)
   i18n/                        <- Configuracion next-intl
     request.ts                 <- getRequestConfig
     routing.ts                 <- defineRouting + createNavigation
   lib/                         <- Utilidades, tipos, auth, db
+    api/                       <- apiHandler wrapper, errores, validacion
+    db/                        <- Drizzle ORM schema y conexion
+    hooks/                     <- useWebLN (deteccion de extensiones)
+    auth.ts                    <- Gestion de sesiones JWT
+    crypto.ts                  <- Encriptacion AES-256-GCM para NWC URLs
+    types.ts                   <- Interfaces TypeScript compartidas
   messages/                    <- Archivos de traduccion (es.json, en.json)
-  styles/                      <- SCSS variables, mixins, globals
+  styles/                      <- SCSS variables, mixins, glassmorphism system
+  tests/                       <- 27 archivos de test, 147 tests (Vitest)
+    api/                       <- Tests de endpoints API
+    components/                <- Tests de componentes
+    helpers/                   <- Utilidades de test
   docs/
     openapi.yaml               <- Especificacion OpenAPI 3.0 (Swagger)
   middleware.ts                <- next-intl middleware
-  setup-database.sql           <- Schema SQL para Neon DB
+  setup-database.sql           <- Schema SQL para Neon DB (8 tablas)
 ```
 
 ### Reglas de estructura
@@ -115,10 +134,11 @@ bitbybit-habits/
 - Todas las responses usan el formato `ApiResponse<T>` con `{ success, data?, error? }`
 
 ### Base de datos
-- Neon DB usa tagged template literals: `` db`SELECT * FROM users WHERE id = ${id}` ``
-- NO usar string interpolation en queries (SQL injection)
-- Schema definido en `setup-database.sql`
+- Drizzle ORM con Neon DB (PostgreSQL serverless)
+- Conexion lazy via `getDb()` en `lib/db/index.ts`
+- Schema Drizzle en `lib/db/schema.ts`, schema SQL en `setup-database.sql`
 - Tipos de DB mapeados en `lib/types.ts`
+- NO usar string interpolation en queries (SQL injection)
 
 ### Auth
 - Sesion via cookie httpOnly (`session`)
@@ -132,17 +152,22 @@ bitbybit-habits/
 - **Family**: grupo con invite_code, creado por un sponsor
 - **Habit**: creado por sponsor, asignado a kid, tiene sat_reward
 - **Completion**: kid marca como hecho, sponsor aprueba/rechaza
-- **Payment**: registro del pago Lightning al aprobar
-- **Wallet**: conexion NWC del sponsor
+- **Payment**: registro del pago Lightning (pending/paid/failed) con invoice BOLT11 y payment_hash
+- **Wallet**: conexion NWC para sponsors Y kids (URL encriptada con AES-256-GCM)
+- **Notification**: notificaciones in-app para completaciones, aprobaciones y pagos
 
 ## Flujo principal
 
 ```
 Sponsor crea familia -> genera invite_code
-Kid se une con codigo
+Kid se une con codigo -> conecta wallet Lightning (NWC)
 Sponsor crea habito ("Tender la cama", 50 sats, verificacion: sponsor_approval)
 Kid completa tarea -> completion.status = "pending"
-Sponsor aprueba -> status = "approved" -> pago via NWC -> payment.status = "paid"
+Sponsor aprueba -> cascada de pago:
+  1. WebLN extension (Alby) -> pago instant en browser
+  2. NWC auto-pay -> servidor paga invoice del kid
+  3. Invoice modal -> QR code para pago manual (polling cada 4s)
+  4. Fallback -> aprobado sin pago, wallet pendiente
 ```
 
 ## Comandos
@@ -151,6 +176,9 @@ Sponsor aprueba -> status = "approved" -> pago via NWC -> payment.status = "paid
 npm run dev          # Servidor de desarrollo
 npm run build        # Build de produccion
 npm run lint         # ESLint
+npm test             # Correr tests (Vitest, 147 tests)
+npm run test:watch   # Tests en modo watch
+npm run test:coverage # Tests con reporte de cobertura
 npx tsc --noEmit     # Type-check sin compilar
 ```
 
