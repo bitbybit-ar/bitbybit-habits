@@ -4,6 +4,7 @@ import React from "react";
 import { useTranslations } from "next-intl";
 import Section from "@/components/ui/section";
 import SectionTitle from "@/components/ui/section-title";
+import ScrollReveal from "@/components/ui/scroll-reveal";
 import Tag from "@/components/ui/tag";
 import styles from "./use-cases.module.scss";
 
@@ -31,11 +32,14 @@ export const UseCases: React.FC = () => {
 
   return (
     <Section id="use-cases" alternate aria-labelledby="cases-title">
-      <SectionTitle
-        id="cases-title"
-        title={t("title")}
-        subtitle={t("subtitle")}
-      />
+      <ScrollReveal>
+        <SectionTitle
+          id="cases-title"
+          title={t("title")}
+          subtitle={t("subtitle")}
+        />
+      </ScrollReveal>
+      <ScrollReveal variant="stagger">
       <div className={styles.useCases}>
         {USE_CASES.map((useCase) => (
           <article key={useCase.title} className={styles.useCase}>
@@ -55,6 +59,7 @@ export const UseCases: React.FC = () => {
           </article>
         ))}
       </div>
+      </ScrollReveal>
     </Section>
   );
 };

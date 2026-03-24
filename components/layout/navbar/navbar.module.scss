@@ -15,6 +15,7 @@
   border-bottom: 1px solid rgba(var(--glass-color), 0.06);
   transform: translateY(-100%);
   transition: transform 0.3s ease;
+  padding-top: env(safe-area-inset-top);
 }
 
 .visible {
@@ -29,6 +30,10 @@
   align-items: center;
   justify-content: space-between;
   height: 60px;
+
+  @include mobile {
+    padding: 0 $container-padding-mobile;
+  }
 }
 
 .brand {
@@ -69,7 +74,11 @@
 .authButtons {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: $spacing-8;
+
+  @include mobile {
+    gap: $spacing-4;
+  }
 }
 
 .loginButton,
@@ -80,9 +89,10 @@
   text-decoration: none;
   font-size: $font-size-sm;
   font-weight: $font-weight-medium;
-  padding: 6px 14px;
+  padding: $spacing-8 $spacing-12;
   border-radius: $border-radius-md;
   transition: all 0.2s;
+  min-height: 36px;
 }
 
 .loginButton {
@@ -91,6 +101,13 @@
   &:hover,
   &:focus {
     color: var(--color-text-primary);
+  }
+
+  @include mobile {
+    span {
+      display: none;
+    }
+    padding: $spacing-8;
   }
 }
 
@@ -107,7 +124,109 @@
     span {
       display: none;
     }
-
-    padding: 6px;
+    padding: $spacing-8;
   }
+}
+
+// --- Hamburger menu button ---
+.hamburger {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: $spacing-8;
+  color: var(--color-text-secondary);
+
+  @include mobile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+  }
+}
+
+.hamburgerLine {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: currentColor;
+  border-radius: 1px;
+  position: relative;
+  transition: transform 0.3s ease, background 0.3s ease;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: currentColor;
+    border-radius: 1px;
+    transition: transform 0.3s ease;
+  }
+
+  &::before { transform: translateY(-6px); }
+  &::after { transform: translateY(6px); }
+}
+
+.hamburgerOpen .hamburgerLine {
+  background: transparent;
+  &::before { transform: rotate(45deg); }
+  &::after { transform: rotate(-45deg); }
+}
+
+// --- Mobile dropdown menu ---
+.mobileMenu {
+  display: none;
+
+  @include mobile {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    @include glass(0.12, 20px, 0.10, 0);
+    border-top: 1px solid rgba(var(--glass-color), 0.06);
+    padding: $spacing-16 $container-padding-mobile;
+    transform: translateY(-10px);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+
+    &[data-open="true"] {
+      transform: translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    a {
+      padding: $spacing-12 0;
+      color: var(--color-text-secondary);
+      font-size: $font-size-base;
+      font-weight: $font-weight-medium;
+      border-bottom: 1px solid rgba(var(--glass-color), 0.05);
+      transition: color 0.2s;
+
+      &:hover {
+        color: var(--color-text-primary);
+      }
+
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+  }
+}
+
+// --- Scroll progress bar ---
+.scrollProgress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  background: $gradient-primary;
+  transition: width 0.1s linear;
+  z-index: 1;
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
 import { Link } from "@/i18n/routing";
@@ -14,8 +14,9 @@ export const Navbar: React.FC = () => {
   const t = useTranslations();
   const pathname = usePathname();
   const [visible, setVisible] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
 
-  // Only show section links on the landing page (/ or /es or /en)
   const isLanding = /^\/(es|en)?\/?$/.test(pathname);
 
   const LANDING_LINKS = [
@@ -23,6 +24,8 @@ export const Navbar: React.FC = () => {
     { href: "#use-cases", label: t("landing.nav.useCases") },
     { href: "#tech-stack", label: t("landing.nav.techStack") },
   ];
+
+  const closeMenu = useCallback(() => setMenuOpen(false), []);
 
   useEffect(() => {
     if (!isLanding) {
@@ -40,6 +43,25 @@ export const Navbar: React.FC = () => {
     observer.observe(hero);
     return () => observer.disconnect();
   }, [isLanding]);
+
+  // Scroll progress for landing page
+  useEffect(() => {
+    if (!isLanding) return;
+
+    const handleScroll = () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      setScrollProgress(docHeight > 0 ? (scrollTop / docHeight) * 100 : 0);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [isLanding]);
+
+  // Close mobile menu on route change
+  useEffect(() => {
+    closeMenu();
+  }, [pathname, closeMenu]);
 
   return (
     <nav
@@ -71,8 +93,38 @@ export const Navbar: React.FC = () => {
             <UserPlusIcon size={16} />
             <span>{t("auth.register")}</span>
           </Link>
+          {isLanding && (
+            <button
+              className={cn(styles.hamburger, menuOpen && styles.hamburgerOpen)}
+              onClick={() => setMenuOpen(!menuOpen)}
+              aria-label={menuOpen ? "Close menu" : "Open menu"}
+              aria-expanded={menuOpen}
+            >
+              <span className={styles.hamburgerLine} />
+            </button>
+          )}
         </div>
       </div>
+
+      {/* Mobile menu */}
+      {isLanding && (
+        <div className={styles.mobileMenu} data-open={menuOpen}>
+          {LANDING_LINKS.map((link) => (
+            <a key={link.href} href={link.href} onClick={closeMenu}>
+              {link.label}
+            </a>
+          ))}
+        </div>
+      )}
+
+      {/* Scroll progress */}
+      {isLanding && (
+        <div
+          className={styles.scrollProgress}
+          style={{ width: `${scrollProgress}%` }}
+          aria-hidden="true"
+        />
+      )}
     </nav>
   );
 };

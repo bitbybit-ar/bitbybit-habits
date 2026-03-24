@@ -296,9 +296,9 @@
   text-decoration: none;
   border-radius: $border-radius-md;
   animation: glowPulse 3s ease-in-out infinite;
+  flex: 1;
 
   > * {
-    min-width: 200px;
     width: 100%;
     display: flex;
     align-items: center;
@@ -311,9 +311,9 @@
 .demoLink {
   display: flex;
   text-decoration: none;
+  flex: 1;
 
   > * {
-    min-width: 160px;
     width: 100%;
     display: flex;
     align-items: center;

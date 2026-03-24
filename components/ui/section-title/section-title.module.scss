@@ -1,10 +1,15 @@
 @use "@/styles/colors" as *;
 @use "@/styles/typography" as *;
 @use "@/styles/spacing" as *;
+@use "@/styles/media-mixins" as *;
 
 .sectionTitle {
   text-align: center;
   margin-bottom: $spacing-64;
+
+  @include mobile {
+    margin-bottom: $spacing-32;
+  }
 
   h2 {
     font-family: $font-family-display;

@@ -1,11 +1,16 @@
 @use "./colors" as *;
 @use "./spacing" as *;
+@use "./media-mixins" as *;
 @use "./glass" as *;
 
 @mixin container {
   max-width: $container-max-width;
   margin: 0 auto;
   padding: 0 $container-padding;
+
+  @include mobile {
+    padding: 0 $container-padding-mobile;
+  }
 }
 
 @mixin gradient-text {

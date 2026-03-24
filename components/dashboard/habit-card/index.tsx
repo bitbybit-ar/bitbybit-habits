@@ -141,7 +141,13 @@ export function HabitCard({ habit, completions, onComplete, hideAction, currentU
   };
 
   return (
-    <div className={cn(styles.card, compact && styles.compact)} style={{ borderLeftColor: habit.color }}>
+    <div
+      className={cn(styles.card, compact && styles.compact)}
+      style={{
+        "--habit-color": habit.color || "transparent",
+        "--habit-tint": habit.color ? `${habit.color}0D` : "transparent",
+      } as React.CSSProperties}
+    >
       {/* Header: name, description, sat badge */}
       <div className={styles.header}>
         <div className={styles.headerLeft}>

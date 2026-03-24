@@ -89,7 +89,7 @@ $tabbar-height: 52px;
 
 // ── Header card ──
 .headerCard {
-  @include glass-card;
+  @include glass-prominent($color-primary, 0.06);
   @include glass-highlight;
   padding: $spacing-24;
   margin-bottom: $spacing-16;
@@ -188,14 +188,20 @@ $tabbar-height: 52px;
 
 .tabItemActive {
   color: $color-primary;
-  background: rgba($color-primary, 0.12);
+  background: rgba($color-primary, 0.18);
   border-bottom: 2px solid $color-primary;
+  box-shadow: 0 0 12px rgba($color-primary, 0.12);
+
+  .tabIcon {
+    transform: scale(1.1);
+  }
 }
 
 .tabIcon {
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: transform 0.2s ease;
 }
 
 .tabBadge {
@@ -207,7 +213,7 @@ $tabbar-height: 52px;
   border-radius: $border-radius-full;
   background: $color-warning;
   color: var(--color-bg);
-  font-size: 9px;
+  font-size: 10px;
   font-weight: $font-weight-bold;
   display: flex;
   align-items: center;
@@ -235,6 +241,6 @@ $tabbar-height: 52px;
   }
 
   @include mobile {
-    padding-bottom: 60px;
+    padding-bottom: calc(60px + env(safe-area-inset-bottom));
   }
 }

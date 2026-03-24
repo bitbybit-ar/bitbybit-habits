@@ -4,6 +4,7 @@ import React, { useState, useCallback, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import Section from "@/components/ui/section";
 import SectionTitle from "@/components/ui/section-title";
+import ScrollReveal from "@/components/ui/scroll-reveal";
 import styles from "./tech-stack.module.scss";
 
 interface TechItem {
@@ -83,11 +84,14 @@ export const TechStack: React.FC = () => {
 
   return (
     <Section id="tech-stack" alternate aria-labelledby="tech-title">
-      <SectionTitle
-        id="tech-title"
-        title={t("title")}
-        subtitle={t("subtitle")}
-      />
+      <ScrollReveal>
+        <SectionTitle
+          id="tech-title"
+          title={t("title")}
+          subtitle={t("subtitle")}
+        />
+      </ScrollReveal>
+      <ScrollReveal variant="stagger">
       <div className={styles.grid}>
         {TECH.map((tech, i) => (
           <article key={tech.title} className={styles.card}>
@@ -105,6 +109,7 @@ export const TechStack: React.FC = () => {
           </article>
         ))}
       </div>
+      </ScrollReveal>
 
       {activeModal !== null && (
         <div className={styles.overlay} onClick={closeModal}>

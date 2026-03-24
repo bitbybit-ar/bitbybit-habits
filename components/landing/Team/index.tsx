@@ -4,6 +4,7 @@ import React from "react";
 import { useTranslations } from "next-intl";
 import Section from "@/components/ui/section";
 import SectionTitle from "@/components/ui/section-title";
+import ScrollReveal from "@/components/ui/scroll-reveal";
 import { cn } from "@/lib/utils";
 import styles from "./team.module.scss";
 
@@ -61,11 +62,14 @@ export const Team: React.FC = () => {
 
   return (
     <Section id="team" aria-labelledby="team-title">
-      <SectionTitle
-        id="team-title"
-        title={t("title")}
-        subtitle={t("subtitle")}
-      />
+      <ScrollReveal>
+        <SectionTitle
+          id="team-title"
+          title={t("title")}
+          subtitle={t("subtitle")}
+        />
+      </ScrollReveal>
+      <ScrollReveal variant="stagger">
       <div className={styles.grid}>
         {(TEAM as TeamMember[]).map((member) => (
           <article key={member.name} className={cn(styles.card, member.isBot && styles.cardBot)}>
@@ -92,6 +96,7 @@ export const Team: React.FC = () => {
           </article>
         ))}
       </div>
+      </ScrollReveal>
     </Section>
   );
 };

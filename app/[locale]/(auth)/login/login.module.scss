@@ -18,7 +18,7 @@
 .card {
   width: 100%;
   max-width: 420px;
-  @include glass-card;
+  @include glass-card-tinted($color-primary, 0.04);
   border-radius: $border-radius-xl;
   padding: $spacing-40;
   @include glass-hover;

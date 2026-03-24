@@ -4,6 +4,7 @@ import React from "react";
 import { useTranslations } from "next-intl";
 import Section from "@/components/ui/section";
 import SectionTitle from "@/components/ui/section-title";
+import ScrollReveal from "@/components/ui/scroll-reveal";
 import styles from "./roadmap.module.scss";
 import { cn } from "@/lib/utils";
 
@@ -23,11 +24,14 @@ export const Roadmap: React.FC = () => {
 
   return (
     <Section id="roadmap" aria-labelledby="roadmap-title">
-      <SectionTitle
-        id="roadmap-title"
-        title={t("title")}
-        subtitle={t("subtitle")}
-      />
+      <ScrollReveal>
+        <SectionTitle
+          id="roadmap-title"
+          title={t("title")}
+          subtitle={t("subtitle")}
+        />
+      </ScrollReveal>
+      <ScrollReveal variant="stagger">
       <div className={styles.roadmap} role="list">
         {MILESTONES.map((milestone) => (
           <div
@@ -48,6 +52,7 @@ export const Roadmap: React.FC = () => {
           </div>
         ))}
       </div>
+      </ScrollReveal>
     </Section>
   );
 };
