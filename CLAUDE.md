@@ -154,6 +154,14 @@ npm run lint         # ESLint
 npx tsc --noEmit     # Type-check sin compilar
 ```
 
+## Git workflow
+
+- **Never push directly to `main`**. Always create a feature branch and open a PR.
+- Branch naming: `fix/<description>` or `feat/<description>`
+- Use `gh pr create` to open the PR with a clear title and description of changes.
+- Ani (repo owner) must approve the PR before it can be merged.
+- Git author for commits: `Analia Acosta <analia.a.acosta@gmail.com>`
+
 ## Antes de commitear
 
 - [ ] `npx tsc --noEmit` pasa sin errores
