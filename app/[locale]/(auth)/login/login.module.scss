@@ -77,6 +77,29 @@
   }
 }
 
+.required {
+  color: var(--color-accent);
+  margin-left: $spacing-4;
+  font-weight: $font-weight-bold;
+}
+
+.fieldError {
+  label {
+    color: var(--color-accent);
+  }
+}
+
+.inputError {
+  border-color: var(--color-accent) !important;
+  box-shadow: 0 0 0 1px rgba($color-accent, 0.3);
+}
+
+.errorText {
+  font-size: $font-size-xs;
+  color: var(--color-accent);
+  margin-top: $spacing-4;
+}
+
 .error {
   color: var(--color-error);
   font-size: $font-size-sm;

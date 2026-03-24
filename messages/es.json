@@ -34,7 +34,9 @@
     "invalidCredentials": "Credenciales inválidas",
     "connectionError": "Error de conexión",
     "passwordMismatch": "Las contraseñas no coinciden",
-    "passwordTooShort": "La contraseña debe tener al menos 6 caracteres"
+    "passwordTooShort": "La contraseña debe tener al menos 6 caracteres",
+    "invalidEmail": "Email inválido",
+    "usernameTooShort": "El nombre de usuario debe tener al menos 3 caracteres"
   },
   "dashboard": {
     "welcome": "Bienvenido/a",
