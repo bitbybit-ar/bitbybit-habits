@@ -514,6 +514,12 @@
     },
     "stepIncompleteError": "You must complete this step before continuing"
   },
+  "invoiceModal": {
+    "paid": "Payment received! ⚡",
+    "copied": "Copied!",
+    "copyInvoice": "Copy invoice",
+    "close": "Close"
+  },
   "validation": {
     "required": "This field is required",
     "selectAtLeastOneKid": "Select at least one kid",

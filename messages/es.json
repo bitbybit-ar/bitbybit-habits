@@ -514,6 +514,12 @@
     },
     "stepIncompleteError": "Debés completar este paso antes de continuar"
   },
+  "invoiceModal": {
+    "paid": "¡Pago recibido! ⚡",
+    "copied": "¡Copiado!",
+    "copyInvoice": "Copiar invoice",
+    "close": "Cerrar"
+  },
   "validation": {
     "required": "Este campo es obligatorio",
     "selectAtLeastOneKid": "Seleccioná al menos un kid",

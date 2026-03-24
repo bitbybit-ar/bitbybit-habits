@@ -52,6 +52,8 @@ tags:
     description: Gestion de familias y miembros
   - name: Stats
     description: Estadisticas y rachas del usuario
+  - name: Payments
+    description: Pagos Lightning y gestion de invoices
 
 paths:
   /auth/register:
@@ -1042,6 +1044,122 @@ paths:
                 success: false
                 error: "Error al obtener las estadisticas"
 
+  /payments/invoice:
+    post:
+      tags:
+        - Payments
+      summary: Generar invoice Lightning desde la wallet del kid
+      description: |
+        Genera una Lightning invoice usando la wallet NWC del kid para una completacion dada.
+        Solo sponsors pueden usar este endpoint. Crea un registro de pago con estado "pending".
+      operationId: createInvoice
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateInvoiceRequest"
+            example:
+              completion_id: "660e8400-e29b-41d4-a716-446655440001"
+              amount_sats: 50
+      responses:
+        "200":
+          description: Invoice generado exitosamente
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/InvoiceResponse"
+              example:
+                success: true
+                data:
+                  paymentRequest: "lnbc500n1..."
+                  paymentHash: "abc123hash"
+                  payment_id: "770e8400-e29b-41d4-a716-446655440001"
+                  completion_id: "660e8400-e29b-41d4-a716-446655440001"
+        "400":
+          description: Campos faltantes o completacion no encontrada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseError"
+        "401":
+          description: No autenticado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseError"
+        "403":
+          description: Solo sponsors pueden generar invoices
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseError"
+        "422":
+          description: El kid no tiene wallet configurada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseError"
+              example:
+                success: false
+                error: "kid_no_wallet"
+
+  /payments/{id}/status:
+    get:
+      tags:
+        - Payments
+      summary: Verificar estado de pago Lightning
+      description: |
+        Consulta el estado de un pago Lightning usando la wallet NWC del kid.
+        Si la invoice fue pagada, actualiza el registro de pago a "paid" en la base de datos.
+        Timeout de 5 segundos en la llamada NWC.
+      operationId: getPaymentStatus
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID del registro de pago
+      responses:
+        "200":
+          description: Estado del pago
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/PaymentStatusResponse"
+              example:
+                success: true
+                data:
+                  settled: true
+        "401":
+          description: No autenticado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseError"
+        "404":
+          description: Pago no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseError"
+
 components:
   securitySchemes:
     cookieAuth:
@@ -1616,3 +1734,45 @@ components:
         totalSatsPaid:
           type: integer
           description: Total de sats pagados (all time)
+
+    CreateInvoiceRequest:
+      type: object
+      required:
+        - completion_id
+        - amount_sats
+      properties:
+        completion_id:
+          type: string
+          format: uuid
+          description: ID de la completacion para la que se genera el invoice
+        amount_sats:
+          type: integer
+          minimum: 1
+          description: Monto en satoshis para el invoice
+
+    InvoiceResponse:
+      type: object
+      description: Datos del invoice Lightning generado
+      properties:
+        paymentRequest:
+          type: string
+          description: Invoice Lightning (BOLT11)
+        paymentHash:
+          type: string
+          description: Hash del pago Lightning
+        payment_id:
+          type: string
+          format: uuid
+          description: ID del registro de pago creado
+        completion_id:
+          type: string
+          format: uuid
+          description: ID de la completacion asociada
+
+    PaymentStatusResponse:
+      type: object
+      description: Estado actual del pago Lightning
+      properties:
+        settled:
+          type: boolean
+          description: Si el invoice fue pagado (true) o no (false)
