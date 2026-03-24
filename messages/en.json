@@ -487,5 +487,11 @@
       "celebrationMsg": "Keep it up! Every habit gets you closer to more sats ⚡",
       "registerCTA": "Register as Kid"
     }
+  },
+  "validation": {
+    "required": "This field is required",
+    "selectAtLeastOneKid": "Select at least one kid",
+    "selectAtLeastOneDay": "Select at least one day",
+    "minZero": "Value must be 0 or greater"
   }
 }

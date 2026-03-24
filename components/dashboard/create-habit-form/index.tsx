@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { PlusIcon } from "@/components/icons";
 import { MemberPicker } from "@/components/dashboard/member-picker";
+import { cn } from "@/lib/utils";
 import styles from "./create-habit-form.module.scss";
 
 interface KidOption {
@@ -31,8 +32,16 @@ export interface CreateHabitData {
   schedule_days: number[];
   schedule_times_per_week: number;
   verification_type: "sponsor_approval" | "self_verify";
-  assigned_to: string;
+  assigned_to: string[];
   family_id: string;
+}
+
+interface FormErrors {
+  name?: string;
+  familyId?: string;
+  assignedTo?: string;
+  satReward?: string;
+  scheduleDays?: string;
 }
 
 const PRESET_COLORS = [
@@ -66,9 +75,11 @@ export function CreateHabitForm({ families, kids, onSubmit }: CreateHabitFormPro
   const [scheduleDays, setScheduleDays] = useState<number[]>([]);
   const [timesPerWeek, setTimesPerWeek] = useState(3);
   const [verificationType, setVerificationType] = useState<"sponsor_approval" | "self_verify">("sponsor_approval");
-  const [assignedTo, setAssignedTo] = useState("");
+  const [assignedTo, setAssignedTo] = useState<string[]>([]);
   const [familyId, setFamilyId] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [errors, setErrors] = useState<FormErrors>({});
+  const [touched, setTouched] = useState(false);
 
   const handleDayToggle = (day: number) => {
     setScheduleDays((prev) =>
@@ -76,9 +87,31 @@ export function CreateHabitForm({ families, kids, onSubmit }: CreateHabitFormPro
     );
   };
 
+  const handleKidToggle = (userId: string) => {
+    setAssignedTo((prev) =>
+      prev.includes(userId) ? prev.filter((id) => id !== userId) : [...prev, userId]
+    );
+  };
+
+  const validate = (): FormErrors => {
+    const errs: FormErrors = {};
+    if (!name.trim()) errs.name = t("validation.required");
+    if (!familyId) errs.familyId = t("validation.required");
+    if (assignedTo.length === 0) errs.assignedTo = t("validation.selectAtLeastOneKid");
+    if (satReward < 0) errs.satReward = t("validation.minZero");
+    if (scheduleType === "specific_days" && scheduleDays.length === 0) {
+      errs.scheduleDays = t("validation.selectAtLeastOneDay");
+    }
+    return errs;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim() || !assignedTo || !familyId) return;
+    setTouched(true);
+
+    const validationErrors = validate();
+    setErrors(validationErrors);
+    if (Object.keys(validationErrors).length > 0) return;
 
     setSubmitting(true);
     try {
@@ -103,24 +136,29 @@ export function CreateHabitForm({ families, kids, onSubmit }: CreateHabitFormPro
       setScheduleDays([]);
       setTimesPerWeek(3);
       setVerificationType("sponsor_approval");
-      setAssignedTo("");
+      setAssignedTo([]);
+      setErrors({});
+      setTouched(false);
     } finally {
       setSubmitting(false);
     }
   };
 
   return (
-    <form className={styles.form} onSubmit={handleSubmit}>
+    <form className={styles.form} onSubmit={handleSubmit} noValidate>
       {/* Habit name */}
-      <div className={styles.field}>
-        <label className={styles.label}>{t("habits.habitName")}</label>
+      <div className={cn(styles.field, touched && errors.name && styles.fieldError)}>
+        <label className={styles.label}>
+          {t("habits.habitName")}
+          <span className={styles.required}>*</span>
+        </label>
         <input
           type="text"
-          className={styles.input}
+          className={cn(styles.input, touched && errors.name && styles.inputError)}
           value={name}
           onChange={(e) => setName(e.target.value)}
-          required
         />
+        {touched && errors.name && <span className={styles.errorText}>{errors.name}</span>}
       </div>
 
       {/* Description */}
@@ -151,16 +189,19 @@ export function CreateHabitForm({ families, kids, onSubmit }: CreateHabitFormPro
       </div>
 
       {/* Sat reward */}
-      <div className={styles.field}>
-        <label className={styles.label}>{t("habits.satReward")}</label>
+      <div className={cn(styles.field, touched && errors.satReward && styles.fieldError)}>
+        <label className={styles.label}>
+          {t("habits.satReward")}
+          <span className={styles.required}>*</span>
+        </label>
         <input
           type="number"
-          className={styles.input}
+          className={cn(styles.input, touched && errors.satReward && styles.inputError)}
           value={satReward}
           onChange={(e) => setSatReward(Math.max(0, parseInt(e.target.value) || 0))}
           min={0}
-          required
         />
+        {touched && errors.satReward && <span className={styles.errorText}>{errors.satReward}</span>}
       </div>
 
       {/* Schedule type */}
@@ -179,7 +220,7 @@ export function CreateHabitForm({ families, kids, onSubmit }: CreateHabitFormPro
 
       {/* Specific days checkboxes */}
       {scheduleType === "specific_days" && (
-        <div className={styles.field}>
+        <div className={cn(styles.field, touched && errors.scheduleDays && styles.fieldError)}>
           <div className={styles.daysGrid}>
             {DAY_KEYS.map((key, index) => (
               <label key={key} className={styles.dayCheck}>
@@ -193,6 +234,7 @@ export function CreateHabitForm({ families, kids, onSubmit }: CreateHabitFormPro
               </label>
             ))}
           </div>
+          {touched && errors.scheduleDays && <span className={styles.errorText}>{errors.scheduleDays}</span>}
         </div>
       )}
 
@@ -225,13 +267,15 @@ export function CreateHabitForm({ families, kids, onSubmit }: CreateHabitFormPro
       </div>
 
       {/* Family */}
-      <div className={styles.field}>
-        <label className={styles.label}>{t("family.myFamily")}</label>
+      <div className={cn(styles.field, touched && errors.familyId && styles.fieldError)}>
+        <label className={styles.label}>
+          {t("family.myFamily")}
+          <span className={styles.required}>*</span>
+        </label>
         <select
-          className={styles.select}
+          className={cn(styles.select, touched && errors.familyId && styles.inputError)}
           value={familyId}
           onChange={(e) => setFamilyId(e.target.value)}
-          required
         >
           <option value="">{t("sponsorDashboard.selectFamily")}</option>
           {families.map((f) => (
@@ -240,20 +284,26 @@ export function CreateHabitForm({ families, kids, onSubmit }: CreateHabitFormPro
             </option>
           ))}
         </select>
+        {touched && errors.familyId && <span className={styles.errorText}>{errors.familyId}</span>}
       </div>
 
-      {/* Assign to — visual member picker */}
-      <div className={styles.field}>
-        <label className={styles.label}>{t("habits.assignTo")}</label>
+      {/* Assign to — visual member picker (multi-select) */}
+      <div className={cn(styles.field, touched && errors.assignedTo && styles.fieldError)}>
+        <label className={styles.label}>
+          {t("habits.assignTo")}
+          <span className={styles.required}>*</span>
+        </label>
         <MemberPicker
           kids={kids}
-          selectedId={assignedTo}
-          onSelect={setAssignedTo}
+          selectedIds={assignedTo}
+          onToggle={handleKidToggle}
+          multiple
         />
+        {touched && errors.assignedTo && <span className={styles.errorText}>{errors.assignedTo}</span>}
       </div>
 
       {/* Submit */}
-      <button type="submit" className={styles.submitButton} disabled={submitting || !name.trim() || !assignedTo || !familyId}>
+      <button type="submit" className={styles.submitButton} disabled={submitting}>
         <PlusIcon size={16} />
         {t("habits.createHabit")}
       </button>

@@ -6,13 +6,17 @@
   background: rgba(var(--glass-color), 0.1);
   border-radius: 8px;
   padding: 2px;
+
+  [data-theme="light"] & {
+    background: rgba(0, 0, 0, 0.08);
+  }
 }
 
 .btn {
   padding: $spacing-8 $spacing-12;
   border: none;
   background: transparent;
-  color: rgba(var(--glass-color), 0.6);
+  color: var(--color-text-secondary);
   font-size: 13px;
   font-weight: 600;
   border-radius: 6px;
@@ -21,11 +25,15 @@
   min-height: 36px;
 
   &:hover {
-    color: #fff;
+    color: var(--color-text-primary);
   }
 }
 
 .active {
   background: rgba(var(--glass-color), 0.2);
-  color: #fff;
+  color: var(--color-text-primary);
+
+  [data-theme="light"] & {
+    background: rgba(0, 0, 0, 0.1);
+  }
 }

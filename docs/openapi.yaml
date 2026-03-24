@@ -330,6 +330,113 @@ paths:
                 success: false
                 error: "Error al obtener los habitos"
 
+    post:
+      tags:
+        - Habits
+      summary: Crear habito(s)
+      description: |
+        Crea uno o mas habitos. El campo `assigned_to` acepta un UUID (un kid)
+        o un array de UUIDs (multiples kids). Cuando se pasan multiples kids,
+        se crea un habito identico para cada uno y la respuesta es un array.
+      operationId: createHabit
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - color
+                - schedule_type
+                - verification_type
+                - assigned_to
+                - family_id
+              properties:
+                name:
+                  type: string
+                  description: Nombre del habito
+                  example: "Tender la cama"
+                description:
+                  type: string
+                  nullable: true
+                  description: Descripcion opcional
+                color:
+                  type: string
+                  pattern: "^#[0-9A-Fa-f]{6}$"
+                  example: "#4CAF7D"
+                sat_reward:
+                  type: integer
+                  minimum: 0
+                  maximum: 1000000
+                  example: 50
+                schedule_type:
+                  type: string
+                  enum: [daily, specific_days, times_per_week]
+                schedule_days:
+                  type: array
+                  items:
+                    type: integer
+                    minimum: 0
+                    maximum: 6
+                  nullable: true
+                schedule_times_per_week:
+                  type: integer
+                  minimum: 1
+                  maximum: 7
+                  nullable: true
+                verification_type:
+                  type: string
+                  enum: [sponsor_approval, self_verify]
+                assigned_to:
+                  oneOf:
+                    - type: string
+                      format: uuid
+                    - type: array
+                      items:
+                        type: string
+                        format: uuid
+                  description: Un kid (UUID) o multiples kids (array de UUIDs)
+                family_id:
+                  type: string
+                  format: uuid
+      responses:
+        "201":
+          description: Habito(s) creado(s) exitosamente
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        oneOf:
+                          - $ref: "#/components/schemas/Habit"
+                          - type: array
+                            items:
+                              $ref: "#/components/schemas/Habit"
+        "400":
+          description: Datos invalidos
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseError"
+        "401":
+          description: No autenticado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseError"
+        "403":
+          description: No es sponsor de la familia
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseError"
+
   /completions:
     get:
       tags:

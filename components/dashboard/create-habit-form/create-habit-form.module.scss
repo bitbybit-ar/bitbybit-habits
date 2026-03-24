@@ -128,6 +128,29 @@
   font-weight: $font-weight-medium;
 }
 
+.required {
+  color: $color-accent;
+  margin-left: $spacing-4;
+  font-weight: $font-weight-bold;
+}
+
+.fieldError {
+  .label {
+    color: $color-accent;
+  }
+}
+
+.inputError {
+  border-color: $color-accent !important;
+  box-shadow: 0 0 0 1px rgba($color-accent, 0.3);
+}
+
+.errorText {
+  font-size: $font-size-xs;
+  color: $color-accent;
+  margin-top: $spacing-4;
+}
+
 .submitButton {
   display: flex;
   align-items: center;

@@ -78,7 +78,7 @@ export const POST = apiHandler(async (request, { session, db }) => {
     schedule_days?: number[];
     schedule_times_per_week?: number;
     verification_type: "sponsor_approval" | "self_verify";
-    assigned_to: string;
+    assigned_to: string | string[];
     family_id: string;
   };
 
@@ -113,7 +113,9 @@ export const POST = apiHandler(async (request, { session, db }) => {
     }
   }
 
-  const isSelfAssigned = !assigned_to || assigned_to === session.user_id;
+  // Normalize assigned_to to array (supports both single string and array)
+  const assignees = Array.isArray(assigned_to) ? assigned_to : [assigned_to].filter(Boolean);
+  const isSelfAssigned = assignees.length === 0 || (assignees.length === 1 && assignees[0] === session.user_id);
 
   if (!isSelfAssigned) {
     if (!family_id) {
@@ -135,34 +137,46 @@ export const POST = apiHandler(async (request, { session, db }) => {
       throw new ForbiddenError("No sos sponsor de esta familia");
     }
 
-    const assigneeMembership = await db
-      .select({ id: familyMembers.id })
-      .from(familyMembers)
-      .where(
-        and(eq(familyMembers.family_id, family_id), eq(familyMembers.user_id, assigned_to))
-      );
+    // Validate all assignees are family members
+    for (const assigneeId of assignees) {
+      const assigneeMembership = await db
+        .select({ id: familyMembers.id })
+        .from(familyMembers)
+        .where(
+          and(eq(familyMembers.family_id, family_id), eq(familyMembers.user_id, assigneeId))
+        );
 
-    if (assigneeMembership.length === 0) {
-      throw new BadRequestError("El usuario asignado no es miembro de esta familia");
+      if (assigneeMembership.length === 0) {
+        throw new BadRequestError("El usuario asignado no es miembro de esta familia");
+      }
     }
   }
 
-  const result = await db
-    .insert(habits)
-    .values({
-      family_id: family_id ?? null,
-      created_by: session.user_id,
-      assigned_to: isSelfAssigned ? session.user_id : assigned_to,
-      name: name.trim(),
-      description: description?.trim() ?? null,
-      color,
-      sat_reward: isSelfAssigned ? 0 : (sat_reward ?? 0),
-      schedule_type,
-      schedule_days: schedule_days ?? null,
-      schedule_times_per_week: schedule_times_per_week ?? null,
-      verification_type,
-    })
-    .returning();
+  // Create one habit per assignee
+  const targetAssignees = isSelfAssigned ? [session.user_id] : assignees;
+  const createdHabits = [];
 
-  return created(result[0]);
+  for (const assigneeId of targetAssignees) {
+    const result = await db
+      .insert(habits)
+      .values({
+        family_id: family_id ?? null,
+        created_by: session.user_id,
+        assigned_to: assigneeId,
+        name: name.trim(),
+        description: description?.trim() ?? null,
+        color,
+        sat_reward: isSelfAssigned ? 0 : (sat_reward ?? 0),
+        schedule_type,
+        schedule_days: schedule_days ?? null,
+        schedule_times_per_week: schedule_times_per_week ?? null,
+        verification_type,
+      })
+      .returning();
+
+    createdHabits.push(result[0]);
+  }
+
+  // Return first habit for single assignment (backwards compatible), array for multiple
+  return created(createdHabits.length === 1 ? createdHabits[0] : createdHabits);
 });
