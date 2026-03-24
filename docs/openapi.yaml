@@ -1111,6 +1111,67 @@ paths:
                 success: false
                 error: "kid_no_wallet"
 
+  /payments/{id}/pay:
+    post:
+      tags:
+        - Payments
+      summary: Pagar una invoice Lightning pendiente
+      description: |
+        Intenta pagar una invoice Lightning pendiente usando la wallet NWC del sponsor.
+        El sponsor debe ser el pagador (from_user_id) del registro de pago.
+      operationId: payPayment
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID del registro de pago
+      responses:
+        "200":
+          description: Pago realizado o ya estaba pagado
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/PayPaymentResponse"
+              example:
+                success: true
+                data:
+                  paid: true
+                  preimage: "abc123"
+        "400":
+          description: Sin wallet o sin invoice
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseError"
+        "401":
+          description: No autenticado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseError"
+        "403":
+          description: No autorizado para este pago
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseError"
+        "404":
+          description: Pago no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseError"
+
   /payments/{id}/status:
     get:
       tags:
@@ -1768,6 +1829,20 @@ components:
           type: string
           format: uuid
           description: ID de la completacion asociada
+
+    PayPaymentResponse:
+      type: object
+      description: Resultado de intentar pagar una invoice
+      properties:
+        paid:
+          type: boolean
+          description: Si el pago fue exitoso
+        already_paid:
+          type: boolean
+          description: Si el pago ya estaba completado
+        preimage:
+          type: string
+          description: Preimage del pago Lightning (si exitoso)
 
     PaymentStatusResponse:
       type: object

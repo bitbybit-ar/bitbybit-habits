@@ -314,6 +314,10 @@
       "paid": "Pagado",
       "failed": "Fallido"
     },
+    "autoPaidSuccess": "¡Aprobado! Se enviaron {amount} sats ⚡",
+    "scanInvoice": "Escaneá o copiá la invoice para pagar {amount} sats",
+    "approvedNoPay": "Aprobado sin pago. Configurá una wallet para enviar sats.",
+    "paymentError": "Error al procesar el pago. Intentá de nuevo.",
     "retryButton": "Reintentar",
     "retrySuccess": "Pago en cola para reintento",
     "retryError": "No se pudo reintentar el pago",

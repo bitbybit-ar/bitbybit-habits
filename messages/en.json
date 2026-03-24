@@ -314,6 +314,10 @@
       "paid": "Paid",
       "failed": "Failed"
     },
+    "autoPaidSuccess": "Approved! {amount} sats sent ⚡",
+    "scanInvoice": "Scan or copy the invoice to pay {amount} sats",
+    "approvedNoPay": "Approved without payment. Set up a wallet to send sats.",
+    "paymentError": "Error processing payment. Try again.",
     "retryButton": "Retry",
     "retrySuccess": "Payment queued for retry",
     "retryError": "Could not retry payment",
