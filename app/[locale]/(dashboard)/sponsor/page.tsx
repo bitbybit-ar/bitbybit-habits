@@ -163,7 +163,13 @@ export default function SponsorDashboard() {
         const data = await res.json();
         if (data.success) {
           setPendingCompletions((prev) => prev.filter((c) => c.id !== completionId));
-          showToast(t("sponsorDashboard.approveSuccess"), "success");
+
+          const paymentStatus = data.data?.payment_status;
+          if (paymentStatus === "no_wallet") {
+            showToast(t("sponsorDashboard.approveNoWallet"), "info");
+          } else {
+            showToast(t("sponsorDashboard.approveSuccess"), "success");
+          }
         }
       }
     } catch {

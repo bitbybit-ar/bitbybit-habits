@@ -135,13 +135,13 @@ $tabbar-height: 52px;
   width: 48px;
   height: 48px;
   border-radius: $border-radius-full;
-  background: $gradient-primary;
+  background: var(--gradient-primary-bg);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: $font-size-xl;
   font-weight: $font-weight-bold;
-  color: var(--color-bg);
+  color: var(--color-on-gradient);
   flex-shrink: 0;
 }
 
@@ -170,8 +170,9 @@ $tabbar-height: 52px;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
+  gap: $spacing-8;
   height: 44px;
+  padding: 0 $spacing-16;
   border-radius: $border-radius-md;
   border: none;
   background: transparent;
@@ -179,6 +180,12 @@ $tabbar-height: 52px;
   cursor: pointer;
   @include transition;
   flex-shrink: 0;
+
+  @include mobile {
+    width: 44px;
+    padding: 0;
+    gap: 0;
+  }
 
   &:hover {
     color: var(--color-text-primary);
@@ -209,6 +216,16 @@ $tabbar-height: 52px;
   transition: transform 0.2s ease;
 }
 
+.tabLabel {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  white-space: nowrap;
+
+  @include mobile {
+    display: none;
+  }
+}
+
 .tabBadge {
   position: absolute;
   top: 2px;
@@ -216,8 +233,8 @@ $tabbar-height: 52px;
   min-width: 16px;
   height: 16px;
   border-radius: $border-radius-full;
-  background: $color-warning;
-  color: var(--color-bg);
+  background: var(--color-warning);
+  color: #fff;
   font-size: 10px;
   font-weight: $font-weight-bold;
   display: flex;

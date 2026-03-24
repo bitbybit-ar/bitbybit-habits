@@ -350,6 +350,7 @@
     "selectSchedule": "Seleccionar frecuencia",
     "selectVerification": "Seleccionar verificación",
     "approveSuccess": "Completación aprobada correctamente",
+    "approveNoWallet": "Completación aprobada, pero necesitás conectar una wallet Lightning para enviar las recompensas. Andá a la pestaña Wallet para configurarla.",
     "rejectSuccess": "Completación rechazada",
     "createSuccess": "Hábito creado correctamente",
     "copied": "Copiado"

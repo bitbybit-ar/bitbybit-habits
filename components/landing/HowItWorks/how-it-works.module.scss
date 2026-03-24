@@ -60,7 +60,7 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: $gradient-primary;
+  background: var(--gradient-primary-bg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -86,7 +86,7 @@
 .dotNumber {
   font-size: $font-size-base;
   font-weight: $font-weight-extrabold;
-  color: var(--color-bg);
+  color: var(--color-on-gradient);
 }
 
 // Step card

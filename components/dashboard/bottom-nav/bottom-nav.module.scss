@@ -71,8 +71,8 @@
   width: 16px;
   height: 16px;
   border-radius: $border-radius-full;
-  background: $color-warning;
-  color: var(--color-bg);
+  background: var(--color-warning);
+  color: #fff;
   font-size: 9px;
   font-weight: $font-weight-bold;
   display: flex;

@@ -194,7 +194,7 @@
   padding: $spacing-8 $spacing-16;
   border-radius: $border-radius-md;
   border: none;
-  background: $gradient-primary;
+  background: var(--gradient-primary-bg);
   color: white;
   font-size: $font-size-sm;
   font-weight: $font-weight-bold;

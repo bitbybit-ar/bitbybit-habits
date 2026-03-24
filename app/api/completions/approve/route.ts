@@ -1,6 +1,6 @@
 import { apiHandler, requireFields, NotFoundError } from "@/lib/api";
 import { createNotification } from "@/lib/notifications";
-import { completions, habits, familyMembers, payments } from "@/lib/db";
+import { completions, habits, familyMembers, payments, wallets } from "@/lib/db";
 import { eq, and, sql } from "drizzle-orm";
 
 export const POST = apiHandler(async (request, { session, db }) => {
@@ -45,15 +45,29 @@ export const POST = apiHandler(async (request, { session, db }) => {
     .where(eq(completions.id, completion_id))
     .returning();
 
-  // If habit has sat_reward > 0, create a pending payment record
+  // Check wallet and create payment record if reward > 0
+  let paymentStatus: "no_wallet" | "pending" | "none" = "none";
+
   if (completion.sat_reward > 0) {
-    await db.insert(payments).values({
-      completion_id,
-      from_user_id: session.user_id,
-      to_user_id: completion.user_id,
-      amount_sats: completion.sat_reward,
-      status: "pending",
-    });
+    // Check if sponsor has a connected wallet
+    const walletResult = await db
+      .select({ id: wallets.id })
+      .from(wallets)
+      .where(and(eq(wallets.user_id, session.user_id), eq(wallets.active, true)))
+      .limit(1);
+
+    if (walletResult.length === 0) {
+      paymentStatus = "no_wallet";
+    } else {
+      await db.insert(payments).values({
+        completion_id,
+        from_user_id: session.user_id,
+        to_user_id: completion.user_id,
+        amount_sats: completion.sat_reward,
+        status: "pending",
+      });
+      paymentStatus = "pending";
+    }
   }
 
   // Notify the kid
@@ -71,5 +85,5 @@ export const POST = apiHandler(async (request, { session, db }) => {
     console.error("Error creating notification:", notifError);
   }
 
-  return updated[0];
+  return { ...updated[0], payment_status: paymentStatus };
 });

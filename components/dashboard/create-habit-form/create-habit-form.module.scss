@@ -129,25 +129,25 @@
 }
 
 .required {
-  color: $color-accent;
+  color: var(--color-accent);
   margin-left: $spacing-4;
   font-weight: $font-weight-bold;
 }
 
 .fieldError {
   .label {
-    color: $color-accent;
+    color: var(--color-accent);
   }
 }
 
 .inputError {
-  border-color: $color-accent !important;
+  border-color: var(--color-accent) !important;
   box-shadow: 0 0 0 1px rgba($color-accent, 0.3);
 }
 
 .errorText {
   font-size: $font-size-xs;
-  color: $color-accent;
+  color: var(--color-accent);
   margin-top: $spacing-4;
 }
 
@@ -163,7 +163,7 @@
   font-weight: $font-weight-bold;
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
-  background: $gradient-primary;
+  background: var(--gradient-primary-bg);
   color: white;
   margin-top: $spacing-8;
 
