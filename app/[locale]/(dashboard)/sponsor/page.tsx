@@ -12,7 +12,9 @@ import { WalletConnect } from "@/components/dashboard/wallet-connect";
 import { Onboarding } from "@/components/dashboard/onboarding";
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 import type { DashboardTab } from "@/components/dashboard/dashboard-layout";
+import { InvoiceModal } from "@/components/ui/invoice-modal";
 import { useToast } from "@/components/ui/toast";
+import { useWebLN } from "@/lib/hooks/useWebLN";
 import type { Habit, AuthSession, PaymentWithDetails } from "@/lib/types";
 import styles from "./sponsor.module.scss";
 
@@ -59,6 +61,7 @@ const STATUS_COLORS: Record<string, string> = {
 export default function SponsorDashboard() {
   const t = useTranslations();
   const { showToast } = useToast();
+  const { hasExtension: hasWebLN } = useWebLN();
   const [session, setSession] = useState<AuthSession | null>(null);
   const [activeTab, setActiveTab] = useState<TabType>("byHabit");
   const [habits, setHabits] = useState<Habit[]>([]);
@@ -74,6 +77,12 @@ export default function SponsorDashboard() {
   const [paymentsLoading, setPaymentsLoading] = useState(false);
   const [loading, setLoading] = useState(true);
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [invoiceModal, setInvoiceModal] = useState<{
+    paymentRequest: string;
+    paymentId: string;
+    amountSats: number;
+    habitName: string;
+  } | null>(null);
 
   // Fetch family-specific data (completions + stats) for all sponsor families
   const fetchFamilyData = useCallback(async (familyList: FamilyWithMembers[]) => {
@@ -231,45 +240,131 @@ export default function SponsorDashboard() {
       pendingApprovals: Math.max(0, prev.pendingApprovals - 1),
     }));
 
+    const revertOptimistic = () => {
+      setFamilyCompletions((prev) =>
+        prev.map((c) => (c.id === completionId ? { ...c, status: "pending" as const } : c))
+      );
+      setFamilyStats((prev) => ({
+        ...prev,
+        pendingApprovals: prev.pendingApprovals + 1,
+      }));
+    };
+
     try {
+      // Step 1: Approve the completion
       const res = await fetch("/api/completions/approve", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ completion_id: completionId }),
       });
 
-      if (res.ok) {
-        const data = await res.json();
-        if (data.success) {
-          const paymentStatus = data.data?.payment_status;
-          if (paymentStatus === "no_wallet") {
-            showToast(t("sponsorDashboard.approveNoWallet"), "info");
-          } else {
-            showToast(t("sponsorDashboard.approveSuccess"), "success");
+      if (!res.ok) {
+        revertOptimistic();
+        return;
+      }
+
+      const data = await res.json();
+      if (!data.success) {
+        revertOptimistic();
+        return;
+      }
+
+      const approveResult = data.data;
+      const paymentStatus = approveResult?.payment_status;
+      const completionData = familyCompletions.find((c) => c.id === completionId);
+
+      // Step 2: If no wallet at all, show info toast
+      if (paymentStatus === "no_wallet") {
+        showToast(t("sponsorDashboard.approveNoWallet"), "info");
+        return;
+      }
+
+      // Step 3: If no reward, just approve
+      if (paymentStatus === "none" || !completionData?.sat_reward) {
+        showToast(t("sponsorDashboard.approveSuccess"), "success");
+        return;
+      }
+
+      // Step 4: Try auto-pay via sponsor's NWC wallet
+      // First, try to generate invoice from kid's wallet
+      const invoiceRes = await fetch("/api/payments/invoice", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          completion_id: completionId,
+          amount_sats: completionData.sat_reward,
+        }),
+      });
+
+      if (invoiceRes.ok) {
+        const invoiceData = await invoiceRes.json();
+        if (invoiceData.success && invoiceData.data) {
+          const { paymentRequest, payment_id: paymentId } = invoiceData.data;
+
+          // Priority 1: Try WebLN extension (Alby, etc.)
+          if (hasWebLN) {
+            try {
+              const webln = (window as unknown as { webln?: { enable: () => Promise<void>; sendPayment: (invoice: string) => Promise<{ preimage: string }> } }).webln;
+              if (webln) {
+                await webln.enable();
+                await webln.sendPayment(paymentRequest);
+                showToast(
+                  t("payments.autoPaidSuccess", { amount: completionData.sat_reward }),
+                  "success"
+                );
+                return;
+              }
+            } catch {
+              // WebLN failed, fall through to NWC
+            }
           }
+
+          // Priority 2: Try auto-pay with sponsor's NWC wallet
+          try {
+            const payRes = await fetch(`/api/payments/${paymentId}/pay`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+            });
+
+            if (payRes.ok) {
+              const payData = await payRes.json();
+              if (payData.success && payData.data?.paid) {
+                showToast(
+                  t("payments.autoPaidSuccess", { amount: completionData.sat_reward }),
+                  "success"
+                );
+                return;
+              }
+            }
+          } catch {
+            // Auto-pay failed, fall through to invoice modal
+          }
+
+          // Priority 3: Show invoice modal for manual scan
+          setInvoiceModal({
+            paymentRequest,
+            paymentId,
+            amountSats: completionData.sat_reward,
+            habitName: completionData.habit_name,
+          });
+          showToast(t("payments.scanInvoice", { amount: completionData.sat_reward }), "info");
           return;
         }
       }
-      // Revert on failure
-      setFamilyCompletions((prev) =>
-        prev.map((c) => (c.id === completionId ? { ...c, status: "pending" as const } : c))
-      );
-      setFamilyStats((prev) => ({
-        ...prev,
-        pendingApprovals: prev.pendingApprovals + 1,
-      }));
+
+      // Kid has no wallet (422) → approved without payment
+      if (invoiceRes.status === 422) {
+        showToast(t("payments.approvedNoPay"), "info");
+        return;
+      }
+
+      // Other error
+      showToast(t("payments.paymentError"), "error");
     } catch {
-      // Revert on error
-      setFamilyCompletions((prev) =>
-        prev.map((c) => (c.id === completionId ? { ...c, status: "pending" as const } : c))
-      );
-      setFamilyStats((prev) => ({
-        ...prev,
-        pendingApprovals: prev.pendingApprovals + 1,
-      }));
+      revertOptimistic();
       showToast(t("auth.connectionError"), "error");
     }
-  }, [showToast, t]);
+  }, [showToast, t, familyCompletions]);
 
   const handleCreateHabit = useCallback(async (data: CreateHabitData) => {
     try {
@@ -775,6 +870,23 @@ export default function SponsorDashboard() {
           <h2 className={styles.sectionTitle}>{t("wallet.connectWallet")}</h2>
           <WalletConnect />
         </div>
+      )}
+
+      {invoiceModal && (
+        <InvoiceModal
+          paymentRequest={invoiceModal.paymentRequest}
+          paymentId={invoiceModal.paymentId}
+          amountSats={invoiceModal.amountSats}
+          habitName={invoiceModal.habitName}
+          onPaid={() => {
+            setInvoiceModal(null);
+            showToast(
+              t("payments.autoPaidSuccess", { amount: invoiceModal.amountSats }),
+              "success"
+            );
+          }}
+          onClose={() => setInvoiceModal(null)}
+        />
       )}
     </DashboardLayout>
   );

@@ -105,7 +105,8 @@
     "nwcUrl": "NWC URL",
     "label": "Label (optional)",
     "labelPlaceholder": "e.g. My Alby wallet",
-    "disconnect": "Disconnect"
+    "disconnect": "Disconnect",
+    "connectExtension": "Connect with {name}"
   },
   "sats": {
     "sats": "sats",
@@ -314,6 +315,10 @@
       "paid": "Paid",
       "failed": "Failed"
     },
+    "autoPaidSuccess": "Approved! {amount} sats sent ⚡",
+    "scanInvoice": "Scan or copy the invoice to pay {amount} sats",
+    "approvedNoPay": "Approved without payment. Set up a wallet to send sats.",
+    "paymentError": "Error processing payment. Try again.",
     "retryButton": "Retry",
     "retrySuccess": "Payment queued for retry",
     "retryError": "Could not retry payment",
@@ -513,6 +518,12 @@
       "registerCTA": "Register as Kid"
     },
     "stepIncompleteError": "You must complete this step before continuing"
+  },
+  "invoiceModal": {
+    "paid": "Payment received! ⚡",
+    "copied": "Copied!",
+    "copyInvoice": "Copy invoice",
+    "close": "Close"
   },
   "validation": {
     "required": "This field is required",
