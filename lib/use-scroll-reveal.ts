@@ -18,7 +18,7 @@ export function useScrollReveal<T extends HTMLElement>(
     const el = ref.current;
     if (!el) return;
 
-    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const prefersReducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
     if (prefersReducedMotion) {
       el.classList.add("scroll-visible");
       return;

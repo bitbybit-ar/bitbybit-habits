@@ -16,7 +16,7 @@ export function CelebrationBurst({ satReward, onComplete, color = "#F7A825" }: C
     const container = containerRef.current;
     if (!container) return;
 
-    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const prefersReducedMotion = typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
     if (prefersReducedMotion) {
       onComplete?.();
       return;
