@@ -2,10 +2,11 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
-import { BoltIcon, FlameIcon, ListIcon, UsersIcon } from "@/components/icons";
+import { BoltIcon, FlameIcon, ListIcon, UsersIcon, WalletIcon } from "@/components/icons";
 import { StatsBar } from "@/components/dashboard/stats-bar";
 import { HabitList } from "@/components/dashboard/habit-list";
 import { FamilyCard } from "@/components/dashboard/family-card";
+import { WalletConnect } from "@/components/dashboard/wallet-connect";
 import { Onboarding } from "@/components/dashboard/onboarding";
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 import type { DashboardTab } from "@/components/dashboard/dashboard-layout";
@@ -33,7 +34,7 @@ interface FamilyWithMembers {
   }[];
 }
 
-type TabType = "habits" | "family";
+type TabType = "habits" | "family" | "wallet";
 
 export default function KidDashboard() {
   const t = useTranslations();
@@ -239,6 +240,7 @@ export default function KidDashboard() {
   const tabs: DashboardTab[] = [
     { key: "habits", icon: <ListIcon size={20} />, label: t("dashboard.myHabits") },
     { key: "family", icon: <UsersIcon size={20} />, label: t("family.myFamily") },
+    { key: "wallet", icon: <WalletIcon size={20} />, label: t("wallet.connectWallet") },
   ];
 
   const headerExtra = (
@@ -337,6 +339,13 @@ export default function KidDashboard() {
             </form>
             {joinError && <p className={styles.joinError}>{joinError}</p>}
           </div>
+        </>
+      )}
+
+      {activeTab === "wallet" && (
+        <>
+          <h2 className={styles.sectionTitle}>{t("wallet.connectWallet")}</h2>
+          <WalletConnect />
         </>
       )}
     </>

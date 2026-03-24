@@ -164,6 +164,12 @@ export function HabitCard({ habit, completions, onComplete, hideAction, currentU
           </div>
         </div>
         <div className={styles.headerRight}>
+          {currentStreak > 0 && (
+            <div className={cn(styles.streakBadge, styles.streakActive)}>
+              <FlameIcon size={14} />
+              <span>{currentStreak}</span>
+            </div>
+          )}
           <div className={styles.satBadge}>
             <BoltIcon size={12} />
             {habit.sat_reward} {t("sats.sats")}
@@ -191,21 +197,9 @@ export function HabitCard({ habit, completions, onComplete, hideAction, currentU
         </div>
       </div>
 
-      {/* Schedule and streak */}
+      {/* Schedule */}
       <div className={styles.meta}>
         <span className={styles.schedule}>{scheduleText}</span>
-        {currentStreak > 0 && (
-          <div className={cn(styles.streak, styles.streakActive)}>
-            <FlameIcon size={14} />
-            <span className={styles.streakCount}>{currentStreak}</span>
-          </div>
-        )}
-        {currentStreak === 0 && (
-          <div className={cn(styles.streak, styles.streakInactive)}>
-            <FlameIcon size={14} />
-            <span className={styles.streakCount}>0</span>
-          </div>
-        )}
       </div>
 
       {/* Last 7 days circles */}
