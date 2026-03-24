@@ -161,40 +161,6 @@
   }
 }
 
-.qrToggle {
-  display: inline-flex;
-  align-items: center;
-  gap: $spacing-4;
-  margin-top: $spacing-12;
-  padding: $spacing-8 $spacing-16;
-  border-radius: $border-radius-md;
-  border: 1px solid rgba(var(--glass-color), 0.1);
-  background: transparent;
-  color: var(--color-text-secondary);
-  font-size: $font-size-xs;
-  font-weight: $font-weight-semibold;
-  cursor: pointer;
-  transition: color 0.2s, border-color 0.2s;
-
-  &:hover {
-    color: var(--color-primary);
-    border-color: rgba($color-primary, 0.3);
-  }
-}
-
-.qrContainer {
-  display: flex;
-  justify-content: center;
-  margin-top: $spacing-16;
-  padding: $spacing-16;
-  background: var(--color-bg-3);
-  border-radius: $border-radius-md;
-}
-
-.qrImage {
-  border-radius: $border-radius-sm;
-}
-
 .membersSection {
   border-top: 1px solid rgba(var(--glass-color), 0.05);
   padding-top: $spacing-20;

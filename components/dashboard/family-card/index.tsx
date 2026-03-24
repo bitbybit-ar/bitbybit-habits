@@ -42,7 +42,6 @@ export function FamilyCard({
 }: FamilyCardProps) {
   const t = useTranslations();
   const [copied, setCopied] = useState(false);
-  const [showQR, setShowQR] = useState(false);
   const [confirmAction, setConfirmAction] = useState<"leave" | "delete" | null>(null);
 
   const isCreator = currentUserId === createdBy;
@@ -80,8 +79,6 @@ export function FamilyCard({
     const newRole = currentRole === "sponsor" ? "kid" : "sponsor";
     onRoleChange?.(familyId, userId, newRole);
   };
-
-  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(inviteCode)}&bgcolor=1A1A2E&color=F7A825`;
 
   return (
     <div className={styles.card}>
@@ -136,23 +133,6 @@ export function FamilyCard({
               {copied ? t("sponsorDashboard.copied") : t("family.copyCode")}
             </button>
           </div>
-          <button
-            className={styles.qrToggle}
-            onClick={() => setShowQR((prev) => !prev)}
-          >
-            {showQR ? t("family.hideQR") : t("family.showQR")}
-          </button>
-          {showQR && (
-            <div className={styles.qrContainer}>
-              <img
-                src={qrUrl}
-                alt={`QR: ${inviteCode}`}
-                width={150}
-                height={150}
-                className={styles.qrImage}
-              />
-            </div>
-          )}
         </div>
       )}
 
