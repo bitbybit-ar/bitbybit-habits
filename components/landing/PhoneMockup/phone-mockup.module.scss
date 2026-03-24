@@ -269,14 +269,14 @@
 // The compact variants on StatsBar/HabitCard handle font/padding reduction.
 // Scale handles the rest so components stay proportional.
 
-$virtual-w: 320px;
+$virtual-w: 340px;
 
 .screenContent {
   width: $virtual-w;
-  height: 690px; // enough virtual height so nothing clips
-  transform: scale(calc(272 / 320)); // (bezel inner width) / virtual width
+  height: 750px;
+  transform: scale(calc(272 / 340));
   transform-origin: top left;
-  padding: 44px 10px 28px;
+  padding: 44px 12px 28px;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -284,13 +284,13 @@ $virtual-w: 320px;
   box-sizing: border-box;
 
   @include tablet {
-    height: 750px;
-    transform: scale(calc(232 / 320));
+    height: 800px;
+    transform: scale(calc(232 / 340));
   }
 
   @include mobile {
-    height: 800px;
-    transform: scale(calc(212 / 320));
+    height: 850px;
+    transform: scale(calc(212 / 340));
   }
 }
 

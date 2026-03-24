@@ -349,17 +349,17 @@
   }
 
   .habitName {
-    font-size: 12px;
+    font-size: 13px;
   }
 
   .habitDescription {
-    font-size: 9px;
+    font-size: 10px;
     margin-top: 1px;
   }
 
   .satBadge {
-    font-size: 10px;
-    padding: 2px 5px;
+    font-size: 11px;
+    padding: 2px 6px;
     gap: 2px;
 
     svg {
@@ -369,49 +369,49 @@
   }
 
   .meta {
-    margin-bottom: 4px;
-    font-size: 9px;
-  }
-
-  .streakCount {
+    margin-bottom: 5px;
     font-size: 10px;
   }
 
+  .streakCount {
+    font-size: 11px;
+  }
+
   .streak {
-    gap: 2px;
+    gap: 3px;
 
     svg {
-      width: 11px;
-      height: 11px;
+      width: 12px;
+      height: 12px;
     }
   }
 
   .dateCircles {
-    gap: 1px;
+    gap: 2px;
     margin-bottom: 0;
   }
 
   .dayLabel {
-    font-size: 8px;
+    font-size: 9px;
   }
 
   .dateCircle {
-    gap: 1px;
+    gap: 2px;
   }
 
   .circle {
-    width: 18px;
-    height: 18px;
+    width: 22px;
+    height: 22px;
     border-width: 1.5px;
 
     svg {
-      width: 9px;
-      height: 9px;
+      width: 10px;
+      height: 10px;
     }
 
     @include desktop {
-      width: 18px;
-      height: 18px;
+      width: 22px;
+      height: 22px;
     }
   }
 }
