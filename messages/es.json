@@ -511,7 +511,8 @@
       "step5Desc": "Tu sponsor aprobó tus hábitos y los sats ya están en tu wallet.",
       "celebrationMsg": "¡Seguí así! Cada hábito te acerca a más sats ⚡",
       "registerCTA": "Registrarse como Kid"
-    }
+    },
+    "stepIncompleteError": "Debés completar este paso antes de continuar"
   },
   "validation": {
     "required": "Este campo es obligatorio",

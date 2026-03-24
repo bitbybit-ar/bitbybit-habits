@@ -511,7 +511,8 @@
       "step5Desc": "Your sponsor approved your habits and the sats are in your wallet.",
       "celebrationMsg": "Keep it up! Every habit gets you closer to more sats ⚡",
       "registerCTA": "Register as Kid"
-    }
+    },
+    "stepIncompleteError": "You must complete this step before continuing"
   },
   "validation": {
     "required": "This field is required",

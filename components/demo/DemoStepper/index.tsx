@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import Button from "@/components/ui/button";
@@ -20,12 +20,31 @@ interface DemoStepperProps {
 
 export const DemoStepper: React.FC<DemoStepperProps> = ({ steps, onFinish, finishLabel, finishNode, canAdvance, backUrl }) => {
   const t = useTranslations("common");
+  const td = useTranslations("demo");
   const router = useRouter();
   const [current, setCurrent] = useState(0);
+  const [showStepError, setShowStepError] = useState(false);
+
+  // Clear error when the step requirement is fulfilled
+  const currentCanAdvance = canAdvance ? canAdvance[current] : true;
+  useEffect(() => {
+    if (currentCanAdvance) {
+      setShowStepError(false);
+    }
+  }, [currentCanAdvance]);
+
+  // Clear error when changing steps
+  useEffect(() => {
+    setShowStepError(false);
+  }, [current]);
 
   const next = useCallback(() => {
+    if (canAdvance && canAdvance[current] === false) {
+      setShowStepError(true);
+      return;
+    }
     if (current < steps.length - 1) setCurrent((c) => c + 1);
-  }, [current, steps.length]);
+  }, [current, steps.length, canAdvance]);
 
   const prev = useCallback(() => {
     if (current > 0) setCurrent((c) => c - 1);
@@ -56,17 +75,21 @@ export const DemoStepper: React.FC<DemoStepperProps> = ({ steps, onFinish, finis
         <Button variant="outline" onClick={current === 0 && backUrl ? () => router.push(backUrl) : prev} disabled={current === 0 && !backUrl}>
           <ArrowLeftIcon size={14} /> {t("back")}
         </Button>
-        {current === steps.length - 1 ? (
-          finishNode ?? <Button onClick={onFinish}>{finishLabel || t("confirm")}</Button>
-        ) : (
-          <Button
-            onClick={next}
-            disabled={canAdvance ? canAdvance[current] === false : false}
-            className={canAdvance && canAdvance[current] ? styles.glowHint : undefined}
-          >
-            {t("next")} <ArrowRightIcon size={14} />
-          </Button>
-        )}
+        <div className={styles.navRight}>
+          {showStepError && (
+            <p className={styles.stepError}>{td("stepIncompleteError")}</p>
+          )}
+          {current === steps.length - 1 ? (
+            finishNode ?? <Button onClick={onFinish}>{finishLabel || t("confirm")}</Button>
+          ) : (
+            <Button
+              onClick={next}
+              className={canAdvance && canAdvance[current] ? styles.glowHint : undefined}
+            >
+              {t("next")} <ArrowRightIcon size={14} />
+            </Button>
+          )}
+        </div>
       </div>
     </div>
   );
