@@ -31,8 +31,8 @@
   background: rgba($color-primary, 0.1);
 
   .avatar {
-    background: $color-primary;
-    color: var(--color-bg);
+    background: var(--color-primary);
+    color: var(--color-on-primary);
   }
 }
 
@@ -58,9 +58,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: $color-primary;
+  background: var(--color-primary);
   border-radius: $border-radius-full;
-  color: var(--color-bg);
+  color: var(--color-on-primary);
 }
 
 .memberName {

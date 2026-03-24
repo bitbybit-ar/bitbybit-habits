@@ -218,8 +218,8 @@
   padding: $spacing-12 $spacing-24;
   border-radius: $border-radius-md;
   border: none;
-  background: $color-primary;
-  color: var(--color-bg);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
   font-size: $font-size-base;
   font-weight: $font-weight-bold;
   cursor: pointer;
@@ -347,7 +347,7 @@
 }
 
 .tipDotActive {
-  background: $color-primary;
+  background: var(--color-primary);
   width: 24px;
 }
 

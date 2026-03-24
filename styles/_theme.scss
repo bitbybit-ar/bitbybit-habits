@@ -15,6 +15,7 @@
 
   // Glass / overlay channels
   --glass-color: 255, 255, 255;
+  --glass-text-color: 255, 255, 255;
   --shadow-color: 0, 0, 0;
   --glass-fallback-bg: rgba(26, 26, 46, 0.9);
 
@@ -48,12 +49,17 @@
   --color-error: #EE5A5A;
   --color-info: #4DB6AC;
 
-  // Gradient for text (gradient-text mixin)
+  // Gradients
   --gradient-primary-text: linear-gradient(135deg, #F7A825, #4CAF7D);
+  --gradient-primary-bg: linear-gradient(135deg, #F7A825, #4CAF7D);
 
   // Orb colors
   --orb-color-1: rgba(247, 168, 37, 0.06);
   --orb-color-2: rgba(76, 175, 125, 0.05);
+
+  // Text on colored backgrounds
+  --color-on-primary: #000;
+  --color-on-gradient: #fff;
 
   // Scrollbar
   --scrollbar-thumb: rgba(255, 255, 255, 0.1);
@@ -84,6 +90,7 @@
 
   // Glass / overlay channels
   --glass-color: 255, 255, 255;
+  --glass-text-color: 0, 0, 0;
   --shadow-color: 100, 80, 60;
   --glass-fallback-bg: rgba(255, 248, 240, 0.92);
 
@@ -117,12 +124,17 @@
   --color-error: #C43030;
   --color-info: #0F6E56;
 
-  // Gradient for text — darker for readability
+  // Gradients — darker for readability
   --gradient-primary-text: linear-gradient(135deg, #B37209, #1D7D4A);
+  --gradient-primary-bg: linear-gradient(135deg, #C47F0A, #2E7D52);
 
   // Orb colors — stronger, purple instead of green
   --orb-color-1: rgba(247, 168, 37, 0.12);
   --orb-color-2: rgba(160, 100, 200, 0.10);
+
+  // Text on colored backgrounds
+  --color-on-primary: #fff;
+  --color-on-gradient: #fff;
 
   // Scrollbar
   --scrollbar-thumb: rgba(0, 0, 0, 0.1);

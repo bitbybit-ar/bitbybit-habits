@@ -11,7 +11,7 @@
   padding-top: $spacing-32;
   padding-bottom: $spacing-40;
   background:
-    radial-gradient(ellipse at 50% 40%, rgba(26, 26, 46, 0.6) 0%, transparent 70%),
+    radial-gradient(ellipse at 50% 40%, rgba(var(--shadow-color), 0.15) 0%, transparent 70%),
     transparent;
 
   @include desktop {
@@ -141,7 +141,7 @@
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: rgba(var(--glass-color), 0.45);
+  color: rgba(var(--glass-text-color), 0.45);
   font-weight: $font-weight-semibold;
   margin-bottom: $spacing-8;
 }
@@ -189,7 +189,7 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: $gradient-primary;
+  background: var(--gradient-primary-bg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -227,7 +227,7 @@
   right: $spacing-16;
   top: 50%;
   transform: translateY(-50%);
-  color: rgba(var(--glass-color), 0.35);
+  color: rgba(var(--glass-text-color), 0.35);
   font-size: 0.9rem;
   pointer-events: none;
 }
@@ -250,7 +250,7 @@
 
 .errorText {
   font-size: $font-size-sm;
-  color: #ff6b6b;
+  color: var(--color-error);
   text-align: center;
 }
 
@@ -259,7 +259,7 @@
   padding: $spacing-12 $spacing-24;
   border-radius: $border-radius-md;
   border: none;
-  background: $gradient-primary;
+  background: var(--gradient-primary-bg);
   color: white;
   font-size: $font-size-sm;
   font-weight: $font-weight-bold;

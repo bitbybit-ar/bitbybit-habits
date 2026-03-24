@@ -217,7 +217,7 @@
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: $color-primary;
+    background: var(--color-primary);
     animation: dotPulse 1.4s ease-in-out infinite;
 
     &:nth-child(2) { animation-delay: 0.2s; }

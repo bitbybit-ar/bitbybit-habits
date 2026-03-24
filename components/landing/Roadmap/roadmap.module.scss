@@ -44,7 +44,7 @@
 .dot {
   width: 16px;
   height: 16px;
-  background: $gradient-primary;
+  background: var(--gradient-primary-bg);
   border-radius: 50%;
   margin-top: 22px;
   z-index: 1;

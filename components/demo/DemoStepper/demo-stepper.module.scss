@@ -58,7 +58,7 @@
   flex-shrink: 0;
 
   &.active {
-    background: $color-primary;
+    background: var(--color-primary);
   }
 
   @include mobile {

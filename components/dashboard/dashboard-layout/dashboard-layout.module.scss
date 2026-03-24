@@ -135,13 +135,13 @@ $tabbar-height: 52px;
   width: 48px;
   height: 48px;
   border-radius: $border-radius-full;
-  background: $gradient-primary;
+  background: var(--gradient-primary-bg);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: $font-size-xl;
   font-weight: $font-weight-bold;
-  color: var(--color-bg);
+  color: var(--color-on-gradient);
   flex-shrink: 0;
 }
 
@@ -216,8 +216,8 @@ $tabbar-height: 52px;
   min-width: 16px;
   height: 16px;
   border-radius: $border-radius-full;
-  background: $color-warning;
-  color: var(--color-bg);
+  background: var(--color-warning);
+  color: #fff;
   font-size: 10px;
   font-weight: $font-weight-bold;
   display: flex;

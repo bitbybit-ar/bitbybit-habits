@@ -117,12 +117,12 @@
 }
 
 .signupButton {
-  background: $color-primary;
-  color: var(--color-bg);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
 
   &:hover,
   &:focus {
-    background: color.adjust($color-primary, $lightness: 5%);
+    background: var(--color-primary-hover);
   }
 
   @include mobile {
@@ -231,7 +231,7 @@
   bottom: 0;
   left: 0;
   height: 2px;
-  background: $gradient-primary;
+  background: var(--gradient-primary-bg);
   transition: width 0.1s linear;
   z-index: 1;
 }

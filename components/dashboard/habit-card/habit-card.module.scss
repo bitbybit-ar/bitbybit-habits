@@ -305,7 +305,7 @@
   font-weight: $font-weight-bold;
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
-  background: $gradient-primary;
+  background: var(--gradient-primary-bg);
   color: white;
 
   &:hover {

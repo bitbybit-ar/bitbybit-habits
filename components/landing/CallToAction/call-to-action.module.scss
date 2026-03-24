@@ -67,11 +67,11 @@
 }
 
 .primaryButton {
-  background: $color-primary;
-  color: var(--color-bg);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
 
   &:hover {
-    background: color.adjust($color-primary, $lightness: 5%);
+    background: var(--color-primary-hover);
     transform: translateY(-2px);
   }
 }

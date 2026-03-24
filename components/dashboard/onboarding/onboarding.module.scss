@@ -52,7 +52,7 @@
 
 .dotActive {
   border-color: var(--color-primary);
-  background: $color-primary;
+  background: var(--color-primary);
   transform: scale(1.2);
 }
 
@@ -160,11 +160,11 @@
 }
 
 .startButton {
-  background: $color-primary;
-  color: var(--color-bg);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
 
   &:hover {
-    background: color.adjust($color-primary, $lightness: 5%);
+    background: var(--color-primary-hover);
   }
 }
 
