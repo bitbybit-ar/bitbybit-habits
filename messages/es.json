@@ -338,6 +338,21 @@
       "payment_failed": "Pago fallido"
     }
   },
+  "summaryBar": {
+    "completedToday": "completados hoy",
+    "pending": "pendientes",
+    "satsPaid": "sats pagados"
+  },
+  "weeklyTracker": {
+    "sun": "D",
+    "mon": "L",
+    "tue": "M",
+    "wed": "X",
+    "thu": "J",
+    "fri": "V",
+    "sat": "S",
+    "approve": "Aprobar"
+  },
   "sponsorDashboard": {
     "pendingApprovals": "Pendientes de aprobación",
     "habitsCreated": "Hábitos creados",
@@ -353,7 +368,16 @@
     "approveNoWallet": "Completación aprobada, pero necesitás conectar una wallet Lightning para enviar las recompensas. Andá a la pestaña Wallet para configurarla.",
     "rejectSuccess": "Completación rechazada",
     "createSuccess": "Hábito creado correctamente",
-    "copied": "Copiado"
+    "copied": "Copiado",
+    "familyNotFound": "Familia no encontrada",
+    "onlySponsor": "Solo sponsors pueden acceder a esta información",
+    "byHabit": "Por hábito",
+    "byKid": "Por niño",
+    "noKidsAssigned": "No hay kids asignados a este hábito",
+    "noKids": "No hay kids en tus familias",
+    "noKidsDesc": "Compartí tu código de invitación para que tus kids se unan",
+    "habitsAssigned": "hábitos asignados",
+    "noHabitsForKid": "Este kid no tiene hábitos asignados"
   },
   "onboarding": {
     "welcome": "¡Hola {name}!",

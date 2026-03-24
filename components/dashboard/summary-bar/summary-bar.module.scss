@@ -1,0 +1,131 @@
+@use "@/styles/colors" as *;
+@use "@/styles/spacing" as *;
+@use "@/styles/typography" as *;
+@use "@/styles/media-mixins" as *;
+@use "@/styles/glass" as *;
+
+.bar {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $spacing-12;
+  margin-bottom: $spacing-24;
+
+  @include mobile {
+    grid-template-columns: 1fr;
+    gap: $spacing-8;
+  }
+}
+
+.card {
+  display: flex;
+  align-items: center;
+  gap: $spacing-12;
+  @include glass-subtle;
+  padding: $spacing-16 $spacing-20;
+  cursor: default;
+  border: 1px solid var(--glass-subtle-border);
+  transition: all 0.3s ease;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+
+  // Reset button styles for clickable cards
+  &[type="button"] {
+    cursor: pointer;
+
+    &:hover {
+      border-color: rgba(var(--glass-color), 0.15);
+      box-shadow: 0 4px 16px rgba(var(--shadow-color), 0.15);
+      transform: translateY(-1px);
+    }
+
+    &:active {
+      transform: translateY(0);
+      transition-duration: 0.1s;
+    }
+  }
+}
+
+.cardCompleted {
+  border-color: rgba($color-success, 0.15);
+  background: linear-gradient(135deg, rgba($color-success, 0.06) 0%, var(--glass-subtle-bg) 100%);
+}
+
+.cardPending {
+  border-color: rgba($color-warning, 0.15);
+  background: linear-gradient(135deg, rgba($color-warning, 0.06) 0%, var(--glass-subtle-bg) 100%);
+}
+
+.cardSats {
+  border-color: rgba($color-primary, 0.15);
+  background: linear-gradient(135deg, rgba($color-primary, 0.06) 0%, var(--glass-subtle-bg) 100%);
+}
+
+.iconWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: $border-radius-md;
+  flex-shrink: 0;
+}
+
+.iconCompleted {
+  background: rgba($color-success, 0.15);
+  color: var(--color-success);
+}
+
+.iconPending {
+  background: rgba($color-warning, 0.15);
+  color: var(--color-warning);
+}
+
+.iconSats {
+  background: rgba($color-primary, 0.15);
+  color: var(--color-primary);
+}
+
+.cardContent {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.cardValue {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: var(--color-text-primary);
+  line-height: $line-height-tight;
+  display: flex;
+  align-items: center;
+  gap: $spacing-8;
+}
+
+.valueSats {
+  color: var(--color-primary);
+}
+
+.cardLabel {
+  font-size: $font-size-xs;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: $border-radius-full;
+  background: var(--color-warning);
+  color: #fff;
+  font-size: 11px;
+  font-weight: $font-weight-bold;
+  line-height: 1;
+}

@@ -156,3 +156,145 @@
   padding: 0 6px;
   margin-left: $spacing-4;
 }
+
+// Group cards (by habit / by kid)
+.groupCard {
+  @include glass-card;
+  padding: $spacing-20;
+  margin-bottom: $spacing-12;
+}
+
+.groupHeader {
+  display: flex;
+  align-items: center;
+  gap: $spacing-12;
+  margin-bottom: $spacing-16;
+}
+
+.colorDot {
+  width: 12px;
+  height: 12px;
+  border-radius: $border-radius-full;
+  flex-shrink: 0;
+}
+
+.groupInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.groupName {
+  font-size: $font-size-base;
+  font-weight: $font-weight-semibold;
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.groupDescription {
+  font-size: $font-size-xs;
+  color: var(--color-text-secondary);
+}
+
+.satBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba($color-primary, 0.15);
+  color: var(--color-primary);
+  padding: 4px $spacing-8;
+  border-radius: $border-radius-full;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.kidRows {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-12;
+}
+
+.kidRow {
+  display: flex;
+  align-items: center;
+  gap: $spacing-12;
+  padding: $spacing-8 0;
+  border-top: 1px solid rgba(var(--glass-color), 0.06);
+
+  @include mobile {
+    flex-wrap: wrap;
+  }
+}
+
+.kidAvatar,
+.kidAvatarLg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: $border-radius-full;
+  background: rgba($color-secondary, 0.15);
+  color: var(--color-secondary);
+  font-weight: $font-weight-bold;
+  flex-shrink: 0;
+}
+
+.kidAvatar {
+  width: 28px;
+  height: 28px;
+  font-size: $font-size-xs;
+}
+
+.kidAvatarLg {
+  width: 40px;
+  height: 40px;
+  font-size: $font-size-base;
+}
+
+.kidName {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  min-width: 80px;
+  flex-shrink: 0;
+}
+
+.trackerWrapper {
+  flex: 1;
+  min-width: 0;
+
+  @include mobile {
+    width: 100%;
+    flex-basis: 100%;
+  }
+}
+
+.habitRowInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 80px;
+  flex-shrink: 0;
+}
+
+.habitRowSats {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 11px;
+  color: var(--color-primary);
+  font-weight: $font-weight-bold;
+}
+
+.noKidsText {
+  font-size: $font-size-sm;
+  color: var(--color-text-secondary);
+  padding: $spacing-8 0;
+  margin: 0;
+}

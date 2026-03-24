@@ -853,6 +853,139 @@ paths:
                 success: false
                 error: "Error al unirse a la familia"
 
+  /families/{id}/completions:
+    get:
+      tags:
+        - Families
+      summary: Obtener completaciones de una familia (ultimos N dias)
+      description: |
+        Devuelve todas las completaciones de todos los kids en una familia
+        para los ultimos N dias (default 7). El usuario debe ser sponsor en la familia.
+      operationId: getFamilyCompletions
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID de la familia
+        - name: days
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 7
+            minimum: 1
+            maximum: 90
+          description: Cantidad de dias hacia atras (default 7)
+      responses:
+        "200":
+          description: Lista de completaciones
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/FamilyCompletion"
+              example:
+                success: true
+                data:
+                  - id: "aaa00000-0000-0000-0000-000000000001"
+                    habit_id: "bbb00000-0000-0000-0000-000000000001"
+                    habit_name: "Tender la cama"
+                    kid_user_id: "ccc00000-0000-0000-0000-000000000001"
+                    kid_display_name: "Satoshi Jr."
+                    date: "2026-03-24"
+                    status: "pending"
+                    sat_reward: 50
+        "401":
+          description: No autenticado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseError"
+        "403":
+          description: No es sponsor en esta familia
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseError"
+              example:
+                success: false
+                error: "Solo sponsors pueden ver completaciones de la familia"
+        "404":
+          description: Familia no encontrada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseError"
+
+  /families/{id}/stats:
+    get:
+      tags:
+        - Families
+      summary: Obtener estadisticas resumidas de una familia
+      description: |
+        Devuelve estadisticas para el sponsor dashboard:
+        completaciones de hoy, total esperado, pendientes de aprobacion, y total de sats pagados.
+        El usuario debe ser sponsor en la familia.
+      operationId: getFamilyStats
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID de la familia
+      responses:
+        "200":
+          description: Estadisticas de la familia
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/FamilyStats"
+              example:
+                success: true
+                data:
+                  completedToday: 3
+                  totalToday: 5
+                  pendingApprovals: 2
+                  totalSatsPaid: 1500
+        "401":
+          description: No autenticado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseError"
+        "403":
+          description: No es sponsor en esta familia
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseError"
+        "404":
+          description: Familia no encontrada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseError"
+
   /stats:
     get:
       tags:
@@ -1440,3 +1573,46 @@ components:
         pending_completions:
           type: integer
           description: Completaciones pendientes de aprobacion
+
+    FamilyCompletion:
+      type: object
+      description: Completacion de un habito dentro de una familia
+      properties:
+        id:
+          type: string
+          format: uuid
+        habit_id:
+          type: string
+          format: uuid
+        habit_name:
+          type: string
+        kid_user_id:
+          type: string
+          format: uuid
+        kid_display_name:
+          type: string
+        date:
+          type: string
+          format: date
+        status:
+          type: string
+          enum: [pending, approved, rejected]
+        sat_reward:
+          type: integer
+
+    FamilyStats:
+      type: object
+      description: Estadisticas resumidas de una familia para el sponsor dashboard
+      properties:
+        completedToday:
+          type: integer
+          description: Completaciones hechas hoy por todos los kids
+        totalToday:
+          type: integer
+          description: Total de completaciones esperadas hoy (habitos activos)
+        pendingApprovals:
+          type: integer
+          description: Completaciones pendientes de aprobacion
+        totalSatsPaid:
+          type: integer
+          description: Total de sats pagados (all time)

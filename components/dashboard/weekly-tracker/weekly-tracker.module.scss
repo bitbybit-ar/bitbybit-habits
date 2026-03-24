@@ -1,0 +1,115 @@
+@use "@/styles/colors" as *;
+@use "@/styles/spacing" as *;
+@use "@/styles/typography" as *;
+@use "@/styles/media-mixins" as *;
+
+.tracker {
+  display: flex;
+  gap: $spacing-8;
+  justify-content: space-between;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+.dayLabel {
+  font-size: 10px;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  font-weight: $font-weight-semibold;
+  letter-spacing: 0.02em;
+}
+
+.dayLabelToday {
+  color: var(--color-primary);
+  font-weight: $font-weight-bold;
+}
+
+.cell {
+  width: 32px;
+  height: 32px;
+  border-radius: $border-radius-full;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid rgba(var(--glass-text-color), 0.12);
+  background: transparent;
+  transition: all 0.2s ease;
+  font-size: $font-size-xs;
+
+  @include desktop {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+.cellCompleted {
+  background: var(--color-success);
+  border-color: var(--color-success);
+  color: white;
+}
+
+.cellMissed {
+  border-color: rgba(var(--glass-text-color), 0.15);
+  background: rgba(var(--glass-text-color), 0.05);
+}
+
+.missedIcon {
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  font-weight: $font-weight-bold;
+  opacity: 0.5;
+}
+
+.cellPendingToday {
+  border-color: var(--color-text-secondary);
+  color: var(--color-text-secondary);
+  border-style: dashed;
+}
+
+.cellPendingApproval {
+  background: rgba($color-warning, 0.15);
+  border-color: var(--color-warning);
+  color: var(--color-warning);
+}
+
+.cellNotAssigned {
+  border-color: transparent;
+  opacity: 0.3;
+}
+
+.dot {
+  font-size: 18px;
+  line-height: 1;
+  color: var(--color-text-secondary);
+}
+
+.approveBtn {
+  margin-top: 2px;
+  padding: 2px 6px;
+  border: none;
+  border-radius: $border-radius-sm;
+  background: var(--color-success);
+  color: #fff;
+  font-size: 9px;
+  font-weight: $font-weight-bold;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  white-space: nowrap;
+
+  &:hover {
+    opacity: 0.85;
+  }
+
+  &:active {
+    opacity: 0.7;
+  }
+}
