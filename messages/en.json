@@ -34,7 +34,9 @@
     "invalidCredentials": "Invalid credentials",
     "connectionError": "Connection error",
     "passwordMismatch": "Passwords don't match",
-    "passwordTooShort": "Password must be at least 6 characters"
+    "passwordTooShort": "Password must be at least 6 characters",
+    "invalidEmail": "Invalid email",
+    "usernameTooShort": "Username must be at least 3 characters"
   },
   "dashboard": {
     "welcome": "Welcome",
