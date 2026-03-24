@@ -322,3 +322,96 @@
   background: rgba($color-success, 0.12);
   color: $color-success;
 }
+
+// --- Compact variant (for phone mockup / small containers) ---
+.compact.compact {
+  padding: 6px 8px;
+  border-radius: 8px;
+  border-left-width: 2px;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+
+  .header {
+    margin-bottom: 3px;
+  }
+
+  .headerLeft {
+    gap: 3px;
+  }
+
+  .headerRight {
+    gap: 4px;
+  }
+
+  .colorDot {
+    width: 6px;
+    height: 6px;
+  }
+
+  .habitName {
+    font-size: 12px;
+  }
+
+  .habitDescription {
+    font-size: 9px;
+    margin-top: 1px;
+  }
+
+  .satBadge {
+    font-size: 10px;
+    padding: 2px 5px;
+    gap: 2px;
+
+    svg {
+      width: 10px;
+      height: 10px;
+    }
+  }
+
+  .meta {
+    margin-bottom: 4px;
+    font-size: 9px;
+  }
+
+  .streakCount {
+    font-size: 10px;
+  }
+
+  .streak {
+    gap: 2px;
+
+    svg {
+      width: 11px;
+      height: 11px;
+    }
+  }
+
+  .dateCircles {
+    gap: 1px;
+    margin-bottom: 0;
+  }
+
+  .dayLabel {
+    font-size: 8px;
+  }
+
+  .dateCircle {
+    gap: 1px;
+  }
+
+  .circle {
+    width: 18px;
+    height: 18px;
+    border-width: 1.5px;
+
+    svg {
+      width: 9px;
+      height: 9px;
+    }
+
+    @include desktop {
+      width: 18px;
+      height: 18px;
+    }
+  }
+}

@@ -23,6 +23,7 @@ interface HabitCardProps {
   onDelete?: (habitId: string) => void;
   streak?: number;
   kids?: KidMember[];
+  compact?: boolean;
 }
 
 function getScheduleText(habit: Habit, t: ReturnType<typeof useTranslations>): string {
@@ -119,7 +120,7 @@ function getTodayStatus(habitId: string, completions: Completion[]): TodayStatus
   return "incomplete";
 }
 
-export function HabitCard({ habit, completions, onComplete, hideAction, currentUserId, onEdit, onDelete, streak, kids }: HabitCardProps) {
+export function HabitCard({ habit, completions, onComplete, hideAction, currentUserId, onEdit, onDelete, streak, kids, compact }: HabitCardProps) {
   const t = useTranslations();
   const [editing, setEditing] = useState(false);
   const [justCompleted, setJustCompleted] = useState(false);
@@ -140,7 +141,7 @@ export function HabitCard({ habit, completions, onComplete, hideAction, currentU
   };
 
   return (
-    <div className={styles.card} style={{ borderLeftColor: habit.color }}>
+    <div className={cn(styles.card, compact && styles.compact)} style={{ borderLeftColor: habit.color }}>
       {/* Header: name, description, sat badge */}
       <div className={styles.header}>
         <div className={styles.headerLeft}>

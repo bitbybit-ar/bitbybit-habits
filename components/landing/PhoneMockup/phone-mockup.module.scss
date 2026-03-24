@@ -1,0 +1,374 @@
+@use "sass:color";
+@use "@/styles/colors" as *;
+@use "@/styles/spacing" as *;
+@use "@/styles/typography" as *;
+@use "@/styles/media-mixins" as *;
+
+// ============================================================
+// Animations
+// ============================================================
+
+@keyframes phoneEntrance {
+  from {
+    opacity: 0;
+    transform: rotateY(-25deg) rotateX(10deg) translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: rotateY(-15deg) rotateX(5deg) translateY(0);
+  }
+}
+
+@keyframes floatUp {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes floatDown {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(8px); }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+
+// ============================================================
+// Phone frame
+// ============================================================
+
+.phoneWrapper {
+  perspective: 1000px;
+  position: relative;
+  flex-shrink: 0;
+  opacity: 0;
+  animation: phoneEntrance 0.8s ease-out 0.6s forwards;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 10%;
+    left: -15%;
+    width: 130%;
+    height: 80%;
+    background: radial-gradient(
+      ellipse at center,
+      rgba($color-primary, 0.1) 0%,
+      rgba($color-secondary, 0.05) 40%,
+      transparent 70%
+    );
+    filter: blur(40px);
+    pointer-events: none;
+    z-index: -1;
+  }
+}
+
+.phone {
+  transform: rotateY(-15deg) rotateX(5deg);
+  transform-style: preserve-3d;
+  transition: transform 0.6s ease;
+  position: relative;
+  border-radius: 40px;
+
+  box-shadow:
+    8px 8px 20px rgba(var(--shadow-color), 0.5),
+    20px 25px 50px rgba(var(--shadow-color), 0.4),
+    40px 50px 80px rgba(var(--shadow-color), 0.3),
+    60px 60px 120px rgba(var(--shadow-color), 0.15),
+    0 0 80px rgba($color-primary, 0.08),
+    0 0 160px rgba($color-primary, 0.04);
+
+  [data-theme="light"] & {
+    box-shadow:
+      6px 6px 16px rgba(var(--shadow-color), 0.12),
+      16px 20px 40px rgba(var(--shadow-color), 0.1),
+      30px 40px 60px rgba(var(--shadow-color), 0.08),
+      0 0 60px rgba($color-primary, 0.06);
+  }
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 40px;
+    background: linear-gradient(145deg, color.adjust($color-bg-dark-2, $lightness: -6%), color.adjust($color-bg-dark-2, $lightness: -10%));
+    border: 3px solid rgba(255, 255, 255, 0.04);
+    transform: translateZ(-12px);
+    pointer-events: none;
+
+    [data-theme="light"] & {
+      background: linear-gradient(145deg, #d4c8b8, #c2b6a6);
+      border-color: rgba(0, 0, 0, 0.06);
+    }
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: 41px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.06) 25%, transparent 45%, rgba(0, 0, 0, 0.15) 100%);
+    pointer-events: none;
+    z-index: 4;
+
+    [data-theme="light"] & {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.2) 25%, transparent 45%, rgba(0, 0, 0, 0.06) 100%);
+    }
+  }
+
+  @media (hover: hover) {
+    &:hover {
+      transform: rotateY(-8deg) rotateX(3deg);
+      box-shadow:
+        6px 6px 16px rgba(var(--shadow-color), 0.45),
+        16px 20px 40px rgba(var(--shadow-color), 0.35),
+        30px 40px 60px rgba(var(--shadow-color), 0.25),
+        0 0 100px rgba($color-primary, 0.1);
+
+      [data-theme="light"] & {
+        box-shadow:
+          4px 4px 12px rgba(var(--shadow-color), 0.1),
+          12px 16px 30px rgba(var(--shadow-color), 0.08),
+          0 0 80px rgba($color-primary, 0.08);
+      }
+    }
+  }
+
+  @include tablet {
+    transform: rotateY(-10deg) rotateX(4deg);
+    @media (hover: hover) { &:hover { transform: rotateY(-5deg) rotateX(2deg); } }
+  }
+
+  @include mobile {
+    transform: rotateY(-6deg) rotateX(3deg);
+    @media (hover: hover) { &:hover { transform: rotateY(-3deg) rotateX(1deg); } }
+  }
+}
+
+.bezel {
+  width: 280px;
+  height: 570px;
+  background: linear-gradient(145deg, color.adjust($color-bg-dark-2, $lightness: 5%), $color-bg-dark-2, color.adjust($color-bg-dark-2, $lightness: -4%));
+  border: 4px solid rgba(255, 255, 255, 0.12);
+  border-top-color: rgba(255, 255, 255, 0.25);
+  border-left-color: rgba(255, 255, 255, 0.20);
+  border-bottom-color: rgba(255, 255, 255, 0.04);
+  border-right-color: rgba(255, 255, 255, 0.06);
+  border-radius: 40px;
+  position: relative;
+  overflow: hidden;
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.12),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.3),
+    inset 2px 0 0 rgba(255, 255, 255, 0.06),
+    inset -2px 0 0 rgba(0, 0, 0, 0.15),
+    inset 0 0 40px rgba(0, 0, 0, 0.5);
+
+  [data-theme="light"] & {
+    background: linear-gradient(145deg, #e8ddd0, #ddd1c3, #d2c6b8);
+    border-color: rgba(0, 0, 0, 0.08);
+    border-top-color: rgba(255, 255, 255, 0.6);
+    border-left-color: rgba(255, 255, 255, 0.4);
+    border-bottom-color: rgba(0, 0, 0, 0.1);
+    border-right-color: rgba(0, 0, 0, 0.06);
+    box-shadow:
+      inset 0 2px 0 rgba(255, 255, 255, 0.4),
+      inset 0 -2px 0 rgba(0, 0, 0, 0.08),
+      inset 0 0 30px rgba(0, 0, 0, 0.06);
+  }
+
+  @include tablet {
+    width: 240px;
+    height: 490px;
+  }
+
+  @include mobile {
+    width: 220px;
+    height: 450px;
+  }
+}
+
+.notch {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90px;
+  height: 24px;
+  background: #000;
+  border-radius: 12px;
+  z-index: 3;
+
+  @include tablet {
+    width: 76px;
+    height: 20px;
+  }
+
+  @include mobile {
+    width: 70px;
+    height: 20px;
+    top: 10px;
+  }
+}
+
+.screenContainer {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  right: 4px;
+  bottom: 4px;
+  border-radius: 36px;
+  overflow: hidden;
+  z-index: 1;
+  background: var(--color-bg);
+}
+
+.homeIndicator {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+  z-index: 3;
+
+  [data-theme="light"] & {
+    background: rgba(0, 0, 0, 0.15);
+  }
+
+  @include mobile {
+    width: 80px;
+    height: 3px;
+  }
+}
+
+.glassReflection {
+  position: absolute;
+  inset: 0;
+  border-radius: 40px;
+  background:
+    linear-gradient(115deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.04) 25%, transparent 45%),
+    linear-gradient(200deg, transparent 60%, rgba(255, 255, 255, 0.02) 80%, rgba(255, 255, 255, 0.05) 100%);
+  pointer-events: none;
+  z-index: 2;
+}
+
+// ============================================================
+// Screen content — scaled down to fit phone
+// ============================================================
+
+// Render content at a "virtual" mobile width then CSS-scale to fit the bezel.
+// The compact variants on StatsBar/HabitCard handle font/padding reduction.
+// Scale handles the rest so components stay proportional.
+
+$virtual-w: 320px;
+
+.screenContent {
+  width: $virtual-w;
+  height: 690px; // enough virtual height so nothing clips
+  transform: scale(calc(272 / 320)); // (bezel inner width) / virtual width
+  transform-origin: top left;
+  padding: 44px 10px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow: hidden;
+  box-sizing: border-box;
+
+  @include tablet {
+    height: 750px;
+    transform: scale(calc(232 / 320));
+  }
+
+  @include mobile {
+    height: 800px;
+    transform: scale(calc(212 / 320));
+  }
+}
+
+.statsBarWrap {
+  margin-top: 4px;
+}
+
+.habitList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+// ============================================================
+// Celebration
+// ============================================================
+
+.celebration {
+  text-align: center;
+  padding: 8px 4px;
+
+  .celebrationIcons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    animation: pulse 1.5s infinite;
+  }
+
+  .satsAmount {
+    font-size: 16px;
+    font-weight: $font-weight-extrabold;
+    color: $color-primary;
+    margin-top: 4px;
+  }
+}
+
+// ============================================================
+// Floating decorative elements
+// ============================================================
+
+.floatingCoin {
+  position: absolute;
+  top: -10px;
+  right: -20px;
+  opacity: 0;
+  animation: fadeInUp 0.5s ease-out 1.2s forwards;
+  pointer-events: none;
+
+  svg {
+    animation: floatUp 3s ease-in-out infinite;
+    opacity: 0.7;
+  }
+
+  @include mobile {
+    top: -8px;
+    right: -12px;
+    svg { width: 30px; height: 30px; }
+  }
+}
+
+.floatingBolt {
+  position: absolute;
+  bottom: 40px;
+  left: -24px;
+  opacity: 0;
+  animation: fadeInUp 0.5s ease-out 1.4s forwards;
+  pointer-events: none;
+
+  svg {
+    animation: floatDown 3.5s ease-in-out infinite;
+    opacity: 0.6;
+  }
+
+  @include mobile {
+    bottom: 30px;
+    left: -16px;
+    svg { width: 24px; height: 24px; }
+  }
+}

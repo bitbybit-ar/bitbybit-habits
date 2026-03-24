@@ -2,6 +2,7 @@
 @use "@/styles/typography" as *;
 @use "@/styles/spacing" as *;
 @use "@/styles/common-mixins" as *;
+@use "@/styles/media-mixins" as *;
 
 // --- Staggered entrance ---
 @keyframes fadeInUp {
@@ -35,35 +36,110 @@
   100% { opacity: 0; transform: translateY(calc(90vh + 60px)); }
 }
 
+// --- Orb drift animations ---
+@keyframes orbDrift1 {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-40px, 60px) scale(1.1); }
+  100% { transform: translate(30px, -30px) scale(0.95); }
+}
+
+@keyframes orbDrift2 {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(50px, -40px) scale(1.08); }
+  100% { transform: translate(-20px, 40px) scale(0.92); }
+}
+
+@keyframes orbDrift3 {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-30px, -50px) scale(1.12); }
+  100% { transform: translate(40px, 30px) scale(0.9); }
+}
+
+// --- Hero container ---
 .hero {
   min-height: 90vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  text-align: center;
   position: relative;
   padding: $spacing-80 $container-padding;
   overflow: hidden;
 
-  &::before {
-    content: "";
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(ellipse at 30% 50%, rgba($color-accent-alt, 0.08) 0%, transparent 50%),
-                radial-gradient(ellipse at 70% 50%, rgba($color-primary, 0.06) 0%, transparent 50%);
-    pointer-events: none;
+  @include tablet {
+    padding: $spacing-48 $spacing-24;
+    min-height: auto;
+  }
+
+  @include mobile {
+    min-height: auto;
+    padding: $spacing-80 $spacing-20 $spacing-48;
   }
 }
 
+// --- Background orbs ---
+.orbGold,
+.orbGreen,
+.orbPurple {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(80px);
+}
+
+.orbGold {
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba($color-primary, 0.08) 0%, transparent 70%);
+  top: -100px;
+  left: -50px;
+  z-index: 0;
+  animation: orbDrift1 25s ease-in-out infinite alternate;
+
+  @include mobile {
+    width: 300px;
+    height: 300px;
+  }
+}
+
+.orbGreen {
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba($color-secondary, 0.06) 0%, transparent 70%);
+  bottom: -80px;
+  right: -60px;
+  z-index: 0;
+  animation: orbDrift2 30s ease-in-out infinite alternate;
+
+  @include mobile {
+    width: 250px;
+    height: 250px;
+  }
+}
+
+.orbPurple {
+  width: 350px;
+  height: 350px;
+  background: radial-gradient(circle, rgba(#7F77DD, 0.04) 0%, transparent 70%);
+  top: 30%;
+  right: 15%;
+  z-index: 2;
+  animation: orbDrift3 28s ease-in-out infinite alternate;
+
+  @include mobile {
+    width: 200px;
+    height: 200px;
+    right: -30px;
+  }
+}
+
+// --- Particles ---
 .particles {
   position: absolute;
   inset: 0;
   overflow: hidden;
   pointer-events: none;
+  z-index: 0;
 }
 
 .bolt {
@@ -73,6 +149,58 @@
   background: linear-gradient(to bottom, transparent, rgba($color-primary-light, 0.6), transparent);
   opacity: 0;
   animation: lightningFall linear infinite;
+}
+
+// --- Two-column content layout ---
+.content {
+  display: flex;
+  align-items: center;
+  gap: 60px;
+  position: relative;
+  z-index: 1;
+  max-width: $container-max-width;
+  width: 100%;
+
+  @include tablet {
+    gap: 24px;
+  }
+
+  @include mobile {
+    flex-direction: column;
+    gap: $spacing-32;
+    align-items: center;
+  }
+}
+
+// --- Text column ---
+.textColumn {
+  flex: 1;
+  min-width: 0;
+  max-width: 480px;
+
+  @include tablet {
+    max-width: 380px;
+  }
+
+  @include mobile {
+    max-width: 100%;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+// --- Phone column ---
+.phoneColumn {
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+
+  @include mobile {
+    display: flex;
+    justify-content: center;
+  }
 }
 
 // --- Staggered entrance: each element fades in sequentially ---
