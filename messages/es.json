@@ -36,7 +36,14 @@
     "passwordMismatch": "Las contraseñas no coinciden",
     "passwordTooShort": "La contraseña debe tener al menos 6 caracteres",
     "invalidEmail": "Email inválido",
-    "usernameTooShort": "El nombre de usuario debe tener al menos 3 caracteres"
+    "usernameTooShort": "El nombre de usuario debe tener al menos 3 caracteres",
+    "strengthWeak": "Débil",
+    "strengthFair": "Regular",
+    "strengthGood": "Buena",
+    "strengthStrong": "Fuerte",
+    "orLoginWith": "o ingresá con",
+    "orRegisterWith": "o registrate con",
+    "registerWithNostr": "Registrarse con Nostr"
   },
   "dashboard": {
     "welcome": "Bienvenido/a",

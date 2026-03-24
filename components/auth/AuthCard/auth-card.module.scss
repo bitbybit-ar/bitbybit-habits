@@ -1,0 +1,232 @@
+@use "@/styles/colors" as *;
+@use "@/styles/spacing" as *;
+@use "@/styles/typography" as *;
+@use "@/styles/common-mixins" as *;
+@use "@/styles/media-mixins" as *;
+@use "@/styles/glass" as *;
+
+// ── Page container ──
+.container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-24;
+  padding-top: calc(60px + #{$spacing-24});
+  background: var(--color-bg);
+  @include glass-background-orbs;
+  position: relative;
+}
+
+// ── Wrapper (holds card + floating icons) ──
+.wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 440px;
+  z-index: 1;
+}
+
+.wrapperWide {
+  max-width: 520px;
+}
+
+// ── Floating decorative icons ──
+.floatingIcons {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+
+  @include mobile {
+    display: none;
+  }
+}
+
+.floatingIcon {
+  position: absolute;
+  border-radius: $border-radius-full;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  @media (prefers-reduced-motion: no-preference) {
+    animation: iconFloat 3s ease-in-out infinite;
+  }
+}
+
+.icon1 {
+  width: 34px;
+  height: 34px;
+  background: rgba($color-primary, 0.15);
+  border: 1px solid rgba($color-primary, 0.25);
+  color: $color-primary;
+  top: 12px;
+  right: -10px;
+  animation-delay: 0s;
+}
+
+.icon2 {
+  width: 28px;
+  height: 28px;
+  background: rgba($color-accent-alt, 0.15);
+  border: 1px solid rgba($color-accent-alt, 0.25);
+  color: $color-accent-alt;
+  top: 45%;
+  left: -8px;
+  animation-delay: 1s;
+
+  @media (prefers-reduced-motion: no-preference) {
+    animation: iconFloat2 3s ease-in-out infinite;
+    animation-delay: 1s;
+  }
+}
+
+.icon3 {
+  width: 26px;
+  height: 26px;
+  background: rgba($color-accent, 0.15);
+  border: 1px solid rgba($color-accent, 0.25);
+  color: $color-accent;
+  bottom: 48px;
+  right: -6px;
+  animation-delay: 0.5s;
+}
+
+@keyframes iconFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+@keyframes iconFloat2 {
+  0%, 100% { transform: translateY(-50%); }
+  50% { transform: translateY(calc(-50% - 5px)); }
+}
+
+// ── Card with accent bar ──
+.card {
+  display: flex;
+  @include glass-card;
+  border-radius: $border-radius-xl;
+  overflow: visible;
+  position: relative;
+  border-left: none;
+}
+
+.accentBar {
+  width: 4px;
+  flex-shrink: 0;
+  background: linear-gradient(
+    180deg,
+    $color-primary 0%,
+    $color-accent-alt 33%,
+    $color-secondary 66%,
+    $color-accent 100%
+  );
+  border-radius: $border-radius-xl 0 0 $border-radius-xl;
+}
+
+.content {
+  flex: 1;
+  padding: $spacing-32;
+
+  @include mobile {
+    padding: $spacing-24 $spacing-20;
+  }
+}
+
+// ── Title + subtitle ──
+.title {
+  font-family: $font-family-display;
+  font-size: $font-size-2xl;
+  font-weight: $font-weight-extrabold;
+  letter-spacing: $letter-spacing-tight;
+  @include gradient-text;
+  margin-bottom: $spacing-4;
+}
+
+.subtitle {
+  color: var(--color-text-secondary);
+  font-size: $font-size-base;
+  margin-bottom: $spacing-24;
+}
+
+// ── Error ──
+.error {
+  color: $color-error;
+  font-size: $font-size-sm;
+  text-align: center;
+  margin-top: $spacing-8;
+}
+
+// ── Divider ──
+.divider {
+  display: flex;
+  align-items: center;
+  gap: $spacing-12;
+  margin: $spacing-20 0;
+
+  &::before,
+  &::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: rgba(var(--glass-color), 0.06);
+  }
+
+  span {
+    font-size: $font-size-xs;
+    color: var(--color-text-secondary);
+    white-space: nowrap;
+  }
+}
+
+// ── Nostr button ──
+.nostrButton {
+  width: 100%;
+  padding: $spacing-12;
+  border-radius: $border-radius-md;
+  border: 1px solid rgba($color-secondary, 0.15);
+  background: rgba($color-secondary, 0.06);
+  color: $color-secondary-light;
+  font-size: $font-size-sm;
+  font-family: $font-family-base;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-8;
+  cursor: not-allowed;
+  opacity: 0.7;
+  @include transition;
+
+  &:hover {
+    opacity: 0.85;
+    border-color: rgba($color-secondary, 0.25);
+  }
+}
+
+.comingSoon {
+  font-size: $font-size-xs;
+  background: rgba($color-secondary, 0.15);
+  color: $color-secondary-light;
+  padding: 2px $spacing-8;
+  border-radius: $border-radius-full;
+}
+
+// ── Switch auth link ──
+.switchAuth {
+  text-align: center;
+  margin-top: $spacing-20;
+  font-size: $font-size-sm;
+  color: var(--color-text-secondary);
+
+  a {
+    color: $color-primary;
+    font-weight: $font-weight-semibold;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+
+    &:hover {
+      color: $color-primary-light;
+    }
+  }
+}
