@@ -105,7 +105,8 @@
     "nwcUrl": "NWC URL",
     "label": "Label (optional)",
     "labelPlaceholder": "e.g. My Alby wallet",
-    "disconnect": "Disconnect"
+    "disconnect": "Disconnect",
+    "connectExtension": "Connect with {name}"
   },
   "sats": {
     "sats": "sats",

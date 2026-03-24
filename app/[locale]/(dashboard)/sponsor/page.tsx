@@ -14,6 +14,7 @@ import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 import type { DashboardTab } from "@/components/dashboard/dashboard-layout";
 import { InvoiceModal } from "@/components/ui/invoice-modal";
 import { useToast } from "@/components/ui/toast";
+import { useWebLN } from "@/lib/hooks/useWebLN";
 import type { Habit, AuthSession, PaymentWithDetails } from "@/lib/types";
 import styles from "./sponsor.module.scss";
 
@@ -60,6 +61,7 @@ const STATUS_COLORS: Record<string, string> = {
 export default function SponsorDashboard() {
   const t = useTranslations();
   const { showToast } = useToast();
+  const { hasExtension: hasWebLN } = useWebLN();
   const [session, setSession] = useState<AuthSession | null>(null);
   const [activeTab, setActiveTab] = useState<TabType>("byHabit");
   const [habits, setHabits] = useState<Habit[]>([]);
@@ -299,7 +301,25 @@ export default function SponsorDashboard() {
         if (invoiceData.success && invoiceData.data) {
           const { paymentRequest, payment_id: paymentId } = invoiceData.data;
 
-          // Try to auto-pay with sponsor's wallet
+          // Priority 1: Try WebLN extension (Alby, etc.)
+          if (hasWebLN) {
+            try {
+              const webln = (window as unknown as { webln?: { enable: () => Promise<void>; sendPayment: (invoice: string) => Promise<{ preimage: string }> } }).webln;
+              if (webln) {
+                await webln.enable();
+                await webln.sendPayment(paymentRequest);
+                showToast(
+                  t("payments.autoPaidSuccess", { amount: completionData.sat_reward }),
+                  "success"
+                );
+                return;
+              }
+            } catch {
+              // WebLN failed, fall through to NWC
+            }
+          }
+
+          // Priority 2: Try auto-pay with sponsor's NWC wallet
           try {
             const payRes = await fetch(`/api/payments/${paymentId}/pay`, {
               method: "POST",
@@ -320,7 +340,7 @@ export default function SponsorDashboard() {
             // Auto-pay failed, fall through to invoice modal
           }
 
-          // Auto-pay failed → show invoice modal for manual scan
+          // Priority 3: Show invoice modal for manual scan
           setInvoiceModal({
             paymentRequest,
             paymentId,

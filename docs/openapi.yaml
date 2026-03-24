@@ -52,6 +52,8 @@ tags:
     description: Gestion de familias y miembros
   - name: Stats
     description: Estadisticas y rachas del usuario
+  - name: Wallets
+    description: Gestion de wallets NWC
   - name: Payments
     description: Pagos Lightning y gestion de invoices
 
@@ -1044,6 +1046,41 @@ paths:
                 success: false
                 error: "Error al obtener las estadisticas"
 
+  /wallets/balance:
+    get:
+      tags:
+        - Wallets
+      summary: Obtener balance de la wallet NWC
+      description: |
+        Consulta el balance de la wallet NWC del usuario autenticado.
+        Best-effort: devuelve null si la wallet no soporta getBalance o hay timeout.
+        Timeout de 5 segundos en la llamada NWC.
+      operationId: getWalletBalance
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: Balance obtenido
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/WalletBalanceResponse"
+              example:
+                success: true
+                data:
+                  balance_sats: 50000
+        "401":
+          description: No autenticado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseError"
+
   /payments/invoice:
     post:
       tags:
@@ -1829,6 +1866,15 @@ components:
           type: string
           format: uuid
           description: ID de la completacion asociada
+
+    WalletBalanceResponse:
+      type: object
+      description: Balance de la wallet NWC
+      properties:
+        balance_sats:
+          type: integer
+          nullable: true
+          description: Balance en satoshis (null si no disponible)
 
     PayPaymentResponse:
       type: object
