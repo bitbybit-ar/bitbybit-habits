@@ -5,76 +5,13 @@
 @use "@/styles/media-mixins" as *;
 @use "@/styles/glass" as *;
 
-$navbar-height: 56px;
+$navbar-height: 60px;
 $tabbar-height: 52px;
 
 .layout {
   min-height: 100vh;
   @include glass-background-orbs;
   position: relative;
-}
-
-// ── Navbar ──
-.navbar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 100;
-  height: $navbar-height;
-  @include glass(0.08, 20px, 0.06, 0);
-  border-bottom: 1px solid rgba(var(--glass-color), 0.06);
-}
-
-.navContent {
-  @include container;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 100%;
-}
-
-.logo {
-  font-size: $font-size-lg;
-  font-weight: $font-weight-bold;
-  color: var(--color-primary);
-  text-decoration: none;
-  white-space: nowrap;
-
-  @include mobile {
-    font-size: $font-size-base;
-  }
-}
-
-.navActions {
-  display: flex;
-  align-items: center;
-  gap: $spacing-8;
-
-  @include mobile {
-    gap: $spacing-4;
-  }
-}
-
-.navBtn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: $border-radius-md;
-  border: 1px solid rgba(var(--glass-color), 0.08);
-  background: transparent;
-  color: var(--color-text-secondary);
-  cursor: pointer;
-  text-decoration: none;
-  @include transition;
-
-  &:hover {
-    color: var(--color-text-primary);
-    border-color: rgba(var(--glass-color), 0.15);
-    background: rgba(var(--glass-color), 0.04);
-  }
 }
 
 // ── Container ──
@@ -153,7 +90,8 @@ $tabbar-height: 52px;
 .tabBar {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
+  width: 100%;
   gap: $spacing-4;
   @include glass(0.08, 20px, 0.06, $border-radius-lg);
   padding: $spacing-8 $spacing-12;

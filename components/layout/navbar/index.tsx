@@ -2,24 +2,67 @@
 
 import React, { useEffect, useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Link } from "@/i18n/routing";
-import { LogInIcon, UserPlusIcon } from "@/components/icons";
+import {
+  LogInIcon,
+  UserPlusIcon,
+  LogOutIcon,
+  SettingsIcon,
+  DashboardIcon,
+} from "@/components/icons";
+import { NotificationBell } from "@/components/dashboard/notification-bell";
 import { LanguageSwitcher } from "@/components/layout/language-switcher";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import styles from "./navbar.module.scss";
 import { cn } from "@/lib/utils";
 
-export const Navbar: React.FC = () => {
+interface NavbarUser {
+  user_id: string;
+  display_name?: string;
+  role?: string | null;
+}
+
+interface NavbarProps {
+  user?: NavbarUser | null;
+}
+
+export const Navbar: React.FC<NavbarProps> = ({ user: userProp }) => {
   const t = useTranslations();
   const pathname = usePathname();
+  const router = useRouter();
   const [visible, setVisible] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
+  const [user, setUser] = useState<NavbarUser | null>(userProp ?? null);
+  const [checkedSession, setCheckedSession] = useState(!!userProp);
 
   const isLanding = /^\/(es|en)?\/?$/.test(pathname);
   const isLoginPage = /^\/(es|en)\/login\/?$/.test(pathname);
   const isRegisterPage = /^\/(es|en)\/register\/?$/.test(pathname);
+  const isLoggedIn = !!user;
+
+  // Fetch session if not provided via prop
+  useEffect(() => {
+    if (userProp !== undefined) return;
+    let cancelled = false;
+
+    fetch("/api/auth/session")
+      .then((res) => res.json())
+      .then((data) => {
+        if (!cancelled) {
+          setUser(data.success ? data.data : null);
+          setCheckedSession(true);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setCheckedSession(true);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [userProp]);
 
   const LANDING_LINKS = [
     { href: "#how-it-works", label: t("landing.nav.howItWorks") },
@@ -39,7 +82,8 @@ export const Navbar: React.FC = () => {
 
     const handleScroll = () => {
       const scrollTop = window.scrollY;
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const docHeight =
+        document.documentElement.scrollHeight - window.innerHeight;
       setScrollProgress(docHeight > 0 ? (scrollTop / docHeight) * 100 : 0);
     };
 
@@ -52,6 +96,12 @@ export const Navbar: React.FC = () => {
     closeMenu();
   }, [pathname, closeMenu]);
 
+  const handleLogout = async () => {
+    await fetch("/api/auth/logout", { method: "POST" });
+    setUser(null);
+    router.push("/");
+  };
+
   return (
     <nav
       className={cn(styles.navbar, visible && styles.visible)}
@@ -62,6 +112,7 @@ export const Navbar: React.FC = () => {
         <Link href="/" className={styles.brand} aria-label="BitByBit home">
           BitByBit
         </Link>
+
         {isLanding && (
           <ul className={styles.links}>
             {LANDING_LINKS.map((link) => (
@@ -71,24 +122,61 @@ export const Navbar: React.FC = () => {
             ))}
           </ul>
         )}
-        <div className={styles.authButtons}>
+
+        <div className={styles.navActions}>
           <ThemeToggle />
           <LanguageSwitcher />
-          {!isLoginPage && (
-            <Link href="/login" className={styles.loginButton}>
-              <LogInIcon size={16} />
-              <span>{t("auth.login")}</span>
-            </Link>
+
+          {checkedSession && isLoggedIn && (
+            <>
+              <Link
+                href={user?.role === "kid" ? "/kid" : "/sponsor"}
+                className={styles.navBtn}
+                aria-label={t("dashboard.welcome")}
+              >
+                <DashboardIcon size={18} />
+              </Link>
+              <NotificationBell />
+              <Link
+                href="/settings"
+                className={styles.navBtn}
+                aria-label={t("settings.title")}
+              >
+                <SettingsIcon size={18} />
+              </Link>
+              <button
+                className={styles.navBtn}
+                onClick={handleLogout}
+                aria-label={t("auth.logout")}
+              >
+                <LogOutIcon size={18} />
+              </button>
+            </>
           )}
-          {!isRegisterPage && (
-            <Link href="/register" className={styles.signupButton}>
-              <UserPlusIcon size={16} />
-              <span>{t("auth.register")}</span>
-            </Link>
+
+          {checkedSession && !isLoggedIn && (
+            <>
+              {!isLoginPage && (
+                <Link href="/login" className={styles.loginButton}>
+                  <LogInIcon size={16} />
+                  <span>{t("auth.login")}</span>
+                </Link>
+              )}
+              {!isRegisterPage && (
+                <Link href="/register" className={styles.signupButton}>
+                  <UserPlusIcon size={16} />
+                  <span>{t("auth.register")}</span>
+                </Link>
+              )}
+            </>
           )}
+
           {isLanding && (
             <button
-              className={cn(styles.hamburger, menuOpen && styles.hamburgerOpen)}
+              className={cn(
+                styles.hamburger,
+                menuOpen && styles.hamburgerOpen
+              )}
               onClick={() => setMenuOpen(!menuOpen)}
               aria-label={menuOpen ? "Close menu" : "Open menu"}
               aria-expanded={menuOpen}

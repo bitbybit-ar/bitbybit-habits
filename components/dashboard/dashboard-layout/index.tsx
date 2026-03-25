@@ -1,10 +1,5 @@
 "use client";
 
-import { Link } from "@/i18n/routing";
-import { LogOutIcon, SettingsIcon } from "@/components/icons";
-import { NotificationBell } from "@/components/dashboard/notification-bell";
-import { LanguageSwitcher } from "@/components/layout/language-switcher";
-import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { cn } from "@/lib/utils";
 import styles from "./dashboard-layout.module.scss";
 
@@ -22,7 +17,6 @@ interface DashboardLayoutProps {
   tabs: DashboardTab[];
   activeTab: string;
   onTabChange: (key: string) => void;
-  onLogout: () => void;
   children: React.ReactNode;
 }
 
@@ -33,31 +27,10 @@ export function DashboardLayout({
   tabs,
   activeTab,
   onTabChange,
-  onLogout,
   children,
 }: DashboardLayoutProps) {
   return (
     <div className={styles.layout}>
-      {/* Navbar */}
-      <nav className={styles.navbar}>
-        <div className={styles.navContent}>
-          <Link href="/" className={styles.logo}>
-            ⚡ BitByBit
-          </Link>
-          <div className={styles.navActions}>
-            <ThemeToggle />
-            <LanguageSwitcher />
-            <NotificationBell />
-            <Link href="/settings" className={styles.navBtn} aria-label="Settings">
-              <SettingsIcon size={18} />
-            </Link>
-            <button className={styles.navBtn} onClick={onLogout} aria-label="Logout">
-              <LogOutIcon size={18} />
-            </button>
-          </div>
-        </div>
-      </nav>
-
       {/* Header card */}
       <div className={styles.container}>
         <div className={styles.headerCard}>

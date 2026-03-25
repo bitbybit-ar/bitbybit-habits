@@ -125,7 +125,8 @@
     "title": "Configuración",
     "avatarUrl": "URL del avatar",
     "language": "Idioma",
-    "saved": "¡Guardado!"
+    "saved": "¡Guardado!",
+    "invalidUrl": "URL inválida"
   },
   "emptyState": {
     "noHabitsTitle": "Todavía no hay hábitos",

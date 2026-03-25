@@ -10,7 +10,6 @@
 .bell {
   background: none;
   border: none;
-  font-size: 1.4rem;
   cursor: pointer;
   position: relative;
   padding: $spacing-8;
@@ -20,6 +19,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  color: var(--color-text-primary);
 }
 
 .badge {

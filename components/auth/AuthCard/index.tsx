@@ -10,10 +10,10 @@ import styles from "./auth-card.module.scss";
 interface AuthCardProps {
   children: React.ReactNode;
   title?: string;
-  subtitle: string;
-  switchText: string;
-  switchLabel: string;
-  switchHref: string;
+  subtitle?: string;
+  switchText?: string;
+  switchLabel?: string;
+  switchHref?: string;
   showNostr?: boolean;
   nostrLabel?: string;
   error?: string;
@@ -60,7 +60,7 @@ export function AuthCard({
           <div className={styles.accentBar} aria-hidden="true" />
           <div className={styles.content}>
             <h1 className={styles.title}>{title || t("common.appName")}</h1>
-            <p className={styles.subtitle}>{subtitle}</p>
+            {subtitle && <p className={styles.subtitle}>{subtitle}</p>}
 
             {children}
 
@@ -83,10 +83,12 @@ export function AuthCard({
               </>
             )}
 
-            <p className={styles.switchAuth}>
-              {switchText}{" "}
-              <Link href={switchHref}>{switchLabel}</Link>
-            </p>
+            {switchText && switchLabel && switchHref && (
+              <p className={styles.switchAuth}>
+                {switchText}{" "}
+                <Link href={switchHref}>{switchLabel}</Link>
+              </p>
+            )}
           </div>
         </div>
       </div>

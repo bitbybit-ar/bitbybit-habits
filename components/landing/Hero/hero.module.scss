@@ -63,17 +63,17 @@
   justify-content: center;
   align-items: center;
   position: relative;
-  padding: $spacing-80 $container-padding;
+  padding: $spacing-80 0;
   overflow: hidden;
 
   @include tablet {
-    padding: $spacing-48 $spacing-24;
+    padding: $spacing-48 0;
     min-height: auto;
   }
 
   @include mobile {
     min-height: auto;
-    padding: $spacing-80 $spacing-20 $spacing-48;
+    padding: $spacing-80 $container-padding-mobile $spacing-48;
   }
 }
 
@@ -160,6 +160,8 @@
   z-index: 1;
   max-width: $container-max-width;
   width: 100%;
+  margin: 0 auto;
+  padding: 0 $container-padding;
 
   @include tablet {
     gap: 24px;
@@ -170,6 +172,7 @@
     gap: $spacing-32;
     align-items: center;
     justify-content: center;
+    padding: 0;
   }
 }
 

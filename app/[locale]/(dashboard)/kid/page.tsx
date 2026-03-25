@@ -207,14 +207,7 @@ export default function KidDashboard() {
     }
   }, [showToast, t]);
 
-  const handleLogout = useCallback(async () => {
-    try {
-      await fetch("/api/auth/logout", { method: "POST" });
-      window.location.href = "/";
-    } catch {
-      // Silently handle errors
-    }
-  }, []);
+
 
   if (loading) {
     return (
@@ -368,7 +361,7 @@ export default function KidDashboard() {
           tabs={tabs}
           activeTab={activeTab}
           onTabChange={(key) => setActiveTab(key as TabType)}
-          onLogout={handleLogout}
+
         >
           <Onboarding
             displayName={displayName}
@@ -383,7 +376,7 @@ export default function KidDashboard() {
           tabs={tabs}
           activeTab={activeTab}
           onTabChange={(key) => setActiveTab(key as TabType)}
-          onLogout={handleLogout}
+
         >
           {layoutContent}
         </DashboardLayout>

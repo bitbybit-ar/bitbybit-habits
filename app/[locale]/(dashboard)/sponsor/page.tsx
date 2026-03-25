@@ -438,14 +438,7 @@ export default function SponsorDashboard() {
     }
   }, [showToast, t]);
 
-  const handleLogout = useCallback(async () => {
-    try {
-      await fetch("/api/auth/logout", { method: "POST" });
-      window.location.href = "/";
-    } catch {
-      // Silently handle errors
-    }
-  }, []);
+
 
   const handleRemoveMember = useCallback(async (familyId: string, userId: string) => {
     try {
@@ -609,7 +602,7 @@ export default function SponsorDashboard() {
         tabs={tabs}
         activeTab={activeTab}
         onTabChange={(key) => setActiveTab(key as TabType)}
-        onLogout={handleLogout}
+
       >
         <Onboarding
           displayName={displayName}
@@ -626,7 +619,6 @@ export default function SponsorDashboard() {
       tabs={tabs}
       activeTab={activeTab}
       onTabChange={(key) => setActiveTab(key as TabType)}
-      onLogout={handleLogout}
     >
       {activeTab === "byHabit" && (
         <div className={styles.section}>

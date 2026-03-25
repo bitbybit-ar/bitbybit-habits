@@ -125,7 +125,8 @@
     "title": "Settings",
     "avatarUrl": "Avatar URL",
     "language": "Language",
-    "saved": "Saved!"
+    "saved": "Saved!",
+    "invalidUrl": "Invalid URL"
   },
   "emptyState": {
     "noHabitsTitle": "No habits yet",
