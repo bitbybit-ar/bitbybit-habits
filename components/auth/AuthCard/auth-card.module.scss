@@ -54,25 +54,27 @@
   }
 }
 
-.icon1 {
+// Bolt — top right
+.iconBolt {
   width: 34px;
   height: 34px;
   background: rgba($color-primary, 0.15);
   border: 1px solid rgba($color-primary, 0.25);
   color: $color-primary;
   top: 12px;
-  right: -10px;
+  right: -18px;
   animation-delay: 0s;
 }
 
-.icon2 {
+// Check — middle left (register only)
+.iconCheck {
   width: 28px;
   height: 28px;
   background: rgba($color-accent-alt, 0.15);
   border: 1px solid rgba($color-accent-alt, 0.25);
   color: $color-accent-alt;
   top: 45%;
-  left: -8px;
+  left: -20px;
   animation-delay: 1s;
 
   @media (prefers-reduced-motion: no-preference) {
@@ -81,15 +83,33 @@
   }
 }
 
-.icon3 {
-  width: 26px;
-  height: 26px;
+// Nostrich — bottom right
+.iconNostrich {
+  width: 30px;
+  height: 30px;
+  background: rgba($color-nostr, 0.15);
+  border: 1px solid rgba($color-nostr, 0.25);
+  color: $color-nostr;
+  bottom: 60px;
+  right: -16px;
+  animation-delay: 0.5s;
+}
+
+// Streak — bottom left
+.iconStreak {
+  width: 28px;
+  height: 28px;
   background: rgba($color-accent, 0.15);
   border: 1px solid rgba($color-accent, 0.25);
   color: $color-accent;
-  bottom: 48px;
-  right: -6px;
-  animation-delay: 0.5s;
+  bottom: 20px;
+  left: -18px;
+  animation-delay: 1.5s;
+
+  @media (prefers-reduced-motion: no-preference) {
+    animation: iconFloat2 3s ease-in-out infinite;
+    animation-delay: 1.5s;
+  }
 }
 
 @keyframes iconFloat {
@@ -107,7 +127,7 @@
   display: flex;
   @include glass-card;
   border-radius: $border-radius-xl;
-  overflow: visible;
+  overflow: hidden;
   position: relative;
   border-left: none;
 }
@@ -122,7 +142,6 @@
     $color-secondary 66%,
     $color-accent 100%
   );
-  border-radius: $border-radius-xl 0 0 $border-radius-xl;
 }
 
 .content {
@@ -185,9 +204,9 @@
   width: 100%;
   padding: $spacing-12;
   border-radius: $border-radius-md;
-  border: 1px solid rgba($color-secondary, 0.15);
-  background: rgba($color-secondary, 0.06);
-  color: $color-secondary-light;
+  border: 1px solid rgba($color-nostr, 0.2);
+  background: rgba($color-nostr, 0.06);
+  color: $color-nostr;
   font-size: $font-size-sm;
   font-family: $font-family-base;
   display: flex;
@@ -200,14 +219,14 @@
 
   &:hover {
     opacity: 0.85;
-    border-color: rgba($color-secondary, 0.25);
+    border-color: rgba($color-nostr, 0.35);
   }
 }
 
 .comingSoon {
   font-size: $font-size-xs;
-  background: rgba($color-secondary, 0.15);
-  color: $color-secondary-light;
+  background: rgba($color-nostr, 0.15);
+  color: $color-nostr;
   padding: 2px $spacing-8;
   border-radius: $border-radius-full;
 }

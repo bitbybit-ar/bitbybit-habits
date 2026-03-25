@@ -3,7 +3,7 @@
 import React from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
-import { BoltIcon, CheckIcon, StarIcon, ShieldIcon } from "@/components/icons";
+import { BoltIcon, CheckIcon, FlameIcon, NostrichIcon } from "@/components/icons";
 import { cn } from "@/lib/utils";
 import styles from "./auth-card.module.scss";
 
@@ -39,16 +39,19 @@ export function AuthCard({
       <div className={cn(styles.wrapper, variant === "register" && styles.wrapperWide)}>
         {/* Floating decorative icons */}
         <div className={styles.floatingIcons} aria-hidden="true">
-          <div className={cn(styles.floatingIcon, styles.icon1)}>
+          <div className={cn(styles.floatingIcon, styles.iconBolt)}>
             <BoltIcon size={16} />
           </div>
           {variant === "register" && (
-            <div className={cn(styles.floatingIcon, styles.icon2)}>
+            <div className={cn(styles.floatingIcon, styles.iconCheck)}>
               <CheckIcon size={14} />
             </div>
           )}
-          <div className={cn(styles.floatingIcon, styles.icon3)}>
-            <StarIcon size={13} />
+          <div className={cn(styles.floatingIcon, styles.iconNostrich)}>
+            <NostrichIcon size={14} />
+          </div>
+          <div className={cn(styles.floatingIcon, styles.iconStreak)}>
+            <FlameIcon size={14} />
           </div>
         </div>
 
@@ -71,7 +74,7 @@ export function AuthCard({
                   </span>
                 </div>
                 <button className={styles.nostrButton} disabled>
-                  <ShieldIcon size={16} />
+                  <NostrichIcon size={18} />
                   {nostrLabel || t("auth.loginWithNostr")}
                   <span className={styles.comingSoon}>
                     {t("common.comingSoon")}

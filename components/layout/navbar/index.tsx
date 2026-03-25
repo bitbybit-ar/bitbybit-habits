@@ -18,6 +18,8 @@ export const Navbar: React.FC = () => {
   const [scrollProgress, setScrollProgress] = useState(0);
 
   const isLanding = /^\/(es|en)?\/?$/.test(pathname);
+  const isLoginPage = /^\/(es|en)\/login\/?$/.test(pathname);
+  const isRegisterPage = /^\/(es|en)\/register\/?$/.test(pathname);
 
   const LANDING_LINKS = [
     { href: "#how-it-works", label: t("landing.nav.howItWorks") },
@@ -72,14 +74,18 @@ export const Navbar: React.FC = () => {
         <div className={styles.authButtons}>
           <ThemeToggle />
           <LanguageSwitcher />
-          <Link href="/login" className={styles.loginButton}>
-            <LogInIcon size={16} />
-            <span>{t("auth.login")}</span>
-          </Link>
-          <Link href="/register" className={styles.signupButton}>
-            <UserPlusIcon size={16} />
-            <span>{t("auth.register")}</span>
-          </Link>
+          {!isLoginPage && (
+            <Link href="/login" className={styles.loginButton}>
+              <LogInIcon size={16} />
+              <span>{t("auth.login")}</span>
+            </Link>
+          )}
+          {!isRegisterPage && (
+            <Link href="/register" className={styles.signupButton}>
+              <UserPlusIcon size={16} />
+              <span>{t("auth.register")}</span>
+            </Link>
+          )}
           {isLanding && (
             <button
               className={cn(styles.hamburger, menuOpen && styles.hamburgerOpen)}

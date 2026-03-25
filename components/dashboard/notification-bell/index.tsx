@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import type { Notification } from "@/lib/types";
+import { BellIcon } from "@/components/icons";
 import styles from "./notification-bell.module.scss";
 
 export function NotificationBell() {
@@ -47,7 +48,7 @@ export function NotificationBell() {
         onClick={() => setOpen(!open)}
         aria-label="Notifications"
       >
-        🔔
+        <BellIcon size={20} />
         {unreadCount > 0 && (
           <span className={styles.badge}>{unreadCount}</span>
         )}
