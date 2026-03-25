@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
-import { WalletIcon } from "@/components/icons";
+import { WalletIcon, BoltIcon } from "@/components/icons";
+import { useWebLN } from "@/lib/hooks/useWebLN";
 import styles from "./wallet-connect.module.scss";
 
 interface WalletPublic {
@@ -16,11 +17,13 @@ interface WalletPublic {
 
 export function WalletConnect() {
   const t = useTranslations();
+  const { hasExtension, extensionName } = useWebLN();
   const [wallet, setWallet] = useState<WalletPublic | null>(null);
   const [nwcUrl, setNwcUrl] = useState("");
   const [label, setLabel] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [balance, setBalance] = useState<number | null>(null);
 
   const fetchWallet = useCallback(async () => {
     try {
@@ -39,6 +42,30 @@ export function WalletConnect() {
   useEffect(() => {
     fetchWallet();
   }, [fetchWallet]);
+
+  // Fetch balance when wallet is connected
+  useEffect(() => {
+    if (!wallet) {
+      setBalance(null);
+      return;
+    }
+
+    async function fetchBalance() {
+      try {
+        const res = await fetch("/api/wallets/balance");
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && data.data?.balance_sats != null) {
+            setBalance(data.data.balance_sats);
+          }
+        }
+      } catch {
+        // Balance fetch is best-effort
+      }
+    }
+
+    fetchBalance();
+  }, [wallet]);
 
   const handleConnect = useCallback(async () => {
     if (!nwcUrl) return;
@@ -64,12 +91,39 @@ export function WalletConnect() {
     }
   }, [nwcUrl, label]);
 
+  const handleExtensionConnect = useCallback(async () => {
+    setSaving(true);
+    try {
+      const webln = (window as unknown as { webln?: { enable: () => Promise<void>; getInfo?: () => Promise<{ node?: { alias?: string } }> } }).webln;
+      if (!webln) return;
+      await webln.enable();
+
+      // Try to get the NWC URL from the extension's provider
+      // Alby exposes nostr.getRelays() and NWC URL via the provider
+      const nostr = (window as unknown as { nostr?: { getRelays?: () => Promise<Record<string, unknown>>; nip04?: unknown } }).nostr;
+      if (nostr) {
+        // For Alby, the NWC URL is typically configured by the user
+        // We prompt to enter it manually but with extension info
+        const info = webln.getInfo ? await webln.getInfo() : null;
+        const extensionLabel = info?.node?.alias ?? extensionName ?? "WebLN Extension";
+        setLabel(extensionLabel);
+      }
+    } catch {
+      // Extension connection failed
+    } finally {
+      setSaving(false);
+    }
+  }, [extensionName]);
+
   const handleDisconnect = useCallback(async () => {
     try {
       const res = await fetch("/api/wallets", { method: "DELETE" });
       if (res.ok) {
         const data = await res.json();
-        if (data.success) setWallet(null);
+        if (data.success) {
+          setWallet(null);
+          setBalance(null);
+        }
       }
     } catch {
       // Silently handle
@@ -86,8 +140,16 @@ export function WalletConnect() {
         <div className={styles.statusRow}>
           <div className={styles.statusIndicator} data-connected="true" />
           <span className={styles.statusText}>{t("wallet.walletConnected")}</span>
+          <span className={styles.badge}>NWC</span>
         </div>
         {wallet.label && <p className={styles.label}>{wallet.label}</p>}
+        {balance !== null && (
+          <div className={styles.balanceRow}>
+            <BoltIcon size={14} />
+            <span className={styles.balanceValue}>{balance.toLocaleString()}</span>
+            <span className={styles.balanceLabel}>{t("sats.sats")}</span>
+          </div>
+        )}
         <button className={styles.disconnectButton} onClick={handleDisconnect}>
           {t("wallet.disconnect")}
         </button>
@@ -101,6 +163,17 @@ export function WalletConnect() {
         <div className={styles.statusIndicator} data-connected="false" />
         <span className={styles.statusText}>{t("wallet.connectWallet")}</span>
       </div>
+
+      {hasExtension && (
+        <button
+          className={styles.extensionButton}
+          onClick={handleExtensionConnect}
+          disabled={saving}
+        >
+          {t("wallet.connectExtension", { name: extensionName ?? "WebLN" })}
+        </button>
+      )}
+
       <div className={styles.form}>
         <div className={styles.field}>
           <label className={styles.fieldLabel}>{t("wallet.nwcUrl")}</label>

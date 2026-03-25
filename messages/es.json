@@ -112,7 +112,8 @@
     "nwcUrl": "URL de NWC",
     "label": "Etiqueta (opcional)",
     "labelPlaceholder": "ej. Mi wallet de Alby",
-    "disconnect": "Desconectar"
+    "disconnect": "Desconectar",
+    "connectExtension": "Conectar con {name}"
   },
   "sats": {
     "sats": "sats",
@@ -321,6 +322,10 @@
       "paid": "Pagado",
       "failed": "Fallido"
     },
+    "autoPaidSuccess": "¡Aprobado! Se enviaron {amount} sats ⚡",
+    "scanInvoice": "Escaneá o copiá la invoice para pagar {amount} sats",
+    "approvedNoPay": "Aprobado sin pago. Configurá una wallet para enviar sats.",
+    "paymentError": "Error al procesar el pago. Intentá de nuevo.",
     "retryButton": "Reintentar",
     "retrySuccess": "Pago en cola para reintento",
     "retryError": "No se pudo reintentar el pago",
@@ -520,6 +525,12 @@
       "registerCTA": "Registrarse como Kid"
     },
     "stepIncompleteError": "Debés completar este paso antes de continuar"
+  },
+  "invoiceModal": {
+    "paid": "¡Pago recibido! ⚡",
+    "copied": "¡Copiado!",
+    "copyInvoice": "Copiar invoice",
+    "close": "Cerrar"
   },
   "validation": {
     "required": "Este campo es obligatorio",
