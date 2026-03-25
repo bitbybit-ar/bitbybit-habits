@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import AuthCard from "@/components/auth/AuthCard";
@@ -89,49 +89,45 @@ export default function SettingsPage() {
     return errs;
   };
 
-  const handleSubmit = useCallback(
-    async (e: React.FormEvent) => {
-      e.preventDefault();
-      setSaved(false);
-      setError("");
-      setTouched(true);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSaved(false);
+    setError("");
+    setTouched(true);
 
-      const validationErrors = validate();
-      setErrors(validationErrors);
-      if (Object.keys(validationErrors).length > 0) return;
+    const validationErrors = validate();
+    setErrors(validationErrors);
+    if (Object.keys(validationErrors).length > 0) return;
 
-      setSaving(true);
-      try {
-        const res = await fetch("/api/auth/profile", {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            display_name: displayName,
-            username,
-            email,
-            avatar_url: avatarUrl || null,
-            locale,
-          }),
-        });
-        const data = await res.json();
-        if (res.ok && data.success) {
-          setSaved(true);
-          setProfile(data.data);
-          if (profile && locale !== profile.locale) {
-            router.push(`/${locale}/settings`);
-          }
-        } else {
-          setError(data.error || t("auth.connectionError"));
+    setSaving(true);
+    try {
+      const res = await fetch("/api/auth/profile", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          display_name: displayName,
+          username,
+          email,
+          avatar_url: avatarUrl || null,
+          locale,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setSaved(true);
+        setProfile(data.data);
+        if (profile && locale !== profile.locale) {
+          router.push(`/${locale}/settings`);
         }
-      } catch {
-        setError(t("auth.connectionError"));
-      } finally {
-        setSaving(false);
+      } else {
+        setError(data.error || t("auth.connectionError"));
       }
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [displayName, username, email, avatarUrl, locale, profile, router, t]
-  );
+    } catch {
+      setError(t("auth.connectionError"));
+    } finally {
+      setSaving(false);
+    }
+  };
 
   if (loading) {
     return (
