@@ -1,13 +1,29 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { Notification } from "@/lib/types";
+import { BellIcon } from "@/components/icons";
 import styles from "./notification-bell.module.scss";
 
 export function NotificationBell() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [open, setOpen] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement>(null);
   const unreadCount = notifications.filter((n) => !n.read).length;
+
+  // Close dropdown on click outside
+  useEffect(() => {
+    if (!open) return;
+
+    const handleClickOutside = (e: MouseEvent) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [open]);
 
   const fetchNotifications = useCallback(async () => {
     try {
@@ -41,13 +57,13 @@ export function NotificationBell() {
   };
 
   return (
-    <div className={styles.wrapper}>
+    <div className={styles.wrapper} ref={wrapperRef}>
       <button
         className={styles.bell}
         onClick={() => setOpen(!open)}
         aria-label="Notifications"
       >
-        🔔
+        <BellIcon size={20} />
         {unreadCount > 0 && (
           <span className={styles.badge}>{unreadCount}</span>
         )}

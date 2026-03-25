@@ -39,7 +39,7 @@
 .brand {
   font-family: $font-family-display;
   font-weight: $font-weight-extrabold;
-  font-size: $font-size-md;
+  font-size: $font-size-lg;
   letter-spacing: $letter-spacing-tight;
   background: var(--gradient-primary-text);
   -webkit-background-clip: text;
@@ -71,13 +71,34 @@
   }
 }
 
-.authButtons {
+.navActions {
   display: flex;
   align-items: center;
   gap: $spacing-8;
 
   @include mobile {
     gap: $spacing-4;
+  }
+}
+
+.navBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: $border-radius-md;
+  border: 1px solid rgba(var(--glass-color), 0.08);
+  background: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s;
+
+  &:hover {
+    color: var(--color-text-primary);
+    border-color: rgba(var(--glass-color), 0.15);
+    background: rgba(var(--glass-color), 0.04);
   }
 }
 

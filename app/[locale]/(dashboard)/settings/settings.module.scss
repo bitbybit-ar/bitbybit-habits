@@ -3,86 +3,13 @@
 @use "@/styles/typography" as *;
 @use "@/styles/common-mixins" as *;
 @use "@/styles/media-mixins" as *;
-@use "@/styles/glass" as *;
 
-.container {
-  @include container;
+// ── Loading state ──
+.loadingContainer {
   min-height: 100vh;
-  padding-top: $spacing-32;
-  padding-bottom: $spacing-40;
-  background:
-    radial-gradient(ellipse at 50% 40%, rgba(var(--shadow-color), 0.15) 0%, transparent 70%),
-    transparent;
-
-  @include desktop {
-    padding-top: $spacing-48;
-  }
-}
-
-// ---------- Header ----------
-
-.header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: $spacing-16;
-}
-
-.backButton {
-  display: inline-flex;
-  align-items: center;
-  gap: $spacing-4;
-  padding: $spacing-8 $spacing-12;
-  border: none;
-  border-radius: $border-radius-sm;
-  background: transparent;
-  color: var(--color-text-secondary);
-  font-size: $font-size-sm;
-  cursor: pointer;
-  transition: color 0.2s, background 0.2s;
-
-  &:hover {
-    color: var(--color-text-primary);
-    background: rgba(var(--glass-color), 0.04);
-  }
-}
-
-.backArrow {
-  font-size: 1.1em;
-  line-height: 1;
-}
-
-.title {
-  font-size: $font-size-xl;
-  font-weight: 600;
-  color: var(--color-text-primary);
-  margin: 0;
-  text-align: center;
-  flex: 1;
-
-  @include mobile {
-    text-align: left;
-    flex: unset;
-  }
-}
-
-.headerSpacer {
-  // balances the back button width so title stays centered on desktop
-  width: 90px;
-
-  @include mobile {
-    display: none;
-  }
-}
-
-.separator {
-  height: 1px;
-  background: rgba(var(--glass-color), 0.06);
-  margin-bottom: $spacing-32;
-
-  @include desktop {
-    margin-bottom: $spacing-40;
-  }
+  justify-content: center;
 }
 
 .loadingText {
@@ -90,94 +17,7 @@
   font-size: $font-size-sm;
 }
 
-// ---------- Card ----------
-
-.cardWrapper {
-  display: flex;
-  justify-content: center;
-}
-
-.card {
-  width: 100%;
-  max-width: 520px;
-  @include glass-card;
-  padding: $spacing-32 $spacing-32 $spacing-24;
-  box-shadow:
-    0 0 40px rgba(var(--shadow-color), 0.25),
-    inset 0 1px 0 rgba(var(--glass-color), 0.04);
-  transition: all 0.3s ease;
-
-  &:hover {
-    border-color: rgba(var(--glass-color), 0.12);
-  }
-
-  @include tablet {
-    width: 70%;
-    max-width: none;
-    padding: $spacing-24;
-  }
-
-  @include mobile {
-    max-width: none;
-    width: 100%;
-    margin: 0 auto;
-    padding: $spacing-20 $spacing-16;
-    border-radius: $border-radius-md;
-  }
-}
-
-// ---------- Fields ----------
-
-.field {
-  margin-bottom: $spacing-20;
-
-  @include desktop {
-    margin-bottom: $spacing-24;
-  }
-}
-
-.label {
-  display: block;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: rgba(var(--glass-text-color), 0.45);
-  font-weight: $font-weight-semibold;
-  margin-bottom: $spacing-8;
-}
-
-.input,
-.select {
-  width: 100%;
-  padding: $spacing-12 $spacing-16;
-  border-radius: 8px;
-  border: 1px solid rgba(var(--glass-color), 0.1);
-  background: var(--color-bg);
-  color: var(--color-text-primary);
-  font-size: $font-size-sm;
-  line-height: 1.5;
-  outline: none;
-  box-sizing: border-box;
-  transition: border-color 0.2s, box-shadow 0.2s;
-
-  &:focus {
-    border-color: rgba(var(--glass-color), 0.25);
-    box-shadow: 0 0 0 3px rgba(var(--glass-color), 0.04);
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
-  @include mobile {
-    font-size: 16px; // prevent iOS zoom
-    min-height: 44px;
-  }
-}
-
-// ---------- Avatar ----------
-
+// ── Avatar ──
 .avatarField {
   display: flex;
   align-items: center;
@@ -206,20 +46,34 @@
 .avatarInitials {
   font-size: $font-size-sm;
   font-weight: $font-weight-bold;
-  color: #fff;
+  color: var(--color-on-gradient);
   user-select: none;
 }
 
-// ---------- Select ----------
-
+// ── Select ──
 .selectWrapper {
   position: relative;
 }
 
 .select {
+  width: 100%;
+  padding: $spacing-12 $spacing-16;
+  padding-right: $spacing-40;
+  border-radius: 12px;
+  border: 1px solid rgba($color-accent-alt, 0.10);
+  background: rgba($color-accent-alt, 0.04);
+  color: var(--color-text-primary);
+  font-size: $font-size-base;
+  font-family: $font-family-base;
   appearance: none;
   cursor: pointer;
-  padding-right: $spacing-40;
+  @include transition;
+
+  &:focus {
+    outline: none;
+    border-color: $color-accent-alt;
+    box-shadow: 0 0 0 2px rgba($color-accent-alt, 0.12);
+  }
 }
 
 .selectChevron {
@@ -227,57 +81,14 @@
   right: $spacing-16;
   top: 50%;
   transform: translateY(-50%);
-  color: rgba(var(--glass-text-color), 0.35);
+  color: var(--color-text-secondary);
   font-size: 0.9rem;
   pointer-events: none;
 }
 
-// ---------- Actions ----------
-
-.actions {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: $spacing-12;
-  margin-top: $spacing-24;
-}
-
+// ── Saved feedback ──
 .savedText {
   font-size: $font-size-sm;
   color: var(--color-success);
   text-align: center;
-}
-
-.errorText {
-  font-size: $font-size-sm;
-  color: var(--color-error);
-  text-align: center;
-}
-
-.saveButton {
-  width: 100%;
-  padding: $spacing-12 $spacing-24;
-  border-radius: $border-radius-md;
-  border: none;
-  background: var(--gradient-primary-bg);
-  color: white;
-  font-size: $font-size-sm;
-  font-weight: $font-weight-bold;
-  cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
-
-  &:hover:not(:disabled) {
-    transform: scale(1.02);
-    box-shadow: 0 4px 20px rgba($color-primary, 0.35);
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
-  @include mobile {
-    min-height: 44px;
-    font-size: 16px;
-  }
 }

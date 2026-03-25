@@ -3,8 +3,14 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Link } from "@/i18n/routing";
-import styles from "./login.module.scss";
+import AuthCard from "@/components/auth/AuthCard";
+import { cn } from "@/lib/utils";
+import formStyles from "@/components/auth/auth-form.module.scss";
+
+interface FormErrors {
+  login?: string;
+  password?: string;
+}
 
 export default function LoginPage() {
   const router = useRouter();
@@ -12,11 +18,26 @@ export default function LoginPage() {
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [errors, setErrors] = useState<FormErrors>({});
+  const [touched, setTouched] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const validate = (): FormErrors => {
+    const errs: FormErrors = {};
+    if (!login.trim()) errs.login = t("validation.required");
+    if (!password) errs.password = t("validation.required");
+    return errs;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setTouched(true);
+
+    const validationErrors = validate();
+    setErrors(validationErrors);
+    if (Object.keys(validationErrors).length > 0) return;
+
     setLoading(true);
 
     try {
@@ -25,7 +46,6 @@ export default function LoginPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ login, password }),
       });
-
       const data = await res.json();
 
       if (!data.success) {
@@ -34,13 +54,9 @@ export default function LoginPage() {
       }
 
       const role = data.data?.role;
-      if (role === "kid") {
-        router.push("/kid");
-      } else if (role === "sponsor") {
-        router.push("/sponsor");
-      } else {
-        router.push("/onboard");
-      }
+      if (role === "kid") router.push("/kid");
+      else if (role === "sponsor") router.push("/sponsor");
+      else router.push("/onboard");
     } catch {
       setError(t("auth.connectionError"));
     } finally {
@@ -49,59 +65,78 @@ export default function LoginPage() {
   };
 
   return (
-    <div className={styles.container}>
-      <div className={styles.card}>
-        <h1 className={styles.title}>{t("common.appName")}</h1>
-        <p className={styles.subtitle}>{t("auth.login")}</p>
+    <AuthCard
+      subtitle={t("auth.login")}
+      switchText={t("auth.noAccount")}
+      switchLabel={t("auth.register")}
+      switchHref="/register"
+      showNostr
+      error={error}
+      variant="login"
+    >
+      <form onSubmit={handleSubmit} className={formStyles.form} noValidate>
+        <div
+          className={cn(
+            formStyles.field,
+            touched && errors.login && formStyles.fieldError
+          )}
+        >
+          <label htmlFor="login" className={formStyles.label}>
+            {t("auth.email")} / {t("auth.username")}
+            <span className={formStyles.required}>*</span>
+          </label>
+          <input
+            id="login"
+            type="text"
+            value={login}
+            onChange={(e) => setLogin(e.target.value)}
+            autoComplete="username"
+            className={cn(
+              formStyles.inputIdentity,
+              touched && errors.login && formStyles.inputError
+            )}
+            placeholder={t("auth.email")}
+          />
+          {touched && errors.login && (
+            <span className={formStyles.errorText}>{errors.login}</span>
+          )}
+        </div>
 
-        <form onSubmit={handleSubmit} className={styles.form}>
-          <div className={styles.field}>
-            <label htmlFor="login">
-              {t("auth.email")} / {t("auth.username")}
-            </label>
-            <input
-              id="login"
-              type="text"
-              value={login}
-              onChange={(e) => setLogin(e.target.value)}
-              required
-              autoComplete="username"
-            />
-          </div>
+        <div
+          className={cn(
+            formStyles.field,
+            touched && errors.password && formStyles.fieldError
+          )}
+        >
+          <label htmlFor="password" className={formStyles.label}>
+            {t("auth.password")}
+            <span className={formStyles.required}>*</span>
+          </label>
+          <input
+            id="password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            autoComplete="current-password"
+            className={cn(
+              formStyles.inputSecurity,
+              touched && errors.password && formStyles.inputError
+            )}
+            placeholder="••••••••"
+          />
+          {touched && errors.password && (
+            <span className={formStyles.errorText}>{errors.password}</span>
+          )}
+        </div>
 
-          <div className={styles.field}>
-            <label htmlFor="password">{t("auth.password")}</label>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              autoComplete="current-password"
-            />
-          </div>
-
-          {error && <p className={styles.error}>{error}</p>}
-
-          <button
-            type="submit"
-            className={styles.submitButton}
-            disabled={loading}
-          >
-            {loading ? t("common.loading") : t("auth.login")}
-          </button>
-        </form>
-
-        <button className={styles.nostrButton} disabled>
-          {t("auth.loginWithNostr")}
-          <span className={styles.comingSoon}>{t("common.comingSoon")}</span>
+        <button
+          type="submit"
+          className={formStyles.submitButton}
+          disabled={loading}
+        >
+          {loading ? t("common.loading") : t("auth.login")}
         </button>
-
-        <p className={styles.switchAuth}>
-          {t("auth.noAccount")}{" "}
-          <Link href="/register">{t("auth.register")}</Link>
-        </p>
-      </div>
-    </div>
+      </form>
+    </AuthCard>
   );
 }

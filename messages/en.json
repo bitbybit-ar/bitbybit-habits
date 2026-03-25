@@ -36,7 +36,14 @@
     "passwordMismatch": "Passwords don't match",
     "passwordTooShort": "Password must be at least 6 characters",
     "invalidEmail": "Invalid email",
-    "usernameTooShort": "Username must be at least 3 characters"
+    "usernameTooShort": "Username must be at least 3 characters",
+    "strengthWeak": "Weak",
+    "strengthFair": "Fair",
+    "strengthGood": "Good",
+    "strengthStrong": "Strong",
+    "orLoginWith": "or log in with",
+    "orRegisterWith": "or register with",
+    "registerWithNostr": "Register with Nostr"
   },
   "dashboard": {
     "welcome": "Welcome",
@@ -118,7 +125,8 @@
     "title": "Settings",
     "avatarUrl": "Avatar URL",
     "language": "Language",
-    "saved": "Saved!"
+    "saved": "Saved!",
+    "invalidUrl": "Invalid URL"
   },
   "emptyState": {
     "noHabitsTitle": "No habits yet",

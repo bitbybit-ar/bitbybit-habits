@@ -1,11 +1,28 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Link } from "@/i18n/routing";
+import AuthCard from "@/components/auth/AuthCard";
 import { cn } from "@/lib/utils";
-import styles from "../login/login.module.scss";
+import formStyles from "@/components/auth/auth-form.module.scss";
+
+function getPasswordStrength(password: string): number {
+  let strength = 0;
+  if (password.length >= 6) strength++;
+  if (password.length >= 10) strength++;
+  if (/[a-zA-Z]/.test(password) && /[0-9]/.test(password)) strength++;
+  if (/[^a-zA-Z0-9]/.test(password)) strength++;
+  return strength;
+}
+
+const STRENGTH_COLORS = [
+  "transparent",
+  "var(--color-error)",
+  "var(--color-warning)",
+  "var(--color-accent-alt)",
+  "var(--color-success)",
+];
 
 interface FormErrors {
   display_name?: string;
@@ -30,12 +47,26 @@ export default function RegisterPage() {
   const [touched, setTouched] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const passwordStrength = useMemo(
+    () => getPasswordStrength(form.password),
+    [form.password]
+  );
+
+  const STRENGTH_LABELS = [
+    "",
+    t("auth.strengthWeak"),
+    t("auth.strengthFair"),
+    t("auth.strengthGood"),
+    t("auth.strengthStrong"),
+  ];
+
   const update = (field: string, value: string) =>
     setForm((prev) => ({ ...prev, [field]: value }));
 
   const validate = (): FormErrors => {
     const errs: FormErrors = {};
-    if (!form.display_name.trim()) errs.display_name = t("validation.required");
+    if (!form.display_name.trim())
+      errs.display_name = t("validation.required");
     if (!form.email.trim()) {
       errs.email = t("validation.required");
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
@@ -110,51 +141,56 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className={styles.container}>
-      <div className={styles.card}>
-        <h1 className={styles.title}>{t("common.appName")}</h1>
-        <p className={styles.subtitle}>{t("auth.register")}</p>
-
-        <form onSubmit={handleSubmit} className={styles.form} noValidate>
-          <div className={cn(styles.field, touched && errors.display_name && styles.fieldError)}>
-            <label htmlFor="display_name">
+    <AuthCard
+      subtitle={t("auth.register")}
+      switchText={t("auth.hasAccount")}
+      switchLabel={t("auth.login")}
+      switchHref="/login"
+      showNostr
+      nostrLabel={t("auth.registerWithNostr")}
+      error={error}
+      variant="register"
+    >
+      <form onSubmit={handleSubmit} className={formStyles.form} noValidate>
+        {/* Row 1: Name + Username */}
+        <div className={formStyles.fieldRow}>
+          <div
+            className={cn(
+              formStyles.field,
+              touched && errors.display_name && formStyles.fieldError
+            )}
+          >
+            <label htmlFor="display_name" className={formStyles.label}>
               {t("auth.displayName")}
-              <span className={styles.required}>*</span>
+              <span className={formStyles.required}>*</span>
             </label>
             <input
               id="display_name"
               type="text"
               value={form.display_name}
               onChange={(e) => update("display_name", e.target.value)}
-              className={cn(touched && errors.display_name && styles.inputError)}
+              className={cn(
+                formStyles.inputIdentity,
+                touched && errors.display_name && formStyles.inputError
+              )}
+              placeholder={t("auth.displayName")}
             />
             {touched && errors.display_name && (
-              <span className={styles.errorText}>{errors.display_name}</span>
+              <span className={formStyles.errorText}>
+                {errors.display_name}
+              </span>
             )}
           </div>
 
-          <div className={cn(styles.field, touched && errors.email && styles.fieldError)}>
-            <label htmlFor="email">
-              {t("auth.email")}
-              <span className={styles.required}>*</span>
-            </label>
-            <input
-              id="email"
-              type="email"
-              value={form.email}
-              onChange={(e) => update("email", e.target.value)}
-              autoComplete="email"
-              className={cn(touched && errors.email && styles.inputError)}
-            />
-            {touched && errors.email && (
-              <span className={styles.errorText}>{errors.email}</span>
+          <div
+            className={cn(
+              formStyles.field,
+              touched && errors.username && formStyles.fieldError
             )}
-          </div>
-
-          <div className={cn(styles.field, touched && errors.username && styles.fieldError)}>
-            <label htmlFor="username">
+          >
+            <label htmlFor="username" className={formStyles.label}>
               {t("auth.username")}
-              <span className={styles.required}>*</span>
+              <span className={formStyles.required}>*</span>
             </label>
             <input
               id="username"
@@ -162,17 +198,57 @@ export default function RegisterPage() {
               value={form.username}
               onChange={(e) => update("username", e.target.value)}
               autoComplete="username"
-              className={cn(touched && errors.username && styles.inputError)}
+              className={cn(
+                formStyles.inputIdentity,
+                touched && errors.username && formStyles.inputError
+              )}
+              placeholder="@usuario"
             />
             {touched && errors.username && (
-              <span className={styles.errorText}>{errors.username}</span>
+              <span className={formStyles.errorText}>{errors.username}</span>
             )}
           </div>
+        </div>
 
-          <div className={cn(styles.field, touched && errors.password && styles.fieldError)}>
-            <label htmlFor="password">
+        {/* Email — full width */}
+        <div
+          className={cn(
+            formStyles.field,
+            touched && errors.email && formStyles.fieldError
+          )}
+        >
+          <label htmlFor="email" className={formStyles.label}>
+            {t("auth.email")}
+            <span className={formStyles.required}>*</span>
+          </label>
+          <input
+            id="email"
+            type="email"
+            value={form.email}
+            onChange={(e) => update("email", e.target.value)}
+            autoComplete="email"
+            className={cn(
+              formStyles.inputIdentity,
+              touched && errors.email && formStyles.inputError
+            )}
+            placeholder="email@ejemplo.com"
+          />
+          {touched && errors.email && (
+            <span className={formStyles.errorText}>{errors.email}</span>
+          )}
+        </div>
+
+        {/* Row 2: Password + Confirm */}
+        <div className={formStyles.fieldRow}>
+          <div
+            className={cn(
+              formStyles.field,
+              touched && errors.password && formStyles.fieldError
+            )}
+          >
+            <label htmlFor="password" className={formStyles.label}>
               {t("auth.password")}
-              <span className={styles.required}>*</span>
+              <span className={formStyles.required}>*</span>
             </label>
             <input
               id="password"
@@ -180,17 +256,26 @@ export default function RegisterPage() {
               value={form.password}
               onChange={(e) => update("password", e.target.value)}
               autoComplete="new-password"
-              className={cn(touched && errors.password && styles.inputError)}
+              className={cn(
+                formStyles.inputSecurity,
+                touched && errors.password && formStyles.inputError
+              )}
+              placeholder="••••••••"
             />
             {touched && errors.password && (
-              <span className={styles.errorText}>{errors.password}</span>
+              <span className={formStyles.errorText}>{errors.password}</span>
             )}
           </div>
 
-          <div className={cn(styles.field, touched && errors.confirmPassword && styles.fieldError)}>
-            <label htmlFor="confirmPassword">
+          <div
+            className={cn(
+              formStyles.field,
+              touched && errors.confirmPassword && formStyles.fieldError
+            )}
+          >
+            <label htmlFor="confirmPassword" className={formStyles.label}>
               {t("auth.confirmPassword")}
-              <span className={styles.required}>*</span>
+              <span className={formStyles.required}>*</span>
             </label>
             <input
               id="confirmPassword"
@@ -198,29 +283,54 @@ export default function RegisterPage() {
               value={form.confirmPassword}
               onChange={(e) => update("confirmPassword", e.target.value)}
               autoComplete="new-password"
-              className={cn(touched && errors.confirmPassword && styles.inputError)}
+              className={cn(
+                formStyles.inputSecurity,
+                touched && errors.confirmPassword && formStyles.inputError
+              )}
+              placeholder="••••••••"
             />
             {touched && errors.confirmPassword && (
-              <span className={styles.errorText}>{errors.confirmPassword}</span>
+              <span className={formStyles.errorText}>
+                {errors.confirmPassword}
+              </span>
             )}
           </div>
+        </div>
 
-          {error && <p className={styles.error}>{error}</p>}
+        {/* Password strength indicator */}
+        {form.password.length > 0 && (
+          <div className={formStyles.strengthContainer}>
+            <div className={formStyles.strengthBar}>
+              {[1, 2, 3, 4].map((level) => (
+                <div
+                  key={level}
+                  className={formStyles.strengthSegment}
+                  style={{
+                    background:
+                      passwordStrength >= level
+                        ? STRENGTH_COLORS[passwordStrength]
+                        : undefined,
+                  }}
+                />
+              ))}
+            </div>
+            <span
+              className={formStyles.strengthLabel}
+              style={{ color: STRENGTH_COLORS[passwordStrength] }}
+            >
+              {STRENGTH_LABELS[passwordStrength]}
+            </span>
+          </div>
+        )}
 
-          <button
-            type="submit"
-            className={styles.submitButton}
-            disabled={loading}
-          >
-            {loading ? t("common.loading") : t("auth.register")}
-          </button>
-        </form>
-
-        <p className={styles.switchAuth}>
-          {t("auth.hasAccount")}{" "}
-          <Link href="/login">{t("auth.login")}</Link>
-        </p>
-      </div>
-    </div>
+        <button
+          type="submit"
+          className={formStyles.submitButton}
+          disabled={loading}
+        >
+          {loading ? t("common.loading") : t("auth.register")}
+        </button>
+      </form>
+    </AuthCard>
   );
 }

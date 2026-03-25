@@ -1,0 +1,161 @@
+@use "@/styles/colors" as *;
+@use "@/styles/spacing" as *;
+@use "@/styles/typography" as *;
+@use "@/styles/media-mixins" as *;
+@use "@/styles/common-mixins" as *;
+
+// ── Form layout ──
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-16;
+}
+
+// ── 2-column row (register) ──
+.fieldRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $spacing-12;
+
+  @include mobile {
+    grid-template-columns: 1fr;
+  }
+}
+
+// ── Field wrapper ──
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-4;
+}
+
+.label {
+  font-size: $font-size-sm;
+  color: var(--color-text-secondary);
+  font-weight: $font-weight-medium;
+}
+
+.required {
+  color: $color-error;
+  margin-left: 2px;
+}
+
+// ── Base input ──
+.input {
+  padding: $spacing-12 $spacing-16;
+  border-radius: $border-radius-md;
+  color: var(--color-text-primary);
+  font-size: $font-size-base;
+  font-family: $font-family-base;
+  width: 100%;
+  @include transition;
+
+  &::placeholder {
+    color: var(--color-text-secondary);
+    opacity: 0.4;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: $color-primary;
+    box-shadow: 0 0 0 2px rgba($color-primary, 0.15);
+  }
+}
+
+// ── Teal-tinted inputs (identity: name, username, email) ──
+.inputIdentity {
+  @extend .input;
+  background: rgba($color-accent-alt, 0.04);
+  border: 1px solid rgba($color-accent-alt, 0.10);
+
+  &:focus {
+    border-color: $color-accent-alt;
+    box-shadow: 0 0 0 2px rgba($color-accent-alt, 0.12);
+  }
+}
+
+// ── Violet-tinted inputs (security: password, confirm) ──
+.inputSecurity {
+  @extend .input;
+  background: rgba($color-secondary, 0.04);
+  border: 1px solid rgba($color-secondary, 0.10);
+
+  &:focus {
+    border-color: $color-secondary;
+    box-shadow: 0 0 0 2px rgba($color-secondary, 0.12);
+  }
+}
+
+// ── Error states ──
+.fieldError {
+  .label {
+    color: $color-error;
+  }
+}
+
+.inputError {
+  border-color: $color-error !important;
+  box-shadow: 0 0 0 1px rgba($color-error, 0.2);
+}
+
+.errorText {
+  font-size: $font-size-xs;
+  color: $color-error;
+  margin-top: 2px;
+}
+
+// ── Submit button ──
+.submitButton {
+  width: 100%;
+  padding: $spacing-12 $spacing-24;
+  border-radius: $border-radius-md;
+  border: none;
+  background: $gradient-primary;
+  color: #000;
+  font-size: $font-size-base;
+  font-weight: $font-weight-bold;
+  font-family: $font-family-base;
+  cursor: pointer;
+  @include transition;
+  margin-top: $spacing-8;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba($color-primary, 0.3);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0) scale(0.97);
+    transition-duration: 0.1s;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+// ── Password strength indicator ──
+.strengthContainer {
+  margin-top: $spacing-4;
+}
+
+.strengthBar {
+  display: flex;
+  gap: 4px;
+}
+
+.strengthSegment {
+  flex: 1;
+  height: 3px;
+  border-radius: 2px;
+  background: rgba(var(--glass-color), 0.06);
+  @include transition(background, 0.3s);
+}
+
+.strengthLabel {
+  font-size: $font-size-xs;
+  margin-top: $spacing-4;
+  font-weight: $font-weight-medium;
+  display: block;
+}

@@ -1,7 +1,8 @@
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
+import { Navbar } from "@/components/layout/navbar";
 
-export default async function DashboardLayout({
+export default async function DashboardGroupLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -12,5 +13,16 @@ export default async function DashboardLayout({
     redirect("/login");
   }
 
-  return <>{children}</>;
+  return (
+    <>
+      <Navbar
+        user={{
+          user_id: session.user_id,
+          display_name: session.display_name,
+          role: session.role,
+        }}
+      />
+      {children}
+    </>
+  );
 }
