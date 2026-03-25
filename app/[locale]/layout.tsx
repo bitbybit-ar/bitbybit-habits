@@ -7,6 +7,7 @@ import { routing } from "@/i18n/routing";
 import { SwRegister } from "@/components/sw-register";
 import { ToastProvider } from "@/components/ui/toast";
 import { ThemeProvider } from "@/lib/theme-context";
+import { StructuredData } from "@/components/seo/structured-data";
 import "@/styles/globals.scss";
 
 const nunito = Nunito({
@@ -23,13 +24,54 @@ const nunitoSans = Nunito_Sans({
   variable: "--font-body",
 });
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
   const t = await getTranslations("common");
 
+  const title = `${t("appName")} — Earn sats. Build habits. Change lives.`;
+  const description =
+    "A habit tracker powered by Bitcoin Lightning Network that rewards task completion with real sats. Built for La Crypta Hackathons 2026.";
+  const baseUrl = "https://bitbybit.com.ar";
+
   return {
-    title: `${t("appName")} — Earn sats. Build habits. Change lives.`,
-    description:
-      "A habit tracker powered by Bitcoin Lightning Network that rewards task completion with real sats. Built for La Crypta Hackathons 2026.",
+    title,
+    description,
+    metadataBase: new URL(baseUrl),
+    openGraph: {
+      type: "website",
+      locale: locale === "en" ? "en_US" : "es_AR",
+      alternateLocale: locale === "en" ? ["es_AR"] : ["en_US"],
+      url: baseUrl,
+      siteName: "BitByBit",
+      title,
+      description,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+    },
+    alternates: {
+      canonical: baseUrl,
+      languages: {
+        es: "/es",
+        en: "/en",
+      },
+    },
+    keywords: [
+      "Bitcoin",
+      "Lightning Network",
+      "habit tracker",
+      "sats",
+      "rewards",
+      "productivity",
+      "family",
+      "kids",
+    ],
   };
 }
 
@@ -72,6 +114,7 @@ export default async function LocaleLayout({
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="BitByBit" />
+        <StructuredData />
       </head>
       <body className={`${nunito.variable} ${nunitoSans.variable}`}>
         <NextIntlClientProvider locale={locale} messages={messages}>
