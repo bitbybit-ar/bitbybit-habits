@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
 import { getDb, type Db } from "@/lib/db";
-import { ApiError, UnauthorizedError } from "./errors";
+import { ApiError, UnauthorizedError, RateLimitError } from "./errors";
 import type { ApiResponse, AuthSession } from "@/lib/types";
 
 export interface HandlerContext {
@@ -68,6 +68,15 @@ export function apiHandler<T = unknown>(
         data: result,
       });
     } catch (error) {
+      if (error instanceof RateLimitError) {
+        const response = NextResponse.json<ApiResponse>(
+          { success: false, error: error.message },
+          { status: 429 }
+        );
+        response.headers.set("Retry-After", Math.ceil(error.retryAfterMs / 1000).toString());
+        return response;
+      }
+
       if (error instanceof ApiError) {
         return NextResponse.json<ApiResponse>(
           { success: false, error: error.message },

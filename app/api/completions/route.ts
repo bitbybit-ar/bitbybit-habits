@@ -2,6 +2,7 @@ import { apiHandler, created, requireFields, NotFoundError, ConflictError, BadRe
 import { createNotification } from "@/lib/notifications";
 import { habits, familyMembers, completions } from "@/lib/db";
 import { eq, and, or, isNull, isNotNull, desc, gte, lte, sql } from "drizzle-orm";
+import { todayDateStr } from "@/lib/date";
 
 const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -54,7 +55,7 @@ export const POST = apiHandler(async (request, { session, db }) => {
   }
 
   const habit = habitResult[0].habits;
-  const today = new Date().toISOString().split("T")[0];
+  const today = todayDateStr();
 
   // Check if already completed today
   const existing = await db
