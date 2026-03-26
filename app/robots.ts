@@ -7,7 +7,8 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
+      disallow: ["/api/", "/api-docs"],
     },
-    sitemap: "https://annaloppo.github.io/bitbybit/sitemap.xml",
+    sitemap: "https://bitbybit.com.ar/sitemap.xml",
   };
 }

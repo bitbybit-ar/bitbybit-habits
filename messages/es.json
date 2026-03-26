@@ -538,5 +538,9 @@
     "selectAtLeastOneKid": "Seleccioná al menos un kid",
     "selectAtLeastOneDay": "Seleccioná al menos un día",
     "minZero": "El valor debe ser 0 o mayor"
+  },
+  "seo": {
+    "tagline": "Ganá sats. Creá hábitos. Cambiá vidas.",
+    "description": "Un habit tracker con Bitcoin Lightning Network que recompensa completar tareas con sats reales. Creado para La Crypta Hackathons 2026."
   }
 }

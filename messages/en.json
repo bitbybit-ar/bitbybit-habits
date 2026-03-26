@@ -538,5 +538,9 @@
     "selectAtLeastOneKid": "Select at least one kid",
     "selectAtLeastOneDay": "Select at least one day",
     "minZero": "Value must be 0 or greater"
+  },
+  "seo": {
+    "tagline": "Earn sats. Build habits. Change lives.",
+    "description": "A habit tracker powered by Bitcoin Lightning Network that rewards task completion with real sats. Built for La Crypta Hackathons 2026."
   }
 }
