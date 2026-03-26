@@ -1,11 +1,13 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import AuthCard from "@/components/auth/AuthCard";
-import { cn } from "@/lib/utils";
-import formStyles from "@/components/auth/auth-form.module.scss";
+import { FormInput, FormButton } from "@/components/ui/form";
+import { useFormValidation } from "@/lib/hooks/useFormValidation";
+import styles from "@/components/ui/form/form.module.scss";
 
 function getPasswordStrength(password: string): number {
   let strength = 0;
@@ -24,32 +26,52 @@ const STRENGTH_COLORS = [
   "var(--color-success)",
 ];
 
-interface FormErrors {
-  display_name?: string;
-  email?: string;
-  username?: string;
-  password?: string;
-  confirmPassword?: string;
-}
-
 export default function RegisterPage() {
   const router = useRouter();
   const t = useTranslations();
-  const [form, setForm] = useState({
-    email: "",
-    username: "",
-    password: "",
-    confirmPassword: "",
-    display_name: "",
-  });
   const [error, setError] = useState("");
-  const [errors, setErrors] = useState<FormErrors>({});
-  const [touched, setTouched] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const form = useFormValidation({
+    initialValues: {
+      display_name: "",
+      username: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    },
+    validators: {
+      display_name: (v) => !(v as string).trim() ? t("validation.required") : undefined,
+      username: (v) => {
+        const val = v as string;
+        if (!val.trim()) return t("validation.required");
+        if (val.trim().length < 3) return t("auth.usernameTooShort");
+        return undefined;
+      },
+      email: (v) => {
+        const val = v as string;
+        if (!val.trim()) return t("validation.required");
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) return t("auth.invalidEmail");
+        return undefined;
+      },
+      password: (v) => {
+        const val = v as string;
+        if (!val) return t("validation.required");
+        if (val.length < 6) return t("auth.passwordTooShort");
+        return undefined;
+      },
+      confirmPassword: (v, values) => {
+        const val = v as string;
+        if (!val) return t("validation.required");
+        if (val !== (values as Record<string, string>).password) return t("auth.passwordMismatch");
+        return undefined;
+      },
+    },
+  });
+
   const passwordStrength = useMemo(
-    () => getPasswordStrength(form.password),
-    [form.password]
+    () => getPasswordStrength(form.values.password),
+    [form.values.password]
   );
 
   const STRENGTH_LABELS = [
@@ -60,59 +82,25 @@ export default function RegisterPage() {
     t("auth.strengthStrong"),
   ];
 
-  const update = (field: string, value: string) =>
-    setForm((prev) => ({ ...prev, [field]: value }));
-
-  const validate = (): FormErrors => {
-    const errs: FormErrors = {};
-    if (!form.display_name.trim())
-      errs.display_name = t("validation.required");
-    if (!form.email.trim()) {
-      errs.email = t("validation.required");
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
-      errs.email = t("auth.invalidEmail");
-    }
-    if (!form.username.trim()) {
-      errs.username = t("validation.required");
-    } else if (form.username.trim().length < 3) {
-      errs.username = t("auth.usernameTooShort");
-    }
-    if (!form.password) {
-      errs.password = t("validation.required");
-    } else if (form.password.length < 6) {
-      errs.password = t("auth.passwordTooShort");
-    }
-    if (!form.confirmPassword) {
-      errs.confirmPassword = t("validation.required");
-    } else if (form.password !== form.confirmPassword) {
-      errs.confirmPassword = t("auth.passwordMismatch");
-    }
-    return errs;
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    setTouched(true);
 
-    const validationErrors = validate();
-    setErrors(validationErrors);
-    if (Object.keys(validationErrors).length > 0) return;
+    const errs = form.validateAll();
+    if (Object.keys(errs).length > 0) return;
 
     setLoading(true);
-
     try {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          email: form.email,
-          username: form.username,
-          password: form.password,
-          display_name: form.display_name,
+          email: form.values.email,
+          username: form.values.username,
+          password: form.values.password,
+          display_name: form.values.display_name,
         }),
       });
-
       const data = await res.json();
 
       if (!data.success) {
@@ -123,22 +111,22 @@ export default function RegisterPage() {
       const loginRes = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ login: form.email, password: form.password }),
+        body: JSON.stringify({ login: form.values.email, password: form.values.password }),
       });
-
       const loginData = await loginRes.json();
-
-      if (loginData.success) {
-        router.push("/onboard");
-      } else {
-        router.push("/login");
-      }
+      router.push(loginData.success ? "/onboard" : "/login");
     } catch {
       setError(t("auth.connectionError"));
     } finally {
       setLoading(false);
     }
   };
+
+  const dn = form.fieldProps("display_name");
+  const un = form.fieldProps("username");
+  const em = form.fieldProps("email");
+  const pw = form.fieldProps("password");
+  const cpw = form.fieldProps("confirmPassword");
 
   return (
     <AuthCard
@@ -151,181 +139,93 @@ export default function RegisterPage() {
       error={error}
       variant="register"
     >
-      <form onSubmit={handleSubmit} className={formStyles.form} noValidate>
-        {/* Row 1: Name + Username */}
-        <div className={formStyles.fieldRow}>
-          <div
-            className={cn(
-              formStyles.field,
-              touched && errors.display_name && formStyles.fieldError
-            )}
-          >
-            <label htmlFor="display_name" className={formStyles.label}>
-              {t("auth.displayName")}
-              <span className={formStyles.required}>*</span>
-            </label>
-            <input
-              id="display_name"
-              type="text"
-              value={form.display_name}
-              onChange={(e) => update("display_name", e.target.value)}
-              className={cn(
-                formStyles.inputIdentity,
-                touched && errors.display_name && formStyles.inputError
-              )}
-              placeholder={t("auth.displayName")}
-              aria-invalid={touched && !!errors.display_name}
-              aria-describedby={touched && errors.display_name ? "display-name-error" : undefined}
-            />
-            {touched && errors.display_name && (
-              <span id="display-name-error" className={formStyles.errorText}>
-                {errors.display_name}
-              </span>
-            )}
-          </div>
-
-          <div
-            className={cn(
-              formStyles.field,
-              touched && errors.username && formStyles.fieldError
-            )}
-          >
-            <label htmlFor="username" className={formStyles.label}>
-              {t("auth.username")}
-              <span className={formStyles.required}>*</span>
-            </label>
-            <input
-              id="username"
-              type="text"
-              value={form.username}
-              onChange={(e) => update("username", e.target.value)}
-              autoComplete="username"
-              className={cn(
-                formStyles.inputIdentity,
-                touched && errors.username && formStyles.inputError
-              )}
-              placeholder={t("auth.usernamePlaceholder")}
-              aria-invalid={touched && !!errors.username}
-              aria-describedby={touched && errors.username ? "username-error" : undefined}
-            />
-            {touched && errors.username && (
-              <span id="username-error" className={formStyles.errorText}>{errors.username}</span>
-            )}
-          </div>
-        </div>
-
-        {/* Email — full width */}
-        <div
-          className={cn(
-            formStyles.field,
-            touched && errors.email && formStyles.fieldError
-          )}
-        >
-          <label htmlFor="email" className={formStyles.label}>
-            {t("auth.email")}
-            <span className={formStyles.required}>*</span>
-          </label>
-          <input
-            id="email"
-            type="email"
-            value={form.email}
-            onChange={(e) => update("email", e.target.value)}
-            autoComplete="email"
-            className={cn(
-              formStyles.inputIdentity,
-              touched && errors.email && formStyles.inputError
-            )}
-            placeholder={t("auth.emailPlaceholder")}
-            aria-invalid={touched && !!errors.email}
-            aria-describedby={touched && errors.email ? "email-error" : undefined}
+      <form onSubmit={handleSubmit} className={styles.formLayout} noValidate>
+        <div className={styles.fieldRow}>
+          <FormInput
+            id="display_name"
+            label={t("auth.displayName")}
+            required
+            variant="identity"
+            placeholder={t("auth.displayName")}
+            value={dn.value as string}
+            onChange={dn.onChange}
+            onBlur={dn.onBlur}
+            error={dn.error}
           />
-          {touched && errors.email && (
-            <span id="email-error" className={formStyles.errorText}>{errors.email}</span>
-          )}
+          <FormInput
+            id="username"
+            label={t("auth.username")}
+            required
+            variant="identity"
+            placeholder={t("auth.usernamePlaceholder")}
+            autoComplete="username"
+            value={un.value as string}
+            onChange={un.onChange}
+            onBlur={un.onBlur}
+            error={un.error}
+          />
         </div>
 
-        {/* Row 2: Password + Confirm */}
-        <div className={formStyles.fieldRow}>
-          <div
-            className={cn(
-              formStyles.field,
-              touched && errors.password && formStyles.fieldError
-            )}
-          >
-            <label htmlFor="password" className={formStyles.label}>
-              {t("auth.password")}
-              <span className={formStyles.required}>*</span>
-            </label>
-            <input
-              id="password"
-              type="password"
-              value={form.password}
-              onChange={(e) => update("password", e.target.value)}
-              autoComplete="new-password"
-              className={cn(
-                formStyles.inputSecurity,
-                touched && errors.password && formStyles.inputError
-              )}
-              placeholder="••••••••"
-              aria-invalid={touched && !!errors.password}
-              aria-describedby={touched && errors.password ? "password-error" : undefined}
-            />
-            {touched && errors.password && (
-              <span id="password-error" className={formStyles.errorText}>{errors.password}</span>
-            )}
-          </div>
+        <FormInput
+          id="email"
+          type="email"
+          label={t("auth.email")}
+          required
+          variant="identity"
+          placeholder={t("auth.emailPlaceholder")}
+          autoComplete="email"
+          value={em.value as string}
+          onChange={em.onChange}
+          onBlur={em.onBlur}
+          error={em.error}
+        />
 
-          <div
-            className={cn(
-              formStyles.field,
-              touched && errors.confirmPassword && formStyles.fieldError
-            )}
-          >
-            <label htmlFor="confirmPassword" className={formStyles.label}>
-              {t("auth.confirmPassword")}
-              <span className={formStyles.required}>*</span>
-            </label>
-            <input
-              id="confirmPassword"
-              type="password"
-              value={form.confirmPassword}
-              onChange={(e) => update("confirmPassword", e.target.value)}
-              autoComplete="new-password"
-              className={cn(
-                formStyles.inputSecurity,
-                touched && errors.confirmPassword && formStyles.inputError
-              )}
-              placeholder="••••••••"
-              aria-invalid={touched && !!errors.confirmPassword}
-              aria-describedby={touched && errors.confirmPassword ? "confirm-password-error" : undefined}
-            />
-            {touched && errors.confirmPassword && (
-              <span id="confirm-password-error" className={formStyles.errorText}>
-                {errors.confirmPassword}
-              </span>
-            )}
-          </div>
+        <div className={styles.fieldRow}>
+          <FormInput
+            id="password"
+            type="password"
+            label={t("auth.password")}
+            required
+            variant="security"
+            placeholder="••••••••"
+            autoComplete="new-password"
+            value={pw.value as string}
+            onChange={pw.onChange}
+            onBlur={pw.onBlur}
+            error={pw.error}
+          />
+          <FormInput
+            id="confirmPassword"
+            type="password"
+            label={t("auth.confirmPassword")}
+            required
+            variant="security"
+            placeholder="••••••••"
+            autoComplete="new-password"
+            value={cpw.value as string}
+            onChange={cpw.onChange}
+            onBlur={cpw.onBlur}
+            error={cpw.error}
+          />
         </div>
 
-        {/* Password strength indicator */}
-        {form.password.length > 0 && (
-          <div className={formStyles.strengthContainer}>
-            <div className={formStyles.strengthBar}>
+        {form.values.password.length > 0 && (
+          <div className={styles.strengthContainer}>
+            <div className={styles.strengthBar}>
               {[1, 2, 3, 4].map((level) => (
                 <div
                   key={level}
-                  className={formStyles.strengthSegment}
+                  className={styles.strengthSegment}
                   style={{
-                    background:
-                      passwordStrength >= level
-                        ? STRENGTH_COLORS[passwordStrength]
-                        : undefined,
+                    background: passwordStrength >= level
+                      ? STRENGTH_COLORS[passwordStrength]
+                      : undefined,
                   }}
                 />
               ))}
             </div>
             <span
-              className={formStyles.strengthLabel}
+              className={styles.strengthLabel}
               style={{ color: STRENGTH_COLORS[passwordStrength] }}
             >
               {STRENGTH_LABELS[passwordStrength]}
@@ -333,13 +233,9 @@ export default function RegisterPage() {
           </div>
         )}
 
-        <button
-          type="submit"
-          className={formStyles.submitButton}
-          disabled={loading}
-        >
-          {loading ? t("common.loading") : t("auth.register")}
-        </button>
+        <FormButton type="submit" loading={loading} loadingText={t("common.loading")}>
+          {t("auth.register")}
+        </FormButton>
       </form>
     </AuthCard>
   );

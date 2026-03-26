@@ -1,0 +1,222 @@
+@use "@/styles/colors" as *;
+@use "@/styles/spacing" as *;
+@use "@/styles/typography" as *;
+@use "@/styles/common-mixins" as *;
+
+// ── Form layout ──
+.formLayout {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-16;
+}
+
+// ── Field wrapper ──
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-4;
+}
+
+.label {
+  font-size: $font-size-sm;
+  color: var(--color-text-secondary);
+  font-weight: $font-weight-medium;
+}
+
+.required {
+  color: $color-error;
+  margin-left: 2px;
+}
+
+// ── Base input ──
+.input {
+  padding: $spacing-12 $spacing-16;
+  border-radius: $border-radius-md;
+  color: var(--color-text-primary);
+  font-size: $font-size-base;
+  font-family: $font-family-base;
+  width: 100%;
+  background: rgba(var(--glass-color), 0.04);
+  border: 1px solid rgba(var(--glass-color), 0.1);
+  outline: none;
+  @include transition;
+
+  &::placeholder {
+    color: var(--color-text-secondary);
+    opacity: 0.4;
+  }
+
+  &:focus {
+    border-color: $color-primary;
+    box-shadow: 0 0 0 2px rgba($color-primary, 0.15);
+  }
+}
+
+// ── Teal-tinted inputs (identity: name, username, email) ──
+.inputIdentity {
+  composes: input;
+  background: rgba($color-accent-alt, 0.04);
+  border: 1px solid rgba($color-accent-alt, 0.10);
+
+  &:focus {
+    border-color: $color-accent-alt;
+    box-shadow: 0 0 0 2px rgba($color-accent-alt, 0.12);
+  }
+}
+
+// ── Violet-tinted inputs (security: password, confirm) ──
+.inputSecurity {
+  composes: input;
+  background: rgba($color-secondary, 0.04);
+  border: 1px solid rgba($color-secondary, 0.10);
+
+  &:focus {
+    border-color: $color-secondary;
+    box-shadow: 0 0 0 2px rgba($color-secondary, 0.12);
+  }
+}
+
+// ── Select ──
+.select {
+  composes: input;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23B8A898' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right $spacing-16 center;
+  padding-right: $spacing-40;
+
+  option {
+    background: var(--color-bg-3);
+    color: var(--color-text-primary);
+  }
+}
+
+// ── Textarea ──
+.textarea {
+  composes: input;
+  resize: vertical;
+  min-height: 60px;
+}
+
+// ── Error states ──
+.fieldError {
+  .label {
+    color: $color-error;
+  }
+}
+
+.inputError {
+  border-color: $color-error !important;
+  box-shadow: 0 0 0 1px rgba($color-error, 0.2);
+}
+
+.errorText {
+  font-size: $font-size-xs;
+  color: $color-error;
+  margin-top: 2px;
+}
+
+// ── Password strength indicator ──
+.strengthContainer {
+  margin-top: $spacing-4;
+}
+
+.strengthBar {
+  display: flex;
+  gap: 4px;
+}
+
+.strengthSegment {
+  flex: 1;
+  height: 3px;
+  border-radius: 2px;
+  background: rgba(var(--glass-color), 0.06);
+  @include transition(background, 0.3s);
+}
+
+.strengthLabel {
+  font-size: $font-size-xs;
+  margin-top: $spacing-4;
+  font-weight: $font-weight-medium;
+  display: block;
+}
+
+// ── Forgot password link ──
+.forgotLink {
+  background: none;
+  border: none;
+  color: var(--color-text-secondary);
+  font-size: $font-size-xs;
+  font-family: $font-family-base;
+  cursor: pointer;
+  padding: 0;
+  margin-top: $spacing-4;
+  text-align: right;
+  display: block;
+  width: 100%;
+  @include transition;
+
+  &:hover {
+    color: var(--color-primary);
+  }
+}
+
+// ── Two-column row ──
+.fieldRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $spacing-12;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// ── Submit button ──
+.submitButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-8;
+  width: 100%;
+  padding: $spacing-12 $spacing-24;
+  border-radius: $border-radius-md;
+  border: none;
+  background: $gradient-primary;
+  color: #000;
+  font-size: $font-size-base;
+  font-weight: $font-weight-bold;
+  font-family: $font-family-base;
+  cursor: pointer;
+  @include transition;
+  margin-top: $spacing-8;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba($color-primary, 0.3);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0) scale(0.97);
+    transition-duration: 0.1s;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.outlineButton {
+  composes: submitButton;
+  background: transparent;
+  border: 1px solid var(--color-primary);
+  color: var(--color-primary);
+
+  &:hover:not(:disabled) {
+    background: rgba($color-primary, 0.08);
+    box-shadow: none;
+    transform: none;
+  }
+}

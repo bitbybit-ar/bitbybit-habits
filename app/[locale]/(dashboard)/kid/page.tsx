@@ -12,6 +12,7 @@ import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 import type { DashboardTab } from "@/components/dashboard/dashboard-layout";
 import { useToast } from "@/components/ui/toast";
 import { DashboardSkeleton } from "@/components/ui/skeleton";
+import { FormInput, FormButton } from "@/components/ui/form";
 import type { Habit, Completion, AuthSession } from "@/lib/types";
 import styles from "./kid.module.scss";
 
@@ -315,23 +316,23 @@ export default function KidDashboard() {
           <div className={styles.joinSection}>
             <h3 className={styles.joinTitle}>{t("family.joinFamily")}</h3>
             <form onSubmit={handleJoinFamily} className={styles.joinForm}>
-              <input
-                type="text"
-                value={joinCode}
-                onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
+              <FormInput
+                id="join-code"
                 placeholder={t("family.enterInviteCode")}
                 maxLength={6}
-                className={styles.joinInput}
+                value={joinCode}
+                onChange={(v) => setJoinCode(v.toUpperCase())}
+                error={joinError || undefined}
               />
-              <button
+              <FormButton
                 type="submit"
-                className={styles.joinButton}
-                disabled={joinLoading || !joinCode.trim()}
+                loading={joinLoading}
+                loadingText={t("common.loading")}
+                disabled={!joinCode.trim()}
               >
-                {joinLoading ? t("common.loading") : t("family.join")}
-              </button>
+                {t("family.join")}
+              </FormButton>
             </form>
-            {joinError && <p className={styles.joinError}>{joinError}</p>}
           </div>
         </>
       )}

@@ -4,8 +4,9 @@ import { useState, useEffect, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import AuthCard from "@/components/auth/AuthCard";
-import { cn } from "@/lib/utils";
-import formStyles from "@/components/auth/auth-form.module.scss";
+import { FormInput, FormSelect, FormButton } from "@/components/ui/form";
+import { useFormValidation } from "@/lib/hooks/useFormValidation";
+import formStyles from "@/components/ui/form/form.module.scss";
 import styles from "./settings.module.scss";
 
 interface Profile {
@@ -17,34 +18,52 @@ interface Profile {
   locale: "es" | "en";
 }
 
-interface FormErrors {
-  display_name?: string;
-  username?: string;
-  email?: string;
-  avatar_url?: string;
-}
-
 export default function SettingsPage() {
   const t = useTranslations();
   const router = useRouter();
   const [profile, setProfile] = useState<Profile | null>(null);
-  const [displayName, setDisplayName] = useState("");
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [avatarUrl, setAvatarUrl] = useState("");
-  const [locale, setLocale] = useState<"es" | "en">("es");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState("");
-  const [errors, setErrors] = useState<FormErrors>({});
-  const [touched, setTouched] = useState(false);
+  const [locale, setLocale] = useState<"es" | "en">("es");
+
+  const form = useFormValidation({
+    initialValues: {
+      display_name: "",
+      username: "",
+      email: "",
+      avatar_url: "",
+    },
+    validators: {
+      display_name: (v) => !(v as string).trim() ? t("validation.required") : undefined,
+      username: (v) => {
+        const val = v as string;
+        if (!val.trim()) return t("validation.required");
+        if (val.trim().length < 3) return t("auth.usernameTooShort");
+        return undefined;
+      },
+      email: (v) => {
+        const val = v as string;
+        if (!val.trim()) return t("validation.required");
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) return t("auth.invalidEmail");
+        return undefined;
+      },
+      avatar_url: (v) => {
+        const val = v as string;
+        if (val && !/^https?:\/\/.+/.test(val)) return t("settings.invalidUrl");
+        return undefined;
+      },
+    },
+  });
 
   const initials = useMemo(() => {
-    if (displayName.trim()) return displayName.trim().charAt(0).toUpperCase();
-    if (username.trim()) return username.trim().charAt(0).toUpperCase();
+    const dn = form.values.display_name;
+    const un = form.values.username;
+    if (dn.trim()) return dn.trim().charAt(0).toUpperCase();
+    if (un.trim()) return un.trim().charAt(0).toUpperCase();
     return "A";
-  }, [displayName, username]);
+  }, [form.values.display_name, form.values.username]);
 
   useEffect(() => {
     async function fetchProfile() {
@@ -54,10 +73,12 @@ export default function SettingsPage() {
           const data = await res.json();
           if (data.success && data.data) {
             setProfile(data.data);
-            setDisplayName(data.data.display_name);
-            setUsername(data.data.username);
-            setEmail(data.data.email);
-            setAvatarUrl(data.data.avatar_url ?? "");
+            form.setValues({
+              display_name: data.data.display_name,
+              username: data.data.username,
+              email: data.data.email,
+              avatar_url: data.data.avatar_url ?? "",
+            });
             setLocale(data.data.locale);
           }
         }
@@ -68,36 +89,16 @@ export default function SettingsPage() {
       }
     }
     fetchProfile();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const validate = (): FormErrors => {
-    const errs: FormErrors = {};
-    if (!displayName.trim()) errs.display_name = t("validation.required");
-    if (!username.trim()) {
-      errs.username = t("validation.required");
-    } else if (username.trim().length < 3) {
-      errs.username = t("auth.usernameTooShort");
-    }
-    if (!email.trim()) {
-      errs.email = t("validation.required");
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      errs.email = t("auth.invalidEmail");
-    }
-    if (avatarUrl && !/^https?:\/\/.+/.test(avatarUrl)) {
-      errs.avatar_url = t("settings.invalidUrl");
-    }
-    return errs;
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaved(false);
     setError("");
-    setTouched(true);
 
-    const validationErrors = validate();
-    setErrors(validationErrors);
-    if (Object.keys(validationErrors).length > 0) return;
+    const errs = form.validateAll();
+    if (Object.keys(errs).length > 0) return;
 
     setSaving(true);
     try {
@@ -105,10 +106,8 @@ export default function SettingsPage() {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          display_name: displayName,
-          username,
-          email,
-          avatar_url: avatarUrl || null,
+          ...form.values,
+          avatar_url: form.values.avatar_url || null,
           locale,
         }),
       });
@@ -137,6 +136,11 @@ export default function SettingsPage() {
     );
   }
 
+  const dn = form.fieldProps("display_name");
+  const un = form.fieldProps("username");
+  const em = form.fieldProps("email");
+  const av = form.fieldProps("avatar_url");
+
   return (
     <AuthCard
       title={t("settings.title")}
@@ -148,104 +152,52 @@ export default function SettingsPage() {
       error={error}
       variant="register"
     >
-      <form onSubmit={handleSubmit} className={formStyles.form} noValidate>
-        {/* Row 1: Display name + Username */}
+      <form onSubmit={handleSubmit} className={formStyles.formLayout} noValidate>
         <div className={formStyles.fieldRow}>
-          <div
-            className={cn(
-              formStyles.field,
-              touched && errors.display_name && formStyles.fieldError
-            )}
-          >
-            <label htmlFor="display_name" className={formStyles.label}>
-              {t("auth.displayName")}
-              <span className={formStyles.required}>*</span>
-            </label>
-            <input
-              id="display_name"
-              type="text"
-              value={displayName}
-              onChange={(e) => setDisplayName(e.target.value)}
-              className={cn(
-                formStyles.inputIdentity,
-                touched && errors.display_name && formStyles.inputError
-              )}
-            />
-            {touched && errors.display_name && (
-              <span className={formStyles.errorText}>
-                {errors.display_name}
-              </span>
-            )}
-          </div>
-
-          <div
-            className={cn(
-              formStyles.field,
-              touched && errors.username && formStyles.fieldError
-            )}
-          >
-            <label htmlFor="username" className={formStyles.label}>
-              {t("auth.username")}
-              <span className={formStyles.required}>*</span>
-            </label>
-            <input
-              id="username"
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className={cn(
-                formStyles.inputIdentity,
-                touched && errors.username && formStyles.inputError
-              )}
-            />
-            {touched && errors.username && (
-              <span className={formStyles.errorText}>{errors.username}</span>
-            )}
-          </div>
-        </div>
-
-        {/* Email — full width */}
-        <div
-          className={cn(
-            formStyles.field,
-            touched && errors.email && formStyles.fieldError
-          )}
-        >
-          <label htmlFor="email" className={formStyles.label}>
-            {t("auth.email")}
-            <span className={formStyles.required}>*</span>
-          </label>
-          <input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className={cn(
-              formStyles.inputIdentity,
-              touched && errors.email && formStyles.inputError
-            )}
+          <FormInput
+            id="display_name"
+            label={t("auth.displayName")}
+            required
+            variant="identity"
+            value={dn.value as string}
+            onChange={dn.onChange}
+            onBlur={dn.onBlur}
+            error={dn.error}
           />
-          {touched && errors.email && (
-            <span className={formStyles.errorText}>{errors.email}</span>
-          )}
+          <FormInput
+            id="username"
+            label={t("auth.username")}
+            required
+            variant="identity"
+            value={un.value as string}
+            onChange={un.onChange}
+            onBlur={un.onBlur}
+            error={un.error}
+          />
         </div>
 
-        {/* Avatar URL */}
-        <div
-          className={cn(
-            formStyles.field,
-            touched && errors.avatar_url && formStyles.fieldError
-          )}
-        >
+        <FormInput
+          id="email"
+          type="email"
+          label={t("auth.email")}
+          required
+          variant="identity"
+          value={em.value as string}
+          onChange={em.onChange}
+          onBlur={em.onBlur}
+          error={em.error}
+        />
+
+        <div className={formStyles.field}>
           <label htmlFor="avatar_url" className={formStyles.label}>
             {t("settings.avatarUrl")}
           </label>
           <div className={styles.avatarField}>
             <div className={styles.avatarPreview}>
-              {avatarUrl ? (
+              {form.values.avatar_url ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
-                  src={avatarUrl}
+                  src={form.values.avatar_url}
                   alt="Avatar"
                   className={styles.avatarImg}
                 />
@@ -256,51 +208,37 @@ export default function SettingsPage() {
             <input
               id="avatar_url"
               type="url"
-              value={avatarUrl}
-              onChange={(e) => setAvatarUrl(e.target.value)}
-              className={cn(
-                formStyles.inputIdentity,
-                touched && errors.avatar_url && formStyles.inputError
-              )}
+              value={av.value as string}
+              onChange={(e) => av.onChange(e.target.value)}
+              onBlur={av.onBlur}
+              className={formStyles.inputIdentity}
               placeholder="https://..."
+              aria-invalid={!!av.error}
+              aria-describedby={av.error ? "avatar_url-error" : undefined}
             />
           </div>
-          {touched && errors.avatar_url && (
-            <span className={formStyles.errorText}>{errors.avatar_url}</span>
+          {av.error && (
+            <span id="avatar_url-error" className={formStyles.errorText} role="alert">{av.error}</span>
           )}
         </div>
 
-        {/* Language */}
-        <div className={formStyles.field}>
-          <label htmlFor="locale" className={formStyles.label}>
-            {t("settings.language")}
-          </label>
-          <div className={styles.selectWrapper}>
-            <select
-              id="locale"
-              value={locale}
-              onChange={(e) => setLocale(e.target.value as "es" | "en")}
-              className={styles.select}
-            >
-              <option value="es">Español</option>
-              <option value="en">English</option>
-            </select>
-            <span className={styles.selectChevron}>▾</span>
-          </div>
-        </div>
+        <FormSelect
+          id="locale"
+          label={t("settings.language")}
+          value={locale}
+          onChange={(v) => setLocale(v as "es" | "en")}
+        >
+          <option value="es">Español</option>
+          <option value="en">English</option>
+        </FormSelect>
 
-        {/* Actions */}
         {saved && (
           <p className={styles.savedText}>{t("settings.saved")}</p>
         )}
 
-        <button
-          type="submit"
-          className={formStyles.submitButton}
-          disabled={saving}
-        >
-          {saving ? t("common.loading") : t("common.save")}
-        </button>
+        <FormButton type="submit" loading={saving} loadingText={t("common.loading")}>
+          {t("common.save")}
+        </FormButton>
       </form>
     </AuthCard>
   );
