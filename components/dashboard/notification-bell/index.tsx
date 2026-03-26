@@ -1,11 +1,13 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import type { Notification } from "@/lib/types";
 import { BellIcon } from "@/components/icons";
 import styles from "./notification-bell.module.scss";
 
 export function NotificationBell() {
+  const t = useTranslations();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [open, setOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -72,7 +74,7 @@ export function NotificationBell() {
       {open && (
         <div className={styles.dropdown}>
           {notifications.length === 0 ? (
-            <p className={styles.empty}>No notifications</p>
+            <p className={styles.empty}>{t("emptyState.noNotifications")}</p>
           ) : (
             <ul className={styles.list}>
               {notifications.map((n) => (

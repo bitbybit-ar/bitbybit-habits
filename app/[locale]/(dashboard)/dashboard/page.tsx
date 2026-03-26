@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { PageSpinner } from "@/components/ui/spinner";
 
 /**
  * /dashboard — central routing hub
@@ -71,5 +72,5 @@ export default function DashboardPage() {
     redirect();
   }, [router]);
 
-  return null;
+  return <PageSpinner />;
 }

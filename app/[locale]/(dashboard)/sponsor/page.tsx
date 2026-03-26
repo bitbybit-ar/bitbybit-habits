@@ -15,6 +15,7 @@ import type { DashboardTab } from "@/components/dashboard/dashboard-layout";
 import { InvoiceModal } from "@/components/ui/invoice-modal";
 import { useToast } from "@/components/ui/toast";
 import { useWebLN } from "@/lib/hooks/useWebLN";
+import { DashboardSkeleton } from "@/components/ui/skeleton";
 import type { Habit, AuthSession, PaymentWithDetails } from "@/lib/types";
 import styles from "./sponsor.module.scss";
 
@@ -555,11 +556,7 @@ export default function SponsorDashboard() {
   }, [families, familyCompletions, habits]);
 
   if (loading) {
-    return (
-      <div className={styles.container}>
-        <p className={styles.loadingText}>{t("common.loading")}</p>
-      </div>
-    );
+    return <DashboardSkeleton />;
   }
 
   const displayName = session?.display_name ?? session?.username ?? "Sponsor";
@@ -778,7 +775,11 @@ export default function SponsorDashboard() {
         <div className={styles.section}>
           <h2 className={styles.sectionTitle}>{t("family.myFamily")}</h2>
           {families.length === 0 ? (
-            <p className={styles.loadingText}>{t("sponsorDashboard.noFamily")}</p>
+            <div className={styles.emptyState}>
+              <span className={styles.emptyIcon}><UsersIcon size={48} /></span>
+              <h3 className={styles.emptyTitle}>{t("emptyState.noFamily")}</h3>
+              <p className={styles.emptySubtext}>{t("emptyState.noFamilySponsorDesc")}</p>
+            </div>
           ) : (
             families.map((family) => {
               const myMembership = family.members.find((m) => m.user_id === session?.user_id);
@@ -809,7 +810,11 @@ export default function SponsorDashboard() {
           {paymentsLoading ? (
             <p className={styles.loadingText}>{t("common.loading")}</p>
           ) : payments.length === 0 ? (
-            <p className={styles.loadingText}>{t("payments.noPayments")}</p>
+            <div className={styles.emptyState}>
+              <span className={styles.emptyIcon}><BoltIcon size={48} /></span>
+              <h3 className={styles.emptyTitle}>{t("emptyState.noPayments")}</h3>
+              <p className={styles.emptySubtext}>{t("emptyState.noPaymentsDesc")}</p>
+            </div>
           ) : (
             <div className={styles.paymentTable}>
               <table>

@@ -11,6 +11,7 @@ import { Onboarding } from "@/components/dashboard/onboarding";
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 import type { DashboardTab } from "@/components/dashboard/dashboard-layout";
 import { useToast } from "@/components/ui/toast";
+import { DashboardSkeleton } from "@/components/ui/skeleton";
 import type { Habit, Completion, AuthSession } from "@/lib/types";
 import styles from "./kid.module.scss";
 
@@ -210,11 +211,7 @@ export default function KidDashboard() {
 
 
   if (loading) {
-    return (
-      <div className={styles.container}>
-        <p className={styles.loadingText}>{t("common.loading")}</p>
-      </div>
-    );
+    return <DashboardSkeleton />;
   }
 
   const displayName = session?.display_name ?? session?.username ?? "Kid";
@@ -294,7 +291,11 @@ export default function KidDashboard() {
         <>
           <h2 className={styles.sectionTitle}>{t("family.myFamily")}</h2>
           {families.length === 0 ? (
-            <p className={styles.loadingText}>{t("family.noFamilies")}</p>
+            <div className={styles.emptyState}>
+              <span className={styles.emptyIcon}><UsersIcon size={48} /></span>
+              <h3 className={styles.emptyTitle}>{t("emptyState.noFamily")}</h3>
+              <p className={styles.emptySubtext}>{t("emptyState.noFamilyKidDesc")}</p>
+            </div>
           ) : (
             families.map((family) => (
               <FamilyCard
