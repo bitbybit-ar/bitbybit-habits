@@ -168,6 +168,8 @@
     "noHabits": "Todavía no tenés hábitos asignados. Pedile a tu sponsor que te cree uno.",
     "level": "Nivel",
     "satsToday": "sats hoy",
+    "earnings": "Mis ganancias",
+    "earningsDesc": "Tus pagos en sats aparecerán acá cuando tu sponsor apruebe tus hábitos.",
     "week": "semana",
     "daySun": "Dom",
     "dayMon": "Lun",

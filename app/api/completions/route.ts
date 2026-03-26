@@ -1,7 +1,7 @@
 import { apiHandler, created, requireFields, NotFoundError, ConflictError, BadRequestError } from "@/lib/api";
 import { createNotification } from "@/lib/notifications";
 import { habits, familyMembers, completions } from "@/lib/db";
-import { eq, and, or, isNull, isNotNull, desc, gte, lte, sql } from "drizzle-orm";
+import { eq, and, or, isNull, isNotNull, desc, gte, lte } from "drizzle-orm";
 import { todayDateStr } from "@/lib/date";
 
 const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;

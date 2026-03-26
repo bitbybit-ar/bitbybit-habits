@@ -56,8 +56,7 @@ export default function SponsorDashboard() {
 
   useEffect(() => {
     if (activeTab === "payments") payments.refetch();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeTab]);
+  }, [activeTab]); // Only refetch when tab changes
 
   const handleDismissOnboarding = useCallback(() => {
     localStorage.setItem("bitbybit_onboarding_done", "1");

@@ -50,9 +50,7 @@ export function useApi<T>(
     } finally {
       if (mountedRef.current) setIsLoading(false);
     }
-  // initialData is intentionally excluded — it's only for the default value
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [url]);
+  }, [url]); // initialData intentionally excluded — only for default value
 
   useEffect(() => {
     mountedRef.current = true;

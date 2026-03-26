@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
+import { useLocale } from "next-intl";
 import { BoltIcon, FlameIcon, ListIcon, UsersIcon, WalletIcon } from "@/components/icons";
 import { StatsBar } from "@/components/dashboard/stats-bar";
 import { HabitList } from "@/components/dashboard/habit-list";
@@ -18,12 +19,15 @@ import { useHabits } from "@/lib/hooks/useHabits";
 import { useCompletions } from "@/lib/hooks/useCompletions";
 import { useFamilies } from "@/lib/hooks/useFamilies";
 import { useStats } from "@/lib/hooks/useStats";
+import { usePayments } from "@/lib/hooks/usePayments";
+import { formatDisplayDate } from "@/lib/date";
 import styles from "./kid.module.scss";
 
-type TabType = "habits" | "family" | "wallet";
+type TabType = "habits" | "family" | "earnings" | "wallet";
 
 export default function KidDashboard() {
   const t = useTranslations();
+  const locale = useLocale();
   const { showToast } = useToast();
   const [activeTab, setActiveTab] = useState<TabType>("habits");
   const [joinCode, setJoinCode] = useState("");
@@ -38,6 +42,7 @@ export default function KidDashboard() {
   const completions = useCompletions();
   const families = useFamilies();
   const stats = useStats();
+  const kidPayments = usePayments({ role: "kid", skip: activeTab !== "earnings" });
 
   const isLoading = session.isLoading || habits.isLoading || completions.isLoading || families.isLoading || stats.isLoading;
 
@@ -65,6 +70,10 @@ export default function KidDashboard() {
       if (!dismissed) setShowOnboarding(true);
     }
   }, [isLoading, habits.data.length]);
+
+  useEffect(() => {
+    if (activeTab === "earnings") kidPayments.refetch();
+  }, [activeTab]); // Only refetch when tab changes
 
   const handleDismissOnboarding = useCallback(() => {
     localStorage.setItem("bitbybit_onboarding_done", "1");
@@ -137,6 +146,7 @@ export default function KidDashboard() {
   const tabs: DashboardTab[] = [
     { key: "habits", icon: <ListIcon size={20} />, label: t("dashboard.myHabits") },
     { key: "family", icon: <UsersIcon size={20} />, label: t("family.myFamily") },
+    { key: "earnings", icon: <BoltIcon size={20} />, label: t("kidDashboard.earnings") },
     { key: "wallet", icon: <WalletIcon size={20} />, label: t("wallet.connectWallet") },
   ];
 
@@ -216,6 +226,41 @@ export default function KidDashboard() {
               </FormButton>
             </form>
           </div>
+        </>
+      )}
+      {activeTab === "earnings" && (
+        <>
+          <h2 className={styles.sectionTitle}>{t("kidDashboard.earnings")}</h2>
+          {kidPayments.isLoading ? (
+            <p className={styles.loadingText}>{t("common.loading")}</p>
+          ) : kidPayments.data.length === 0 ? (
+            <div className={styles.emptyState}>
+              <span className={styles.emptyIcon}><BoltIcon size={48} /></span>
+              <h3 className={styles.emptyTitle}>{t("emptyState.noPayments")}</h3>
+              <p className={styles.emptySubtext}>{t("kidDashboard.earningsDesc")}</p>
+            </div>
+          ) : (
+            <div className={styles.earningsList}>
+              {kidPayments.data.map((p) => (
+                <div key={p.id} className={styles.earningsItem}>
+                  <div className={styles.earningsInfo}>
+                    <span className={styles.earningsHabit}>{p.habit_name}</span>
+                    <span className={styles.earningsDate}>{formatDisplayDate(p.created_at, locale)}</span>
+                  </div>
+                  <div className={styles.earningsAmount}>
+                    <BoltIcon size={14} />
+                    <span>+{p.amount_sats}</span>
+                    <span
+                      className={styles.earningsStatus}
+                      data-status={p.status}
+                    >
+                      {t(`payments.status.${p.status}`)}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </>
       )}
       {activeTab === "wallet" && (

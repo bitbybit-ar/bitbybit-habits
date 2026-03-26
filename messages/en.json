@@ -168,6 +168,8 @@
     "noHabits": "You don't have any habits yet. Ask your sponsor to create one for you.",
     "level": "Level",
     "satsToday": "sats today",
+    "earnings": "My Earnings",
+    "earningsDesc": "Your sat payments will appear here when your sponsor approves your habits.",
     "week": "week",
     "daySun": "Sun",
     "dayMon": "Mon",

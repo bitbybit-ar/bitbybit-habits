@@ -89,8 +89,7 @@ export default function SettingsPage() {
       }
     }
     fetchProfile();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, []); // Only fetch on mount
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

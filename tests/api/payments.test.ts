@@ -86,13 +86,16 @@ describe("POST /api/payments/retry", () => {
     expect(status).toBe(400);
   });
 
-  it("retries failed payment", async () => {
+  it("retries failed payment without invoice returns needs_new_invoice", async () => {
     await setSessionCookie(testSession);
-    mockSelectResult.mockReturnValue([{ id: UUID.payment1, status: "failed" }]);
+    // First select: verify ownership + failed status
+    mockSelectResult.mockReturnValueOnce([{ id: UUID.payment1, status: "failed", from_user_id: testSession.user_id, payment_request: null }]);
     mockUpdateReturning.mockResolvedValue([{ id: UUID.payment1, status: "pending" }]);
+    // Second select: return updated payment (after reset, for no-invoice path)
+    mockSelectResult.mockReturnValueOnce([{ id: UUID.payment1, status: "pending", needs_new_invoice: true }]);
     const req = createRequest("POST", "/api/payments/retry", { payment_id: UUID.payment1 });
     const { status, body } = await parseResponse(await retryPayment(req));
     expect(status).toBe(200);
-    expect(body.data.status).toBe("pending");
+    expect(body.data.needs_new_invoice).toBe(true);
   });
 });

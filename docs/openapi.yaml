@@ -56,6 +56,8 @@ tags:
     description: Gestion de wallets NWC
   - name: Payments
     description: Pagos Lightning y gestion de invoices
+  - name: Notifications
+    description: Notificaciones in-app
 
 paths:
   /auth/register:
@@ -1257,6 +1259,524 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ApiResponseError"
+
+  /auth/profile:
+    get:
+      tags: [Auth]
+      summary: Obtener perfil del usuario
+      operationId: getProfile
+      security: [{ cookieAuth: [] }]
+      responses:
+        "200":
+          description: Perfil del usuario
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/UserPublic"
+        "401":
+          description: No autenticado
+    patch:
+      tags: [Auth]
+      summary: Actualizar perfil del usuario
+      operationId: updateProfile
+      security: [{ cookieAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                display_name:
+                  type: string
+                username:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                avatar_url:
+                  type: string
+                  format: uri
+                  nullable: true
+                locale:
+                  type: string
+                  enum: [es, en]
+      responses:
+        "200":
+          description: Perfil actualizado
+        "400":
+          description: Datos invalidos
+
+  /auth/2fa/setup:
+    post:
+      tags: [Auth]
+      summary: Inicializar configuracion de 2FA
+      description: Genera un secreto TOTP y devuelve la URI y codigo QR para escanear con una app autenticadora.
+      operationId: setup2FA
+      security: [{ cookieAuth: [] }]
+      responses:
+        "200":
+          description: Secreto TOTP generado
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          otpauthUri:
+                            type: string
+                          qrCode:
+                            type: string
+                            description: QR code como data URI (PNG)
+
+  /auth/2fa/confirm:
+    post:
+      tags: [Auth]
+      summary: Confirmar y activar 2FA
+      description: Verifica el codigo TOTP y activa 2FA. Devuelve 8 codigos de recuperacion (solo se muestran una vez).
+      operationId: confirm2FA
+      security: [{ cookieAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [code]
+              properties:
+                code:
+                  type: string
+                  description: Codigo TOTP de 6 digitos
+      responses:
+        "200":
+          description: 2FA activado, codigos de recuperacion generados
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          recoveryCodes:
+                            type: array
+                            items:
+                              type: string
+        "400":
+          description: Codigo invalido o 2FA no configurado
+
+  /auth/2fa/validate:
+    post:
+      tags: [Auth]
+      summary: Validar codigo 2FA durante login
+      description: Acepta un token temporal (del login) y un codigo TOTP o de recuperacion.
+      operationId: validate2FA
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [tempToken, code]
+              properties:
+                tempToken:
+                  type: string
+                  description: Token temporal JWT del login
+                code:
+                  type: string
+                  description: Codigo TOTP o codigo de recuperacion
+      responses:
+        "200":
+          description: Autenticacion exitosa, sesion creada
+        "400":
+          description: Codigo invalido o token expirado
+
+  /auth/2fa/disable:
+    post:
+      tags: [Auth]
+      summary: Desactivar 2FA
+      operationId: disable2FA
+      security: [{ cookieAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [code]
+              properties:
+                code:
+                  type: string
+                  description: Codigo TOTP actual para confirmar desactivacion
+      responses:
+        "200":
+          description: 2FA desactivado
+        "400":
+          description: Codigo invalido o 2FA no habilitado
+
+  /completions/pending:
+    get:
+      tags: [Completions]
+      summary: Listar completaciones pendientes de aprobacion
+      operationId: getPendingCompletions
+      security: [{ cookieAuth: [] }]
+      responses:
+        "200":
+          description: Lista de completaciones pendientes
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/FamilyCompletion"
+
+  /completions/approve:
+    post:
+      tags: [Completions]
+      summary: Aprobar una completacion pendiente
+      operationId: approveCompletion
+      security: [{ cookieAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [completion_id]
+              properties:
+                completion_id:
+                  type: string
+                  format: uuid
+      responses:
+        "200":
+          description: Completacion aprobada
+
+  /completions/reject:
+    post:
+      tags: [Completions]
+      summary: Rechazar una completacion pendiente
+      operationId: rejectCompletion
+      security: [{ cookieAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [completion_id]
+              properties:
+                completion_id:
+                  type: string
+                  format: uuid
+                reason:
+                  type: string
+      responses:
+        "200":
+          description: Completacion rechazada
+
+  /families/leave:
+    post:
+      tags: [Families]
+      summary: Abandonar una familia
+      operationId: leaveFamily
+      security: [{ cookieAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [family_id]
+              properties:
+                family_id:
+                  type: string
+                  format: uuid
+      responses:
+        "200":
+          description: Familia abandonada exitosamente
+
+  /families/role:
+    patch:
+      tags: [Families]
+      summary: Cambiar rol de un miembro de la familia
+      operationId: changeFamilyRole
+      security: [{ cookieAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [family_id, user_id, new_role]
+              properties:
+                family_id:
+                  type: string
+                  format: uuid
+                user_id:
+                  type: string
+                  format: uuid
+                new_role:
+                  type: string
+                  enum: [sponsor, kid]
+      responses:
+        "200":
+          description: Rol actualizado
+
+  /families/{id}:
+    delete:
+      tags: [Families]
+      summary: Eliminar familia (solo creador)
+      operationId: deleteFamily
+      security: [{ cookieAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Familia eliminada
+
+  /families/{id}/members/{userId}:
+    delete:
+      tags: [Families]
+      summary: Remover miembro de la familia (solo sponsor)
+      operationId: removeFamilyMember
+      security: [{ cookieAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Miembro removido
+
+  /habits/{id}:
+    put:
+      tags: [Habits]
+      summary: Actualizar un habito
+      operationId: updateHabit
+      security: [{ cookieAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                  nullable: true
+                color:
+                  type: string
+                sat_reward:
+                  type: integer
+                schedule_type:
+                  type: string
+                  enum: [daily, specific_days, times_per_week]
+                verification_type:
+                  type: string
+                  enum: [sponsor_approval, self_verify]
+                assigned_to:
+                  type: string
+                  format: uuid
+      responses:
+        "200":
+          description: Habito actualizado
+    delete:
+      tags: [Habits]
+      summary: Desactivar un habito
+      operationId: deleteHabit
+      security: [{ cookieAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Habito desactivado
+
+  /habits/{id}/assignments:
+    get:
+      tags: [Habits]
+      summary: Obtener asignaciones de un habito
+      operationId: getHabitAssignments
+      security: [{ cookieAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Lista de asignaciones
+
+  /wallets:
+    get:
+      tags: [Wallets]
+      summary: Obtener wallet activa del usuario
+      operationId: getWallet
+      security: [{ cookieAuth: [] }]
+      responses:
+        "200":
+          description: Wallet activa o null
+    post:
+      tags: [Wallets]
+      summary: Conectar wallet NWC
+      operationId: createWallet
+      security: [{ cookieAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [nwc_url]
+              properties:
+                nwc_url:
+                  type: string
+                  description: URL de Nostr Wallet Connect
+                label:
+                  type: string
+      responses:
+        "200":
+          description: Wallet conectada
+    delete:
+      tags: [Wallets]
+      summary: Desconectar wallet
+      operationId: deleteWallet
+      security: [{ cookieAuth: [] }]
+      responses:
+        "200":
+          description: Wallet desactivada
+
+  /payments:
+    get:
+      tags: [Payments]
+      summary: Listar pagos del usuario
+      operationId: listPayments
+      security: [{ cookieAuth: [] }]
+      parameters:
+        - name: role
+          in: query
+          schema:
+            type: string
+            enum: [sponsor, kid]
+          description: Filtrar por perspectiva
+        - name: from
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: to
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        "200":
+          description: Lista de pagos
+
+  /payments/retry:
+    post:
+      tags: [Payments]
+      summary: Reintentar un pago fallido
+      operationId: retryPayment
+      security: [{ cookieAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [payment_id]
+              properties:
+                payment_id:
+                  type: string
+                  format: uuid
+      responses:
+        "200":
+          description: Pago reintentado
+        "400":
+          description: Solo se pueden reintentar pagos fallidos
+        "404":
+          description: Pago no encontrado
+
+  /notifications:
+    get:
+      tags: [Notifications]
+      summary: Listar notificaciones del usuario
+      operationId: getNotifications
+      security: [{ cookieAuth: [] }]
+      parameters:
+        - name: unread
+          in: query
+          schema:
+            type: boolean
+          description: Filtrar solo no leidas
+      responses:
+        "200":
+          description: Lista de notificaciones
+    patch:
+      tags: [Notifications]
+      summary: Marcar notificacion como leida
+      operationId: markNotificationRead
+      security: [{ cookieAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [id]
+              properties:
+                id:
+                  type: string
+                  format: uuid
+      responses:
+        "200":
+          description: Notificacion marcada como leida
 
 components:
   securitySchemes:

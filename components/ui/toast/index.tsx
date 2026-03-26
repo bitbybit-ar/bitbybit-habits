@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, useCallback, useRef, useEffect } from "react";
+import { createContext, useContext, useState, useCallback, useRef } from "react";
 import { CheckIcon, BoltIcon } from "@/components/icons";
 import { cn } from "@/lib/utils";
 import styles from "./toast.module.scss";
