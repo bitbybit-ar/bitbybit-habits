@@ -25,6 +25,36 @@
 
 }
 
+.headerRow {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  position: relative;
+}
+
+.exitDemo {
+  position: absolute;
+  right: 0;
+  top: 0;
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  font-size: $font-size-sm;
+  padding: $spacing-8 $spacing-12;
+  border-radius: $border-radius-sm;
+  transition: color 0.2s, background 0.2s;
+
+  &:hover {
+    color: var(--color-text-primary);
+    background: rgba(var(--glass-color), 0.1);
+  }
+
+  @include mobile {
+    font-size: $font-size-xs;
+    padding: $spacing-4 $spacing-8;
+  }
+}
+
 .header {
   text-align: center;
   margin-bottom: $spacing-48;
@@ -102,11 +132,20 @@
   }
 }
 
-// Desktop-only flip
+// Desktop hover flip
 @media (hover: hover) and (min-width: 769px) {
   .flipCard:hover .flipCardInner {
     transform: rotateY(180deg);
   }
+}
+
+// Touch/click flip (toggled via .flipped class)
+.flipCard.flipped .flipCardInner {
+  transform: rotateY(180deg);
+}
+
+.flipCard {
+  cursor: pointer;
 }
 
 .flipFront,

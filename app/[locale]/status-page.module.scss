@@ -1,0 +1,73 @@
+@use "@/styles/colors" as *;
+@use "@/styles/spacing" as *;
+@use "@/styles/typography" as *;
+@use "@/styles/glass" as *;
+@use "@/styles/media-mixins" as *;
+
+.wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 80vh;
+  padding: $spacing-24;
+}
+
+.card {
+  @include glass-card;
+  text-align: center;
+  padding: $spacing-48;
+  max-width: 440px;
+  width: 100%;
+
+  @include mobile {
+    padding: $spacing-32 $spacing-24;
+  }
+}
+
+.icon {
+  font-size: 3.5rem;
+  line-height: 1;
+  margin-bottom: $spacing-20;
+}
+
+.code {
+  font-family: var(--font-display);
+  font-size: $font-size-hero;
+  font-weight: $font-weight-extrabold;
+  background: var(--gradient-primary-text);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+  margin: 0 0 $spacing-8;
+}
+
+.title {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: var(--color-text-primary);
+  margin: 0 0 $spacing-8;
+}
+
+.description {
+  font-size: $font-size-sm;
+  color: var(--color-text-secondary);
+  line-height: $line-height-base;
+  margin: 0 0 $spacing-24;
+  max-width: 320px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.devError {
+  font-size: $font-size-xs;
+  color: var(--color-error);
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-width: 400px;
+  margin: 0 auto $spacing-20;
+  padding: $spacing-12;
+  border-radius: $border-radius-sm;
+  background: rgba($color-error, 0.08);
+  text-align: left;
+}

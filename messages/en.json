@@ -132,7 +132,29 @@
     "noHabitsTitle": "No habits yet",
     "sponsorNoHabitsDesc": "Create habits with sat rewards for your kids to complete.",
     "createFirstHabit": "Create your first habit",
-    "kidNoHabitsDesc": "Ask your sponsor to add habits for you to earn sats!"
+    "kidNoHabitsDesc": "Ask your sponsor to add habits for you to earn sats!",
+    "noCompletions": "No completions yet",
+    "noCompletionsDesc": "When you complete a habit, it will show up here.",
+    "noPayments": "No payments yet",
+    "noPaymentsDesc": "Payments appear after you approve completions with sat rewards.",
+    "noNotifications": "All caught up!",
+    "noNotificationsDesc": "You have no new notifications.",
+    "noFamily": "No family yet",
+    "noFamilyKidDesc": "Join a family with an invite code to get started.",
+    "noFamilySponsorDesc": "Create a family and invite your kids to get started."
+  },
+  "error": {
+    "title": "Something went wrong",
+    "description": "An unexpected error occurred. Try again or reload the page.",
+    "tryAgain": "Try again"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "description": "The page you're looking for doesn't exist or has been moved.",
+    "backHome": "Back to home"
+  },
+  "accessibility": {
+    "skipToContent": "Skip to content"
   },
   "memberPicker": {
     "noKids": "No kids in family yet — share your invite code"
@@ -525,7 +547,8 @@
       "celebrationMsg": "Keep it up! Every habit gets you closer to more sats ⚡",
       "registerCTA": "Register as Kid"
     },
-    "stepIncompleteError": "You must complete this step before continuing"
+    "stepIncompleteError": "You must complete this step before continuing",
+    "exitDemo": "Exit demo"
   },
   "invoiceModal": {
     "paid": "Payment received! ⚡",

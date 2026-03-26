@@ -9,6 +9,8 @@ export default defineConfig({
     globals: true,
     setupFiles: ["./tests/setup.ts"],
     include: ["tests/**/*.test.{ts,tsx}"],
+    pool: "threads",
+    teardownTimeout: 5000,
     coverage: {
       reporter: ["text", "lcov"],
       include: ["app/api/**", "components/**", "lib/**"],

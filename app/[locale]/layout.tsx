@@ -111,8 +111,13 @@ export default async function LocaleLayout({
         <NextIntlClientProvider locale={locale} messages={messages}>
           <ThemeProvider>
             <ToastProvider>
+              <a href="#main-content" className="skip-link">
+                {messages && typeof messages === "object" && "accessibility" in messages
+                  ? (messages.accessibility as Record<string, string>).skipToContent
+                  : "Skip to content"}
+              </a>
               <SwRegister />
-              {children}
+              <main id="main-content">{children}</main>
             </ToastProvider>
           </ThemeProvider>
         </NextIntlClientProvider>

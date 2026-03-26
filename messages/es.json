@@ -132,7 +132,29 @@
     "noHabitsTitle": "Todavía no hay hábitos",
     "sponsorNoHabitsDesc": "Creá hábitos con recompensa en sats para que tus kids completen.",
     "createFirstHabit": "Crear tu primer hábito",
-    "kidNoHabitsDesc": "Pedile a tu sponsor que agregue hábitos para ganar sats!"
+    "kidNoHabitsDesc": "Pedile a tu sponsor que agregue hábitos para ganar sats!",
+    "noCompletions": "Todavía no hay completados",
+    "noCompletionsDesc": "Cuando completes un hábito, aparecerá acá.",
+    "noPayments": "Todavía no hay pagos",
+    "noPaymentsDesc": "Los pagos aparecen después de aprobar completados con recompensa en sats.",
+    "noNotifications": "Todo al día",
+    "noNotificationsDesc": "No tenés notificaciones nuevas.",
+    "noFamily": "Sin familia todavía",
+    "noFamilyKidDesc": "Uníte a una familia con un código de invitación para empezar.",
+    "noFamilySponsorDesc": "Creá una familia e invitá a tus kids para empezar."
+  },
+  "error": {
+    "title": "Algo salió mal",
+    "description": "Ocurrió un error inesperado. Intentá de nuevo o recargá la página.",
+    "tryAgain": "Intentar de nuevo"
+  },
+  "notFound": {
+    "title": "Página no encontrada",
+    "description": "La página que buscás no existe o fue movida.",
+    "backHome": "Volver al inicio"
+  },
+  "accessibility": {
+    "skipToContent": "Saltar al contenido"
   },
   "memberPicker": {
     "noKids": "No hay kids en la familia — compartí tu código de invitación"
@@ -525,7 +547,8 @@
       "celebrationMsg": "¡Seguí así! Cada hábito te acerca a más sats ⚡",
       "registerCTA": "Registrarse como Kid"
     },
-    "stepIncompleteError": "Debés completar este paso antes de continuar"
+    "stepIncompleteError": "Debés completar este paso antes de continuar",
+    "exitDemo": "Salir de la demo"
   },
   "invoiceModal": {
     "paid": "¡Pago recibido! ⚡",

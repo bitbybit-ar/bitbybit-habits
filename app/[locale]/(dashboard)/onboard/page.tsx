@@ -180,16 +180,16 @@ export default function OnboardPage() {
             </div>
 
             <div className={styles.roles}>
-              <div className={styles.roleCard} onClick={() => setStep("sponsor")}>
+              <button type="button" className={styles.roleCard} onClick={() => setStep("sponsor")}>
                 <div className={styles.roleIcon}>🛡️</div>
                 <div className={styles.roleName}>{t("onboarding.postReg.iAmSponsor")}</div>
                 <div className={styles.roleDesc}>{t("onboarding.postReg.sponsorDesc")}</div>
-              </div>
-              <div className={styles.roleCard} onClick={() => setStep("kid")}>
+              </button>
+              <button type="button" className={styles.roleCard} onClick={() => setStep("kid")}>
                 <div className={styles.roleIcon}>⚡</div>
                 <div className={styles.roleName}>{t("onboarding.postReg.iAmKid")}</div>
                 <div className={styles.roleDesc}>{t("onboarding.postReg.kidDesc")}</div>
-              </div>
+              </button>
             </div>
           </>
         )}

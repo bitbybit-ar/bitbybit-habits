@@ -5,8 +5,31 @@ import { eq, and, or, isNull, isNotNull, sql, desc } from "drizzle-orm";
 const VALID_SCHEDULE_TYPES = ["daily", "specific_days", "times_per_week"] as const;
 const VALID_VERIFICATION_TYPES = ["sponsor_approval", "self_verify"] as const;
 
-export const GET = apiHandler(async (_req, { session, db }) => {
+export const GET = apiHandler(async (request, { session, db }) => {
+  const { searchParams } = new URL(request.url);
+  const page = Math.max(1, parseInt(searchParams.get("page") || "1", 10) || 1);
+  const limit = Math.min(100, Math.max(1, parseInt(searchParams.get("limit") || "20", 10) || 20));
+  const offset = (page - 1) * limit;
+
   const today = new Date().toISOString().split("T")[0];
+
+  const whereCondition = and(
+    or(
+      and(isNull(habits.family_id), or(eq(habits.assigned_to, session.user_id), eq(habits.created_by, session.user_id))),
+      and(isNotNull(habits.family_id), isNotNull(familyMembers.id))
+    ),
+    eq(habits.active, true)
+  );
+
+  // Get total count
+  const [{ count: total }] = await db
+    .select({ count: sql<number>`count(DISTINCT ${habits.id})` })
+    .from(habits)
+    .leftJoin(
+      familyMembers,
+      and(eq(familyMembers.family_id, habits.family_id), eq(familyMembers.user_id, session.user_id))
+    )
+    .where(whereCondition);
 
   // Complex query with LEFT JOINs and CASE — use sql template for the computed column
   const result = await db
@@ -42,18 +65,20 @@ export const GET = apiHandler(async (_req, { session, db }) => {
         eq(completions.date, today)
       )
     )
-    .where(
-      and(
-        or(
-          and(isNull(habits.family_id), or(eq(habits.assigned_to, session.user_id), eq(habits.created_by, session.user_id))),
-          and(isNotNull(habits.family_id), isNotNull(familyMembers.id))
-        ),
-        eq(habits.active, true)
-      )
-    )
-    .orderBy(desc(habits.created_at));
+    .where(whereCondition)
+    .orderBy(desc(habits.created_at))
+    .limit(limit)
+    .offset(offset);
 
-  return result;
+  return {
+    habits: result,
+    pagination: {
+      page,
+      limit,
+      total: Number(total),
+      totalPages: Math.ceil(Number(total) / limit),
+    },
+  };
 });
 
 export const POST = apiHandler(async (request, { session, db }) => {

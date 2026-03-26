@@ -2,6 +2,7 @@
 
 import React from "react";
 import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/routing";
 import Navbar from "@/components/layout/navbar";
 import SponsorDemo from "@/components/demo/SponsorDemo";
 import { ShieldIcon } from "@/components/icons";
@@ -14,11 +15,16 @@ export default function SponsorDemoPage() {
     <>
       <Navbar />
       <div className={styles.demoPage}>
-        <div className={styles.header}>
-          <h1 className={styles.title}>
-            <ShieldIcon size={28} color="#F7A825" /> <span>{t("sponsorDemoTitle")}</span>
-          </h1>
-          <p className={styles.subtitle}>{t("sponsorDemoSubtitle")}</p>
+        <div className={styles.headerRow}>
+          <div className={styles.header}>
+            <h1 className={styles.title}>
+              <ShieldIcon size={28} color="#F7A825" /> <span>{t("sponsorDemoTitle")}</span>
+            </h1>
+            <p className={styles.subtitle}>{t("sponsorDemoSubtitle")}</p>
+          </div>
+          <Link href="/" className={styles.exitDemo}>
+            {t("exitDemo")}
+          </Link>
         </div>
 
         <div className={styles.demoContainer}>
