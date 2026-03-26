@@ -148,6 +148,14 @@
     "description": "An unexpected error occurred. Try again or reload the page.",
     "tryAgain": "Try again"
   },
+  "notFound": {
+    "title": "Page not found",
+    "description": "The page you're looking for doesn't exist or has been moved.",
+    "backHome": "Back to home"
+  },
+  "accessibility": {
+    "skipToContent": "Skip to content"
+  },
   "memberPicker": {
     "noKids": "No kids in family yet — share your invite code"
   },

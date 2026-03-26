@@ -24,6 +24,8 @@ export function BottomNav({ tabs, activeTab, onTabChange }: BottomNavProps) {
           key={tab.key}
           className={cn(styles.navItem, activeTab === tab.key && styles.navItemActive)}
           onClick={() => onTabChange(tab.key)}
+          aria-label={tab.label}
+          aria-current={activeTab === tab.key ? "page" : undefined}
         >
           <div className={styles.navIcon}>{tab.icon}</div>
           <span className={styles.navLabel}>{tab.label}</span>

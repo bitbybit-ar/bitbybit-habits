@@ -148,6 +148,14 @@
     "description": "Ocurrió un error inesperado. Intentá de nuevo o recargá la página.",
     "tryAgain": "Intentar de nuevo"
   },
+  "notFound": {
+    "title": "Página no encontrada",
+    "description": "La página que buscás no existe o fue movida.",
+    "backHome": "Volver al inicio"
+  },
+  "accessibility": {
+    "skipToContent": "Saltar al contenido"
+  },
   "memberPicker": {
     "noKids": "No hay kids en la familia — compartí tu código de invitación"
   },

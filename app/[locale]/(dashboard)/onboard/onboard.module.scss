@@ -110,6 +110,10 @@
   text-align: center;
   cursor: pointer;
   transition: all 0.3s ease;
+  // Reset button defaults
+  font: inherit;
+  color: inherit;
+  width: 100%;
 
   &:hover {
     transform: translateY(-4px);
