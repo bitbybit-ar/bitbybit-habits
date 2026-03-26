@@ -1,6 +1,7 @@
 import { apiHandler, created, BadRequestError, ForbiddenError } from "@/lib/api";
 import { habits, familyMembers, completions } from "@/lib/db";
-import { eq, and, or, isNull, isNotNull, sql, desc } from "drizzle-orm";
+import { eq, and, or, isNull, isNotNull, sql, desc, inArray } from "drizzle-orm";
+import { todayDateStr } from "@/lib/date";
 
 const VALID_SCHEDULE_TYPES = ["daily", "specific_days", "times_per_week"] as const;
 const VALID_VERIFICATION_TYPES = ["sponsor_approval", "self_verify"] as const;
@@ -11,7 +12,7 @@ export const GET = apiHandler(async (request, { session, db }) => {
   const limit = Math.min(100, Math.max(1, parseInt(searchParams.get("limit") || "20", 10) || 20));
   const offset = (page - 1) * limit;
 
-  const today = new Date().toISOString().split("T")[0];
+  const today = todayDateStr();
 
   const whereCondition = and(
     or(
@@ -162,16 +163,17 @@ export const POST = apiHandler(async (request, { session, db }) => {
       throw new ForbiddenError("No sos sponsor de esta familia");
     }
 
-    // Validate all assignees are family members
-    for (const assigneeId of assignees) {
-      const assigneeMembership = await db
-        .select({ id: familyMembers.id })
-        .from(familyMembers)
-        .where(
-          and(eq(familyMembers.family_id, family_id), eq(familyMembers.user_id, assigneeId))
-        );
+    // Validate all assignees are family members (single query)
+    const assigneeMemberships = await db
+      .select({ user_id: familyMembers.user_id })
+      .from(familyMembers)
+      .where(
+        and(eq(familyMembers.family_id, family_id), inArray(familyMembers.user_id, assignees))
+      );
 
-      if (assigneeMembership.length === 0) {
+    const memberUserIds = new Set(assigneeMemberships.map((m) => m.user_id));
+    for (const assigneeId of assignees) {
+      if (!memberUserIds.has(assigneeId)) {
         throw new BadRequestError("El usuario asignado no es miembro de esta familia");
       }
     }

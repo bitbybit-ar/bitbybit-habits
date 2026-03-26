@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 
 vi.mock("@/components/dashboard/family-card/family-card.module.scss", () => ({
   default: new Proxy({}, { get: (_t, prop) => String(prop) }),

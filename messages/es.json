@@ -43,7 +43,12 @@
     "strengthStrong": "Fuerte",
     "orLoginWith": "o ingresá con",
     "orRegisterWith": "o registrate con",
-    "registerWithNostr": "Registrarse con Nostr"
+    "registerWithNostr": "Registrarse con Nostr",
+    "forgotPassword": "¿Olvidaste tu contraseña?",
+    "forgotPasswordMsg": "La recuperación de contraseña estará disponible pronto. Contactá a tu sponsor familiar para ayuda.",
+    "loginPlaceholder": "email o usuario",
+    "usernamePlaceholder": "usuario",
+    "emailPlaceholder": "email@ejemplo.com"
   },
   "dashboard": {
     "welcome": "Bienvenido/a",
@@ -163,6 +168,8 @@
     "noHabits": "Todavía no tenés hábitos asignados. Pedile a tu sponsor que te cree uno.",
     "level": "Nivel",
     "satsToday": "sats hoy",
+    "earnings": "Mis ganancias",
+    "earningsDesc": "Tus pagos en sats aparecerán acá cuando tu sponsor apruebe tus hábitos.",
     "week": "semana",
     "daySun": "Dom",
     "dayMon": "Lun",

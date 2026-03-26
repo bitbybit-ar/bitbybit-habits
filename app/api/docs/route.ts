@@ -1,22 +1,12 @@
-import { NextResponse } from "next/server";
+import { apiHandler } from "@/lib/api";
 import { readFileSync } from "fs";
 import { join } from "path";
 import yaml from "js-yaml";
 
-export async function GET() {
-  try {
-    const file = readFileSync(
-      join(process.cwd(), "docs/openapi.yaml"),
-      "utf8"
-    );
-    const spec = yaml.load(file);
-    return NextResponse.json(spec);
-  } catch (error: unknown) {
-    const message =
-      error instanceof Error ? error.message : "Error al cargar la especificacion";
-    return NextResponse.json(
-      { success: false, error: message },
-      { status: 500 }
-    );
-  }
-}
+export const GET = apiHandler(async () => {
+  const file = readFileSync(
+    join(process.cwd(), "docs/openapi.yaml"),
+    "utf8"
+  );
+  return yaml.load(file);
+}, { auth: false });

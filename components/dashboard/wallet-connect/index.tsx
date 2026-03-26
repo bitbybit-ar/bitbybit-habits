@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { WalletIcon, BoltIcon } from "@/components/icons";
+import { FormInput, FormButton } from "@/components/ui/form";
 import { useWebLN } from "@/lib/hooks/useWebLN";
 import styles from "./wallet-connect.module.scss";
 
@@ -175,34 +176,29 @@ export function WalletConnect() {
       )}
 
       <div className={styles.form}>
-        <div className={styles.field}>
-          <label className={styles.fieldLabel}>{t("wallet.nwcUrl")}</label>
-          <input
-            type="text"
-            className={styles.input}
-            placeholder="nostr+walletconnect://..."
-            value={nwcUrl}
-            onChange={(e) => setNwcUrl(e.target.value)}
-          />
-        </div>
-        <div className={styles.field}>
-          <label className={styles.fieldLabel}>{t("wallet.label")}</label>
-          <input
-            type="text"
-            className={styles.input}
-            placeholder={t("wallet.labelPlaceholder")}
-            value={label}
-            onChange={(e) => setLabel(e.target.value)}
-          />
-        </div>
-        <button
-          className={styles.connectButton}
+        <FormInput
+          id="nwc-url"
+          label={t("wallet.nwcUrl")}
+          placeholder="nostr+walletconnect://..."
+          value={nwcUrl}
+          onChange={setNwcUrl}
+        />
+        <FormInput
+          id="nwc-label"
+          label={t("wallet.label")}
+          placeholder={t("wallet.labelPlaceholder")}
+          value={label}
+          onChange={setLabel}
+        />
+        <FormButton
           onClick={handleConnect}
-          disabled={!nwcUrl || saving}
+          loading={saving}
+          loadingText={t("common.loading")}
+          disabled={!nwcUrl}
         >
           <WalletIcon size={16} />
-          {saving ? t("common.loading") : t("wallet.connectWallet")}
-        </button>
+          {t("wallet.connectWallet")}
+        </FormButton>
       </div>
     </div>
   );

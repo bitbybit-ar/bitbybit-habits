@@ -1,6 +1,7 @@
 import { apiHandler, ForbiddenError, NotFoundError } from "@/lib/api";
 import { families, familyMembers, completions, habits, payments } from "@/lib/db";
 import { eq, and, sql, count, sum } from "drizzle-orm";
+import { todayDateStr } from "@/lib/date";
 
 export const GET = apiHandler(async (_req, { session, db, params }) => {
   const familyId = params.id;
@@ -30,7 +31,7 @@ export const GET = apiHandler(async (_req, { session, db, params }) => {
     throw new ForbiddenError("Solo sponsors pueden ver estadísticas de la familia");
   }
 
-  const todayStr = new Date().toISOString().split("T")[0];
+  const todayStr = todayDateStr();
 
   // Run all stats queries in parallel
   const [completedTodayResult, totalTodayResult, pendingResult, totalPaidResult] =

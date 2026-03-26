@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "@/i18n/routing";
 import { Onboarding } from "@/components/dashboard/onboarding";
 import styles from "../dashboard.module.scss";

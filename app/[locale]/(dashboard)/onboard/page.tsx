@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import Navbar from "@/components/layout/navbar";
+import { FormInput, FormButton } from "@/components/ui/form";
 import styles from "./onboard.module.scss";
 
 type Step = "role" | "sponsor" | "kid" | "done";
@@ -202,23 +203,17 @@ export default function OnboardPage() {
             <h2 className={styles.formTitle}>{t("onboarding.postReg.createYourFamily")}</h2>
             <p className={styles.formSubtitle}>{t("family.familyName")}</p>
             <form onSubmit={handleCreateFamily} className={styles.form}>
-              <div className={styles.field}>
-                <input
-                  type="text"
-                  value={familyName}
-                  onChange={(e) => setFamilyName(e.target.value)}
-                  placeholder={t("family.familyName")}
-                  required
-                />
-              </div>
+              <FormInput
+                id="family-name"
+                value={familyName}
+                onChange={(v) => setFamilyName(v)}
+                placeholder={t("family.familyName")}
+                required
+              />
               {error && <p className={styles.error}>{error}</p>}
-              <button
-                type="submit"
-                className={styles.submitButton}
-                disabled={loading || !familyName.trim()}
-              >
-                {loading ? t("common.loading") : t("family.createFamily")}
-              </button>
+              <FormButton type="submit" loading={loading} loadingText={t("common.loading")} disabled={!familyName.trim()}>
+                {t("family.createFamily")}
+              </FormButton>
             </form>
           </div>
         )}
@@ -231,25 +226,19 @@ export default function OnboardPage() {
             <h2 className={styles.formTitle}>{t("onboarding.postReg.joinAFamily")}</h2>
             <p className={styles.formSubtitle}>{t("onboarding.postReg.enterCode")}</p>
             <form onSubmit={handleJoinFamily} className={styles.form}>
-              <div className={styles.field}>
-                <input
-                  type="text"
-                  value={inviteCode}
-                  onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
-                  placeholder={t("family.inviteCode")}
-                  required
-                  maxLength={6}
-                  style={{ textAlign: "center", letterSpacing: "0.15em", fontSize: "1.25rem" }}
-                />
-              </div>
+              <FormInput
+                id="invite-code"
+                value={inviteCode}
+                onChange={(v) => setInviteCode(v.toUpperCase())}
+                placeholder={t("family.inviteCode")}
+                required
+                maxLength={6}
+                style={{ textAlign: "center", letterSpacing: "0.15em", fontSize: "1.25rem" }}
+              />
               {error && <p className={styles.error}>{error}</p>}
-              <button
-                type="submit"
-                className={styles.submitButton}
-                disabled={loading || !inviteCode.trim()}
-              >
-                {loading ? t("common.loading") : t("family.join")}
-              </button>
+              <FormButton type="submit" loading={loading} loadingText={t("common.loading")} disabled={!inviteCode.trim()}>
+                {t("family.join")}
+              </FormButton>
             </form>
           </div>
         )}

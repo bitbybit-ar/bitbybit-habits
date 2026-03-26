@@ -43,7 +43,12 @@
     "strengthStrong": "Strong",
     "orLoginWith": "or log in with",
     "orRegisterWith": "or register with",
-    "registerWithNostr": "Register with Nostr"
+    "registerWithNostr": "Register with Nostr",
+    "forgotPassword": "Forgot your password?",
+    "forgotPasswordMsg": "Password reset will be available soon. Contact your family sponsor for help.",
+    "loginPlaceholder": "email or username",
+    "usernamePlaceholder": "username",
+    "emailPlaceholder": "email@example.com"
   },
   "dashboard": {
     "welcome": "Welcome",
@@ -163,6 +168,8 @@
     "noHabits": "You don't have any habits yet. Ask your sponsor to create one for you.",
     "level": "Level",
     "satsToday": "sats today",
+    "earnings": "My Earnings",
+    "earningsDesc": "Your sat payments will appear here when your sponsor approves your habits.",
     "week": "week",
     "daySun": "Sun",
     "dayMon": "Mon",

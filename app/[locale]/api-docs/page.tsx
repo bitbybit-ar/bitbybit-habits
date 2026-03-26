@@ -1,14 +1,26 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
-import SwaggerUI from "swagger-ui-react";
-import "swagger-ui-react/swagger-ui.css";
+
+const SwaggerUI = dynamic(() => import("swagger-ui-react"), {
+  ssr: false,
+  loading: () => (
+    <div style={{ padding: "2rem", color: "#e0e0e0", textAlign: "center" }}>
+      <p>Cargando documentacion...</p>
+    </div>
+  ),
+});
 
 export default function ApiDocsPage() {
   const [spec, setSpec] = useState<Record<string, unknown> | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [cssLoaded, setCssLoaded] = useState(false);
 
   useEffect(() => {
+    // @ts-expect-error — CSS module has no type declarations
+    import("swagger-ui-react/swagger-ui.css").then(() => setCssLoaded(true));
+
     fetch("/api/docs")
       .then((res) => res.json())
       .then((data) => {
@@ -30,7 +42,7 @@ export default function ApiDocsPage() {
     );
   }
 
-  if (!spec) {
+  if (!spec || !cssLoaded) {
     return (
       <div style={{ padding: "2rem", color: "#e0e0e0", textAlign: "center" }}>
         <p>Cargando documentacion...</p>

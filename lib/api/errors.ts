@@ -23,3 +23,11 @@ export class ForbiddenError extends ApiError {
 export class ConflictError extends ApiError {
   constructor(message: string) { super(409, message); }
 }
+
+export class RateLimitError extends ApiError {
+  public retryAfterMs: number;
+  constructor(retryAfterMs: number, message = "Demasiados intentos. Intenta de nuevo mas tarde") {
+    super(429, message);
+    this.retryAfterMs = retryAfterMs;
+  }
+}

@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
+import { formatDisplayDate } from "@/lib/date";
 import { CheckIcon, ClockIcon, BoltIcon } from "@/components/icons";
 import styles from "./pending-list.module.scss";
 
@@ -24,6 +25,7 @@ interface PendingListProps {
 
 export function PendingList({ completions, onApprove, onReject }: PendingListProps) {
   const t = useTranslations();
+  const locale = useLocale();
   const [processingIds, setProcessingIds] = useState<Set<string>>(new Set());
 
   const handleApprove = async (id: string) => {
@@ -79,7 +81,7 @@ export function PendingList({ completions, onApprove, onReject }: PendingListPro
               </div>
               <div className={styles.itemMeta}>
                 <span className={styles.kidName}>{completion.kid_name}</span>
-                <span className={styles.date}>{new Date(completion.date).toLocaleDateString()}</span>
+                <span className={styles.date}>{formatDisplayDate(completion.date, locale)}</span>
               </div>
             </div>
             <div className={styles.actions}>

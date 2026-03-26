@@ -1,25 +1,13 @@
 @use "@/styles/colors" as *;
 @use "@/styles/spacing" as *;
 @use "@/styles/typography" as *;
-@use "@/styles/media-mixins" as *;
 @use "@/styles/common-mixins" as *;
 
 // ── Form layout ──
-.form {
+.formLayout {
   display: flex;
   flex-direction: column;
   gap: $spacing-16;
-}
-
-// ── 2-column row (register) ──
-.fieldRow {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: $spacing-12;
-
-  @include mobile {
-    grid-template-columns: 1fr;
-  }
 }
 
 // ── Field wrapper ──
@@ -48,6 +36,9 @@
   font-size: $font-size-base;
   font-family: $font-family-base;
   width: 100%;
+  background: rgba(var(--glass-color), 0.04);
+  border: 1px solid rgba(var(--glass-color), 0.1);
+  outline: none;
   @include transition;
 
   &::placeholder {
@@ -56,7 +47,6 @@
   }
 
   &:focus {
-    outline: none;
     border-color: $color-primary;
     box-shadow: 0 0 0 2px rgba($color-primary, 0.15);
   }
@@ -64,7 +54,7 @@
 
 // ── Teal-tinted inputs (identity: name, username, email) ──
 .inputIdentity {
-  @extend .input;
+  composes: input;
   background: rgba($color-accent-alt, 0.04);
   border: 1px solid rgba($color-accent-alt, 0.10);
 
@@ -76,7 +66,7 @@
 
 // ── Violet-tinted inputs (security: password, confirm) ──
 .inputSecurity {
-  @extend .input;
+  composes: input;
   background: rgba($color-secondary, 0.04);
   border: 1px solid rgba($color-secondary, 0.10);
 
@@ -84,6 +74,29 @@
     border-color: $color-secondary;
     box-shadow: 0 0 0 2px rgba($color-secondary, 0.12);
   }
+}
+
+// ── Select ──
+.select {
+  composes: input;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23B8A898' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right $spacing-16 center;
+  padding-right: $spacing-40;
+
+  option {
+    background: var(--color-bg-3);
+    color: var(--color-text-primary);
+  }
+}
+
+// ── Textarea ──
+.textarea {
+  composes: input;
+  resize: vertical;
+  min-height: 60px;
 }
 
 // ── Error states ──
@@ -104,6 +117,31 @@
   margin-top: 2px;
 }
 
+// ── Password strength indicator ──
+.strengthContainer {
+  margin-top: $spacing-4;
+}
+
+.strengthBar {
+  display: flex;
+  gap: 4px;
+}
+
+.strengthSegment {
+  flex: 1;
+  height: 3px;
+  border-radius: 2px;
+  background: rgba(var(--glass-color), 0.06);
+  @include transition(background, 0.3s);
+}
+
+.strengthLabel {
+  font-size: $font-size-xs;
+  margin-top: $spacing-4;
+  font-weight: $font-weight-medium;
+  display: block;
+}
+
 // ── Forgot password link ──
 .forgotLink {
   background: none;
@@ -115,6 +153,8 @@
   padding: 0;
   margin-top: $spacing-4;
   text-align: right;
+  display: block;
+  width: 100%;
   @include transition;
 
   &:hover {
@@ -122,8 +162,23 @@
   }
 }
 
+// ── Two-column row ──
+.fieldRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $spacing-12;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
 // ── Submit button ──
 .submitButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-8;
   width: 100%;
   padding: $spacing-12 $spacing-24;
   border-radius: $border-radius-md;
@@ -153,27 +208,15 @@
   }
 }
 
-// ── Password strength indicator ──
-.strengthContainer {
-  margin-top: $spacing-4;
-}
+.outlineButton {
+  composes: submitButton;
+  background: transparent;
+  border: 1px solid var(--color-primary);
+  color: var(--color-primary);
 
-.strengthBar {
-  display: flex;
-  gap: 4px;
-}
-
-.strengthSegment {
-  flex: 1;
-  height: 3px;
-  border-radius: 2px;
-  background: rgba(var(--glass-color), 0.06);
-  @include transition(background, 0.3s);
-}
-
-.strengthLabel {
-  font-size: $font-size-xs;
-  margin-top: $spacing-4;
-  font-weight: $font-weight-medium;
-  display: block;
+  &:hover:not(:disabled) {
+    background: rgba($color-primary, 0.08);
+    box-shadow: none;
+    transform: none;
+  }
 }

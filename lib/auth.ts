@@ -64,13 +64,28 @@ export async function getSession(): Promise<AuthSession | null> {
     const secret = getSecretKey();
     const { payload } = await jwtVerify(token, secret);
 
+    // Runtime validation — reject malformed JWTs
+    const { user_id, email, username, display_name, locale, role } = payload;
+
+    if (
+      typeof user_id !== "string" || !user_id ||
+      typeof email !== "string" || !email ||
+      typeof username !== "string" || !username ||
+      typeof display_name !== "string"
+    ) {
+      return null;
+    }
+
+    const validLocale = locale === "es" || locale === "en" ? locale : "es";
+    const validRole = role === "sponsor" || role === "kid" ? role : null;
+
     return {
-      user_id: payload.user_id as string,
-      email: payload.email as string,
-      username: payload.username as string,
-      display_name: payload.display_name as string,
-      locale: payload.locale as "es" | "en",
-      role: (payload.role as "sponsor" | "kid") ?? null,
+      user_id,
+      email,
+      username,
+      display_name,
+      locale: validLocale,
+      role: validRole,
     };
   } catch {
     return null;

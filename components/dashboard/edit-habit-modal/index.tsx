@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { MemberPicker } from "@/components/dashboard/member-picker";
+import { ModalLoader } from "@/components/ui/modal-loader";
+import { FormInput, FormSelect, FormField, FormButton } from "@/components/ui/form";
 import type { Habit } from "@/lib/types";
 import styles from "./edit-habit-modal.module.scss";
 
@@ -21,12 +23,8 @@ interface EditHabitModalProps {
 const COLORS = ["#F7A825", "#4CAF7D", "#FF6B6B", "#4DB6AC", "#FF9F43", "#EE5A5A", "#A5D6B7", "#FBC96B"];
 
 const DAY_KEYS = [
-  "kidDashboard.daySun",
-  "kidDashboard.dayMon",
-  "kidDashboard.dayTue",
-  "kidDashboard.dayWed",
-  "kidDashboard.dayThu",
-  "kidDashboard.dayFri",
+  "kidDashboard.daySun", "kidDashboard.dayMon", "kidDashboard.dayTue",
+  "kidDashboard.dayWed", "kidDashboard.dayThu", "kidDashboard.dayFri",
   "kidDashboard.daySat",
 ] as const;
 
@@ -47,7 +45,6 @@ export function EditHabitModal({ habit, kids, onSave, onClose }: EditHabitModalP
   const [saving, setSaving] = useState(false);
   const [loadingAssignments, setLoadingAssignments] = useState(true);
 
-  // Fetch current member assignments when modal opens
   useEffect(() => {
     async function fetchAssignments() {
       try {
@@ -57,7 +54,6 @@ export function EditHabitModal({ habit, kids, onSave, onClose }: EditHabitModalP
           if (data.success && data.data && data.data.length > 0) {
             setAssignedMembers(data.data.map((a: { user_id: string }) => a.user_id));
           } else {
-            // Fall back to the habit's assigned_to field
             setAssignedMembers(habit.assigned_to ? [habit.assigned_to] : []);
           }
         } else {
@@ -81,20 +77,16 @@ export function EditHabitModal({ habit, kids, onSave, onClose }: EditHabitModalP
   const handleMemberToggle = (userId: string) => {
     setAssignedMembers((prev) => {
       if (prev.includes(userId)) {
-        // Don't allow deselecting the last member
         if (prev.length <= 1) return prev;
         return prev.filter((id) => id !== userId);
       }
       return [...prev, userId];
     });
-    // Keep assigned_to in sync (primary assignee = first selected)
     setAssignedTo((prev) => {
       if (assignedMembers.includes(userId)) {
-        // Removing this user, update primary if needed
         const remaining = assignedMembers.filter((id) => id !== userId);
         return remaining.length > 0 ? remaining[0] : prev;
       }
-      // Adding this user
       return assignedMembers.length === 0 ? userId : prev;
     });
   };
@@ -135,37 +127,30 @@ export function EditHabitModal({ habit, kids, onSave, onClose }: EditHabitModalP
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
         <h3 className={styles.title}>{t("habits.editHabit")}</h3>
 
-        <div className={styles.field}>
-          <label className={styles.label}>{t("habits.habitName")}</label>
-          <input
-            className={styles.input}
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-        </div>
+        <FormInput
+          id="edit-habit-name"
+          label={t("habits.habitName")}
+          value={name}
+          onChange={setName}
+        />
 
-        <div className={styles.field}>
-          <label className={styles.label}>{t("habits.description")}</label>
-          <input
-            className={styles.input}
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
-        </div>
+        <FormInput
+          id="edit-habit-desc"
+          label={t("habits.description")}
+          value={description}
+          onChange={setDescription}
+        />
 
-        <div className={styles.field}>
-          <label className={styles.label}>{t("habits.satReward")}</label>
-          <input
-            className={styles.input}
-            type="number"
-            min={0}
-            value={satReward}
-            onChange={(e) => setSatReward(Number(e.target.value))}
-          />
-        </div>
+        <FormInput
+          id="edit-habit-reward"
+          type="number"
+          label={t("habits.satReward")}
+          min={0}
+          value={String(satReward)}
+          onChange={(v) => setSatReward(Number(v))}
+        />
 
-        <div className={styles.field}>
-          <label className={styles.label}>{t("habits.color")}</label>
+        <FormField label={t("habits.color")}>
           <div className={styles.colorPicker}>
             {COLORS.map((c) => (
               <button
@@ -178,23 +163,21 @@ export function EditHabitModal({ habit, kids, onSave, onClose }: EditHabitModalP
               />
             ))}
           </div>
-        </div>
+        </FormField>
 
-        <div className={styles.field}>
-          <label className={styles.label}>{t("habits.schedule")}</label>
-          <select
-            className={styles.select}
-            value={scheduleType}
-            onChange={(e) => setScheduleType(e.target.value as "daily" | "specific_days" | "times_per_week")}
-          >
-            <option value="daily">{t("habits.daily")}</option>
-            <option value="specific_days">{t("habits.specificDays")}</option>
-            <option value="times_per_week">{t("habits.timesPerWeek")}</option>
-          </select>
-        </div>
+        <FormSelect
+          id="edit-habit-schedule"
+          label={t("habits.schedule")}
+          value={scheduleType}
+          onChange={(v) => setScheduleType(v as "daily" | "specific_days" | "times_per_week")}
+        >
+          <option value="daily">{t("habits.daily")}</option>
+          <option value="specific_days">{t("habits.specificDays")}</option>
+          <option value="times_per_week">{t("habits.timesPerWeek")}</option>
+        </FormSelect>
 
         {scheduleType === "specific_days" && (
-          <div className={styles.field}>
+          <FormField>
             <div className={styles.daysGrid}>
               {DAY_KEYS.map((key, index) => (
                 <label key={key} className={styles.dayCheck}>
@@ -208,41 +191,35 @@ export function EditHabitModal({ habit, kids, onSave, onClose }: EditHabitModalP
                 </label>
               ))}
             </div>
-          </div>
+          </FormField>
         )}
 
         {scheduleType === "times_per_week" && (
-          <div className={styles.field}>
-            <label className={styles.label}>{t("habits.timesPerWeek")}</label>
-            <input
-              className={styles.input}
-              type="number"
-              min={1}
-              max={7}
-              value={timesPerWeek}
-              onChange={(e) => setTimesPerWeek(Math.max(1, Math.min(7, parseInt(e.target.value) || 1)))}
-            />
-          </div>
+          <FormInput
+            id="edit-habit-times"
+            type="number"
+            label={t("habits.timesPerWeek")}
+            min={1}
+            max={7}
+            value={String(timesPerWeek)}
+            onChange={(v) => setTimesPerWeek(Math.max(1, Math.min(7, parseInt(v) || 1)))}
+          />
         )}
 
-        <div className={styles.field}>
-          <label className={styles.label}>{t("habits.verification")}</label>
-          <select
-            className={styles.select}
-            value={verificationType}
-            onChange={(e) => setVerificationType(e.target.value as "sponsor_approval" | "self_verify")}
-          >
-            <option value="sponsor_approval">{t("habits.sponsorApproval")}</option>
-            <option value="self_verify">{t("habits.selfVerify")}</option>
-          </select>
-        </div>
+        <FormSelect
+          id="edit-habit-verify"
+          label={t("habits.verification")}
+          value={verificationType}
+          onChange={(v) => setVerificationType(v as "sponsor_approval" | "self_verify")}
+        >
+          <option value="sponsor_approval">{t("habits.sponsorApproval")}</option>
+          <option value="self_verify">{t("habits.selfVerify")}</option>
+        </FormSelect>
 
-        {/* Assign to — visual member picker with multi-select */}
         {kids && kids.length > 0 && (
-          <div className={styles.field}>
-            <label className={styles.label}>{t("habits.assignTo")}</label>
+          <FormField label={t("habits.assignTo")}>
             {loadingAssignments ? (
-              <p>{t("common.loading")}</p>
+              <ModalLoader />
             ) : (
               <MemberPicker
                 kids={kids}
@@ -251,20 +228,21 @@ export function EditHabitModal({ habit, kids, onSave, onClose }: EditHabitModalP
                 multiple
               />
             )}
-          </div>
+          </FormField>
         )}
 
         <div className={styles.actions}>
           <button className={styles.cancelButton} onClick={onClose}>
             {t("common.cancel")}
           </button>
-          <button
-            className={styles.saveButton}
+          <FormButton
             onClick={handleSave}
-            disabled={!name.trim() || saving}
+            loading={saving}
+            loadingText={t("common.loading")}
+            disabled={!name.trim()}
           >
-            {saving ? t("common.loading") : t("common.save")}
-          </button>
+            {t("common.save")}
+          </FormButton>
         </div>
       </div>
     </div>

@@ -4,47 +4,39 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import AuthCard from "@/components/auth/AuthCard";
-import { cn } from "@/lib/utils";
-import formStyles from "@/components/auth/auth-form.module.scss";
-
-interface FormErrors {
-  login?: string;
-  password?: string;
-}
+import { FormInput, FormButton } from "@/components/ui/form";
+import { useToast } from "@/components/ui/toast";
+import { useFormValidation } from "@/lib/hooks/useFormValidation";
+import styles from "@/components/ui/form/form.module.scss";
 
 export default function LoginPage() {
   const router = useRouter();
   const t = useTranslations();
-  const [login, setLogin] = useState("");
-  const [password, setPassword] = useState("");
+  const { showToast } = useToast();
   const [error, setError] = useState("");
-  const [errors, setErrors] = useState<FormErrors>({});
-  const [touched, setTouched] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const validate = (): FormErrors => {
-    const errs: FormErrors = {};
-    if (!login.trim()) errs.login = t("validation.required");
-    if (!password) errs.password = t("validation.required");
-    return errs;
-  };
+  const form = useFormValidation({
+    initialValues: { login: "", password: "" },
+    validators: {
+      login: (v) => !(v as string).trim() ? t("validation.required") : undefined,
+      password: (v) => !(v as string) ? t("validation.required") : undefined,
+    },
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    setTouched(true);
 
-    const validationErrors = validate();
-    setErrors(validationErrors);
-    if (Object.keys(validationErrors).length > 0) return;
+    const errs = form.validateAll();
+    if (Object.keys(errs).length > 0) return;
 
     setLoading(true);
-
     try {
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ login, password }),
+        body: JSON.stringify(form.values),
       });
       const data = await res.json();
 
@@ -64,6 +56,9 @@ export default function LoginPage() {
     }
   };
 
+  const loginField = form.fieldProps("login");
+  const passwordField = form.fieldProps("password");
+
   return (
     <AuthCard
       subtitle={t("auth.login")}
@@ -74,68 +69,46 @@ export default function LoginPage() {
       error={error}
       variant="login"
     >
-      <form onSubmit={handleSubmit} className={formStyles.form} noValidate>
-        <div
-          className={cn(
-            formStyles.field,
-            touched && errors.login && formStyles.fieldError
-          )}
-        >
-          <label htmlFor="login" className={formStyles.label}>
-            {t("auth.email")} / {t("auth.username")}
-            <span className={formStyles.required}>*</span>
-          </label>
-          <input
-            id="login"
-            type="text"
-            value={login}
-            onChange={(e) => setLogin(e.target.value)}
-            autoComplete="username"
-            className={cn(
-              formStyles.inputIdentity,
-              touched && errors.login && formStyles.inputError
-            )}
-            placeholder={t("auth.email")}
-          />
-          {touched && errors.login && (
-            <span className={formStyles.errorText}>{errors.login}</span>
-          )}
-        </div>
+      <form onSubmit={handleSubmit} className={styles.formLayout} noValidate>
+        <FormInput
+          id="login"
+          label={`${t("auth.email")} / ${t("auth.username")}`}
+          required
+          variant="identity"
+          placeholder={t("auth.loginPlaceholder")}
+          autoComplete="username"
+          value={loginField.value as string}
+          onChange={loginField.onChange}
+          onBlur={loginField.onBlur}
+          error={loginField.error}
+        />
 
-        <div
-          className={cn(
-            formStyles.field,
-            touched && errors.password && formStyles.fieldError
-          )}
-        >
-          <label htmlFor="password" className={formStyles.label}>
-            {t("auth.password")}
-            <span className={formStyles.required}>*</span>
-          </label>
-          <input
+        <div>
+          <FormInput
             id="password"
             type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            autoComplete="current-password"
-            className={cn(
-              formStyles.inputSecurity,
-              touched && errors.password && formStyles.inputError
-            )}
+            label={t("auth.password")}
+            required
+            variant="security"
             placeholder="••••••••"
+            autoComplete="current-password"
+            value={passwordField.value as string}
+            onChange={passwordField.onChange}
+            onBlur={passwordField.onBlur}
+            error={passwordField.error}
           />
-          {touched && errors.password && (
-            <span className={formStyles.errorText}>{errors.password}</span>
-          )}
+          <button
+            type="button"
+            className={styles.forgotLink}
+            onClick={() => showToast(t("auth.forgotPasswordMsg"), "info")}
+          >
+            {t("auth.forgotPassword")}
+          </button>
         </div>
 
-        <button
-          type="submit"
-          className={formStyles.submitButton}
-          disabled={loading}
-        >
-          {loading ? t("common.loading") : t("auth.login")}
-        </button>
+        <FormButton type="submit" loading={loading} loadingText={t("common.loading")}>
+          {t("auth.login")}
+        </FormButton>
       </form>
     </AuthCard>
   );

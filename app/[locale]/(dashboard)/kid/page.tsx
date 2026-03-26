@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
+import { useLocale } from "next-intl";
 import { BoltIcon, FlameIcon, ListIcon, UsersIcon, WalletIcon } from "@/components/icons";
 import { StatsBar } from "@/components/dashboard/stats-bar";
 import { HabitList } from "@/components/dashboard/habit-list";
@@ -12,112 +13,48 @@ import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 import type { DashboardTab } from "@/components/dashboard/dashboard-layout";
 import { useToast } from "@/components/ui/toast";
 import { DashboardSkeleton } from "@/components/ui/skeleton";
-import type { Habit, Completion, AuthSession } from "@/lib/types";
+import { FormInput, FormButton } from "@/components/ui/form";
+import { useSession } from "@/lib/hooks/useSession";
+import { useHabits } from "@/lib/hooks/useHabits";
+import { useCompletions } from "@/lib/hooks/useCompletions";
+import { useFamilies } from "@/lib/hooks/useFamilies";
+import { useStats } from "@/lib/hooks/useStats";
+import { usePayments } from "@/lib/hooks/usePayments";
+import { formatDisplayDate } from "@/lib/date";
 import styles from "./kid.module.scss";
 
-interface StatsData {
-  totalSats: number;
-  bestStreak: number;
-  pendingCount: number;
-}
-
-interface FamilyWithMembers {
-  id: string;
-  name: string;
-  invite_code: string;
-  created_by: string;
-  members: {
-    user_id: string;
-    display_name: string;
-    username: string;
-    role: string;
-    avatar_url: string | null;
-  }[];
-}
-
-type TabType = "habits" | "family" | "wallet";
+type TabType = "habits" | "family" | "earnings" | "wallet";
 
 export default function KidDashboard() {
   const t = useTranslations();
+  const locale = useLocale();
   const { showToast } = useToast();
-  const [session, setSession] = useState<AuthSession | null>(null);
-  const [habits, setHabits] = useState<Habit[]>([]);
-  const [completions, setCompletions] = useState<Completion[]>([]);
-  const [families, setFamilies] = useState<FamilyWithMembers[]>([]);
   const [activeTab, setActiveTab] = useState<TabType>("habits");
   const [joinCode, setJoinCode] = useState("");
   const [joinLoading, setJoinLoading] = useState(false);
   const [joinError, setJoinError] = useState("");
-  const [stats, setStats] = useState<StatsData>({
-    totalSats: 0,
-    bestStreak: 0,
-    pendingCount: 0,
-  });
-  const [loading, setLoading] = useState(true);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [satsAnimation, setSatsAnimation] = useState<{ amount: number; key: number } | null>(null);
   const [prevApprovedCount, setPrevApprovedCount] = useState<number | null>(null);
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const [sessionRes, habitsRes, completionsRes, statsRes, familiesRes] = await Promise.all([
-          fetch("/api/auth/session"),
-          fetch("/api/habits"),
-          fetch("/api/completions"),
-          fetch("/api/stats"),
-          fetch("/api/families"),
-        ]);
+  const session = useSession();
+  const habits = useHabits();
+  const completions = useCompletions();
+  const families = useFamilies();
+  const stats = useStats();
+  const kidPayments = usePayments({ role: "kid", skip: activeTab !== "earnings" });
 
-        if (sessionRes.ok) {
-          const sessionData = await sessionRes.json();
-          if (sessionData.success) setSession(sessionData.data);
-        }
-
-        if (habitsRes.ok) {
-          const habitsData = await habitsRes.json();
-          if (habitsData.success) setHabits(habitsData.data ?? []);
-        }
-
-        if (completionsRes.ok) {
-          const completionsData = await completionsRes.json();
-          if (completionsData.success) setCompletions(completionsData.data ?? []);
-        }
-
-        if (statsRes.ok) {
-          const statsData = await statsRes.json();
-          if (statsData.success) {
-            setStats({
-              totalSats: statsData.data?.totalSats ?? 0,
-              bestStreak: statsData.data?.bestStreak ?? 0,
-              pendingCount: statsData.data?.pendingCount ?? 0,
-            });
-          }
-        }
-
-        if (familiesRes.ok) {
-          const familiesData = await familiesRes.json();
-          if (familiesData.success) setFamilies(familiesData.data ?? []);
-        }
-      } catch {
-        // Silently handle fetch errors - data stays at defaults
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchData();
-  }, []);
+  const isLoading = session.isLoading || habits.isLoading || completions.isLoading || families.isLoading || stats.isLoading;
 
   // Track approved completions for sats animation
   useEffect(() => {
-    const approvedCount = completions.filter((c) => c.status === "approved").length;
+    const approvedCount = completions.data.filter((c) => c.status === "approved").length;
     if (prevApprovedCount !== null && approvedCount > prevApprovedCount) {
-      const lastApproved = completions
+      const lastApproved = completions.data
         .filter((c) => c.status === "approved")
         .sort((a, b) => new Date(b.completed_at).getTime() - new Date(a.completed_at).getTime())[0];
       if (lastApproved) {
-        const habit = habits.find((h) => h.id === lastApproved.habit_id);
+        const habit = habits.data.find((h) => h.id === lastApproved.habit_id);
         if (habit) {
           setSatsAnimation({ amount: habit.sat_reward, key: Date.now() });
           setTimeout(() => setSatsAnimation(null), 2000);
@@ -125,14 +62,18 @@ export default function KidDashboard() {
       }
     }
     setPrevApprovedCount(approvedCount);
-  }, [completions, habits, prevApprovedCount]);
+  }, [completions.data, habits.data, prevApprovedCount]);
 
   useEffect(() => {
-    if (!loading && habits.length === 0) {
+    if (!isLoading && habits.data.length === 0) {
       const dismissed = localStorage.getItem("bitbybit_onboarding_done");
       if (!dismissed) setShowOnboarding(true);
     }
-  }, [loading, habits.length]);
+  }, [isLoading, habits.data.length]);
+
+  useEffect(() => {
+    if (activeTab === "earnings") kidPayments.refetch();
+  }, [activeTab]); // Only refetch when tab changes
 
   const handleDismissOnboarding = useCallback(() => {
     localStorage.setItem("bitbybit_onboarding_done", "1");
@@ -153,11 +94,7 @@ export default function KidDashboard() {
       if (data.success) {
         setJoinCode("");
         showToast(t("family.joinSuccess"), "success");
-        const famRes = await fetch("/api/families");
-        if (famRes.ok) {
-          const famData = await famRes.json();
-          if (famData.success) setFamilies(famData.data ?? []);
-        }
+        families.refetch();
       } else {
         setJoinError(data.error);
       }
@@ -166,23 +103,12 @@ export default function KidDashboard() {
     } finally {
       setJoinLoading(false);
     }
-  }, [joinCode, showToast, t]);
+  }, [joinCode, showToast, t, families]);
 
   const handleLeaveFamily = useCallback(async (familyId: string) => {
-    try {
-      const res = await fetch("/api/families/leave", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ family_id: familyId }),
-      });
-      if (res.ok) {
-        setFamilies((prev) => prev.filter((f) => f.id !== familyId));
-        showToast(t("family.leaveSuccess"), "info");
-      }
-    } catch {
-      // Silently handle
-    }
-  }, [showToast, t]);
+    const ok = await families.leaveFamily(familyId);
+    if (ok) showToast(t("family.leaveSuccess"), "info");
+  }, [families, showToast, t]);
 
   const handleComplete = useCallback(async (habitId: string) => {
     try {
@@ -191,78 +117,56 @@ export default function KidDashboard() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ habit_id: habitId }),
       });
-
       if (res.ok) {
         const data = await res.json();
         if (data.success && data.data) {
-          setCompletions((prev) => [...prev, data.data]);
-          setStats((prev) => ({
-            ...prev,
-            pendingCount: prev.pendingCount + 1,
-          }));
+          completions.setData((prev) => [...prev, data.data]);
+          stats.setData((prev) => ({ ...prev, pendingCount: prev.pendingCount + 1 }));
           showToast(t("dashboard.completed") + " ⚡", "success");
         }
       }
     } catch {
       showToast(t("auth.connectionError"), "error");
     }
-  }, [showToast, t]);
+  }, [showToast, t, completions, stats]);
 
+  if (isLoading) return <DashboardSkeleton />;
 
+  const displayName = session.data?.display_name ?? session.data?.username ?? "Kid";
+  const level = Math.floor(stats.data.totalSats / 100) + 1;
 
-  if (loading) {
-    return <DashboardSkeleton />;
-  }
-
-  const displayName = session?.display_name ?? session?.username ?? "Kid";
-  const level = Math.floor(stats.totalSats / 100) + 1;
-
-  // Calculate today's sats
   const todayStr = new Date().toISOString().split("T")[0];
-  const todayCompletions = completions.filter(
-    (c) => c.date === todayStr && c.status === "approved"
-  );
-  const todaySats = todayCompletions.reduce((sum, c) => {
-    const habit = habits.find((h) => h.id === c.habit_id);
-    return sum + (habit?.sat_reward ?? 0);
-  }, 0);
+  const todaySats = completions.data
+    .filter((c) => c.date === todayStr && c.status === "approved")
+    .reduce((sum, c) => {
+      const habit = habits.data.find((h) => h.id === c.habit_id);
+      return sum + (habit?.sat_reward ?? 0);
+    }, 0);
 
   const tabs: DashboardTab[] = [
     { key: "habits", icon: <ListIcon size={20} />, label: t("dashboard.myHabits") },
     { key: "family", icon: <UsersIcon size={20} />, label: t("family.myFamily") },
+    { key: "earnings", icon: <BoltIcon size={20} />, label: t("kidDashboard.earnings") },
     { key: "wallet", icon: <WalletIcon size={20} />, label: t("wallet.connectWallet") },
   ];
 
   const headerExtra = (
-    <div className={styles.levelBadge}>
-      <BoltIcon size={14} />
-      {t("kidDashboard.level")} {level}
-    </div>
+    <div className={styles.levelBadge}><BoltIcon size={14} /> {t("kidDashboard.level")} {level}</div>
   );
 
   const statsBar = (
     <>
-      {/* Hero sats today */}
       <div className={styles.heroSats}>
-        <div className={styles.heroSatsIcon}>
-          <BoltIcon size={32} />
-        </div>
+        <div className={styles.heroSatsIcon}><BoltIcon size={32} /></div>
         <div className={styles.heroSatsInfo}>
           <span className={styles.heroSatsValue}>{todaySats}</span>
           <span className={styles.heroSatsLabel}>{t("kidDashboard.satsToday")}</span>
         </div>
-        {stats.bestStreak > 0 && (
-          <div className={styles.heroStreak}>
-            <FlameIcon size={20} />
-            <span>{stats.bestStreak}</span>
-          </div>
+        {stats.data.bestStreak > 0 && (
+          <div className={styles.heroStreak}><FlameIcon size={20} /><span>{stats.data.bestStreak}</span></div>
         )}
       </div>
-      <StatsBar
-        totalSats={stats.totalSats}
-        bestStreak={stats.bestStreak}
-        pendingCount={stats.pendingCount}
-      />
+      <StatsBar totalSats={stats.data.totalSats} bestStreak={stats.data.bestStreak} pendingCount={stats.data.pendingCount} />
     </>
   );
 
@@ -271,33 +175,28 @@ export default function KidDashboard() {
       {activeTab === "habits" && (
         <>
           <h2 className={styles.sectionTitle}>{t("dashboard.myHabits")}</h2>
-          {habits.length === 0 ? (
+          {habits.data.length === 0 ? (
             <div className={styles.emptyState}>
               <span className={styles.emptyIcon}>⚡</span>
               <h3 className={styles.emptyTitle}>{t("emptyState.noHabitsTitle")}</h3>
               <p className={styles.emptySubtext}>{t("emptyState.kidNoHabitsDesc")}</p>
             </div>
           ) : (
-            <HabitList
-              habits={habits}
-              completions={completions}
-              onComplete={handleComplete}
-            />
+            <HabitList habits={habits.data} completions={completions.data} onComplete={handleComplete} />
           )}
         </>
       )}
-
       {activeTab === "family" && (
         <>
           <h2 className={styles.sectionTitle}>{t("family.myFamily")}</h2>
-          {families.length === 0 ? (
+          {families.data.length === 0 ? (
             <div className={styles.emptyState}>
               <span className={styles.emptyIcon}><UsersIcon size={48} /></span>
               <h3 className={styles.emptyTitle}>{t("emptyState.noFamily")}</h3>
               <p className={styles.emptySubtext}>{t("emptyState.noFamilyKidDesc")}</p>
             </div>
           ) : (
-            families.map((family) => (
+            families.data.map((family) => (
               <FamilyCard
                 key={family.id}
                 familyId={family.id}
@@ -305,37 +204,65 @@ export default function KidDashboard() {
                 inviteCode={family.invite_code}
                 members={family.members}
                 createdBy={family.created_by}
-                currentUserId={session?.user_id ?? ""}
-                currentUserRole={family.members.find((m) => m.user_id === session?.user_id)?.role}
+                currentUserId={session.data?.user_id ?? ""}
+                currentUserRole={family.members.find((m) => m.user_id === session.data?.user_id)?.role}
                 onLeave={handleLeaveFamily}
               />
             ))
           )}
-
           <div className={styles.joinSection}>
             <h3 className={styles.joinTitle}>{t("family.joinFamily")}</h3>
             <form onSubmit={handleJoinFamily} className={styles.joinForm}>
-              <input
-                type="text"
-                value={joinCode}
-                onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
+              <FormInput
+                id="join-code"
                 placeholder={t("family.enterInviteCode")}
                 maxLength={6}
-                className={styles.joinInput}
+                value={joinCode}
+                onChange={(v) => setJoinCode(v.toUpperCase())}
+                error={joinError || undefined}
               />
-              <button
-                type="submit"
-                className={styles.joinButton}
-                disabled={joinLoading || !joinCode.trim()}
-              >
-                {joinLoading ? t("common.loading") : t("family.join")}
-              </button>
+              <FormButton type="submit" loading={joinLoading} loadingText={t("common.loading")} disabled={!joinCode.trim()}>
+                {t("family.join")}
+              </FormButton>
             </form>
-            {joinError && <p className={styles.joinError}>{joinError}</p>}
           </div>
         </>
       )}
-
+      {activeTab === "earnings" && (
+        <>
+          <h2 className={styles.sectionTitle}>{t("kidDashboard.earnings")}</h2>
+          {kidPayments.isLoading ? (
+            <p className={styles.loadingText}>{t("common.loading")}</p>
+          ) : kidPayments.data.length === 0 ? (
+            <div className={styles.emptyState}>
+              <span className={styles.emptyIcon}><BoltIcon size={48} /></span>
+              <h3 className={styles.emptyTitle}>{t("emptyState.noPayments")}</h3>
+              <p className={styles.emptySubtext}>{t("kidDashboard.earningsDesc")}</p>
+            </div>
+          ) : (
+            <div className={styles.earningsList}>
+              {kidPayments.data.map((p) => (
+                <div key={p.id} className={styles.earningsItem}>
+                  <div className={styles.earningsInfo}>
+                    <span className={styles.earningsHabit}>{p.habit_name}</span>
+                    <span className={styles.earningsDate}>{formatDisplayDate(p.created_at, locale)}</span>
+                  </div>
+                  <div className={styles.earningsAmount}>
+                    <BoltIcon size={14} />
+                    <span>+{p.amount_sats}</span>
+                    <span
+                      className={styles.earningsStatus}
+                      data-status={p.status}
+                    >
+                      {t(`payments.status.${p.status}`)}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </>
+      )}
       {activeTab === "wallet" && (
         <>
           <h2 className={styles.sectionTitle}>{t("wallet.connectWallet")}</h2>
@@ -347,41 +274,23 @@ export default function KidDashboard() {
 
   return (
     <div style={{ position: "relative" }}>
-      {/* Sats animation overlay */}
       {satsAnimation && (
-        <div key={satsAnimation.key} className={styles.satsAnimation}>
-          +{satsAnimation.amount} sats ⚡
-        </div>
+        <div key={satsAnimation.key} className={styles.satsAnimation}>+{satsAnimation.amount} sats ⚡</div>
       )}
-
-      {showOnboarding ? (
-        <DashboardLayout
-          displayName={`${t("dashboard.welcome")}, ${displayName}`}
-          headerExtra={headerExtra}
-          statsBar={statsBar}
-          tabs={tabs}
-          activeTab={activeTab}
-          onTabChange={(key) => setActiveTab(key as TabType)}
-
-        >
-          <Onboarding
-            displayName={displayName}
-            onDismiss={handleDismissOnboarding}
-          />
-        </DashboardLayout>
-      ) : (
-        <DashboardLayout
-          displayName={`${t("dashboard.welcome")}, ${displayName}`}
-          headerExtra={headerExtra}
-          statsBar={statsBar}
-          tabs={tabs}
-          activeTab={activeTab}
-          onTabChange={(key) => setActiveTab(key as TabType)}
-
-        >
-          {layoutContent}
-        </DashboardLayout>
-      )}
+      <DashboardLayout
+        displayName={`${t("dashboard.welcome")}, ${displayName}`}
+        headerExtra={headerExtra}
+        statsBar={statsBar}
+        tabs={tabs}
+        activeTab={activeTab}
+        onTabChange={(key) => setActiveTab(key as TabType)}
+      >
+        {showOnboarding ? (
+          <Onboarding displayName={displayName} onDismiss={handleDismissOnboarding} />
+        ) : (
+          layoutContent
+        )}
+      </DashboardLayout>
     </div>
   );
 }
