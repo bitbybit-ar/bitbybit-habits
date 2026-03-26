@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import AuthCard from "@/components/auth/AuthCard";
+import { useToast } from "@/components/ui/toast";
 import { cn } from "@/lib/utils";
 import formStyles from "@/components/auth/auth-form.module.scss";
 
@@ -15,6 +16,7 @@ interface FormErrors {
 export default function LoginPage() {
   const router = useRouter();
   const t = useTranslations();
+  const { showToast } = useToast();
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -95,10 +97,12 @@ export default function LoginPage() {
               formStyles.inputIdentity,
               touched && errors.login && formStyles.inputError
             )}
-            placeholder={t("auth.email")}
+            placeholder={t("auth.loginPlaceholder")}
+            aria-invalid={touched && !!errors.login}
+            aria-describedby={touched && errors.login ? "login-error" : undefined}
           />
           {touched && errors.login && (
-            <span className={formStyles.errorText}>{errors.login}</span>
+            <span id="login-error" className={formStyles.errorText}>{errors.login}</span>
           )}
         </div>
 
@@ -123,10 +127,19 @@ export default function LoginPage() {
               touched && errors.password && formStyles.inputError
             )}
             placeholder="••••••••"
+            aria-invalid={touched && !!errors.password}
+            aria-describedby={touched && errors.password ? "password-error" : undefined}
           />
           {touched && errors.password && (
-            <span className={formStyles.errorText}>{errors.password}</span>
+            <span id="password-error" className={formStyles.errorText}>{errors.password}</span>
           )}
+          <button
+            type="button"
+            className={formStyles.forgotLink}
+            onClick={() => showToast(t("auth.forgotPasswordMsg"), "info")}
+          >
+            {t("auth.forgotPassword")}
+          </button>
         </div>
 
         <button

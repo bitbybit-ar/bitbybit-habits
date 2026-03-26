@@ -1,13 +1,15 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
+import { formatDisplayDate } from "@/lib/date";
 import type { Notification } from "@/lib/types";
 import { BellIcon } from "@/components/icons";
 import styles from "./notification-bell.module.scss";
 
 export function NotificationBell() {
   const t = useTranslations();
+  const locale = useLocale();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [open, setOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -85,7 +87,7 @@ export function NotificationBell() {
                 >
                   <strong>{n.title}</strong>
                   <p>{n.body}</p>
-                  <time>{new Date(n.created_at).toLocaleString()}</time>
+                  <time>{formatDisplayDate(n.created_at, locale, { hour: "numeric", minute: "numeric" })}</time>
                 </li>
               ))}
             </ul>

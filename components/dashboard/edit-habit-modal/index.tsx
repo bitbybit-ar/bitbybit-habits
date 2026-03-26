@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { MemberPicker } from "@/components/dashboard/member-picker";
+import { ModalLoader } from "@/components/ui/modal-loader";
 import type { Habit } from "@/lib/types";
 import styles from "./edit-habit-modal.module.scss";
 
@@ -242,7 +243,7 @@ export function EditHabitModal({ habit, kids, onSave, onClose }: EditHabitModalP
           <div className={styles.field}>
             <label className={styles.label}>{t("habits.assignTo")}</label>
             {loadingAssignments ? (
-              <p>{t("common.loading")}</p>
+              <ModalLoader />
             ) : (
               <MemberPicker
                 kids={kids}

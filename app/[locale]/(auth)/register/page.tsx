@@ -174,9 +174,11 @@ export default function RegisterPage() {
                 touched && errors.display_name && formStyles.inputError
               )}
               placeholder={t("auth.displayName")}
+              aria-invalid={touched && !!errors.display_name}
+              aria-describedby={touched && errors.display_name ? "display-name-error" : undefined}
             />
             {touched && errors.display_name && (
-              <span className={formStyles.errorText}>
+              <span id="display-name-error" className={formStyles.errorText}>
                 {errors.display_name}
               </span>
             )}
@@ -202,10 +204,12 @@ export default function RegisterPage() {
                 formStyles.inputIdentity,
                 touched && errors.username && formStyles.inputError
               )}
-              placeholder="@usuario"
+              placeholder={t("auth.usernamePlaceholder")}
+              aria-invalid={touched && !!errors.username}
+              aria-describedby={touched && errors.username ? "username-error" : undefined}
             />
             {touched && errors.username && (
-              <span className={formStyles.errorText}>{errors.username}</span>
+              <span id="username-error" className={formStyles.errorText}>{errors.username}</span>
             )}
           </div>
         </div>
@@ -231,10 +235,12 @@ export default function RegisterPage() {
               formStyles.inputIdentity,
               touched && errors.email && formStyles.inputError
             )}
-            placeholder="email@ejemplo.com"
+            placeholder={t("auth.emailPlaceholder")}
+            aria-invalid={touched && !!errors.email}
+            aria-describedby={touched && errors.email ? "email-error" : undefined}
           />
           {touched && errors.email && (
-            <span className={formStyles.errorText}>{errors.email}</span>
+            <span id="email-error" className={formStyles.errorText}>{errors.email}</span>
           )}
         </div>
 
@@ -261,9 +267,11 @@ export default function RegisterPage() {
                 touched && errors.password && formStyles.inputError
               )}
               placeholder="••••••••"
+              aria-invalid={touched && !!errors.password}
+              aria-describedby={touched && errors.password ? "password-error" : undefined}
             />
             {touched && errors.password && (
-              <span className={formStyles.errorText}>{errors.password}</span>
+              <span id="password-error" className={formStyles.errorText}>{errors.password}</span>
             )}
           </div>
 
@@ -288,9 +296,11 @@ export default function RegisterPage() {
                 touched && errors.confirmPassword && formStyles.inputError
               )}
               placeholder="••••••••"
+              aria-invalid={touched && !!errors.confirmPassword}
+              aria-describedby={touched && errors.confirmPassword ? "confirm-password-error" : undefined}
             />
             {touched && errors.confirmPassword && (
-              <span className={formStyles.errorText}>
+              <span id="confirm-password-error" className={formStyles.errorText}>
                 {errors.confirmPassword}
               </span>
             )}

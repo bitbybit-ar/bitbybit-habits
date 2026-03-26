@@ -1,0 +1,18 @@
+@use "@/styles/colors" as *;
+@use "@/styles/spacing" as *;
+@use "@/styles/typography" as *;
+
+.loader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-16;
+  padding: $spacing-40 $spacing-24;
+}
+
+.message {
+  color: var(--color-text-secondary);
+  font-size: $font-size-sm;
+  margin: 0;
+}

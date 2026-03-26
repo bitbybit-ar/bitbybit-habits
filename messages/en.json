@@ -43,7 +43,12 @@
     "strengthStrong": "Strong",
     "orLoginWith": "or log in with",
     "orRegisterWith": "or register with",
-    "registerWithNostr": "Register with Nostr"
+    "registerWithNostr": "Register with Nostr",
+    "forgotPassword": "Forgot your password?",
+    "forgotPasswordMsg": "Password reset will be available soon. Contact your family sponsor for help.",
+    "loginPlaceholder": "email or username",
+    "usernamePlaceholder": "username",
+    "emailPlaceholder": "email@example.com"
   },
   "dashboard": {
     "welcome": "Welcome",

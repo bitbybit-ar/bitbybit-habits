@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { BoltIcon, ClockIcon, ListIcon, PlusIcon, UsersIcon, WalletIcon, UserIcon } from "@/components/icons";
 import { SummaryBar } from "@/components/dashboard/summary-bar";
 import { WeeklyTracker } from "@/components/dashboard/weekly-tracker";
@@ -16,6 +16,7 @@ import { InvoiceModal } from "@/components/ui/invoice-modal";
 import { useToast } from "@/components/ui/toast";
 import { useWebLN } from "@/lib/hooks/useWebLN";
 import { DashboardSkeleton } from "@/components/ui/skeleton";
+import { formatDisplayDate } from "@/lib/date";
 import type { Habit, AuthSession, PaymentWithDetails } from "@/lib/types";
 import styles from "./sponsor.module.scss";
 
@@ -61,6 +62,7 @@ const STATUS_COLORS: Record<string, string> = {
 
 export default function SponsorDashboard() {
   const t = useTranslations();
+  const locale = useLocale();
   const { showToast } = useToast();
   const { hasExtension: hasWebLN } = useWebLN();
   const [session, setSession] = useState<AuthSession | null>(null);
@@ -842,7 +844,7 @@ export default function SponsorDashboard() {
                           {t(`payments.status.${p.status}`)}
                         </span>
                       </td>
-                      <td>{new Date(p.created_at).toLocaleDateString()}</td>
+                      <td>{formatDisplayDate(p.created_at, locale)}</td>
                       <td>
                         {p.status === "failed" && (
                           <button
