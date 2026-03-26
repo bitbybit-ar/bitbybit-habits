@@ -2,30 +2,19 @@
 
 **[bitbybit.com.ar](https://bitbybit.com.ar)**
 
-A habit tracker powered by Bitcoin Lightning that rewards task completion with real sats.
+Kids earn real Bitcoin by building real habits.
 
-**MVP: "Mesada 2.0"** — Sponsors (parents/guardians) create habits with sat rewards. Kids complete them and earn Bitcoin instantly via Lightning Network.
+BitByBit turns "la mesada" into a tool for financial education. Parents create habits with sat rewards, kids complete them and receive real Bitcoin instantly via Lightning Network. No pretend money, no delayed gratification — every completed task means sats in their wallet, teaching kids that earning is something they can do right now. **Mesada 2.0.**
 
 ## How It Works
 
-```
-Sponsor creates family → generates invite code
-Kid joins with code → connects Lightning wallet (NWC)
-Sponsor creates habit ("Make the bed", 50 sats, verification: sponsor approval)
-Kid completes task → status = "pending"
-Sponsor approves → payment cascade triggers automatically
-```
+1. **Create your family** — A parent signs up, creates a family, and shares the invite code
+2. **Kids join** — Kids enter the code and connect their Lightning wallet
+3. **Assign habits with rewards** — "Make the bed" = 50 sats, "Read 20 minutes" = 100 sats
+4. **Kids complete, parents approve** — One tap to mark done, one tap to approve
+5. **Sats arrive instantly** — Payment flows automatically to the kid's wallet via Lightning
 
-### Lightning Payment Flow
-
-When a sponsor approves a completion with a sat reward, BitByBit runs through a payment cascade:
-
-1. **WebLN Extension** — If the sponsor has Alby or another WebLN-compatible extension, payment is instant in-browser
-2. **NWC Auto-pay** — If the sponsor has a connected NWC wallet, the server pays the kid's invoice automatically
-3. **Invoice Modal** — QR code displayed for manual payment from any Lightning wallet (polls every 4s for settlement)
-4. **Graceful fallback** — If neither party has a wallet, the completion is approved and payment stays pending
-
-The kid receives sats directly to their own Lightning wallet via NWC-generated invoices.
+The reward is real, instant, and theirs. That's what makes the habit stick.
 
 ## Stack
 
@@ -35,11 +24,11 @@ The kid receives sats directly to their own Lightning wallet via NWC-generated i
 | **Styles** | SCSS Modules with glassmorphism design system — dark theme default (eye safety for kids) |
 | **i18n** | next-intl with `[locale]` routing (Spanish default, English) |
 | **Database** | Neon DB (PostgreSQL serverless) via Drizzle ORM |
-| **Auth** | Email/username + password (bcryptjs, JWT sessions). 2FA with TOTP. Nostr login coming soon |
+| **Auth** | Email/username + password (bcryptjs, JWT sessions). Optional TOTP 2FA. Nostr login coming soon |
 | **Lightning** | NWC (Nostr Wallet Connect) via `@getalby/sdk`. WebLN browser extension support |
 | **Encryption** | AES-256-GCM for wallet NWC URLs at rest |
-| **API Docs** | OpenAPI 3.0 (Swagger) at `/api-docs` |
-| **Testing** | Vitest + Testing Library (147 tests across 27 test files) |
+| **API Docs** | OpenAPI 3.0 (Swagger) at `/api-docs` — 42 endpoints fully documented |
+| **Testing** | Vitest + Testing Library (161 tests across 28 test files) |
 | **Icons** | Custom SVGs in `components/icons/` (no external icon libraries) |
 
 ## Getting Started
@@ -85,10 +74,12 @@ npm run dev
 bitbybit-habits/
   app/
     [locale]/                  # i18n routes (es, en)
-      (auth)/                  # Login, Register
-      (dashboard)/             # Kid & Sponsor dashboards
+      (auth)/                  # Login, Register (with loading.tsx, error.tsx)
+      (dashboard)/             # Kid & Sponsor dashboards (with loading.tsx, error.tsx)
       demo/                    # Interactive demo (no signup needed)
-    api/                       # 34 API routes (outside [locale])
+      not-found.tsx            # Custom 404 page
+      error.tsx                # Root error boundary
+    api/                       # 34 API route files (outside [locale])
       auth/                    # login, register, logout, session, profile, 2fa/*
       completions/             # CRUD, approve, reject, pending
       families/                # CRUD, join, leave, role, stats, completions
@@ -100,23 +91,29 @@ bitbybit-habits/
   components/
     icons/                     # Custom SVG React components
     layout/                    # Navbar, Footer
-    ui/                        # Reusable: Button, Card, Toast, InvoiceModal, etc.
+    ui/                        # Reusable: Form, Button, Toast, Skeleton, Spinner, InvoiceModal, etc.
     dashboard/                 # StatsBar, HabitCard, WeeklyTracker, WalletConnect, etc.
+      sponsor/                 # Sponsor tab sub-components (HabitsTab, PaymentsTab, FamilyTab)
+    demo/                      # Demo stepper, KidDemo, SponsorDemo
+    auth/                      # AuthCard wrapper
   lib/
     api/                       # apiHandler wrapper, errors, validation
     db/                        # Drizzle ORM schema & connection
-    hooks/                     # useWebLN (extension detection)
-    auth.ts                    # JWT session management
+    hooks/                     # useSession, useHabits, useFamilies, usePayments, useStats, useFormValidation, useWebLN, etc.
+    auth.ts                    # JWT session management with runtime payload validation
     crypto.ts                  # AES-256-GCM encryption for wallet URLs
+    date.ts                    # Date formatting utilities (todayDateStr, formatDisplayDate)
+    request.ts                 # IP extraction for rate limiting
     types.ts                   # Shared TypeScript interfaces
   messages/                    # Translation files (es.json, en.json)
   styles/                      # SCSS variables, mixins, glassmorphism system
-  tests/                       # 27 test files, 147 tests
-    api/                       # API endpoint tests
+  tests/                       # 28 test files, 161 tests
+    api/                       # API endpoint tests (auth, habits, payments, families, etc.)
     components/                # Component tests
     helpers/                   # Test utilities
   docs/
-    openapi.yaml               # OpenAPI 3.0 spec
+    openapi.yaml               # OpenAPI 3.0 spec (42 endpoints)
+  proxy.ts                     # Next.js 16 middleware (i18n routing + route protection)
   setup-database.sql           # Database schema (8 tables)
 ```
 
@@ -154,29 +151,33 @@ Users ──┬── FamilyMembers ──── Families
 
 ## API
 
-34 endpoints across 8 resource groups. Interactive Swagger UI at `/api-docs`.
+42 endpoints across 9 resource groups. Interactive Swagger UI at `/api-docs`.
 
 | Group | Endpoints | Description |
 |---|---|---|
-| Auth | 9 | Register, login, logout, session, profile, 2FA setup/confirm/validate/disable |
-| Habits | 4 | CRUD + multi-kid assignments |
-| Completions | 4 | Create, list, approve, reject |
+| Auth | 10 | Register, login, logout, session, profile (GET/PATCH), 2FA setup/confirm/validate/disable |
+| Habits | 5 | List (paginated), create, update, delete, assignments |
+| Completions | 5 | Create, list, pending, approve, reject |
 | Families | 8 | Create, join, leave, delete, members, roles, stats, completions |
-| Payments | 5 | List, generate invoice, pay, check status, retry |
+| Payments | 5 | List (with role/date filters), generate invoice, pay, check status, retry |
 | Wallets | 4 | Connect, disconnect, get, balance |
 | Stats | 1 | User stats with streaks |
-| Notifications | 1 | List with read status |
+| Notifications | 2 | List (with unread filter), mark as read |
+| Docs | 1 | OpenAPI spec |
 
 Full OpenAPI 3.0 spec in [`docs/openapi.yaml`](docs/openapi.yaml).
 
 ## Security
 
 - Passwords hashed with bcryptjs (10 salt rounds)
-- JWT sessions in httpOnly cookies (7-day expiry)
+- JWT sessions in httpOnly cookies (7-day expiry) with runtime payload validation
+- Route protection via Next.js proxy middleware (dashboard routes require valid JWT)
 - NWC wallet URLs encrypted at rest with AES-256-GCM
-- Optional TOTP-based 2FA
+- Optional TOTP-based 2FA with hashed recovery codes
+- Rate limiting on login and register endpoints (IP-based sliding window)
+- Account lockout after 10 failed login attempts (30-minute cooldown)
 - SQL injection prevention via Drizzle ORM parameterized queries
-- Account lockout after failed login attempts
+- All API routes use shared `apiHandler` for consistent error handling
 
 ## Hackathon
 
