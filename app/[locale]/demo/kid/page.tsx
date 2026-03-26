@@ -2,6 +2,7 @@
 
 import React from "react";
 import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/routing";
 import Navbar from "@/components/layout/navbar";
 import KidDemo from "@/components/demo/KidDemo";
 import { BoltIcon } from "@/components/icons";
@@ -14,11 +15,16 @@ export default function KidDemoPage() {
     <>
       <Navbar />
       <div className={styles.demoPage}>
-        <div className={styles.header}>
-          <h1 className={styles.title}>
-            <BoltIcon size={28} color="#4DB6AC" /> <span>{t("kidDemoTitle")}</span>
-          </h1>
-          <p className={styles.subtitle}>{t("kidDemoSubtitle")}</p>
+        <div className={styles.headerRow}>
+          <div className={styles.header}>
+            <h1 className={styles.title}>
+              <BoltIcon size={28} color="#4DB6AC" /> <span>{t("kidDemoTitle")}</span>
+            </h1>
+            <p className={styles.subtitle}>{t("kidDemoSubtitle")}</p>
+          </div>
+          <Link href="/" className={styles.exitDemo}>
+            {t("exitDemo")}
+          </Link>
         </div>
 
         <div className={styles.demoContainer}>

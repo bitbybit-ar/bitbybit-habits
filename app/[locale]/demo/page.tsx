@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
 import Image from "next/image";
@@ -10,21 +10,34 @@ import styles from "./demo.module.scss";
 
 export default function DemoPage() {
   const t = useTranslations("demo");
+  const [flippedCard, setFlippedCard] = useState<string | null>(null);
+
+  const toggleFlip = (card: string) => {
+    setFlippedCard((prev) => (prev === card ? null : card));
+  };
 
   return (
     <>
       <Navbar />
       <div className={styles.demoPage}>
-        <div className={styles.header}>
-          <h1 className={styles.title}>
-            <span>{t("title")}</span>
-          </h1>
-          <p className={styles.subtitle}>{t("subtitle")}</p>
+        <div className={styles.headerRow}>
+          <div className={styles.header}>
+            <h1 className={styles.title}>
+              <span>{t("title")}</span>
+            </h1>
+            <p className={styles.subtitle}>{t("subtitle")}</p>
+          </div>
+          <Link href="/" className={styles.exitDemo}>
+            {t("exitDemo")}
+          </Link>
         </div>
 
         <div className={styles.roles}>
           {/* Sponsor Card */}
-          <div className={`${styles.flipCard} ${styles.sponsorCard}`}>
+          <div
+            className={`${styles.flipCard} ${styles.sponsorCard} ${flippedCard === "sponsor" ? styles.flipped : ""}`}
+            onClick={() => toggleFlip("sponsor")}
+          >
             <div className={styles.flipCardInner}>
               <div className={styles.flipFront}>
                 <div className={styles.iconWrapper}>
@@ -34,8 +47,9 @@ export default function DemoPage() {
                 <p className={styles.roleDesc}>
                   {t("sponsorExplain")}
                 </p>
-                <Link href="/demo/sponsor" className={styles.ctaButton}>
-                  {t("trySponsor")}                </Link>
+                <Link href="/demo/sponsor" className={styles.ctaButton} onClick={(e) => e.stopPropagation()}>
+                  {t("trySponsor")}
+                </Link>
               </div>
               <div className={styles.flipBack}>
                 <Image
@@ -45,15 +59,19 @@ export default function DemoPage() {
                   className={styles.previewImage}
                 />
                 <div className={styles.backOverlay}>
-                  <Link href="/demo/sponsor" className={styles.ctaButton}>
-                    {t("trySponsor")}                  </Link>
+                  <Link href="/demo/sponsor" className={styles.ctaButton} onClick={(e) => e.stopPropagation()}>
+                    {t("trySponsor")}
+                  </Link>
                 </div>
               </div>
             </div>
           </div>
 
           {/* Kid Card */}
-          <div className={`${styles.flipCard} ${styles.kidCard}`}>
+          <div
+            className={`${styles.flipCard} ${styles.kidCard} ${flippedCard === "kid" ? styles.flipped : ""}`}
+            onClick={() => toggleFlip("kid")}
+          >
             <div className={styles.flipCardInner}>
               <div className={styles.flipFront}>
                 <div className={styles.iconWrapper}>
@@ -63,8 +81,9 @@ export default function DemoPage() {
                 <p className={styles.roleDesc}>
                   {t("kidExplain")}
                 </p>
-                <Link href="/demo/kid" className={styles.ctaButton}>
-                  {t("tryKid")}                </Link>
+                <Link href="/demo/kid" className={styles.ctaButton} onClick={(e) => e.stopPropagation()}>
+                  {t("tryKid")}
+                </Link>
               </div>
               <div className={styles.flipBack}>
                 <Image
@@ -74,8 +93,9 @@ export default function DemoPage() {
                   className={styles.previewImage}
                 />
                 <div className={styles.backOverlay}>
-                  <Link href="/demo/kid" className={styles.ctaButton}>
-                    {t("tryKid")}                  </Link>
+                  <Link href="/demo/kid" className={styles.ctaButton} onClick={(e) => e.stopPropagation()}>
+                    {t("tryKid")}
+                  </Link>
                 </div>
               </div>
             </div>

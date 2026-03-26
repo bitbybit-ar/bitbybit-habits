@@ -525,7 +525,8 @@
       "celebrationMsg": "¡Seguí así! Cada hábito te acerca a más sats ⚡",
       "registerCTA": "Registrarse como Kid"
     },
-    "stepIncompleteError": "Debés completar este paso antes de continuar"
+    "stepIncompleteError": "Debés completar este paso antes de continuar",
+    "exitDemo": "Salir de la demo"
   },
   "invoiceModal": {
     "paid": "¡Pago recibido! ⚡",

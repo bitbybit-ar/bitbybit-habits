@@ -9,7 +9,7 @@ const chainableSelect = () => {
   const chain: Record<string, unknown> = {};
   const self = () => chain;
   chain.from = self; chain.where = self; chain.leftJoin = self; chain.innerJoin = self;
-  chain.orderBy = self; chain.limit = self; chain.groupBy = self;
+  chain.orderBy = self; chain.limit = self; chain.offset = self; chain.groupBy = self;
   chain.then = (r: (v: unknown) => void) => r(mockSelectResult());
   return chain;
 };
@@ -50,15 +50,32 @@ describe("/api/habits", () => {
 
     it("returns habits list when authenticated", async () => {
       await setSessionCookie(testSession);
-      mockSelectResult.mockReturnValue([
+      // First call: count query returns [{ count: 1 }]
+      mockSelectResult.mockReturnValueOnce([{ count: 1 }]);
+      // Second call: actual habits query
+      mockSelectResult.mockReturnValueOnce([
         { id: UUID.habit1, name: "Read", color: "#F7A825", active: true, completed_today: false },
       ]);
 
       const req = createRequest("GET", "/api/habits");
       const { status, body } = await parseResponse(await GET(req));
       expect(status).toBe(200);
-      expect(body.data).toHaveLength(1);
-      expect(body.data[0].name).toBe("Read");
+      expect(body.data.habits).toHaveLength(1);
+      expect(body.data.habits[0].name).toBe("Read");
+      expect(body.data.pagination).toEqual({ page: 1, limit: 20, total: 1, totalPages: 1 });
+    });
+
+    it("respects page and limit query params", async () => {
+      await setSessionCookie(testSession);
+      mockSelectResult.mockReturnValueOnce([{ count: 25 }]);
+      mockSelectResult.mockReturnValueOnce([
+        { id: UUID.habit1, name: "Read", color: "#F7A825", active: true, completed_today: false },
+      ]);
+
+      const req = createRequest("GET", "/api/habits", undefined, { page: "2", limit: "10" });
+      const { status, body } = await parseResponse(await GET(req));
+      expect(status).toBe(200);
+      expect(body.data.pagination).toEqual({ page: 2, limit: 10, total: 25, totalPages: 3 });
     });
   });
 
