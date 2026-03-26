@@ -31,11 +31,12 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations("common");
+  const seo = await getTranslations("seo");
 
-  const title = `${t("appName")} — Earn sats. Build habits. Change lives.`;
-  const description =
-    "A habit tracker powered by Bitcoin Lightning Network that rewards task completion with real sats. Built for La Crypta Hackathons 2026.";
+  const title = `${t("appName")} — ${seo("tagline")}`;
+  const description = seo("description");
   const baseUrl = "https://bitbybit.com.ar";
+  const localeUrl = `${baseUrl}/${locale}`;
 
   return {
     title,
@@ -45,7 +46,7 @@ export async function generateMetadata({
       type: "website",
       locale: locale === "en" ? "en_US" : "es_AR",
       alternateLocale: locale === "en" ? ["es_AR"] : ["en_US"],
-      url: baseUrl,
+      url: localeUrl,
       siteName: "BitByBit",
       title,
       description,
@@ -56,22 +57,12 @@ export async function generateMetadata({
       description,
     },
     alternates: {
-      canonical: baseUrl,
+      canonical: localeUrl,
       languages: {
         es: "/es",
         en: "/en",
       },
     },
-    keywords: [
-      "Bitcoin",
-      "Lightning Network",
-      "habit tracker",
-      "sats",
-      "rewards",
-      "productivity",
-      "family",
-      "kids",
-    ],
   };
 }
 
@@ -114,7 +105,7 @@ export default async function LocaleLayout({
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="BitByBit" />
-        <StructuredData />
+        <StructuredData locale={locale} />
       </head>
       <body className={`${nunito.variable} ${nunitoSans.variable}`}>
         <NextIntlClientProvider locale={locale} messages={messages}>

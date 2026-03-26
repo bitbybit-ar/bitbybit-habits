@@ -1,12 +1,20 @@
-export function StructuredData() {
+interface StructuredDataProps {
+  locale: string;
+}
+
+export function StructuredData({ locale }: StructuredDataProps) {
+  const description =
+    locale === "en"
+      ? "A habit tracker powered by Bitcoin Lightning Network that rewards task completion with real sats."
+      : "Un habit tracker con Bitcoin Lightning Network que recompensa completar tareas con sats reales.";
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
       {
         "@type": "WebApplication",
         name: "BitByBit",
-        description:
-          "A habit tracker powered by Bitcoin Lightning Network that rewards task completion with real sats.",
+        description,
         url: "https://bitbybit.com.ar",
         applicationCategory: "LifestyleApplication",
         operatingSystem: "Web",
