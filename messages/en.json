@@ -335,6 +335,11 @@
       "login": "I have an account",
       "preview": "See how it works without signing up →"
     },
+    "phoneMockup": {
+      "habit1": "Make the bed",
+      "habit2": "Read 20 minutes",
+      "habit3": "Walk the dog"
+    },
     "builtWith": {
       "title": "Built With"
     },
