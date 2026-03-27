@@ -97,11 +97,6 @@ export default function SponsorDashboard() {
       const paymentStatus = data.data?.payment_status;
       const completionData = familyData.completions.find((c) => c.id === completionId);
 
-      if (paymentStatus === "no_wallet") {
-        showToast(t("sponsorDashboard.approveNoWallet"), "info");
-        return;
-      }
-
       if (paymentStatus === "none" || !completionData?.sat_reward) {
         showToast(t("sponsorDashboard.approveSuccess"), "success");
         return;

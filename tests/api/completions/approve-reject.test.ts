@@ -70,16 +70,13 @@ describe("/api/completions/approve", () => {
     expect(status).toBe(404);
   });
 
-  it("approves completion and creates payment when sat_reward > 0 and wallet exists", async () => {
+  it("approves completion and creates payment when sat_reward > 0", async () => {
     await setSessionCookie(testSession);
-    // First select: completion query
     selectResults.push([{
       id: UUID.completion1, habit_id: UUID.habit1, user_id: UUID.user2,
       date: "2026-03-11", status: "pending", sat_reward: 100,
       family_id: UUID.family1, assigned_to: UUID.user2, habit_name: "Read",
     }]);
-    // Second select: wallet check - wallet exists
-    selectResults.push([{ id: "wallet-1" }]);
     mockUpdateReturning.mockResolvedValue([{ id: UUID.completion1, status: "approved" }]);
     mockInsertValues.mockResolvedValue(undefined);
 
@@ -90,23 +87,21 @@ describe("/api/completions/approve", () => {
     expect(mockInsertValues).toHaveBeenCalled(); // payment created
   });
 
-  it("approves completion with no_wallet status when no wallet connected", async () => {
+  it("approves completion and creates payment even when sponsor has no wallet", async () => {
     await setSessionCookie(testSession);
-    // First select: completion query
     selectResults.push([{
       id: UUID.completion1, habit_id: UUID.habit1, user_id: UUID.user2,
       date: "2026-03-11", status: "pending", sat_reward: 100,
       family_id: UUID.family1, assigned_to: UUID.user2, habit_name: "Read",
     }]);
-    // Second select: wallet check - no wallet
-    selectResults.push([]);
-    mockUpdateReturning.mockResolvedValue([{ id: UUID.completion1, status: "approved", payment_status: "no_wallet" }]);
+    mockUpdateReturning.mockResolvedValue([{ id: UUID.completion1, status: "approved" }]);
+    mockInsertValues.mockResolvedValue(undefined);
 
     const req = createRequest("POST", "/api/completions/approve", { completion_id: UUID.completion1 });
     const { status, body } = await parseResponse(await approve(req));
     expect(status).toBe(200);
-    expect(body.data.payment_status).toBe("no_wallet");
-    expect(mockInsertValues).not.toHaveBeenCalled(); // no payment created
+    expect(body.data.payment_status).toBe("pending");
+    expect(mockInsertValues).toHaveBeenCalled(); // payment always created
   });
 });
 

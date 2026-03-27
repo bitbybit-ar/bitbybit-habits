@@ -1,13 +1,13 @@
 import { apiHandler, requireFields, NotFoundError } from "@/lib/api";
 import { createNotification } from "@/lib/notifications";
-import { completions, habits, familyMembers, payments, wallets } from "@/lib/db";
+import { completions, habits, familyMembers, payments } from "@/lib/db";
 import { eq, and, sql } from "drizzle-orm";
 
 /**
  * POST /api/completions/approve
  *
  * Approve a pending completion (sponsor only). Creates a payment record
- * if the habit has a sat reward and the sponsor has a connected wallet.
+ * if the habit has a sat reward. Sponsor wallet is not required — they can pay via QR.
  */
 export const POST = apiHandler(async (request, { session, db }) => {
   const body = await request.json();
@@ -55,25 +55,16 @@ export const POST = apiHandler(async (request, { session, db }) => {
   let paymentStatus: "no_wallet" | "pending" | "none" = "none";
 
   if (completion.sat_reward > 0) {
-    // Check if sponsor has a connected wallet
-    const walletResult = await db
-      .select({ id: wallets.id })
-      .from(wallets)
-      .where(and(eq(wallets.user_id, session.user_id), eq(wallets.active, true)))
-      .limit(1);
-
-    if (walletResult.length === 0) {
-      paymentStatus = "no_wallet";
-    } else {
-      await db.insert(payments).values({
-        completion_id,
-        from_user_id: session.user_id,
-        to_user_id: completion.user_id,
-        amount_sats: completion.sat_reward,
-        status: "pending",
-      });
-      paymentStatus = "pending";
-    }
+    // Always create payment record when there's a reward.
+    // Sponsor's wallet is optional — they can pay via QR invoice even without one.
+    await db.insert(payments).values({
+      completion_id,
+      from_user_id: session.user_id,
+      to_user_id: completion.user_id,
+      amount_sats: completion.sat_reward,
+      status: "pending",
+    });
+    paymentStatus = "pending";
   }
 
   // Notify the kid
