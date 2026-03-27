@@ -3,6 +3,11 @@ import { validateHabitFields } from "@/lib/api/validate-habit";
 import { habits, habitAssignments, familyMembers } from "@/lib/db";
 import { eq, and, inArray } from "drizzle-orm";
 
+/**
+ * PUT /api/habits/:id
+ *
+ * Update a habit's properties. Only the creator can update.
+ */
 export const PUT = apiHandler(async (request, { session, db, params }) => {
   const { id } = params;
 
@@ -100,6 +105,11 @@ export const PUT = apiHandler(async (request, { session, db, params }) => {
   return updated[0];
 });
 
+/**
+ * DELETE /api/habits/:id
+ *
+ * Soft-delete a habit by setting active=false. Only the creator can delete.
+ */
 export const DELETE = apiHandler(async (_req, { session, db, params }) => {
   const { id } = params;
 

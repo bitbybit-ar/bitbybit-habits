@@ -3,6 +3,12 @@ import { createNotification } from "@/lib/notifications";
 import { completions, habits, familyMembers, payments, wallets } from "@/lib/db";
 import { eq, and, sql } from "drizzle-orm";
 
+/**
+ * POST /api/completions/approve
+ *
+ * Approve a pending completion (sponsor only). Creates a payment record
+ * if the habit has a sat reward and the sponsor has a connected wallet.
+ */
 export const POST = apiHandler(async (request, { session, db }) => {
   const body = await request.json();
   const { completion_id } = body as { completion_id: string };

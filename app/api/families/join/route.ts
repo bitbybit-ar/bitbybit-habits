@@ -2,6 +2,11 @@ import { apiHandler, created, BadRequestError, NotFoundError, ConflictError } fr
 import { families, familyMembers } from "@/lib/db";
 import { eq, and } from "drizzle-orm";
 
+/**
+ * POST /api/families/join
+ *
+ * Join a family using an invite code. New members are assigned the kid role.
+ */
 export const POST = apiHandler(async (request, { session, db }) => {
   const body = await request.json();
   const { invite_code } = body as { invite_code: string };

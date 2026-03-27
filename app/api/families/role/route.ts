@@ -2,6 +2,11 @@ import { apiHandler, BadRequestError, ForbiddenError, NotFoundError } from "@/li
 import { familyMembers } from "@/lib/db";
 import { eq, and, ne } from "drizzle-orm";
 
+/**
+ * PATCH /api/families/role
+ *
+ * Change a family member's role (sponsor only). Prevents demoting the last sponsor.
+ */
 export const PATCH = apiHandler(async (request, { session, db }) => {
   const body = await request.json();
   const { family_id, user_id, new_role } = body as {

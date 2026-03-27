@@ -285,6 +285,10 @@ export default function KidDashboard() {
         tabs={tabs}
         activeTab={activeTab}
         onTabChange={(key) => setActiveTab(key as TabType)}
+        breadcrumbs={[
+          { label: t("dashboard.title"), href: "/kid" },
+          { label: tabs.find((tb) => tb.key === activeTab)?.label ?? "" },
+        ]}
       >
         {showOnboarding ? (
           <Onboarding displayName={displayName} onDismiss={handleDismissOnboarding} />

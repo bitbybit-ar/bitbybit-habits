@@ -6,6 +6,12 @@ import { todayDateStr } from "@/lib/date";
 
 const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
+/**
+ * POST /api/completions
+ *
+ * Create a habit completion for today. Auto-approves for self-verify habits,
+ * otherwise sets status to pending and notifies family sponsors.
+ */
 export const POST = apiHandler(async (request, { session, db }) => {
   const body = await request.json();
   const { habit_id, note, evidence_url } = body as {
@@ -114,6 +120,11 @@ export const POST = apiHandler(async (request, { session, db }) => {
   return created(result[0]);
 });
 
+/**
+ * GET /api/completions
+ *
+ * List the authenticated user's completions, with optional date range filters (?from, ?to).
+ */
 export const GET = apiHandler(async (request, { session, db }) => {
   const { searchParams } = new URL(request.url);
   const dateFrom = searchParams.get("from");

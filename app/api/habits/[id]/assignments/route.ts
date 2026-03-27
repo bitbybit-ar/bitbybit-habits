@@ -2,6 +2,11 @@ import { apiHandler, NotFoundError } from "@/lib/api";
 import { habits, familyMembers, habitAssignments } from "@/lib/db";
 import { eq, and, or, isNotNull } from "drizzle-orm";
 
+/**
+ * GET /api/habits/:id/assignments
+ *
+ * List the users assigned to a habit. Falls back to the assigned_to field.
+ */
 export const GET = apiHandler(async (_req, { session, db, params }) => {
   const { id } = params;
 

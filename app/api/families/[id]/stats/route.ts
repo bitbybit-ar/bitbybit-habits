@@ -3,6 +3,11 @@ import { families, familyMembers, completions, habits, payments } from "@/lib/db
 import { eq, and, sql, count, sum } from "drizzle-orm";
 import { todayDateStr } from "@/lib/date";
 
+/**
+ * GET /api/families/:id/stats
+ *
+ * Family stats: completed today, pending approvals, total sats paid (sponsor only).
+ */
 export const GET = apiHandler(async (_req, { session, db, params }) => {
   const familyId = params.id;
 

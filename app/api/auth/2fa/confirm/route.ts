@@ -14,6 +14,12 @@ function generateRecoveryCode(length: number = 10): string {
   return code;
 }
 
+/**
+ * POST /api/auth/2fa/confirm
+ *
+ * Confirm 2FA setup by verifying a TOTP code.
+ * Enables 2FA and returns one-time recovery codes.
+ */
 export const POST = apiHandler(async (request, { session, db }) => {
   const body = await request.json();
   const { code } = body as { code: string };

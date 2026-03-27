@@ -15,6 +15,12 @@ function getSecretKey(): Uint8Array {
   return new TextEncoder().encode(secret);
 }
 
+/**
+ * POST /api/auth/2fa/validate
+ *
+ * Validate a 2FA code (TOTP or recovery code) during login.
+ * Creates a full session on success.
+ */
 export const POST = apiHandler(async (request, { db }) => {
   const body = await request.json();
   const { tempToken, code } = body as { tempToken: string; code: string };

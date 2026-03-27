@@ -4,6 +4,11 @@ import { habits, familyMembers, completions } from "@/lib/db";
 import { eq, and, or, isNull, isNotNull, sql, desc, inArray } from "drizzle-orm";
 import { todayDateStr } from "@/lib/date";
 
+/**
+ * GET /api/habits
+ *
+ * Paginated list of the user's active habits with today's completion status.
+ */
 export const GET = apiHandler(async (request, { session, db }) => {
   const { searchParams } = new URL(request.url);
   const page = Math.max(1, parseInt(searchParams.get("page") || "1", 10) || 1);
@@ -79,6 +84,11 @@ export const GET = apiHandler(async (request, { session, db }) => {
   };
 });
 
+/**
+ * POST /api/habits
+ *
+ * Create one or more habits. Supports assigning to multiple family members.
+ */
 export const POST = apiHandler(async (request, { session, db }) => {
   const body = await request.json();
   const {

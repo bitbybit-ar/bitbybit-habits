@@ -3,6 +3,12 @@ import { users } from "@/lib/db";
 import { eq } from "drizzle-orm";
 import { TOTP } from "otpauth";
 
+/**
+ * POST /api/auth/2fa/disable
+ *
+ * Disable 2FA after verifying the current TOTP code.
+ * Clears the TOTP secret and recovery codes.
+ */
 export const POST = apiHandler(async (request, { session, db }) => {
   const body = await request.json();
   const { code } = body as { code: string };
