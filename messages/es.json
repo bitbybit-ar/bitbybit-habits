@@ -41,6 +41,10 @@
     "invalidPreimage": "Preimage inválido: no coincide con el payment_hash",
     "preimageRequired": "preimage es requerido",
     "onlyFailedRetry": "Solo se pueden reintentar pagos fallidos",
+    "insufficientFunds": "Fondos insuficientes en la wallet",
+    "nwcPaymentFailed": "No se pudo realizar el pago automático",
+    "nwcInvoiceFailed": "Error al generar la invoice",
+    "nwcTimeout": "La wallet no respondió a tiempo",
     "invalidNwcUrl": "URL de NWC inválida",
     "unauthorized": "No autenticado",
     "forbidden": "No autorizado",
@@ -407,6 +411,7 @@
     "weblnPaidSuccess": "¡Pagados {amount} sats via {extension}! ⚡",
     "weblnRejected": "Pago rechazado en tu extensión. Probando otros métodos...",
     "weblnConfirmError": "Pago enviado pero la confirmación falló. Puede tardar un momento en actualizarse.",
+    "insufficientFunds": "Fondos insuficientes. Escaneá el QR para pagar desde otra wallet.",
     "retryButton": "Reintentar",
     "retrySuccess": "Pago en cola para reintento",
     "retryError": "No se pudo reintentar el pago",
@@ -612,6 +617,7 @@
     "paid": "¡Pago recibido! ⚡",
     "copied": "¡Copiado!",
     "copyInvoice": "Copiar invoice",
+    "pollError": "Problemas de conexión. Seguimos verificando el pago...",
     "close": "Cerrar"
   },
   "validation": {

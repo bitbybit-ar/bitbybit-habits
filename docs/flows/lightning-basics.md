@@ -92,6 +92,18 @@ flowchart TD
     end
 ```
 
+## WebLN vs NWC
+
+| | WebLN | NWC |
+|---|---|---|
+| **What** | Browser extension API | Remote wallet protocol |
+| **Examples** | Alby extension | Any NWC-compatible wallet (Alby, Mutiny, etc.) |
+| **How it works** | Extension injects `window.webln` into the browser | Server connects to wallet via relay using NWC URL |
+| **Required?** | No — completely optional | Kid: yes (to receive). Sponsor: no (can pay via QR) |
+| **Used for** | Tier 1 instant payment (if available) | Tier 2 auto-pay + invoice generation |
+
+Neither Alby nor any specific wallet is required. Users can connect any NWC-compatible wallet by pasting their NWC URL directly.
+
 ## Related flows
 
 - [Wallet Connection](./wallet-connection.md) - how NWC URLs are stored and encrypted

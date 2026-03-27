@@ -111,6 +111,13 @@
   }
 }
 
+.pollError {
+  text-align: center;
+  color: var(--color-warning, #{$color-warning});
+  font-size: 0.85rem;
+  margin-bottom: $spacing-8;
+}
+
 .closeButton {
   width: 100%;
   padding: $spacing-12 $spacing-24;
