@@ -19,7 +19,7 @@ const chainable = () => {
 vi.mock("@/lib/db", () => ({
   getDb: () => ({
     select: () => chainable(),
-    insert: () => ({ values: mockInsertValues }),
+    insert: () => ({ values: (...args: unknown[]) => { mockInsertValues(...args); return { returning: () => Promise.resolve([{ id: "payment-1" }]) }; } }),
     update: () => ({ set: () => ({ where: () => ({ returning: mockUpdateReturning }) }) }),
   }),
   completions: { id: "id", habit_id: "h", status: "s", user_id: "u" },

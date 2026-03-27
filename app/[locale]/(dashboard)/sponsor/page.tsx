@@ -70,12 +70,12 @@ export default function SponsorDashboard() {
    * 3. Try NWC auto-pay (sponsor's wallet)
    * 4. Fall back to QR invoice modal
    */
-  const runPaymentCascade = useCallback(async (completionId: string, amountSats: number, habitName: string) => {
+  const runPaymentCascade = useCallback(async (completionId: string, amountSats: number, habitName: string, existingPaymentId?: string) => {
     // Generate invoice from kid's wallet
     const invoiceRes = await fetch("/api/payments/invoice", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ completion_id: completionId, amount_sats: amountSats }),
+      body: JSON.stringify({ completion_id: completionId, amount_sats: amountSats, payment_id: existingPaymentId }),
     });
 
     if (!invoiceRes.ok) {
@@ -183,8 +183,9 @@ export default function SponsorDashboard() {
         return;
       }
 
-      // Run the 3-tier payment cascade
-      await runPaymentCascade(completionId, completionData.sat_reward, completionData.habit_name);
+      // Run the 3-tier payment cascade with the payment_id from approve
+      const paymentId = data.data?.payment_id;
+      await runPaymentCascade(completionId, completionData.sat_reward, completionData.habit_name, paymentId);
     } catch {
       revertOptimistic();
       showToast(t("auth.connectionError"), "error");
@@ -223,7 +224,7 @@ export default function SponsorDashboard() {
     // Find habit name from the completion data or payments list
     const paymentData = payments.data.find((p) => p.id === paymentId);
     const habitName = paymentData?.habit_name ?? "";
-    await runPaymentCascade(payment.completion_id, payment.amount_sats, habitName);
+    await runPaymentCascade(payment.completion_id, payment.amount_sats, habitName, paymentId);
   }, [payments, showToast, t, runPaymentCascade]);
 
   const handleLeaveFamily = useCallback(async (familyId: string) => {

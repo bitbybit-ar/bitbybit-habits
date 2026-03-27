@@ -9,8 +9,9 @@ import type { ApiResponse } from "@/lib/types";
 /**
  * POST /api/payments/invoice
  *
- * Generates a Lightning invoice from the kid's NWC wallet for a given completion.
- * Sponsor-only: the authenticated user must be the sponsor who created the habit.
+ * Generates a Lightning invoice from the kid's NWC wallet and updates the
+ * existing payment record with the invoice data. Requires a payment_id
+ * (created by the approve endpoint) or falls back to completion_id lookup.
  */
 export const POST = apiHandler(async (request, { session, db }) => {
   if (session.role !== "sponsor") {
@@ -18,7 +19,8 @@ export const POST = apiHandler(async (request, { session, db }) => {
   }
 
   const body = await request.json();
-  const { completion_id, amount_sats } = body as {
+  const { payment_id, completion_id, amount_sats } = body as {
+    payment_id?: string;
     completion_id: string;
     amount_sats: number;
   };
@@ -27,13 +29,12 @@ export const POST = apiHandler(async (request, { session, db }) => {
     throw new BadRequestError("missing_fields");
   }
 
-  // Look up the completion and associated habit
+  // Look up the completion to find the kid
   const completionRows = await db
     .select({
       id: completions.id,
       user_id: completions.user_id,
       habit_id: completions.habit_id,
-      status: completions.status,
     })
     .from(completions)
     .where(eq(completions.id, completion_id))
@@ -46,14 +47,14 @@ export const POST = apiHandler(async (request, { session, db }) => {
   const completion = completionRows[0];
   const kidUserId = completion.user_id;
 
-  // Get the habit name for the invoice description
+  // Get habit name for the invoice description
   const habitRows = await db
     .select({ name: habits.name })
     .from(habits)
     .where(eq(habits.id, completion.habit_id))
     .limit(1);
 
-  const habitName = habitRows[0]?.name ?? "Hábito";
+  const habitName = habitRows[0]?.name ?? "Habit";
 
   // Look up kid's active wallet
   const walletRows = await db
@@ -78,24 +79,38 @@ export const POST = apiHandler(async (request, { session, db }) => {
       description: `BitByBit: ${habitName}`,
     });
 
-    // Create a payment record
-    const paymentRows = await db
-      .insert(payments)
-      .values({
-        completion_id,
-        from_user_id: session.user_id,
-        to_user_id: kidUserId,
-        amount_sats,
-        payment_request: transaction.invoice,
-        payment_hash: transaction.payment_hash,
-        status: "pending",
-      })
-      .returning();
+    // If we have a payment_id from approve, update that record.
+    // Otherwise create a new one (backward compatibility for retry).
+    let finalPaymentId = payment_id;
+
+    if (payment_id) {
+      await db
+        .update(payments)
+        .set({
+          payment_request: transaction.invoice,
+          payment_hash: transaction.payment_hash,
+        })
+        .where(eq(payments.id, payment_id));
+    } else {
+      const paymentRows = await db
+        .insert(payments)
+        .values({
+          completion_id,
+          from_user_id: session.user_id,
+          to_user_id: kidUserId,
+          amount_sats,
+          payment_request: transaction.invoice,
+          payment_hash: transaction.payment_hash,
+          status: "pending",
+        })
+        .returning();
+      finalPaymentId = paymentRows[0].id;
+    }
 
     return {
       paymentRequest: transaction.invoice,
       paymentHash: transaction.payment_hash,
-      payment_id: paymentRows[0].id,
+      payment_id: finalPaymentId,
       completion_id,
     };
   } catch (error) {

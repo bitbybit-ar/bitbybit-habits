@@ -14,7 +14,7 @@ flowchart TD
     E -- Yes --> G["completion.status = 'approved'<br/>Create payment record (pending)"]
     G --> H["Generate invoice from kid's wallet<br/>(internal — user never sees this)"]
     H --> I{Invoice generated?}
-    I -- No --> J["Error: invoice generation failed<br/>Payment stays pending for retry"]
+    I -- No --> J["Error: invoice generation failed<br/>Payment record exists, can retry later"]
 
     I -- Yes --> K{Sponsor has<br/>WebLN extension?}
 
@@ -81,7 +81,7 @@ The only **required** wallet is the kid's — it generates the invoice. If the k
 | Error | When | User sees |
 |-------|------|-----------|
 | Kid has no wallet | During approval | Approval fails: "Kid must connect a wallet" |
-| Invoice generation failed | NWC error | "Error generating invoice" — payment pending for retry |
+| Invoice generation failed | NWC error | "Error generating invoice" — payment record exists, retry from Payments tab |
 | WebLN rejected | User declines in extension | "Declined" toast, falls to next tier |
 | Insufficient funds | NWC auto-pay | "Insufficient funds" toast, falls to QR |
 | NWC error | Auto-pay fails | Silent fallthrough to QR |

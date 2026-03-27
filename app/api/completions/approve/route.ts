@@ -66,16 +66,18 @@ export const POST = apiHandler(async (request, { session, db }) => {
 
   // Create payment record if reward > 0
   let paymentStatus: "pending" | "none" = "none";
+  let paymentId: string | null = null;
 
   if (completion.sat_reward > 0) {
-    await db.insert(payments).values({
+    const paymentRows = await db.insert(payments).values({
       completion_id,
       from_user_id: session.user_id,
       to_user_id: completion.user_id,
       amount_sats: completion.sat_reward,
       status: "pending",
-    });
+    }).returning();
     paymentStatus = "pending";
+    paymentId = paymentRows[0].id;
   }
 
   // Notify the kid
@@ -93,5 +95,5 @@ export const POST = apiHandler(async (request, { session, db }) => {
     console.error("Error creating notification:", notifError);
   }
 
-  return { ...updated[0], payment_status: paymentStatus };
+  return { ...updated[0], payment_status: paymentStatus, payment_id: paymentId };
 });
