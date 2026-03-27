@@ -57,6 +57,10 @@ export const ERROR_CODES = {
   INVALID_PREIMAGE: "invalid_preimage",
   PREIMAGE_REQUIRED: "preimage_required",
   ONLY_FAILED_RETRY: "only_failed_retry",
+  INSUFFICIENT_FUNDS: "insufficient_funds",
+  NWC_PAYMENT_FAILED: "nwc_payment_failed",
+  NWC_INVOICE_FAILED: "nwc_invoice_failed",
+  NWC_TIMEOUT: "nwc_timeout",
 
   // Wallets
   INVALID_NWC_URL: "invalid_nwc_url",

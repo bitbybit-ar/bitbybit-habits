@@ -142,7 +142,7 @@ export default function SponsorDashboard() {
             }
           }
 
-          // Priority 2: NWC auto-pay
+          // Priority 2: NWC auto-pay (only if sponsor has a wallet)
           try {
             const payRes = await fetch(`/api/payments/${paymentId}/pay`, { method: "POST", headers: { "Content-Type": "application/json" } });
             if (payRes.ok) {
@@ -151,10 +151,18 @@ export default function SponsorDashboard() {
                 showToast(t("payments.autoPaidSuccess", { amount: completionData.sat_reward }), "success");
                 return;
               }
+            } else {
+              const payData = await payRes.json().catch(() => null);
+              const errCode = payData?.error;
+              // Insufficient funds — show specific message, then fall to QR
+              if (errCode === "insufficient_funds") {
+                showToast(t("payments.insufficientFunds"), "error");
+              }
+              // sponsor_no_wallet — expected when no wallet connected, fall through silently to QR
             }
-          } catch { /* fall through */ }
+          } catch { /* network error — fall through to QR */ }
 
-          // Priority 3: Invoice modal
+          // Priority 3: Invoice modal (always available as fallback)
           setInvoiceModal({ paymentRequest, paymentId, amountSats: completionData.sat_reward, habitName: completionData.habit_name });
           showToast(t("payments.scanInvoice", { amount: completionData.sat_reward }), "info");
           return;

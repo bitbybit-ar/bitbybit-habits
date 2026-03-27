@@ -98,6 +98,11 @@ export const POST = apiHandler(async (request, { session, db }) => {
       payment_id: paymentRows[0].id,
       completion_id,
     };
+  } catch (error) {
+    const msg = error instanceof Error ? error.message : "";
+    throw new BadRequestError(
+      msg.includes("timeout") ? "nwc_timeout" : "nwc_invoice_failed"
+    );
   } finally {
     client.close();
   }

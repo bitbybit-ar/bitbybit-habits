@@ -14,14 +14,14 @@ flowchart TD
     end
 
     subgraph "2. Setup"
-        CF --> SW["Sponsor connects<br/>Lightning wallet (NWC)"]
-        JF --> KW["Kid connects<br/>Lightning wallet (NWC)"]
+        CF --> CH["Sponsor creates habit<br/>'Make bed' = 50 sats"]
+        CF -.-> SW["Sponsor connects wallet<br/>(optional — can pay via QR)"]
+        JF --> KW["Kid connects<br/>Lightning wallet (NWC)<br/>(required to receive sats)"]
     end
 
     subgraph "3. Daily Loop"
-        SW --> CH["Sponsor creates habit<br/>'Make bed' = 50 sats"]
-        KW --> COMP["Kid completes habit<br/>taps card in dashboard"]
-        CH --> COMP
+        CH --> COMP["Kid completes habit<br/>taps card in dashboard"]
+        KW --> COMP
         COMP --> PEND["Completion pending<br/>Sponsors notified"]
         PEND --> APPROVE["Sponsor approves"]
         APPROVE --> PAY["Payment cascade:<br/>WebLN -> NWC -> QR"]
@@ -31,6 +31,7 @@ flowchart TD
 
     style SATS fill:#F7A825,color:#000
     style PAY fill:#4DB6AC,color:#fff
+    style SW fill:#FF9F43,color:#000
 ```
 
 ## Step-by-step with links
@@ -43,15 +44,26 @@ flowchart TD
 5. **Kid joins family** using the invite code
 
 ### Phase 2: Setup
-6. **Sponsor connects Lightning wallet** via NWC URL ([Wallet Connection](./wallet-connection.md))
-7. **Kid connects Lightning wallet** via NWC URL
+6. **Kid connects Lightning wallet** via NWC URL or browser extension ([Wallet Connection](./wallet-connection.md)) -- **required** to receive payments
+7. **Sponsor connects wallet** (optional) via NWC URL or browser extension -- enables auto-pay; without it, sponsor pays via QR scan
 8. **Sponsor creates habits** with sat rewards ([Habit Lifecycle](./habit-lifecycle.md))
 
 ### Phase 3: Daily Loop
 9. **Kid completes habit** by tapping the card ([Habit Completion](./habit-completion.md))
 10. **Sponsors get notified** of pending completion ([Notifications](./notifications.md))
 11. **Sponsor approves** the completion
-12. **Payment cascade fires**: WebLN, NWC, or QR ([Payment Cascade](./payment-cascade.md))
+12. **Payment cascade fires**: WebLN, NWC auto-pay, or QR invoice ([Payment Cascade](./payment-cascade.md))
 13. **Kid receives sats** in their Lightning wallet
 14. **Streaks grow** with consecutive daily completions ([Stats & Streaks](./stats-and-streaks.md))
 15. Repeat from step 9!
+
+### What if something goes wrong?
+
+| Scenario | What happens |
+|----------|-------------|
+| Kid has no wallet | Invoice can't be generated — sponsor sees "Kid needs to connect wallet" |
+| Sponsor has no wallet | Tiers 1-2 are skipped, QR invoice shown directly |
+| Insufficient funds | Error toast shown, QR invoice shown as fallback |
+| NWC service down | Auto-pay fails silently, QR invoice shown as fallback |
+| Invoice expires | Sponsor can retry from payments tab — new invoice is generated |
+| Polling fails | Modal shows connection warning, keeps retrying |

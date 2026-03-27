@@ -57,6 +57,10 @@ const ERROR_CODE_TO_I18N: Record<string, string> = {
   invalid_preimage: "errors.invalidPreimage",
   preimage_required: "errors.preimageRequired",
   only_failed_retry: "errors.onlyFailedRetry",
+  insufficient_funds: "errors.insufficientFunds",
+  nwc_payment_failed: "errors.nwcPaymentFailed",
+  nwc_invoice_failed: "errors.nwcInvoiceFailed",
+  nwc_timeout: "errors.nwcTimeout",
 
   // Wallets
   invalid_nwc_url: "errors.invalidNwcUrl",

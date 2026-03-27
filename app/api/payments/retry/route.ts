@@ -104,9 +104,10 @@ export const POST = apiHandler(async (request, { session, db }) => {
       .set({ status: "failed" })
       .where(eq(payments.id, payment_id!));
 
-    throw new BadRequestError(
-      `Payment retry failed: ${errorMsg || "Unknown error"}`
-    );
+    if (errorMsg.includes("insufficient") || errorMsg.includes("not enough")) {
+      throw new BadRequestError("insufficient_funds");
+    }
+    throw new BadRequestError("nwc_payment_failed");
   } finally {
     client.close();
   }

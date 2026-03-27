@@ -82,9 +82,11 @@ export const POST = apiHandler(async (_request, { session, db, params }) => {
       .set({ status: "failed" })
       .where(eq(payments.id, paymentId));
 
-    throw new BadRequestError(
-      `Payment failed: ${error instanceof Error ? error.message : "Unknown error"}`
-    );
+    const msg = error instanceof Error ? error.message.toLowerCase() : "";
+    if (msg.includes("insufficient") || msg.includes("not enough")) {
+      throw new BadRequestError("insufficient_funds");
+    }
+    throw new BadRequestError("nwc_payment_failed");
   } finally {
     client.close();
   }

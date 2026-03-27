@@ -171,7 +171,7 @@ describe("POST /api/payments/invoice", () => {
       amount_sats: 50,
     });
     const { status } = await parseResponse(await POST(req));
-    expect(status).toBe(500);
+    expect(status).toBe(400);
     expect(mockClose).toHaveBeenCalled();
   });
 });
