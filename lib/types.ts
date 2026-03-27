@@ -70,6 +70,8 @@ export interface Payment {
   amount_sats: number;
   payment_request?: string;
   payment_hash?: string;
+  preimage?: string;
+  payment_method?: "webln" | "nwc" | "manual";
   status: "pending" | "paid" | "failed";
   paid_at?: string;
   created_at: string;

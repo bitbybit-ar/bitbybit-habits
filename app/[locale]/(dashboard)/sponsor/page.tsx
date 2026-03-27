@@ -29,7 +29,7 @@ type TabType = "byHabit" | "byKid" | "create" | "family" | "payments" | "wallet"
 export default function SponsorDashboard() {
   const t = useTranslations();
   const { showToast } = useToast();
-  const { hasExtension: hasWebLN } = useWebLN();
+  const { hasExtension: hasWebLN, sendPayment: weblnSendPayment, extensionName } = useWebLN();
   const [activeTab, setActiveTab] = useState<TabType>("byHabit");
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [invoiceModal, setInvoiceModal] = useState<{
@@ -119,17 +119,32 @@ export default function SponsorDashboard() {
         if (invoiceData.success && invoiceData.data) {
           const { paymentRequest, payment_id: paymentId } = invoiceData.data;
 
-          // Priority 1: WebLN
+          // Priority 1: WebLN (browser extension like Alby)
           if (hasWebLN) {
             try {
-              const webln = (window as unknown as { webln?: { enable: () => Promise<void>; sendPayment: (invoice: string) => Promise<{ preimage: string }> } }).webln;
-              if (webln) {
-                await webln.enable();
-                await webln.sendPayment(paymentRequest);
-                showToast(t("payments.autoPaidSuccess", { amount: completionData.sat_reward }), "success");
-                return;
+              const { preimage } = await weblnSendPayment(paymentRequest);
+
+              // Confirm on backend (store preimage, mark as paid)
+              try {
+                await fetch(`/api/payments/${paymentId}/confirm`, {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ preimage }),
+                });
+                showToast(t("payments.weblnPaidSuccess", { amount: completionData.sat_reward, extension: extensionName ?? "WebLN" }), "success");
+              } catch {
+                // Payment was sent but backend confirm failed — don't double-pay
+                showToast(t("payments.weblnConfirmError"), "info");
               }
-            } catch { /* fall through */ }
+              return; // CRITICAL: never fall through after sendPayment succeeds
+            } catch (err) {
+              // WebLN failed — show feedback if user rejected, then fall through
+              const msg = err instanceof Error ? err.message : "";
+              if (msg.includes("rejected") || msg.includes("denied") || msg.includes("cancelled")) {
+                showToast(t("payments.weblnRejected"), "info");
+              }
+              // Fall through to NWC / QR
+            }
           }
 
           // Priority 2: NWC auto-pay
@@ -161,7 +176,7 @@ export default function SponsorDashboard() {
       revertOptimistic();
       showToast(t("auth.connectionError"), "error");
     }
-  }, [showToast, t, familyData, hasWebLN]);
+  }, [showToast, t, familyData, hasWebLN, weblnSendPayment, extensionName]);
 
   const handleCreateHabit = useCallback(async (data: CreateHabitData) => {
     try {

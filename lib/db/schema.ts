@@ -113,6 +113,8 @@ export const payments = pgTable("payments", {
   amount_sats: integer("amount_sats").notNull(),
   payment_request: text("payment_request"),
   payment_hash: text("payment_hash"),
+  preimage: text("preimage"),
+  payment_method: text("payment_method").$type<"webln" | "nwc" | "manual">(),
   status: text("status").notNull().default("pending").$type<"pending" | "paid" | "failed">(),
   paid_at: timestamp("paid_at"),
   created_at: timestamp("created_at").defaultNow(),
