@@ -406,6 +406,7 @@
     },
     "autoPaidSuccess": "¡Aprobado! Se enviaron {amount} sats ⚡",
     "scanInvoice": "Escaneá o copiá la invoice para pagar {amount} sats",
+    "kidNoWallet": "El kid necesita conectar una wallet para recibir sats",
     "approvedNoPay": "Aprobado sin pago. Configurá una wallet para enviar sats.",
     "paymentError": "Error al procesar el pago. Intentá de nuevo.",
     "weblnPaidSuccess": "¡Pagados {amount} sats via {extension}! ⚡",

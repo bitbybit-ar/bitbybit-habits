@@ -1,13 +1,13 @@
-import { apiHandler, requireFields, NotFoundError } from "@/lib/api";
+import { apiHandler, requireFields, NotFoundError, BadRequestError } from "@/lib/api";
 import { createNotification } from "@/lib/notifications";
-import { completions, habits, familyMembers, payments } from "@/lib/db";
+import { completions, habits, familyMembers, payments, wallets } from "@/lib/db";
 import { eq, and, sql } from "drizzle-orm";
 
 /**
  * POST /api/completions/approve
  *
  * Approve a pending completion (sponsor only). Creates a payment record
- * if the habit has a sat reward. Sponsor wallet is not required — they can pay via QR.
+ * if the habit has a sat reward. Fails if kid has no wallet when reward > 0.
  */
 export const POST = apiHandler(async (request, { session, db }) => {
   const body = await request.json();
@@ -44,6 +44,19 @@ export const POST = apiHandler(async (request, { session, db }) => {
 
   const completion = result[0];
 
+  // If there's a sat reward, verify kid has a wallet to receive payment
+  if (completion.sat_reward > 0) {
+    const kidWallet = await db
+      .select({ id: wallets.id })
+      .from(wallets)
+      .where(and(eq(wallets.user_id, completion.user_id), eq(wallets.active, true)))
+      .limit(1);
+
+    if (kidWallet.length === 0) {
+      throw new BadRequestError("kid_no_wallet");
+    }
+  }
+
   // Update completion status
   const updated = await db
     .update(completions)
@@ -51,12 +64,10 @@ export const POST = apiHandler(async (request, { session, db }) => {
     .where(eq(completions.id, completion_id))
     .returning();
 
-  // Check wallet and create payment record if reward > 0
-  let paymentStatus: "no_wallet" | "pending" | "none" = "none";
+  // Create payment record if reward > 0
+  let paymentStatus: "pending" | "none" = "none";
 
   if (completion.sat_reward > 0) {
-    // Always create payment record when there's a reward.
-    // Sponsor's wallet is optional — they can pay via QR invoice even without one.
     await db.insert(payments).values({
       completion_id,
       from_user_id: session.user_id,
