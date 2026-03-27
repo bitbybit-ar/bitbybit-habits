@@ -39,8 +39,9 @@ flowchart TD
     V --> W["Sponsor scans & pays<br/>from any Lightning wallet"]
     W --> X["Modal polls every 4s"]
     X --> Y{Settled?}
-    Y -- No --> X
     Y -- Yes --> Z["PAID ✓"]
+    Y -- "Not paid<br/>before expiry" --> EX["Invoice expires<br/>Payment marked as failed"]
+    EX --> RT["Sponsor can retry anytime<br/>from Payments tab"]
 
     style A fill:#F7A825,color:#000
     style N fill:#4CAF7D,color:#fff
@@ -48,6 +49,7 @@ flowchart TD
     style Z fill:#4CAF7D,color:#fff
     style F fill:#EE5A5A,color:#fff
     style J fill:#FF9F43,color:#000
+    style EX fill:#EE5A5A,color:#fff
 ```
 
 ## The three tiers
@@ -61,6 +63,7 @@ flowchart TD
 - The invoice is generated **once** from the kid's wallet and reused across all 3 tiers
 - In Tiers 1 and 2, the user never sees the invoice — it's an internal protocol step
 - In Tier 3, the same invoice is displayed as a scannable QR code
+- Lightning invoices have a built-in expiry. If not paid in time, the payment is marked as failed and can be [retried](./payment-retry.md)
 
 ## Sponsor wallet is optional
 
@@ -73,31 +76,20 @@ flowchart TD
 
 The only **required** wallet is the kid's — it generates the invoice. If the kid has no wallet, the approval fails.
 
-## Payment retry
-
-Failed payments can be retried anytime from the Payments tab. Retry resets the payment and re-runs the full cascade (generate new invoice → Tier 1 → 2 → 3).
-
-```mermaid
-flowchart TD
-    A["Sponsor clicks 'Retry'<br/>on failed payment"] --> B["POST /api/payments/retry<br/>Reset to pending, clear old invoice"]
-    B --> C["Re-run full payment cascade<br/>(same 3-tier flow as above)"]
-    C --> D["Generate fresh invoice<br/>from kid's wallet"]
-    D --> E["Tier 1 → Tier 2 → Tier 3"]
-```
-
 ## Error handling
 
 | Error | When | User sees |
 |-------|------|-----------|
 | Kid has no wallet | During approval | Approval fails: "Kid must connect a wallet" |
-| Invoice generation failed | NWC error | "Error generating invoice" — retry later |
+| Invoice generation failed | NWC error | "Error generating invoice" — payment pending for retry |
 | WebLN rejected | User declines in extension | "Declined" toast, falls to next tier |
 | Insufficient funds | NWC auto-pay | "Insufficient funds" toast, falls to QR |
 | NWC error | Auto-pay fails | Silent fallthrough to QR |
 | Polling issues | QR modal | "Connection issues" warning, keeps retrying |
+| Invoice expired | Not paid in time | Payment marked failed, retry from Payments tab |
 
 ## Related flows
 
+- [Payment Retry](./payment-retry.md) — how failed/expired payments are retried
 - [Invoice Modal](./invoice-modal.md) — QR code fallback details
-- [Payment Retry](./payment-retry.md) — retry flow details
 - [Wallet Connection](./wallet-connection.md) — how wallets get connected
