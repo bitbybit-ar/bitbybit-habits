@@ -18,7 +18,7 @@ export const GET = apiHandler(async (_req, { session, db }) => {
     .where(eq(users.id, session.user_id));
 
   if (result.length === 0) {
-    throw new NotFoundError("Usuario");
+    throw new NotFoundError("User");
   }
 
   return result[0];
@@ -35,15 +35,15 @@ export const PATCH = apiHandler(async (request, { session, db }) => {
   };
 
   if (locale && !["es", "en"].includes(locale)) {
-    throw new BadRequestError("Locale inválido");
+    throw new BadRequestError("invalid_locale");
   }
 
   if (username !== undefined && username.trim().length < 3) {
-    throw new BadRequestError("El nombre de usuario debe tener al menos 3 caracteres");
+    throw new BadRequestError("username_too_short");
   }
 
   if (email !== undefined && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
-    throw new BadRequestError("Email inválido");
+    throw new BadRequestError("invalid_email");
   }
 
   const updates: Partial<typeof users.$inferInsert> = {};

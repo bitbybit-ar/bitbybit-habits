@@ -12,7 +12,7 @@ export const GET = apiHandler(async (req, { session, db, params }) => {
     .where(eq(families.id, familyId));
 
   if (family.length === 0) {
-    throw new NotFoundError("Familia");
+    throw new NotFoundError("Family");
   }
 
   // Verify user is a sponsor in this family
@@ -27,7 +27,7 @@ export const GET = apiHandler(async (req, { session, db, params }) => {
     );
 
   if (membership.length === 0 || membership[0].role !== "sponsor") {
-    throw new ForbiddenError("Solo sponsors pueden ver completaciones de la familia");
+    throw new ForbiddenError("sponsors_only");
   }
 
   // Parse days param (default 7)

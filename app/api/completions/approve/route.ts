@@ -33,7 +33,7 @@ export const POST = apiHandler(async (request, { session, db }) => {
     );
 
   if (result.length === 0) {
-    throw new NotFoundError("Completacion no encontrada o ya procesada");
+    throw new NotFoundError("completion_not_found");
   }
 
   const completion = result[0];

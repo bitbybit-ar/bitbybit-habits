@@ -42,7 +42,7 @@ export const POST = apiHandler(async (request, { session, db }) => {
         );
 
       if (otherMembers.length > 0) {
-        throw new BadRequestError("Cannot leave: you are the last sponsor. Promote another member first or delete the family.");
+        throw new BadRequestError("last_sponsor");
       }
     }
   }

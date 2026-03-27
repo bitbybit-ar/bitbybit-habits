@@ -21,13 +21,13 @@ export const POST = apiHandler(async (request, { session, db }) => {
     try {
       new URL(evidence_url);
     } catch {
-      throw new BadRequestError("evidence_url debe ser una URL valida");
+      throw new BadRequestError("invalid_evidence_url");
     }
   }
 
   // Validate note length
   if (note && note.length > 1000) {
-    throw new BadRequestError("La nota no puede superar los 1000 caracteres");
+    throw new BadRequestError("note_too_long");
   }
 
   // Verify the habit exists and user can complete it
@@ -51,7 +51,7 @@ export const POST = apiHandler(async (request, { session, db }) => {
     );
 
   if (habitResult.length === 0) {
-    throw new NotFoundError("Habito no encontrado o no asignado a vos");
+    throw new NotFoundError("habit_not_assigned");
   }
 
   const habit = habitResult[0].habits;
@@ -70,7 +70,7 @@ export const POST = apiHandler(async (request, { session, db }) => {
     );
 
   if (existing.length > 0) {
-    throw new ConflictError("Ya completaste este habito hoy");
+    throw new ConflictError("already_completed_today");
   }
 
   // Status depends on verification type
@@ -121,13 +121,13 @@ export const GET = apiHandler(async (request, { session, db }) => {
 
   // Validate date formats
   if (dateFrom && !ISO_DATE_RE.test(dateFrom)) {
-    throw new BadRequestError("Parametro 'from' debe tener formato YYYY-MM-DD");
+    throw new BadRequestError("invalid_date_format");
   }
   if (dateTo && !ISO_DATE_RE.test(dateTo)) {
-    throw new BadRequestError("Parametro 'to' debe tener formato YYYY-MM-DD");
+    throw new BadRequestError("invalid_date_format");
   }
   if (dateFrom && dateTo && dateFrom > dateTo) {
-    throw new BadRequestError("'from' no puede ser posterior a 'to'");
+    throw new BadRequestError("invalid_date_range");
   }
 
   const conditions = [

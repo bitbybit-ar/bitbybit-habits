@@ -16,7 +16,7 @@ export const DELETE = apiHandler(async (_req, { session, db, params }) => {
   }
 
   if (result[0].created_by !== session.user_id) {
-    throw new ForbiddenError("Only the creator can delete this family");
+    throw new ForbiddenError();
   }
 
   // Deactivate related habits

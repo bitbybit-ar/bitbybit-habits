@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import AuthCard from "@/components/auth/AuthCard";
 import { FormInput, FormSelect, FormButton } from "@/components/ui/form";
 import { useFormValidation } from "@/lib/hooks/useFormValidation";
+import { resolveApiError } from "@/lib/error-messages";
 import formStyles from "@/components/ui/form/form.module.scss";
 import styles from "./settings.module.scss";
 
@@ -118,7 +119,7 @@ export default function SettingsPage() {
           router.push(`/${locale}/settings`);
         }
       } else {
-        setError(data.error || t("auth.connectionError"));
+        setError(resolveApiError(data.error || "internalError", t));
       }
     } catch {
       setError(t("auth.connectionError"));

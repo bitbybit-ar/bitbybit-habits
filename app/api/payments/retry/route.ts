@@ -26,11 +26,11 @@ export const POST = apiHandler(async (request, { session, db }) => {
     .where(and(eq(payments.id, payment_id!), eq(payments.from_user_id, session.user_id)));
 
   if (existing.length === 0) {
-    throw new NotFoundError("Pago");
+    throw new NotFoundError("Payment");
   }
 
   if (existing[0].status !== "failed") {
-    throw new BadRequestError("Solo se pueden reintentar pagos fallidos");
+    throw new BadRequestError("only_failed_retry");
   }
 
   const payment = existing[0];
@@ -105,7 +105,7 @@ export const POST = apiHandler(async (request, { session, db }) => {
       .where(eq(payments.id, payment_id!));
 
     throw new BadRequestError(
-      `Error al reintentar pago: ${errorMsg || "Error desconocido"}`
+      `Payment retry failed: ${errorMsg || "Unknown error"}`
     );
   } finally {
     client.close();

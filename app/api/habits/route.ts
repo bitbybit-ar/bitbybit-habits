@@ -1,10 +1,8 @@
 import { apiHandler, created, BadRequestError, ForbiddenError } from "@/lib/api";
+import { validateHabitFields } from "@/lib/api/validate-habit";
 import { habits, familyMembers, completions } from "@/lib/db";
 import { eq, and, or, isNull, isNotNull, sql, desc, inArray } from "drizzle-orm";
 import { todayDateStr } from "@/lib/date";
-
-const VALID_SCHEDULE_TYPES = ["daily", "specific_days", "times_per_week"] as const;
-const VALID_VERIFICATION_TYPES = ["sponsor_approval", "self_verify"] as const;
 
 export const GET = apiHandler(async (request, { session, db }) => {
   const { searchParams } = new URL(request.url);
@@ -32,7 +30,6 @@ export const GET = apiHandler(async (request, { session, db }) => {
     )
     .where(whereCondition);
 
-  // Complex query with LEFT JOINs and CASE — use sql template for the computed column
   const result = await db
     .selectDistinct({
       id: habits.id,
@@ -109,35 +106,10 @@ export const POST = apiHandler(async (request, { session, db }) => {
   };
 
   if (!name || !color || !schedule_type || !verification_type) {
-    throw new BadRequestError("Faltan campos obligatorios");
+    throw new BadRequestError("Missing required fields");
   }
 
-  // Validate enums
-  if (!VALID_SCHEDULE_TYPES.includes(schedule_type)) {
-    throw new BadRequestError("schedule_type invalido");
-  }
-  if (!VALID_VERIFICATION_TYPES.includes(verification_type)) {
-    throw new BadRequestError("verification_type invalido");
-  }
-
-  // Validate sat_reward
-  if (sat_reward !== undefined && sat_reward !== null) {
-    if (!Number.isInteger(sat_reward) || sat_reward < 0 || sat_reward > 1_000_000) {
-      throw new BadRequestError("sat_reward debe ser un entero entre 0 y 1.000.000");
-    }
-  }
-
-  // Validate color hex
-  if (!/^#[0-9A-Fa-f]{6}$/.test(color)) {
-    throw new BadRequestError("color debe ser un hex valido (#RRGGBB)");
-  }
-
-  // Validate schedule_days
-  if (schedule_days !== undefined && schedule_days !== null) {
-    if (!Array.isArray(schedule_days) || schedule_days.some((d: number) => !Number.isInteger(d) || d < 0 || d > 6)) {
-      throw new BadRequestError("schedule_days debe contener dias validos (0-6)");
-    }
-  }
+  validateHabitFields({ schedule_type, verification_type, sat_reward, color, schedule_days });
 
   // Normalize assigned_to to array (supports both single string and array)
   const assignees = Array.isArray(assigned_to) ? assigned_to : [assigned_to].filter(Boolean);
@@ -145,7 +117,7 @@ export const POST = apiHandler(async (request, { session, db }) => {
 
   if (!isSelfAssigned) {
     if (!family_id) {
-      throw new BadRequestError("Se requiere family_id para asignar habitos a otros");
+      throw new BadRequestError("family_id is required when assigning habits to others");
     }
 
     const sponsorMembership = await db
@@ -160,7 +132,7 @@ export const POST = apiHandler(async (request, { session, db }) => {
       );
 
     if (sponsorMembership.length === 0) {
-      throw new ForbiddenError("No sos sponsor de esta familia");
+      throw new ForbiddenError("Not a sponsor of this family");
     }
 
     // Validate all assignees are family members (single query)
@@ -174,7 +146,7 @@ export const POST = apiHandler(async (request, { session, db }) => {
     const memberUserIds = new Set(assigneeMemberships.map((m) => m.user_id));
     for (const assigneeId of assignees) {
       if (!memberUserIds.has(assigneeId)) {
-        throw new BadRequestError("El usuario asignado no es miembro de esta familia");
+        throw new BadRequestError("Assigned user is not a member of this family");
       }
     }
   }

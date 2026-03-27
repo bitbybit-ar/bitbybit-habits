@@ -18,7 +18,7 @@ export const POST = apiHandler(async (request, { db }) => {
   const { email, username, password, display_name, locale } = await request.json();
 
   if (!email || !username || !password || !display_name) {
-    throw new BadRequestError("Faltan campos requeridos");
+    throw new BadRequestError("missing_fields");
   }
 
   const password_hash = await hashPassword(password);

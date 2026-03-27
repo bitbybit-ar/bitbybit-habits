@@ -119,7 +119,7 @@ describe("POST /api/payments/[id]/confirm", () => {
     const req = createRequest("POST", `/api/payments/${UUID.payment1}/confirm`, { preimage: invalidPreimage });
     const { status, body } = await parseResponse(await POST(req, routeCtx));
     expect(status).toBe(400);
-    expect(body.error).toContain("Preimage");
+    expect(body.error).toContain("invalid_preimage");
     expect(mockUpdateSet).not.toHaveBeenCalled();
   });
 

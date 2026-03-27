@@ -6,7 +6,7 @@ export function requireFields<T extends Record<string, unknown>>(
 ): void {
   for (const field of fields) {
     if (!body[field]) {
-      throw new BadRequestError(`El campo ${String(field)} es obligatorio`);
+      throw new BadRequestError(`Field '${String(field)}' is required`);
     }
   }
 }

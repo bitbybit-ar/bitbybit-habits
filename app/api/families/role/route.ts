@@ -52,7 +52,7 @@ export const PATCH = apiHandler(async (request, { session, db }) => {
       );
 
     if (otherSponsors.length === 0) {
-      throw new BadRequestError("Cannot demote the last sponsor");
+      throw new BadRequestError("cannot_demote_last_sponsor");
     }
   }
 

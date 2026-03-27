@@ -62,6 +62,6 @@ describe("POST /api/auth/register", () => {
     });
     const { status, body } = await parseResponse(await POST(req));
     expect(status).toBe(409);
-    expect(body.error).toContain("ya existe");
+    expect(body.error).toContain("already exists");
   });
 });
