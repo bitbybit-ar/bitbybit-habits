@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import Navbar from "@/components/layout/navbar";
 import { FormInput, FormButton } from "@/components/ui/form";
+import { resolveApiError } from "@/lib/error-messages";
 import styles from "./onboard.module.scss";
 
 type Step = "role" | "sponsor" | "kid" | "done";
@@ -68,7 +69,7 @@ export default function OnboardPage() {
         setChosenRole("sponsor");
         setStep("done");
       } else {
-        setError(data.error);
+        setError(resolveApiError(data.error, t));
       }
     } catch {
       setError(t("auth.connectionError"));
@@ -95,7 +96,7 @@ export default function OnboardPage() {
         setChosenRole("kid");
         setStep("done");
       } else {
-        setError(data.error);
+        setError(resolveApiError(data.error, t));
       }
     } catch {
       setError(t("auth.connectionError"));

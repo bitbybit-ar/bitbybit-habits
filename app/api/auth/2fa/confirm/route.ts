@@ -28,7 +28,7 @@ export const POST = apiHandler(async (request, { session, db }) => {
     .limit(1);
 
   if (result.length === 0 || !result[0].totp_secret) {
-    throw new BadRequestError("2FA no configurado");
+    throw new BadRequestError("2fa_not_configured");
   }
 
   const secret = result[0].totp_secret;
@@ -46,7 +46,7 @@ export const POST = apiHandler(async (request, { session, db }) => {
   const delta = totp.validate({ token: code, window: 1 });
 
   if (delta === null) {
-    throw new BadRequestError("Codigo invalido");
+    throw new BadRequestError("invalid_code");
   }
 
   // Generate 8 recovery codes

@@ -40,7 +40,7 @@ export const POST = apiHandler(async (request, { session, db }) => {
   const { nwc_url, label } = body as { nwc_url: string; label?: string };
 
   if (!nwc_url || !nwc_url.startsWith("nostr+walletconnect://")) {
-    throw new BadRequestError("URL de NWC inválida");
+    throw new BadRequestError("invalid_nwc_url");
   }
 
   const encrypted = encrypt(nwc_url);

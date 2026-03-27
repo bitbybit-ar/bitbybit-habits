@@ -119,7 +119,7 @@ describe("2FA API", () => {
       const req = createRequest("POST", "/api/auth/2fa/confirm", { code: "000000" });
       const { status, body } = await parseResponse(await confirm(req));
       expect(status).toBe(400);
-      expect(body.error).toContain("invalido");
+      expect(body.error).toContain("invalid_code");
     });
 
     it("enables 2FA and returns recovery codes", async () => {
@@ -175,7 +175,7 @@ describe("2FA API", () => {
       const req = createRequest("POST", "/api/auth/2fa/validate", { tempToken: "mock-token", code: "000000" });
       const { status, body } = await parseResponse(await validate(req));
       expect(status).toBe(400);
-      expect(body.error).toContain("invalido");
+      expect(body.error).toContain("invalid_code");
     });
   });
 

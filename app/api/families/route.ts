@@ -65,7 +65,7 @@ export const POST = apiHandler(async (request, { session, db }) => {
   const { name } = body as { name: string };
 
   if (!name || name.trim().length === 0) {
-    throw new BadRequestError("El nombre de la familia es obligatorio");
+    throw new BadRequestError("family_name_required");
   }
 
   const inviteCode = generateInviteCode();

@@ -13,14 +13,14 @@ export const POST = apiHandler(async (request, { session, db, params }) => {
   const paymentId = params.id;
 
   if (session.role !== "sponsor") {
-    throw new ForbiddenError("Solo sponsors pueden confirmar pagos");
+    throw new ForbiddenError("sponsors_only");
   }
 
   const body = await request.json();
   const { preimage } = body;
 
   if (!preimage || typeof preimage !== "string") {
-    throw new BadRequestError("preimage es requerido");
+    throw new BadRequestError("preimage_required");
   }
 
   const paymentRows = await db
@@ -30,13 +30,13 @@ export const POST = apiHandler(async (request, { session, db, params }) => {
     .limit(1);
 
   if (!paymentRows[0]) {
-    throw new NotFoundError("Pago");
+    throw new NotFoundError("Payment");
   }
 
   const payment = paymentRows[0];
 
   if (payment.from_user_id !== session.user_id) {
-    throw new ForbiddenError("No autorizado para este pago");
+    throw new ForbiddenError();
   }
 
   // Already paid — idempotent
@@ -51,7 +51,7 @@ export const POST = apiHandler(async (request, { session, db, params }) => {
       .digest("hex");
 
     if (hash !== payment.payment_hash) {
-      throw new BadRequestError("Preimage inválido: no coincide con el payment_hash");
+      throw new BadRequestError("invalid_preimage");
     }
   }
 

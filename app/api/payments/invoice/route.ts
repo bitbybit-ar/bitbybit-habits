@@ -14,7 +14,7 @@ import type { ApiResponse } from "@/lib/types";
  */
 export const POST = apiHandler(async (request, { session, db }) => {
   if (session.role !== "sponsor") {
-    throw new ForbiddenError("Solo sponsors pueden generar invoices");
+    throw new ForbiddenError("sponsors_only");
   }
 
   const body = await request.json();
@@ -24,7 +24,7 @@ export const POST = apiHandler(async (request, { session, db }) => {
   };
 
   if (!completion_id || !amount_sats || amount_sats <= 0) {
-    throw new BadRequestError("completion_id y amount_sats son obligatorios");
+    throw new BadRequestError("missing_fields");
   }
 
   // Look up the completion and associated habit
@@ -40,7 +40,7 @@ export const POST = apiHandler(async (request, { session, db }) => {
     .limit(1);
 
   if (!completionRows[0]) {
-    throw new BadRequestError("Completación no encontrada");
+    throw new BadRequestError("completion_not_found");
   }
 
   const completion = completionRows[0];

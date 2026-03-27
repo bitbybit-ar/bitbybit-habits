@@ -7,6 +7,7 @@ import AuthCard from "@/components/auth/AuthCard";
 import { FormInput, FormButton } from "@/components/ui/form";
 import { useToast } from "@/components/ui/toast";
 import { useFormValidation } from "@/lib/hooks/useFormValidation";
+import { resolveApiError } from "@/lib/error-messages";
 import styles from "@/components/ui/form/form.module.scss";
 
 export default function LoginPage() {
@@ -41,7 +42,7 @@ export default function LoginPage() {
       const data = await res.json();
 
       if (!data.success) {
-        setError(data.error);
+        setError(resolveApiError(data.error, t));
         return;
       }
 

@@ -21,6 +21,7 @@ import { useFamilies } from "@/lib/hooks/useFamilies";
 import { useStats } from "@/lib/hooks/useStats";
 import { usePayments } from "@/lib/hooks/usePayments";
 import { formatDisplayDate } from "@/lib/date";
+import { resolveApiError } from "@/lib/error-messages";
 import styles from "./kid.module.scss";
 
 type TabType = "habits" | "family" | "earnings" | "wallet";
@@ -96,7 +97,7 @@ export default function KidDashboard() {
         showToast(t("family.joinSuccess"), "success");
         families.refetch();
       } else {
-        setJoinError(data.error);
+        setJoinError(resolveApiError(data.error, t));
       }
     } catch {
       setJoinError("Error");
