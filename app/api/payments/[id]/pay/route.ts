@@ -69,6 +69,8 @@ export const POST = apiHandler(async (_request, { session, db, params }) => {
       .set({
         status: "paid",
         paid_at: new Date(),
+        preimage: result.preimage,
+        payment_method: "nwc",
       })
       .where(eq(payments.id, paymentId));
 

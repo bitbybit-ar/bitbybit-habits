@@ -64,7 +64,7 @@ export const GET = apiHandler(async (_request, { session: _session, db, params }
       // Update payment to paid
       await db
         .update(payments)
-        .set({ status: "paid", paid_at: new Date() })
+        .set({ status: "paid", paid_at: new Date(), payment_method: "manual" })
         .where(eq(payments.id, paymentId));
 
       return { settled: true };

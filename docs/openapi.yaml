@@ -1211,6 +1211,86 @@ paths:
               schema:
                 $ref: "#/components/schemas/ApiResponseError"
 
+  /payments/{id}/confirm:
+    post:
+      tags:
+        - Payments
+      summary: Confirmar pago WebLN con preimage
+      description: |
+        Confirma un pago realizado via WebLN (extensión del navegador como Alby).
+        El cliente envía el preimage obtenido de webln.sendPayment().
+        El servidor valida SHA256(preimage) === payment_hash y marca el pago como "paid".
+        Endpoint idempotente: si el pago ya está pagado, retorna éxito sin modificar.
+      operationId: confirmPayment
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID del registro de pago
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - preimage
+              properties:
+                preimage:
+                  type: string
+                  description: Preimage hex del pago Lightning (SHA256(preimage) = payment_hash)
+                  example: "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+      responses:
+        "200":
+          description: Pago confirmado exitosamente
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          confirmed:
+                            type: boolean
+                          already_paid:
+                            type: boolean
+              example:
+                success: true
+                data:
+                  confirmed: true
+        "400":
+          description: Preimage faltante o inválido
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseError"
+        "401":
+          description: No autenticado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseError"
+        "403":
+          description: No autorizado para este pago
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseError"
+        "404":
+          description: Pago no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseError"
+
   /payments/{id}/status:
     get:
       tags:
@@ -2156,6 +2236,18 @@ components:
           type: string
           nullable: true
           description: Hash del pago Lightning
+        preimage:
+          type: string
+          nullable: true
+          description: Preimage del pago Lightning (prueba criptográfica de pago)
+        payment_method:
+          type: string
+          nullable: true
+          enum:
+            - webln
+            - nwc
+            - manual
+          description: Método usado para realizar el pago
         status:
           type: string
           enum:

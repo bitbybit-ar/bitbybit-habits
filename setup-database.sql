@@ -98,6 +98,8 @@ CREATE TABLE IF NOT EXISTS payments (
     amount_sats INTEGER NOT NULL,
     payment_request TEXT,
     payment_hash TEXT,
+    preimage TEXT,
+    payment_method TEXT CHECK (payment_method IN ('webln', 'nwc', 'manual')),
     status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'paid', 'failed')),
     paid_at TIMESTAMP,
     created_at TIMESTAMP DEFAULT NOW()
