@@ -1,39 +1,34 @@
 # Payment Retry
 
-When a payment fails (NWC error, timeout, etc.), sponsors can retry from the payments tab.
+Failed or expired payments can be retried anytime from the Payments tab. There is no time limit.
 
-## Retry Flow
+## When does a payment need retry?
+
+| Cause | What happened |
+|-------|--------------|
+| Invoice expired | QR code wasn't scanned in time |
+| NWC error | Wallet was unreachable during auto-pay |
+| Insufficient funds | Sponsor didn't have enough sats at the time |
+| Invoice generation failed | Kid's wallet was offline |
+
+## Retry flow
 
 ```mermaid
 flowchart TD
-    A["Sponsor clicks 'Retry Payment'"] --> B["POST /api/payments/retry<br/>{ payment_id }"]
-    B --> C{Payment exists<br/>and status = failed?}
-    C -- No --> D["404 or 400 Error"]
-    C -- Yes --> E["Reset status to 'pending'"]
-    E --> F{Has existing<br/>BOLT11 invoice?}
-    F -- No --> G["Return needs_new_invoice: true<br/>Client must generate new invoice"]
-    F -- Yes --> H["Get sponsor's NWC wallet"]
-    H --> I["Try payInvoice(existing_invoice)"]
-    I --> J{Success?}
-    J -- Yes --> K["status = 'paid'<br/>Return paid: true"]
-    J -- No --> L{Error says<br/>'expired'?}
-    L -- Yes --> M["Clear old invoice<br/>status = 'failed'<br/>Return needs_new_invoice: true"]
-    L -- No --> N["status = 'failed'<br/>Return error message"]
+    A["Sponsor sees failed payment<br/>in Payments tab"] --> B["Clicks 'Retry'"]
+    B --> C["POST /api/payments/retry<br/>Reset to pending<br/>Clear stale invoice data"]
+    C --> D["Re-run payment cascade<br/>→ see payment-cascade.md"]
 
-    G --> O["Client calls<br/>POST /api/payments/invoice<br/>to get fresh BOLT11"]
-    O --> P["Restart payment cascade<br/>(WebLN -> NWC -> QR)"]
-
-    style K fill:#4CAF7D,color:#fff
-    style D fill:#EE5A5A,color:#fff
-    style N fill:#EE5A5A,color:#fff
-    style M fill:#FF9F43,color:#000
+    style D fill:#4DB6AC,color:#fff
 ```
 
-## Why do invoices expire?
+## How it works
 
-Lightning invoices have a built-in expiry (usually 1 hour). If the sponsor doesn't pay in time, the invoice becomes invalid and a new one must be generated from the kid's wallet.
+1. Sponsor goes to the **Payments tab** and sees a failed payment with a **Retry** button
+2. Clicking retry calls `POST /api/payments/retry` which resets the payment to `pending` and clears old invoice data
+3. The client re-runs the exact same [payment cascade](./payment-cascade.md) — a fresh invoice is generated from the kid's wallet and the 3-tier flow (WebLN → NWC → QR) runs again
 
 ## Related flows
 
-- [Payment Cascade](./payment-cascade.md) - the initial payment attempt
-- [Invoice Modal](./invoice-modal.md) - the QR fallback that might time out
+- [Payment Cascade](./payment-cascade.md) — the 3-tier flow that retry re-runs
+- [Invoice Modal](./invoice-modal.md) — the QR fallback shown in Tier 3

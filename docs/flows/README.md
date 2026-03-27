@@ -8,10 +8,9 @@ Organized by domain for easy navigation.
 | Flow | Description |
 |------|-------------|
 | [Payment Cascade](./payment-cascade.md) | The core flow: sponsor approves habit, 3-tier payment (WebLN, NWC, QR) |
-| [Lightning Basics](./lightning-basics.md) | What are invoices, BOLT11, preimages, NWC, and how BitByBit uses them |
 | [Wallet Connection](./wallet-connection.md) | How users connect wallets and how NWC URLs are encrypted (AES-256-GCM) |
 | [Invoice Modal](./invoice-modal.md) | QR code fallback with 4-second polling for payment settlement |
-| [Payment Retry](./payment-retry.md) | Retry logic for failed payments, expired invoice detection |
+| [Payment Retry](./payment-retry.md) | Retry failed payments — re-runs full cascade with fresh invoice |
 
 ## Authentication
 

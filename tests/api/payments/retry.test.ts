@@ -2,21 +2,9 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { createRequest, parseResponse, setSessionCookie, clearSessionCookie, testSession, kidSession, UUID } from "../../helpers";
 
-// Mock NWC client
-const mockPayInvoice = vi.fn();
-const mockClose = vi.fn();
-
-vi.mock("@getalby/sdk", () => ({
-  NWCClient: class {
-    payInvoice = mockPayInvoice;
-    close = mockClose;
-  },
-}));
-
 // Mock DB
 const mockSelectResult = vi.fn();
 const mockUpdateSet = vi.fn();
-const mockUpdateReturning = vi.fn();
 
 vi.mock("@/lib/db", () => ({
   getDb: () => ({
@@ -30,18 +18,11 @@ vi.mock("@/lib/db", () => ({
     update: () => ({
       set: (...args: unknown[]) => {
         mockUpdateSet(...args);
-        return {
-          where: vi.fn().mockReturnValue({ returning: mockUpdateReturning }),
-        };
+        return { where: vi.fn() };
       },
     }),
   }),
-  payments: { id: "id", from_user_id: "f", status: "s", payment_request: "pr", payment_hash: "ph", paid_at: "pa" },
-  wallets: { user_id: "u", active: "a", nwc_url_encrypted: "nwc" },
-}));
-
-vi.mock("@/lib/crypto", () => ({
-  decrypt: vi.fn((s: string) => s.replace("enc_", "")),
+  payments: { id: "id", from_user_id: "f", status: "s", payment_request: "pr", payment_hash: "ph", paid_at: "pa", preimage: "pi", payment_method: "pm" },
 }));
 
 vi.mock("drizzle-orm", () => ({
@@ -62,17 +43,16 @@ describe("POST /api/payments/retry", () => {
     expect(status).toBe(401);
   });
 
-  it("returns 403 when kid tries to retry", async () => {
-    await setSessionCookie(kidSession);
-    // Kid's user_id won't match from_user_id, so query returns empty -> 404
+  it("returns 404 when payment not found", async () => {
+    await setSessionCookie(testSession);
     mockSelectResult.mockReturnValueOnce([]);
     const req = createRequest("POST", "/api/payments/retry", { payment_id: UUID.payment1 });
     const { status } = await parseResponse(await POST(req));
     expect(status).toBe(404);
   });
 
-  it("returns 404 when payment not found", async () => {
-    await setSessionCookie(testSession);
+  it("returns 404 when kid tries to retry (ownership mismatch)", async () => {
+    await setSessionCookie(kidSession);
     mockSelectResult.mockReturnValueOnce([]);
     const req = createRequest("POST", "/api/payments/retry", { payment_id: UUID.payment1 });
     const { status } = await parseResponse(await POST(req));
@@ -85,7 +65,6 @@ describe("POST /api/payments/retry", () => {
       id: UUID.payment1,
       from_user_id: testSession.user_id,
       status: "paid",
-      payment_request: "lnbc...",
     }]);
     const req = createRequest("POST", "/api/payments/retry", { payment_id: UUID.payment1 });
     const { status, body } = await parseResponse(await POST(req));
@@ -93,78 +72,39 @@ describe("POST /api/payments/retry", () => {
     expect(body.error).toContain("only_failed_retry");
   });
 
-  it("returns needs_new_invoice when no invoice exists", async () => {
+  it("resets failed payment to pending and returns it", async () => {
     await setSessionCookie(testSession);
-    // First select: payment found with failed status, no invoice
+    // First select: find failed payment
     mockSelectResult.mockReturnValueOnce([{
       id: UUID.payment1,
       from_user_id: testSession.user_id,
       status: "failed",
-      payment_request: null,
+      completion_id: UUID.completion1,
+      amount_sats: 100,
+      payment_request: "lnbc...",
     }]);
-    // After update (reset status), select again for return value
+    // Second select: return updated payment
     mockSelectResult.mockReturnValueOnce([{
       id: UUID.payment1,
       from_user_id: testSession.user_id,
       status: "pending",
+      completion_id: UUID.completion1,
+      amount_sats: 100,
       payment_request: null,
     }]);
 
     const req = createRequest("POST", "/api/payments/retry", { payment_id: UUID.payment1 });
     const { status, body } = await parseResponse(await POST(req));
     expect(status).toBe(200);
-    expect(body.data.needs_new_invoice).toBe(true);
-  });
-
-  it("retries successfully with existing invoice", async () => {
-    await setSessionCookie(testSession);
-    // First select: payment with failed status and invoice
-    mockSelectResult.mockReturnValueOnce([{
-      id: UUID.payment1,
-      from_user_id: testSession.user_id,
-      status: "failed",
-      payment_request: "lnbc500n1...",
-    }]);
-    // Second select: sponsor wallet
-    mockSelectResult.mockReturnValueOnce([{
-      nwc_url_encrypted: "enc_nostr+walletconnect://test",
-    }]);
-    mockPayInvoice.mockResolvedValue({ preimage: "preimage123" });
-    mockUpdateReturning.mockResolvedValue([{
-      id: UUID.payment1, status: "paid", paid_at: new Date(),
-    }]);
-
-    const req = createRequest("POST", "/api/payments/retry", { payment_id: UUID.payment1 });
-    const { status, body } = await parseResponse(await POST(req));
-    expect(status).toBe(200);
-    expect(body.data.paid).toBe(true);
-    expect(mockClose).toHaveBeenCalled();
-  });
-
-  it("returns needs_new_invoice when invoice is expired", async () => {
-    await setSessionCookie(testSession);
-    // First select: payment with failed status and invoice
-    mockSelectResult.mockReturnValueOnce([{
-      id: UUID.payment1,
-      from_user_id: testSession.user_id,
-      status: "failed",
-      payment_request: "lnbc500n1...",
-    }]);
-    // Second select: sponsor wallet
-    mockSelectResult.mockReturnValueOnce([{
-      nwc_url_encrypted: "enc_nostr+walletconnect://test",
-    }]);
-    // NWC payment fails with expired error
-    mockPayInvoice.mockRejectedValue(new Error("INVOICE_EXPIRED"));
-    // After marking failed and clearing invoice, select for return
-    mockSelectResult.mockReturnValueOnce([{
-      id: UUID.payment1, status: "failed", payment_request: null,
-    }]);
-
-    const req = createRequest("POST", "/api/payments/retry", { payment_id: UUID.payment1 });
-    const { status, body } = await parseResponse(await POST(req));
-    expect(status).toBe(200);
-    expect(body.data.needs_new_invoice).toBe(true);
-    expect(mockClose).toHaveBeenCalled();
+    expect(body.data.status).toBe("pending");
+    // Verify old invoice data was cleared
+    expect(mockUpdateSet).toHaveBeenCalledWith(expect.objectContaining({
+      status: "pending",
+      payment_request: null,
+      payment_hash: null,
+      preimage: null,
+      payment_method: null,
+      paid_at: null,
+    }));
   });
 });
