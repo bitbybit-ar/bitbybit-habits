@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import { useTranslations } from "next-intl";
 import styles from "./footer.module.scss";
 
@@ -20,9 +21,11 @@ export const Footer: React.FC = () => {
           rel="noopener noreferrer"
           className={styles.cryptaLink}
         >
-          <img
+          <Image
             src="https://github.com/lacrypta.png?size=64"
             alt="La Crypta"
+            width={64}
+            height={64}
             className={styles.cryptaLogo}
           />
         </a>

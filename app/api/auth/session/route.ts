@@ -5,6 +5,12 @@ import { createSession } from "@/lib/auth";
 import { eq } from "drizzle-orm";
 import type { ApiResponse } from "@/lib/types";
 
+/**
+ * GET /api/auth/session
+ *
+ * Verify current session and return user data.
+ * Refreshes the JWT if the role was stale (e.g. after onboarding).
+ */
 export const GET = apiHandler(async (_request, { session, db }) => {
   // If role is null (stale JWT from before onboarding), refresh from DB
   if (!session.role) {

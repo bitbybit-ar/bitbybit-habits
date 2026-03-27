@@ -14,6 +14,11 @@ interface KidStats {
   pending_completions: number;
 }
 
+/**
+ * GET /api/stats
+ *
+ * User stats: total sats earned, current streaks per habit, and pending completions.
+ */
 export const GET = apiHandler(async (_req, { session, db }) => {
   // Total sats earned (sum of paid payments)
   const satsResult = await db

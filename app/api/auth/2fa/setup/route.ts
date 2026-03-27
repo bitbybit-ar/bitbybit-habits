@@ -4,6 +4,12 @@ import { eq } from "drizzle-orm";
 import { TOTP } from "otpauth";
 import QRCode from "qrcode";
 
+/**
+ * POST /api/auth/2fa/setup
+ *
+ * Generate a TOTP secret and QR code for 2FA enrollment.
+ * Does not enable 2FA until confirmed via /api/auth/2fa/confirm.
+ */
 export const POST = apiHandler(async (_request, { session, db }) => {
   // Generate TOTP secret
   const totp = new TOTP({

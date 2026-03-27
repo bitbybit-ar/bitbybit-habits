@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import { useTranslations } from "next-intl";
 import Section from "@/components/ui/section";
 import SectionTitle from "@/components/ui/section-title";
@@ -30,7 +31,7 @@ export const BuiltWith: React.FC = () => {
             target="_blank"
             rel="noopener noreferrer"
           >
-            <img src={partner.logo} alt={partner.name} className={styles.logo} />
+            <Image src={partner.logo} alt={partner.name} width={64} height={64} className={styles.logo} />
             {partner.name}
           </a>
         ))}

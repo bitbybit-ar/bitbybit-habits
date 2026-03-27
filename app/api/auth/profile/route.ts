@@ -4,6 +4,11 @@ import { eq } from "drizzle-orm";
 
 export const dynamic = "force-dynamic";
 
+/**
+ * GET /api/auth/profile
+ *
+ * Return the authenticated user's profile.
+ */
 export const GET = apiHandler(async (_req, { session, db }) => {
   const result = await db
     .select({
@@ -24,6 +29,11 @@ export const GET = apiHandler(async (_req, { session, db }) => {
   return result[0];
 });
 
+/**
+ * PATCH /api/auth/profile
+ *
+ * Update the authenticated user's profile (display_name, username, email, avatar_url, locale).
+ */
 export const PATCH = apiHandler(async (request, { session, db }) => {
   const body = await request.json();
   const { display_name, username, email, avatar_url, locale } = body as {

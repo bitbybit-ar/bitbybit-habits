@@ -24,8 +24,9 @@ $color-surface-dark: #242442;
 $color-surface-light: #FFF2E6;
 
 // Text — Warm-tinted to avoid harsh contrast
+// Secondary text: #D4C4B0 meets WCAG AAA (7:1) on #0f0f18 dark bg
 $color-text-primary: #F0E6D8;
-$color-text-secondary: #B8A898;
+$color-text-secondary: #D4C4B0;
 $color-text-dark: #2D2416;
 
 // Semantic

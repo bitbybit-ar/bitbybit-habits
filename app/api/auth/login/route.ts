@@ -10,6 +10,12 @@ import type { ApiResponse } from "@/lib/types";
 // Rate limiter: 5 attempts per 15 minutes per IP
 const loginRateLimiter = createRateLimiter(5, 15 * 60 * 1000);
 
+/**
+ * POST /api/auth/login
+ *
+ * Authenticate user with email/username + password. Rate limited (5/15min).
+ * Returns a temp token for 2FA validation if TOTP is enabled.
+ */
 export const POST = apiHandler(async (request, { db }) => {
   const clientIp = getClientIp(request);
   const rateLimitResult = loginRateLimiter.check(clientIp);

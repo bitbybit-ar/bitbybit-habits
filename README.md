@@ -28,7 +28,7 @@ The reward is real, instant, and theirs. That's what makes the habit stick.
 | **Lightning** | NWC (Nostr Wallet Connect) via `@getalby/sdk`. WebLN browser extension support |
 | **Encryption** | AES-256-GCM for wallet NWC URLs at rest |
 | **API Docs** | OpenAPI 3.0 (Swagger) at `/api-docs` — 42 endpoints fully documented |
-| **Testing** | Vitest + Testing Library (161 tests across 28 test files) |
+| **Testing** | Vitest + Testing Library (196 tests across 35 test files) |
 | **Icons** | Custom SVGs in `components/icons/` (no external icon libraries) |
 
 ## Getting Started
@@ -107,7 +107,7 @@ bitbybit-habits/
     types.ts                   # Shared TypeScript interfaces
   messages/                    # Translation files (es.json, en.json)
   styles/                      # SCSS variables, mixins, glassmorphism system
-  tests/                       # 28 test files, 161 tests
+  tests/                       # 35 test files, 196 tests
     api/                       # API endpoint tests (auth, habits, payments, families, etc.)
     components/                # Component tests
     helpers/                   # Test utilities
@@ -128,6 +128,45 @@ npm run test:watch   # Tests in watch mode
 npm run test:coverage # Tests with coverage report
 npx tsc --noEmit     # Type-check without compiling
 ```
+
+## Troubleshooting
+
+### Database connection fails
+
+- Verify `DATABASE_URL` is a valid Neon DB connection string (starts with `postgresql://` or `postgres://`)
+- Check that your Neon project is active (free tier pauses after inactivity)
+- Run `setup-database.sql` against your database if tables don't exist
+
+### Lightning payments not working
+
+- Both sponsor AND kid need a connected wallet (NWC URL) for payments to work
+- NWC URL must start with `nostr+walletconnect://`
+- If invoices expire, use the retry button in the payments tab
+- Ensure `ENCRYPTION_KEY` is set — NWC URLs are encrypted at rest and can't be read without it
+
+### Auth issues
+
+- If login fails repeatedly, the account locks after 10 attempts (30-minute cooldown)
+- JWT sessions expire after 7 days — users need to log in again
+- `AUTH_SECRET` must be at least 32 characters. Generate with: `openssl rand -base64 32`
+
+### Build or type errors
+
+- Run `npx tsc --noEmit` to check for type errors before building
+- Delete `.next/` and `node_modules/.cache` if you see stale build errors
+- Ensure Node.js 18+ is installed (`node --version`)
+
+### i18n / translations
+
+- All user-facing strings must exist in both `messages/es.json` and `messages/en.json`
+- Missing keys will show the raw key path in the UI
+- Spanish is the default locale; English is the fallback
+
+### Tests failing
+
+- Run `npm test` to check all tests (Vitest)
+- Tests mock the database — no real DB connection needed
+- If tests hang, check for port conflicts with `lsof -i :3000`
 
 ## Data Model
 

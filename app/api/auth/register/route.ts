@@ -7,6 +7,11 @@ import { getClientIp } from "@/lib/request";
 // Rate limiter: 3 attempts per 15 minutes per IP
 const registerRateLimiter = createRateLimiter(3, 15 * 60 * 1000);
 
+/**
+ * POST /api/auth/register
+ *
+ * Register a new user account. Rate limited (3/15min).
+ */
 export const POST = apiHandler(async (request, { db }) => {
   const clientIp = getClientIp(request);
   const rateLimitResult = registerRateLimiter.check(clientIp);

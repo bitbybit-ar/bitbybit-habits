@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import { useTranslations } from "next-intl";
 import Section from "@/components/ui/section";
 import SectionTitle from "@/components/ui/section-title";
@@ -73,9 +74,11 @@ export const Team: React.FC = () => {
       <div className={styles.grid}>
         {(TEAM as TeamMember[]).map((member) => (
           <article key={member.name} className={cn(styles.card, member.isBot && styles.cardBot)}>
-            <img
+            <Image
               src={`https://github.com/${member.github}.png?size=128`}
               alt={member.name}
+              width={128}
+              height={128}
               className={cn(styles.avatar, member.isBot && styles.avatarBot)}
             />
             <div className={styles.info}>

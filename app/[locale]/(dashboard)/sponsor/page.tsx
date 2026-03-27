@@ -253,16 +253,22 @@ export default function SponsorDashboard() {
     />
   );
 
+  const activeTabLabel = tabs.find((t) => t.key === activeTab)?.label ?? "";
+  const breadcrumbs = [
+    { label: t("dashboard.title"), href: "/sponsor" },
+    { label: activeTabLabel },
+  ];
+
   if (showOnboarding) {
     return (
-      <DashboardLayout displayName={`${t("dashboard.welcome")}, ${displayName}`} statsBar={statsBar} tabs={tabs} activeTab={activeTab} onTabChange={(key) => setActiveTab(key as TabType)}>
+      <DashboardLayout displayName={`${t("dashboard.welcome")}, ${displayName}`} statsBar={statsBar} tabs={tabs} activeTab={activeTab} onTabChange={(key) => setActiveTab(key as TabType)} breadcrumbs={breadcrumbs}>
         <Onboarding displayName={displayName} onDismiss={handleDismissOnboarding} />
       </DashboardLayout>
     );
   }
 
   return (
-    <DashboardLayout displayName={`${t("dashboard.welcome")}, ${displayName}`} statsBar={statsBar} tabs={tabs} activeTab={activeTab} onTabChange={(key) => setActiveTab(key as TabType)}>
+    <DashboardLayout displayName={`${t("dashboard.welcome")}, ${displayName}`} statsBar={statsBar} tabs={tabs} activeTab={activeTab} onTabChange={(key) => setActiveTab(key as TabType)} breadcrumbs={breadcrumbs}>
       {activeTab === "byHabit" && (
         <SponsorHabitsTab habits={habits.data} families={families.data} familyCompletions={familyData.completions} onApprove={handleApprove} onCreateHabit={() => setActiveTab("create")} />
       )}

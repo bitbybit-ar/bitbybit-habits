@@ -2,6 +2,11 @@ import { apiHandler, requireFields, NotFoundError, BadRequestError } from "@/lib
 import { familyMembers, families, habits } from "@/lib/db";
 import { eq, and, ne } from "drizzle-orm";
 
+/**
+ * POST /api/families/leave
+ *
+ * Leave a family. Prevents the last sponsor from leaving if other members remain.
+ */
 export const POST = apiHandler(async (request, { session, db }) => {
   const body = await request.json();
   const { family_id } = body as { family_id: string };

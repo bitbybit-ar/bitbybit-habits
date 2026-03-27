@@ -2,6 +2,11 @@ import { apiHandler, ForbiddenError, NotFoundError } from "@/lib/api";
 import { families, familyMembers, completions, habits, users } from "@/lib/db";
 import { eq, and, gte, desc } from "drizzle-orm";
 
+/**
+ * GET /api/families/:id/completions
+ *
+ * List completions for all habits in a family (sponsor only). Supports ?days filter.
+ */
 export const GET = apiHandler(async (req, { session, db, params }) => {
   const familyId = params.id;
 

@@ -2,6 +2,11 @@ import { apiHandler, NotFoundError, ForbiddenError } from "@/lib/api";
 import { families, familyMembers, habits } from "@/lib/db";
 import { eq } from "drizzle-orm";
 
+/**
+ * DELETE /api/families/:id
+ *
+ * Delete a family, its members, and deactivate related habits. Creator only.
+ */
 export const DELETE = apiHandler(async (_req, { session, db, params }) => {
   const familyId = params.id;
 
