@@ -58,6 +58,11 @@ export const POST = apiHandler(async (request, { db }) => {
     throw new ForbiddenError("account_locked");
   }
 
+  // Nostr-only accounts have no password
+  if (!user.password_hash) {
+    throw new UnauthorizedError("nostr_only_account");
+  }
+
   const valid = await verifyPassword(password, user.password_hash);
 
   if (!valid) {

@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --experimental-https --experimental-https-key certificates/localhost-key.pem --experimental-https-cert certificates/localhost.pem",
+    "dev:http": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
@@ -21,6 +22,8 @@
   "dependencies": {
     "@getalby/sdk": "^7.0.0",
     "@neondatabase/serverless": "^1.0.2",
+    "@noble/curves": "^2.0.1",
+    "@noble/hashes": "^2.0.1",
     "@types/bcryptjs": "^2.4.6",
     "bcryptjs": "^3.0.3",
     "class-variance-authority": "^0.7.1",

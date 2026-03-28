@@ -230,6 +230,136 @@ paths:
               example:
                 success: true
 
+  /auth/nostr:
+    get:
+      tags:
+        - Auth
+      summary: Obtener desafio Nostr (NIP-42)
+      description: Genera un desafio aleatorio de 32 bytes para autenticacion NIP-42. El desafio se almacena en una cookie httpOnly con expiracion de 5 minutos.
+      operationId: getNostrChallenge
+      responses:
+        "200":
+          description: Desafio generado
+          headers:
+            Set-Cookie:
+              description: Cookie nostr_challenge con el desafio
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          challenge:
+                            type: string
+                            description: Desafio hex de 64 caracteres
+              example:
+                success: true
+                data:
+                  challenge: "a1b2c3d4e5f6..."
+    post:
+      tags:
+        - Auth
+      summary: Autenticar con Nostr (NIP-42)
+      description: Verifica un evento firmado NIP-42 (kind 22242) y autentica al usuario. Crea usuario automaticamente si es la primera vez.
+      operationId: authWithNostr
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - signedEvent
+              properties:
+                signedEvent:
+                  $ref: "#/components/schemas/NostrEvent"
+      responses:
+        "200":
+          description: Autenticacion exitosa
+          headers:
+            Set-Cookie:
+              description: Cookie de sesion JWT
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          user_id:
+                            type: string
+                          email:
+                            type: string
+                          username:
+                            type: string
+                          display_name:
+                            type: string
+                          role:
+                            type: string
+                            nullable: true
+                          nostr_pubkey:
+                            type: string
+                          isNewUser:
+                            type: boolean
+        "400":
+          description: No hay desafio pendiente
+        "401":
+          description: Firma Nostr invalida o desafio expirado
+        "429":
+          description: Demasiados intentos
+
+  /auth/nostr/link:
+    post:
+      tags:
+        - Auth
+      summary: Vincular identidad Nostr
+      description: Vincula una clave publica Nostr a la cuenta autenticada actual. Requiere un evento NIP-42 firmado con el desafio previo.
+      operationId: linkNostr
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - signedEvent
+              properties:
+                signedEvent:
+                  $ref: "#/components/schemas/NostrEvent"
+      responses:
+        "200":
+          description: Nostr vinculado exitosamente
+        "400":
+          description: No hay desafio o firma invalida
+        "409":
+          description: Clave Nostr ya vinculada a otra cuenta o cuenta ya tiene Nostr
+    delete:
+      tags:
+        - Auth
+      summary: Desvincular identidad Nostr
+      description: Elimina la identidad Nostr de la cuenta actual. Solo permitido si el usuario tiene contrasena configurada.
+      operationId: unlinkNostr
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: Nostr desvinculado exitosamente
+        "400":
+          description: No se puede desvincular el unico metodo de autenticacion
+
   /auth/session:
     get:
       tags:
@@ -1300,6 +1430,7 @@ paths:
         Consulta el estado de un pago Lightning usando la wallet NWC del kid.
         Si la invoice fue pagada, actualiza el registro de pago a "paid" en la base de datos.
         Timeout de 5 segundos en la llamada NWC.
+        Solo el pagador (sponsor) o el destinatario (kid) pueden consultar el estado.
       operationId: getPaymentStatus
       security:
         - cookieAuth: []
@@ -1329,6 +1460,12 @@ paths:
                   settled: true
         "401":
           description: No autenticado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseError"
+        "403":
+          description: No autorizado — el usuario no es pagador ni destinatario del pago
           content:
             application/json:
               schema:
@@ -1823,6 +1960,131 @@ paths:
         "404":
           description: Pago no encontrado
 
+  /admin/users:
+    get:
+      tags: [Admin]
+      summary: Listar todos los usuarios (admin)
+      description: |
+        Lista todos los usuarios con paginacion, busqueda y datos de familia/wallet.
+        Solo accesible por el admin (verificado via nostr_pubkey).
+      operationId: adminListUsers
+      security: [{ cookieAuth: [] }]
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+          description: Numero de pagina
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+            maximum: 200
+          description: Items por pagina
+        - name: search
+          in: query
+          schema:
+            type: string
+          description: Filtrar por email, username o display_name
+      responses:
+        "200":
+          description: Lista paginada de usuarios
+        "403":
+          description: No autorizado — no es admin
+
+  /admin/users/{id}:
+    get:
+      tags: [Admin]
+      summary: Detalle de usuario (admin)
+      operationId: adminGetUser
+      security: [{ cookieAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Detalle del usuario con stats
+        "403":
+          description: No autorizado
+        "404":
+          description: Usuario no encontrado
+    patch:
+      tags: [Admin]
+      summary: Editar usuario (admin)
+      operationId: adminUpdateUser
+      security: [{ cookieAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                display_name:
+                  type: string
+                email:
+                  type: string
+                username:
+                  type: string
+                locale:
+                  type: string
+                  enum: [es, en]
+                locked_until:
+                  type: string
+                  nullable: true
+                failed_login_attempts:
+                  type: integer
+      responses:
+        "200":
+          description: Usuario actualizado
+        "403":
+          description: No autorizado
+        "404":
+          description: Usuario no encontrado
+    delete:
+      tags: [Admin]
+      summary: Eliminar usuario (admin)
+      operationId: adminDeleteUser
+      security: [{ cookieAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Usuario eliminado
+        "403":
+          description: No autorizado
+        "404":
+          description: Usuario no encontrado
+
+  /admin/stats:
+    get:
+      tags: [Admin]
+      summary: Estadisticas de la plataforma (admin)
+      operationId: adminGetStats
+      security: [{ cookieAuth: [] }]
+      responses:
+        "200":
+          description: Estadisticas globales de la plataforma
+        "403":
+          description: No autorizado
+
   /notifications:
     get:
       tags: [Notifications]
@@ -1867,6 +2129,44 @@ components:
       description: Cookie de sesion httpOnly seteada por el endpoint de login
 
   schemas:
+    # ---- Nostr schemas ----
+
+    NostrEvent:
+      type: object
+      required:
+        - id
+        - pubkey
+        - created_at
+        - kind
+        - tags
+        - content
+        - sig
+      properties:
+        id:
+          type: string
+          description: SHA-256 hash del evento serializado
+        pubkey:
+          type: string
+          description: Clave publica hex del firmante
+        created_at:
+          type: integer
+          description: Timestamp UNIX en segundos
+        kind:
+          type: integer
+          description: Tipo de evento (22242 para NIP-42 auth)
+        tags:
+          type: array
+          items:
+            type: array
+            items:
+              type: string
+        content:
+          type: string
+          description: Contenido del evento (el desafio para NIP-42)
+        sig:
+          type: string
+          description: Firma Schnorr hex
+
     # ---- Request schemas ----
 
     RegisterRequest:

@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import AuthCard from "@/components/auth/AuthCard";
 import { FormInput, FormSelect, FormButton } from "@/components/ui/form";
 import { useFormValidation } from "@/lib/hooks/useFormValidation";
+import { useNostr } from "@/lib/hooks/useNostr";
+import { NostrichIcon } from "@/components/icons";
 import { resolveApiError } from "@/lib/error-messages";
 import formStyles from "@/components/ui/form/form.module.scss";
 import styles from "./settings.module.scss";
@@ -17,16 +19,20 @@ interface Profile {
   display_name: string;
   avatar_url: string | null;
   locale: "es" | "en";
+  nostr_pubkey: string | null;
+  has_password: boolean;
 }
 
 export default function SettingsPage() {
   const t = useTranslations();
   const router = useRouter();
+  const { hasExtension: nostrAvailable, linkAccount, unlinkAccount, isLoading: nostrLoading } = useNostr();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState("");
+  const [nostrError, setNostrError] = useState("");
   const [locale, setLocale] = useState<"es" | "en">("es");
 
   const form = useFormValidation({
@@ -126,6 +132,33 @@ export default function SettingsPage() {
     } finally {
       setSaving(false);
     }
+  };
+
+  const handleLinkNostr = async () => {
+    setNostrError("");
+    const result = await linkAccount();
+    if (!result.success) {
+      setNostrError(resolveApiError(result.error || "nostr_link_failed", t));
+      return;
+    }
+    // Refresh profile to show the linked pubkey
+    const res = await fetch("/api/auth/profile");
+    const data = await res.json();
+    if (data.success && data.data) setProfile(data.data);
+  };
+
+  const handleUnlinkNostr = async () => {
+    setNostrError("");
+    if (!confirm(t("settings.unlinkNostrConfirm"))) return;
+    const result = await unlinkAccount();
+    if (!result.success) {
+      setNostrError(resolveApiError(result.error || "nostr_unlink_failed", t));
+      return;
+    }
+    // Refresh profile
+    const res = await fetch("/api/auth/profile");
+    const data = await res.json();
+    if (data.success && data.data) setProfile(data.data);
   };
 
   if (loading) {
@@ -231,6 +264,53 @@ export default function SettingsPage() {
           <option value="es">Español</option>
           <option value="en">English</option>
         </FormSelect>
+
+        {/* Nostr Identity Section */}
+        <div className={styles.nostrSection}>
+          <div className={styles.nostrSectionTitle}>
+            <NostrichIcon size={16} />
+            {t("settings.nostrIdentity")}
+          </div>
+
+          {profile?.nostr_pubkey ? (
+            <div className={styles.nostrLinkedInfo}>
+              <div>
+                <div style={{ fontSize: "0.75rem", color: "var(--color-text-secondary)", marginBottom: 4 }}>
+                  {t("settings.nostrPubkey")}
+                </div>
+                <div className={styles.nostrPubkey}>
+                  {profile.nostr_pubkey.slice(0, 16)}...{profile.nostr_pubkey.slice(-8)}
+                </div>
+              </div>
+              {profile.has_password && (
+                <button
+                  className={styles.nostrUnlinkButton}
+                  onClick={handleUnlinkNostr}
+                  disabled={nostrLoading}
+                  type="button"
+                >
+                  {t("settings.unlinkNostr")}
+                </button>
+              )}
+            </div>
+          ) : nostrAvailable ? (
+            <button
+              className={styles.nostrLinkButton}
+              onClick={handleLinkNostr}
+              disabled={nostrLoading}
+              type="button"
+            >
+              <NostrichIcon size={16} />
+              {t("settings.linkNostr")}
+            </button>
+          ) : (
+            <p style={{ fontSize: "0.8rem", color: "var(--color-text-secondary)" }}>
+              {t("auth.nostrExtensionRequired")}
+            </p>
+          )}
+
+          {nostrError && <p className={styles.nostrError}>{nostrError}</p>}
+        </div>
 
         {saved && (
           <p className={styles.savedText}>{t("settings.saved")}</p>

@@ -62,6 +62,16 @@ const ERROR_CODE_TO_I18N: Record<string, string> = {
   nwc_invoice_failed: "errors.nwcInvoiceFailed",
   nwc_timeout: "errors.nwcTimeout",
 
+  // Nostr auth
+  no_challenge: "errors.noChallenge",
+  invalid_nostr_signature: "errors.invalidNostrSignature",
+  nostr_pubkey_already_linked: "errors.nostrPubkeyAlreadyLinked",
+  account_already_has_nostr: "errors.accountAlreadyHasNostr",
+  cannot_unlink_only_auth_method: "errors.cannotUnlinkOnlyAuthMethod",
+  nostr_only_account: "errors.nostrOnlyAccount",
+  nostr_site_not_connected: "auth.nostrSiteNotConnected",
+  nostr_signing_rejected: "auth.nostrSigningRejected",
+
   // Wallets
   invalid_nwc_url: "errors.invalidNwcUrl",
 

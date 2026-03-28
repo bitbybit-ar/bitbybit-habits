@@ -92,3 +92,94 @@
   color: var(--color-success);
   text-align: center;
 }
+
+// ── Nostr identity section ──
+.nostrSection {
+  margin-top: $spacing-24;
+  padding-top: $spacing-20;
+  border-top: 1px solid rgba(var(--glass-color), 0.06);
+}
+
+.nostrSectionTitle {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-nostr;
+  margin-bottom: $spacing-12;
+  display: flex;
+  align-items: center;
+  gap: $spacing-8;
+}
+
+.nostrLinkedInfo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $spacing-12;
+  padding: $spacing-12;
+  border-radius: $border-radius-md;
+  background: rgba($color-nostr, 0.06);
+  border: 1px solid rgba($color-nostr, 0.15);
+}
+
+.nostrPubkey {
+  font-size: $font-size-xs;
+  color: var(--color-text-secondary);
+  font-family: monospace;
+  word-break: break-all;
+}
+
+.nostrLinkButton,
+.nostrUnlinkButton {
+  padding: $spacing-8 $spacing-16;
+  border-radius: $border-radius-md;
+  font-size: $font-size-sm;
+  font-family: $font-family-base;
+  font-weight: $font-weight-medium;
+  cursor: pointer;
+  @include transition;
+  flex-shrink: 0;
+}
+
+.nostrLinkButton {
+  width: 100%;
+  padding: $spacing-12;
+  border: 1px solid rgba($color-nostr, 0.2);
+  background: rgba($color-nostr, 0.06);
+  color: $color-nostr;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-8;
+
+  &:hover {
+    background: rgba($color-nostr, 0.12);
+    border-color: rgba($color-nostr, 0.4);
+  }
+
+  &:disabled {
+    cursor: wait;
+    opacity: 0.7;
+  }
+}
+
+.nostrUnlinkButton {
+  border: 1px solid rgba($color-error, 0.2);
+  background: rgba($color-error, 0.06);
+  color: $color-error;
+
+  &:hover {
+    background: rgba($color-error, 0.12);
+    border-color: rgba($color-error, 0.3);
+  }
+
+  &:disabled {
+    cursor: wait;
+    opacity: 0.7;
+  }
+}
+
+.nostrError {
+  font-size: $font-size-xs;
+  color: $color-error;
+  margin-top: $spacing-8;
+}

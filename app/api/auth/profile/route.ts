@@ -18,6 +18,8 @@ export const GET = apiHandler(async (_req, { session, db }) => {
       display_name: users.display_name,
       avatar_url: users.avatar_url,
       locale: users.locale,
+      nostr_pubkey: users.nostr_pubkey,
+      has_password: users.password_hash,
     })
     .from(users)
     .where(eq(users.id, session.user_id));
@@ -26,7 +28,17 @@ export const GET = apiHandler(async (_req, { session, db }) => {
     throw new NotFoundError("User");
   }
 
-  return result[0];
+  const profile = result[0];
+  return {
+    id: profile.id,
+    email: profile.email,
+    username: profile.username,
+    display_name: profile.display_name,
+    avatar_url: profile.avatar_url,
+    locale: profile.locale,
+    nostr_pubkey: profile.nostr_pubkey,
+    has_password: !!profile.has_password,
+  };
 });
 
 /**
@@ -74,6 +86,7 @@ export const PATCH = apiHandler(async (request, { session, db }) => {
       display_name: users.display_name,
       avatar_url: users.avatar_url,
       locale: users.locale,
+      nostr_pubkey: users.nostr_pubkey,
     });
 
   return updated[0];

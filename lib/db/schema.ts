@@ -18,9 +18,10 @@ export const users = pgTable("users", {
   id: uuid("id").primaryKey().defaultRandom(),
   email: text("email").unique().notNull(),
   username: text("username").unique().notNull(),
-  password_hash: text("password_hash").notNull(),
+  password_hash: text("password_hash"),
   display_name: text("display_name").notNull(),
   avatar_url: text("avatar_url"),
+  nostr_pubkey: text("nostr_pubkey").unique(),
   locale: text("locale").notNull().default("es"),
   failed_login_attempts: integer("failed_login_attempts").notNull().default(0),
   locked_until: timestamp("locked_until"),
@@ -32,6 +33,7 @@ export const users = pgTable("users", {
 }, (t) => [
   index("idx_users_email").on(t.email),
   index("idx_users_username").on(t.username),
+  index("idx_users_nostr_pubkey").on(t.nostr_pubkey),
 ]);
 
 // ============================================================

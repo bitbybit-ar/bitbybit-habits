@@ -65,7 +65,7 @@ export async function getSession(): Promise<AuthSession | null> {
     const { payload } = await jwtVerify(token, secret);
 
     // Runtime validation — reject malformed JWTs
-    const { user_id, email, username, display_name, locale, role } = payload;
+    const { user_id, email, username, display_name, locale, role, nostr_pubkey } = payload;
 
     if (
       typeof user_id !== "string" || !user_id ||
@@ -78,6 +78,7 @@ export async function getSession(): Promise<AuthSession | null> {
 
     const validLocale = locale === "es" || locale === "en" ? locale : "es";
     const validRole = role === "sponsor" || role === "kid" ? role : null;
+    const validNostrPubkey = typeof nostr_pubkey === "string" ? nostr_pubkey : null;
 
     return {
       user_id,
@@ -86,6 +87,7 @@ export async function getSession(): Promise<AuthSession | null> {
       display_name,
       locale: validLocale,
       role: validRole,
+      nostr_pubkey: validNostrPubkey,
     };
   } catch {
     return null;

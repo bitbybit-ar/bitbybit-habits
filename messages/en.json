@@ -46,6 +46,12 @@
     "nwcInvoiceFailed": "Failed to generate invoice",
     "nwcTimeout": "Wallet did not respond in time",
     "invalidNwcUrl": "Invalid NWC URL",
+    "noChallenge": "Challenge not found. Try again",
+    "invalidNostrSignature": "Invalid Nostr signature or expired challenge",
+    "nostrPubkeyAlreadyLinked": "This Nostr key is already linked to another account",
+    "accountAlreadyHasNostr": "Your account already has a Nostr identity linked",
+    "cannotUnlinkOnlyAuthMethod": "You cannot unlink your only authentication method",
+    "nostrOnlyAccount": "This account uses Nostr only. Log in with your Nostr extension",
     "unauthorized": "Not authenticated",
     "forbidden": "Not authorized",
     "resourceExists": "Resource already exists",
@@ -100,7 +106,12 @@
     "forgotPasswordMsg": "Password reset will be available soon. Contact your family sponsor for help.",
     "loginPlaceholder": "email or username",
     "usernamePlaceholder": "username",
-    "emailPlaceholder": "email@example.com"
+    "emailPlaceholder": "email@example.com",
+    "nostrLoginError": "Error logging in with Nostr",
+    "nostrExtensionRequired": "Install a Nostr extension (Alby, nos2x)",
+    "nostrLoginInProgress": "Signing with Nostr...",
+    "nostrSiteNotConnected": "Site not connected — allow access in your Nostr extension",
+    "nostrSigningRejected": "Signing rejected — approve the request in your Nostr extension"
   },
   "dashboard": {
     "welcome": "Welcome",
@@ -183,7 +194,15 @@
     "avatarUrl": "Avatar URL",
     "language": "Language",
     "saved": "Saved!",
-    "invalidUrl": "Invalid URL"
+    "invalidUrl": "Invalid URL",
+    "nostrIdentity": "Nostr Identity",
+    "nostrLinked": "Nostr linked",
+    "nostrNotLinked": "No Nostr linked",
+    "linkNostr": "Link Nostr identity",
+    "unlinkNostr": "Unlink Nostr",
+    "nostrPubkey": "Public key",
+    "unlinkNostrConfirm": "Unlink your Nostr identity? You can re-link it later.",
+    "cannotUnlinkOnlyAuth": "You cannot unlink Nostr without having a password set"
   },
   "emptyState": {
     "noHabitsTitle": "No habits yet",
@@ -394,6 +413,22 @@
       "builtFor": "Built for",
       "hackathonName": "La Crypta Lightning Hackathons 2026",
       "motto": "Bitcoin o Muerte"
+    },
+    "whyLightning": {
+      "title": "Why Bitcoin Lightning?",
+      "subtitle": "Instant, near-free micro-payments built for rewards",
+      "reason1Stat": "< 1 second",
+      "reason1Title": "Instant Settlement",
+      "reason1Desc": "Rewards arrive the moment a task is verified. No waiting, no processing.",
+      "reason2Stat": "< 1 sat fee",
+      "reason2Title": "Near-Free Transactions",
+      "reason2Desc": "Send 10 sats or 10,000 — fees are fractions of a cent. Perfect for micro-rewards.",
+      "reason3Stat": "Global",
+      "reason3Title": "No Bank Needed",
+      "reason3Desc": "Anyone with a phone can receive rewards. No bank account, no KYC, no borders.",
+      "reason4Stat": "Permissionless",
+      "reason4Title": "Open Protocol",
+      "reason4Desc": "No company controls it. No one can freeze funds or shut you down. Money that's truly yours."
     }
   },
   "payments": {
@@ -630,5 +665,42 @@
   "seo": {
     "tagline": "Earn sats. Build habits. Change lives.",
     "description": "A habit tracker powered by Bitcoin Lightning Network that rewards task completion with real sats. Built for La Crypta Hackathons 2026."
+  },
+  "admin": {
+    "title": "Admin Panel",
+    "subtitle": "Manage users and monitor platform activity",
+    "loading": "Loading...",
+    "accessDenied": "Access Denied",
+    "accessDeniedText": "You need admin privileges to access this page.",
+    "statUsers": "Users",
+    "statFamilies": "Families",
+    "statHabits": "Habits",
+    "statApproved": "Approved",
+    "statPayments": "Payments",
+    "statSats": "Total Sats",
+    "searchPlaceholder": "Search by name, email, or username...",
+    "usersFound": "users",
+    "noUsers": "No users found",
+    "colUser": "User",
+    "colFamilies": "Families",
+    "colStatus": "Status",
+    "colCreated": "Created",
+    "colActions": "Actions",
+    "locked": "Locked",
+    "wallet": "Wallet",
+    "edit": "Edit",
+    "unlock": "Unlock",
+    "delete": "Delete",
+    "confirmDelete": "Are you sure you want to delete {name}? This action cannot be undone.",
+    "prev": "Previous",
+    "next": "Next",
+    "editUser": "Edit User",
+    "fieldDisplayName": "Display Name",
+    "fieldUsername": "Username",
+    "fieldEmail": "Email",
+    "fieldLocale": "Language",
+    "cancel": "Cancel",
+    "save": "Save",
+    "saving": "Saving..."
   }
 }
