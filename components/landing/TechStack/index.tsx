@@ -35,8 +35,8 @@ export const TechStack: React.FC = () => {
       ],
     },
     {
-      icon: <img src="https://user-images.githubusercontent.com/99301796/223592277-34058d0e-af30-411d-8dfe-87c42dacdcf2.png" alt="Nostr" className={styles.logoImg} />,
-      title: "Nostr",
+      icon: <img src="https://avatars.githubusercontent.com/u/259148082?v=4" alt="Nostr WoT" className={styles.logoImg} />,
+      title: "Nostr WoT",
       description: t("nostrDesc"),
       linkLabel: t("nostrLink"),
       detailTitle: t("nostrDetailTitle"),
