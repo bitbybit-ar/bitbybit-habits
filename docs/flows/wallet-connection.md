@@ -53,5 +53,4 @@ sequenceDiagram
 
 ## Related flows
 
-- [Lightning Basics](./lightning-basics.md) - what NWC is and how it works
 - [Payment Cascade](./payment-cascade.md) - when decryption happens during payments

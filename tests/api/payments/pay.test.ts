@@ -154,7 +154,7 @@ describe("POST /api/payments/[id]/pay", () => {
     const req = createRequest("POST", `/api/payments/${UUID.payment1}/pay`);
     const { status, body } = await parseResponse(await POST(req, routeCtx));
     expect(status).toBe(400);
-    expect(body.error).toContain("Insufficient balance");
+    expect(body.error).toBe("insufficient_funds");
     expect(mockUpdateSet).toHaveBeenCalledWith(expect.objectContaining({ status: "failed" }));
     expect(mockClose).toHaveBeenCalled();
   });

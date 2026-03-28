@@ -1,10 +1,13 @@
-import { apiHandler, NotFoundError, BadRequestError, ForbiddenError } from "@/lib/api";
+import { apiHandler, NotFoundError, ForbiddenError } from "@/lib/api";
+import { validateHabitFields } from "@/lib/api/validate-habit";
 import { habits, habitAssignments, familyMembers } from "@/lib/db";
 import { eq, and, inArray } from "drizzle-orm";
 
-const VALID_SCHEDULE_TYPES = ["daily", "specific_days", "times_per_week"] as const;
-const VALID_VERIFICATION_TYPES = ["sponsor_approval", "self_verify"] as const;
-
+/**
+ * PUT /api/habits/:id
+ *
+ * Update a habit's properties. Only the creator can update.
+ */
 export const PUT = apiHandler(async (request, { session, db, params }) => {
   const { id } = params;
 
@@ -15,7 +18,7 @@ export const PUT = apiHandler(async (request, { session, db, params }) => {
     .where(and(eq(habits.id, id), eq(habits.created_by, session.user_id)));
 
   if (existing.length === 0) {
-    throw new NotFoundError("Hábito no encontrado o no tenés permiso para editarlo");
+    throw new NotFoundError("habit_not_found");
   }
 
   const habit = existing[0];
@@ -46,32 +49,8 @@ export const PUT = apiHandler(async (request, { session, db, params }) => {
     active?: boolean;
   };
 
-  // Validate enum fields
-  if (schedule_type !== undefined && !VALID_SCHEDULE_TYPES.includes(schedule_type as typeof VALID_SCHEDULE_TYPES[number])) {
-    throw new BadRequestError("schedule_type invalido");
-  }
-  if (verification_type !== undefined && !VALID_VERIFICATION_TYPES.includes(verification_type as typeof VALID_VERIFICATION_TYPES[number])) {
-    throw new BadRequestError("verification_type invalido");
-  }
-
-  // Validate sat_reward
-  if (sat_reward !== undefined) {
-    if (!Number.isInteger(sat_reward) || sat_reward < 0 || sat_reward > 1_000_000) {
-      throw new BadRequestError("sat_reward debe ser un entero entre 0 y 1.000.000");
-    }
-  }
-
-  // Validate color format
-  if (color !== undefined && !/^#[0-9A-Fa-f]{6}$/.test(color)) {
-    throw new BadRequestError("color debe ser un hex valido (#RRGGBB)");
-  }
-
-  // Validate schedule_days
-  if (schedule_days !== undefined) {
-    if (!Array.isArray(schedule_days) || schedule_days.some((d) => !Number.isInteger(d) || d < 0 || d > 6)) {
-      throw new BadRequestError("schedule_days debe contener dias validos (0-6)");
-    }
-  }
+  // Validate fields using shared validator
+  validateHabitFields({ schedule_type, verification_type, sat_reward, color, schedule_days });
 
   // Validate assigned_to belongs to the habit's family
   if (assigned_to !== undefined && habit.family_id) {
@@ -81,7 +60,7 @@ export const PUT = apiHandler(async (request, { session, db, params }) => {
       .where(and(eq(familyMembers.family_id, habit.family_id), eq(familyMembers.user_id, assigned_to)));
 
     if (membership.length === 0) {
-      throw new ForbiddenError("El usuario asignado no es miembro de esta familia");
+      throw new ForbiddenError("user_not_family_member");
     }
   }
 
@@ -93,7 +72,7 @@ export const PUT = apiHandler(async (request, { session, db, params }) => {
       .where(and(eq(familyMembers.family_id, habit.family_id), inArray(familyMembers.user_id, assigned_members)));
 
     if (memberships.length !== assigned_members.length) {
-      throw new ForbiddenError("Algunos usuarios asignados no son miembros de esta familia");
+      throw new ForbiddenError("user_not_family_member");
     }
   }
 
@@ -126,6 +105,11 @@ export const PUT = apiHandler(async (request, { session, db, params }) => {
   return updated[0];
 });
 
+/**
+ * DELETE /api/habits/:id
+ *
+ * Soft-delete a habit by setting active=false. Only the creator can delete.
+ */
 export const DELETE = apiHandler(async (_req, { session, db, params }) => {
   const { id } = params;
 
@@ -135,7 +119,7 @@ export const DELETE = apiHandler(async (_req, { session, db, params }) => {
     .where(and(eq(habits.id, id), eq(habits.created_by, session.user_id)));
 
   if (existing.length === 0) {
-    throw new NotFoundError("Hábito no encontrado o no tenés permiso para eliminarlo");
+    throw new NotFoundError("habit_not_found");
   }
 
   await db.update(habits).set({ active: false }).where(eq(habits.id, id));

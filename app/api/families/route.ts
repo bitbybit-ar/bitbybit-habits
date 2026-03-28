@@ -11,6 +11,11 @@ function generateInviteCode(): string {
   return code;
 }
 
+/**
+ * GET /api/families
+ *
+ * List the user's families with all members included.
+ */
 export const GET = apiHandler(async (_req, { session, db }) => {
   // Get family IDs the user belongs to
   const userFamilyIds = await db
@@ -60,12 +65,17 @@ export const GET = apiHandler(async (_req, { session, db }) => {
   }));
 });
 
+/**
+ * POST /api/families
+ *
+ * Create a new family and add the creator as a sponsor member.
+ */
 export const POST = apiHandler(async (request, { session, db }) => {
   const body = await request.json();
   const { name } = body as { name: string };
 
   if (!name || name.trim().length === 0) {
-    throw new BadRequestError("El nombre de la familia es obligatorio");
+    throw new BadRequestError("family_name_required");
   }
 
   const inviteCode = generateInviteCode();

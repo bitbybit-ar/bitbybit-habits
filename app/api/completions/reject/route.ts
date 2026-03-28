@@ -3,6 +3,11 @@ import { createNotification } from "@/lib/notifications";
 import { completions, habits, familyMembers } from "@/lib/db";
 import { eq, and, sql } from "drizzle-orm";
 
+/**
+ * POST /api/completions/reject
+ *
+ * Reject a pending completion (sponsor only). Notifies the kid.
+ */
 export const POST = apiHandler(async (request, { session, db }) => {
   const body = await request.json();
   const { completion_id, reason } = body as {
@@ -30,7 +35,7 @@ export const POST = apiHandler(async (request, { session, db }) => {
     );
 
   if (result.length === 0) {
-    throw new NotFoundError("Completacion no encontrada o ya procesada");
+    throw new NotFoundError("completion_not_found");
   }
 
   const updates: Record<string, unknown> = {

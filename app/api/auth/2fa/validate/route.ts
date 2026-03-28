@@ -15,6 +15,12 @@ function getSecretKey(): Uint8Array {
   return new TextEncoder().encode(secret);
 }
 
+/**
+ * POST /api/auth/2fa/validate
+ *
+ * Validate a 2FA code (TOTP or recovery code) during login.
+ * Creates a full session on success.
+ */
 export const POST = apiHandler(async (request, { db }) => {
   const body = await request.json();
   const { tempToken, code } = body as { tempToken: string; code: string };
@@ -28,13 +34,13 @@ export const POST = apiHandler(async (request, { db }) => {
     const { payload } = await jwtVerify(tempToken, secret);
 
     if (payload.purpose !== "2fa") {
-      throw new BadRequestError("Token invalido");
+      throw new BadRequestError("invalid_token");
     }
 
     userId = payload.user_id as string;
   } catch (err) {
     if (err instanceof BadRequestError) throw err;
-    throw new BadRequestError("Token expirado o invalido");
+    throw new BadRequestError("token_expired");
   }
 
   // Get user data
@@ -54,7 +60,7 @@ export const POST = apiHandler(async (request, { db }) => {
     .limit(1);
 
   if (result.length === 0 || !result[0].totp_enabled || !result[0].totp_secret) {
-    throw new BadRequestError("2FA no esta habilitado");
+    throw new BadRequestError("2fa_not_enabled");
   }
 
   const user = result[0];
@@ -97,7 +103,7 @@ export const POST = apiHandler(async (request, { db }) => {
   }
 
   if (!isValid) {
-    throw new BadRequestError("Codigo invalido");
+    throw new BadRequestError("invalid_code");
   }
 
   // Get user's role from their first family membership

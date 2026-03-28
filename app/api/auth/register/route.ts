@@ -7,6 +7,11 @@ import { getClientIp } from "@/lib/request";
 // Rate limiter: 3 attempts per 15 minutes per IP
 const registerRateLimiter = createRateLimiter(3, 15 * 60 * 1000);
 
+/**
+ * POST /api/auth/register
+ *
+ * Register a new user account. Rate limited (3/15min).
+ */
 export const POST = apiHandler(async (request, { db }) => {
   const clientIp = getClientIp(request);
   const rateLimitResult = registerRateLimiter.check(clientIp);
@@ -18,7 +23,7 @@ export const POST = apiHandler(async (request, { db }) => {
   const { email, username, password, display_name, locale } = await request.json();
 
   if (!email || !username || !password || !display_name) {
-    throw new BadRequestError("Faltan campos requeridos");
+    throw new BadRequestError("missing_fields");
   }
 
   const password_hash = await hashPassword(password);

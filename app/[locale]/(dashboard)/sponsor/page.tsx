@@ -63,6 +63,81 @@ export default function SponsorDashboard() {
     setShowOnboarding(false);
   }, []);
 
+  /**
+   * Runs the 3-tier payment cascade:
+   * 1. Generate invoice from kid's wallet
+   * 2. Try WebLN (browser extension)
+   * 3. Try NWC auto-pay (sponsor's wallet)
+   * 4. Fall back to QR invoice modal
+   */
+  const runPaymentCascade = useCallback(async (completionId: string, amountSats: number, habitName: string, existingPaymentId?: string) => {
+    // Generate invoice from kid's wallet
+    const invoiceRes = await fetch("/api/payments/invoice", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ completion_id: completionId, amount_sats: amountSats, payment_id: existingPaymentId }),
+    });
+
+    if (!invoiceRes.ok) {
+      showToast(t("payments.paymentError"), "error");
+      return;
+    }
+
+    const invoiceData = await invoiceRes.json();
+    if (!invoiceData.success || !invoiceData.data) {
+      showToast(t("payments.paymentError"), "error");
+      return;
+    }
+
+    const { paymentRequest, payment_id: paymentId } = invoiceData.data;
+
+    // Tier 1: WebLN (browser extension — invisible to user)
+    if (hasWebLN) {
+      try {
+        const { preimage } = await weblnSendPayment(paymentRequest);
+        try {
+          await fetch(`/api/payments/${paymentId}/confirm`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ preimage }),
+          });
+          showToast(t("payments.weblnPaidSuccess", { amount: amountSats, extension: extensionName ?? "WebLN" }), "success");
+        } catch {
+          showToast(t("payments.weblnConfirmError"), "info");
+        }
+        return; // CRITICAL: never fall through after sendPayment succeeds
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : "";
+        if (msg.includes("rejected") || msg.includes("denied") || msg.includes("cancelled")) {
+          showToast(t("payments.weblnRejected"), "info");
+        }
+        // Fall through to NWC
+      }
+    }
+
+    // Tier 2: NWC auto-pay (invisible to user)
+    try {
+      const payRes = await fetch(`/api/payments/${paymentId}/pay`, { method: "POST", headers: { "Content-Type": "application/json" } });
+      if (payRes.ok) {
+        const payData = await payRes.json();
+        if (payData.success && payData.data?.paid) {
+          showToast(t("payments.autoPaidSuccess", { amount: amountSats }), "success");
+          return;
+        }
+      } else {
+        const payData = await payRes.json().catch(() => null);
+        if (payData?.error === "insufficient_funds") {
+          showToast(t("payments.insufficientFunds"), "error");
+        }
+        // sponsor_no_wallet or other — fall through to QR
+      }
+    } catch { /* network error — fall through to QR */ }
+
+    // Tier 3: Show QR invoice modal
+    setInvoiceModal({ paymentRequest, paymentId, amountSats, habitName });
+    showToast(t("payments.scanInvoice", { amount: amountSats }), "info");
+  }, [hasWebLN, weblnSendPayment, extensionName, showToast, t]);
+
   const handleApprove = useCallback(async (completionId: string) => {
     // Optimistic update
     familyData.setCompletions((prev) =>
@@ -90,93 +165,32 @@ export default function SponsorDashboard() {
         body: JSON.stringify({ completion_id: completionId }),
       });
 
-      if (!res.ok) { revertOptimistic(); return; }
       const data = await res.json();
-      if (!data.success) { revertOptimistic(); return; }
+
+      if (!res.ok || !data.success) {
+        revertOptimistic();
+        if (data.error === "kid_no_wallet") {
+          showToast(t("payments.kidNoWallet"), "error");
+        }
+        return;
+      }
 
       const paymentStatus = data.data?.payment_status;
       const completionData = familyData.completions.find((c) => c.id === completionId);
-
-      if (paymentStatus === "no_wallet") {
-        showToast(t("sponsorDashboard.approveNoWallet"), "info");
-        return;
-      }
 
       if (paymentStatus === "none" || !completionData?.sat_reward) {
         showToast(t("sponsorDashboard.approveSuccess"), "success");
         return;
       }
 
-      // Generate invoice
-      const invoiceRes = await fetch("/api/payments/invoice", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ completion_id: completionId, amount_sats: completionData.sat_reward }),
-      });
-
-      if (invoiceRes.ok) {
-        const invoiceData = await invoiceRes.json();
-        if (invoiceData.success && invoiceData.data) {
-          const { paymentRequest, payment_id: paymentId } = invoiceData.data;
-
-          // Priority 1: WebLN (browser extension like Alby)
-          if (hasWebLN) {
-            try {
-              const { preimage } = await weblnSendPayment(paymentRequest);
-
-              // Confirm on backend (store preimage, mark as paid)
-              try {
-                await fetch(`/api/payments/${paymentId}/confirm`, {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ preimage }),
-                });
-                showToast(t("payments.weblnPaidSuccess", { amount: completionData.sat_reward, extension: extensionName ?? "WebLN" }), "success");
-              } catch {
-                // Payment was sent but backend confirm failed — don't double-pay
-                showToast(t("payments.weblnConfirmError"), "info");
-              }
-              return; // CRITICAL: never fall through after sendPayment succeeds
-            } catch (err) {
-              // WebLN failed — show feedback if user rejected, then fall through
-              const msg = err instanceof Error ? err.message : "";
-              if (msg.includes("rejected") || msg.includes("denied") || msg.includes("cancelled")) {
-                showToast(t("payments.weblnRejected"), "info");
-              }
-              // Fall through to NWC / QR
-            }
-          }
-
-          // Priority 2: NWC auto-pay
-          try {
-            const payRes = await fetch(`/api/payments/${paymentId}/pay`, { method: "POST", headers: { "Content-Type": "application/json" } });
-            if (payRes.ok) {
-              const payData = await payRes.json();
-              if (payData.success && payData.data?.paid) {
-                showToast(t("payments.autoPaidSuccess", { amount: completionData.sat_reward }), "success");
-                return;
-              }
-            }
-          } catch { /* fall through */ }
-
-          // Priority 3: Invoice modal
-          setInvoiceModal({ paymentRequest, paymentId, amountSats: completionData.sat_reward, habitName: completionData.habit_name });
-          showToast(t("payments.scanInvoice", { amount: completionData.sat_reward }), "info");
-          return;
-        }
-      }
-
-      if (invoiceRes.status === 422) {
-        showToast(t("payments.approvedNoPay"), "info");
-        return;
-      }
-
-      showToast(t("payments.paymentError"), "error");
+      // Run the 3-tier payment cascade with the payment_id from approve
+      const paymentId = data.data?.payment_id;
+      await runPaymentCascade(completionId, completionData.sat_reward, completionData.habit_name, paymentId);
     } catch {
       revertOptimistic();
       showToast(t("auth.connectionError"), "error");
     }
-  }, [showToast, t, familyData, hasWebLN, weblnSendPayment, extensionName]);
+  }, [showToast, t, familyData, runPaymentCascade]);
 
   const handleCreateHabit = useCallback(async (data: CreateHabitData) => {
     try {
@@ -200,9 +214,18 @@ export default function SponsorDashboard() {
   }, [showToast, t, habits]);
 
   const handleRetryPayment = useCallback(async (paymentId: string) => {
-    const ok = await payments.retryPayment(paymentId);
-    showToast(ok ? t("payments.retrySuccess") : t("payments.retryError"), ok ? "info" : "error");
-  }, [payments, showToast, t]);
+    const result = await payments.retryPayment(paymentId);
+    if (!result.success) {
+      showToast(t("payments.retryError"), "error");
+      return;
+    }
+    // Re-run the full payment cascade with the reset payment
+    const payment = result.payment;
+    // Find habit name from the completion data or payments list
+    const paymentData = payments.data.find((p) => p.id === paymentId);
+    const habitName = paymentData?.habit_name ?? "";
+    await runPaymentCascade(payment.completion_id, payment.amount_sats, habitName, paymentId);
+  }, [payments, showToast, t, runPaymentCascade]);
 
   const handleLeaveFamily = useCallback(async (familyId: string) => {
     const ok = await families.leaveFamily(familyId);
@@ -253,16 +276,22 @@ export default function SponsorDashboard() {
     />
   );
 
+  const activeTabLabel = tabs.find((t) => t.key === activeTab)?.label ?? "";
+  const breadcrumbs = [
+    { label: t("dashboard.title"), href: "/sponsor" },
+    { label: activeTabLabel },
+  ];
+
   if (showOnboarding) {
     return (
-      <DashboardLayout displayName={`${t("dashboard.welcome")}, ${displayName}`} statsBar={statsBar} tabs={tabs} activeTab={activeTab} onTabChange={(key) => setActiveTab(key as TabType)}>
+      <DashboardLayout displayName={`${t("dashboard.welcome")}, ${displayName}`} statsBar={statsBar} tabs={tabs} activeTab={activeTab} onTabChange={(key) => setActiveTab(key as TabType)} breadcrumbs={breadcrumbs}>
         <Onboarding displayName={displayName} onDismiss={handleDismissOnboarding} />
       </DashboardLayout>
     );
   }
 
   return (
-    <DashboardLayout displayName={`${t("dashboard.welcome")}, ${displayName}`} statsBar={statsBar} tabs={tabs} activeTab={activeTab} onTabChange={(key) => setActiveTab(key as TabType)}>
+    <DashboardLayout displayName={`${t("dashboard.welcome")}, ${displayName}`} statsBar={statsBar} tabs={tabs} activeTab={activeTab} onTabChange={(key) => setActiveTab(key as TabType)} breadcrumbs={breadcrumbs}>
       {activeTab === "byHabit" && (
         <SponsorHabitsTab habits={habits.data} families={families.data} familyCompletions={familyData.completions} onApprove={handleApprove} onCreateHabit={() => setActiveTab("create")} />
       )}

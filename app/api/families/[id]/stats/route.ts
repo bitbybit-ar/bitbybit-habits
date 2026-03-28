@@ -3,6 +3,11 @@ import { families, familyMembers, completions, habits, payments } from "@/lib/db
 import { eq, and, sql, count, sum } from "drizzle-orm";
 import { todayDateStr } from "@/lib/date";
 
+/**
+ * GET /api/families/:id/stats
+ *
+ * Family stats: completed today, pending approvals, total sats paid (sponsor only).
+ */
 export const GET = apiHandler(async (_req, { session, db, params }) => {
   const familyId = params.id;
 
@@ -13,7 +18,7 @@ export const GET = apiHandler(async (_req, { session, db, params }) => {
     .where(eq(families.id, familyId));
 
   if (family.length === 0) {
-    throw new NotFoundError("Familia");
+    throw new NotFoundError("Family");
   }
 
   // Verify user is a sponsor in this family
@@ -28,7 +33,7 @@ export const GET = apiHandler(async (_req, { session, db, params }) => {
     );
 
   if (membership.length === 0 || membership[0].role !== "sponsor") {
-    throw new ForbiddenError("Solo sponsors pueden ver estadísticas de la familia");
+    throw new ForbiddenError("sponsors_only");
   }
 
   const todayStr = todayDateStr();

@@ -21,7 +21,7 @@ export const GET = apiHandler(async (_request, { session: _session, db, params }
     .limit(1);
 
   if (!paymentRows[0]) {
-    throw new NotFoundError("Pago");
+    throw new NotFoundError("Payment");
   }
 
   const payment = paymentRows[0];

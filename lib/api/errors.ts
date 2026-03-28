@@ -5,11 +5,11 @@ export class ApiError extends Error {
 }
 
 export class UnauthorizedError extends ApiError {
-  constructor(message = "No autenticado") { super(401, message); }
+  constructor(message = "Unauthorized") { super(401, message); }
 }
 
 export class NotFoundError extends ApiError {
-  constructor(resource = "Recurso") { super(404, `${resource} no encontrado`); }
+  constructor(resource = "Resource") { super(404, `${resource} not found`); }
 }
 
 export class BadRequestError extends ApiError {
@@ -17,7 +17,7 @@ export class BadRequestError extends ApiError {
 }
 
 export class ForbiddenError extends ApiError {
-  constructor(message = "No autorizado") { super(403, message); }
+  constructor(message = "Forbidden") { super(403, message); }
 }
 
 export class ConflictError extends ApiError {
@@ -26,7 +26,7 @@ export class ConflictError extends ApiError {
 
 export class RateLimitError extends ApiError {
   public retryAfterMs: number;
-  constructor(retryAfterMs: number, message = "Demasiados intentos. Intenta de nuevo mas tarde") {
+  constructor(retryAfterMs: number, message = "Too many requests. Try again later.") {
     super(429, message);
     this.retryAfterMs = retryAfterMs;
   }

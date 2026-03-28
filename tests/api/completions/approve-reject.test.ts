@@ -19,7 +19,7 @@ const chainable = () => {
 vi.mock("@/lib/db", () => ({
   getDb: () => ({
     select: () => chainable(),
-    insert: () => ({ values: mockInsertValues }),
+    insert: () => ({ values: (...args: unknown[]) => { mockInsertValues(...args); return { returning: () => Promise.resolve([{ id: "payment-1" }]) }; } }),
     update: () => ({ set: () => ({ where: () => ({ returning: mockUpdateReturning }) }) }),
   }),
   completions: { id: "id", habit_id: "h", status: "s", user_id: "u" },
@@ -70,7 +70,7 @@ describe("/api/completions/approve", () => {
     expect(status).toBe(404);
   });
 
-  it("approves completion and creates payment when sat_reward > 0 and wallet exists", async () => {
+  it("returns 400 when kid has no wallet and sat_reward > 0", async () => {
     await setSessionCookie(testSession);
     // First select: completion query
     selectResults.push([{
@@ -78,7 +78,25 @@ describe("/api/completions/approve", () => {
       date: "2026-03-11", status: "pending", sat_reward: 100,
       family_id: UUID.family1, assigned_to: UUID.user2, habit_name: "Read",
     }]);
-    // Second select: wallet check - wallet exists
+    // Second select: kid wallet check — no wallet
+    selectResults.push([]);
+
+    const req = createRequest("POST", "/api/completions/approve", { completion_id: UUID.completion1 });
+    const { status, body } = await parseResponse(await approve(req));
+    expect(status).toBe(400);
+    expect(body.error).toBe("kid_no_wallet");
+    expect(mockUpdateReturning).not.toHaveBeenCalled(); // completion NOT approved
+  });
+
+  it("approves and creates payment when kid has wallet and sat_reward > 0", async () => {
+    await setSessionCookie(testSession);
+    // First select: completion query
+    selectResults.push([{
+      id: UUID.completion1, habit_id: UUID.habit1, user_id: UUID.user2,
+      date: "2026-03-11", status: "pending", sat_reward: 100,
+      family_id: UUID.family1, assigned_to: UUID.user2, habit_name: "Read",
+    }]);
+    // Second select: kid wallet check — wallet exists
     selectResults.push([{ id: "wallet-1" }]);
     mockUpdateReturning.mockResolvedValue([{ id: UUID.completion1, status: "approved" }]);
     mockInsertValues.mockResolvedValue(undefined);
@@ -86,27 +104,8 @@ describe("/api/completions/approve", () => {
     const req = createRequest("POST", "/api/completions/approve", { completion_id: UUID.completion1 });
     const { status, body } = await parseResponse(await approve(req));
     expect(status).toBe(200);
-    expect(body.data.status).toBe("approved");
+    expect(body.data.payment_status).toBe("pending");
     expect(mockInsertValues).toHaveBeenCalled(); // payment created
-  });
-
-  it("approves completion with no_wallet status when no wallet connected", async () => {
-    await setSessionCookie(testSession);
-    // First select: completion query
-    selectResults.push([{
-      id: UUID.completion1, habit_id: UUID.habit1, user_id: UUID.user2,
-      date: "2026-03-11", status: "pending", sat_reward: 100,
-      family_id: UUID.family1, assigned_to: UUID.user2, habit_name: "Read",
-    }]);
-    // Second select: wallet check - no wallet
-    selectResults.push([]);
-    mockUpdateReturning.mockResolvedValue([{ id: UUID.completion1, status: "approved", payment_status: "no_wallet" }]);
-
-    const req = createRequest("POST", "/api/completions/approve", { completion_id: UUID.completion1 });
-    const { status, body } = await parseResponse(await approve(req));
-    expect(status).toBe(200);
-    expect(body.data.payment_status).toBe("no_wallet");
-    expect(mockInsertValues).not.toHaveBeenCalled(); // no payment created
   });
 });
 

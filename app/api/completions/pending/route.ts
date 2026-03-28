@@ -2,6 +2,11 @@ import { apiHandler } from "@/lib/api";
 import { completions, habits, users, familyMembers } from "@/lib/db";
 import { eq, and, desc } from "drizzle-orm";
 
+/**
+ * GET /api/completions/pending
+ *
+ * List all pending completions across the sponsor's families.
+ */
 export const GET = apiHandler(async (_req, { session, db }) => {
   const result = await db
     .select({

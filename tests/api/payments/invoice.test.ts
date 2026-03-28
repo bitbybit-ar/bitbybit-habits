@@ -87,7 +87,7 @@ describe("POST /api/payments/invoice", () => {
     });
     const { status, body } = await parseResponse(await POST(req));
     expect(status).toBe(400);
-    expect(body.error).toContain("no encontrada");
+    expect(body.error).toContain("completion_not_found");
   });
 
   it("returns 422 when kid has no wallet", async () => {
@@ -171,7 +171,7 @@ describe("POST /api/payments/invoice", () => {
       amount_sats: 50,
     });
     const { status } = await parseResponse(await POST(req));
-    expect(status).toBe(500);
+    expect(status).toBe(400);
     expect(mockClose).toHaveBeenCalled();
   });
 });

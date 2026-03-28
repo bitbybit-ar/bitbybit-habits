@@ -4,6 +4,11 @@ import { eq } from "drizzle-orm";
 
 export const dynamic = "force-dynamic";
 
+/**
+ * GET /api/auth/profile
+ *
+ * Return the authenticated user's profile.
+ */
 export const GET = apiHandler(async (_req, { session, db }) => {
   const result = await db
     .select({
@@ -18,12 +23,17 @@ export const GET = apiHandler(async (_req, { session, db }) => {
     .where(eq(users.id, session.user_id));
 
   if (result.length === 0) {
-    throw new NotFoundError("Usuario");
+    throw new NotFoundError("User");
   }
 
   return result[0];
 });
 
+/**
+ * PATCH /api/auth/profile
+ *
+ * Update the authenticated user's profile (display_name, username, email, avatar_url, locale).
+ */
 export const PATCH = apiHandler(async (request, { session, db }) => {
   const body = await request.json();
   const { display_name, username, email, avatar_url, locale } = body as {
@@ -35,15 +45,15 @@ export const PATCH = apiHandler(async (request, { session, db }) => {
   };
 
   if (locale && !["es", "en"].includes(locale)) {
-    throw new BadRequestError("Locale inválido");
+    throw new BadRequestError("invalid_locale");
   }
 
   if (username !== undefined && username.trim().length < 3) {
-    throw new BadRequestError("El nombre de usuario debe tener al menos 3 caracteres");
+    throw new BadRequestError("username_too_short");
   }
 
   if (email !== undefined && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
-    throw new BadRequestError("Email inválido");
+    throw new BadRequestError("invalid_email");
   }
 
   const updates: Partial<typeof users.$inferInsert> = {};

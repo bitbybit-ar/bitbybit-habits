@@ -2,6 +2,11 @@ import { apiHandler, ForbiddenError, NotFoundError } from "@/lib/api";
 import { families, familyMembers, completions, habits, users } from "@/lib/db";
 import { eq, and, gte, desc } from "drizzle-orm";
 
+/**
+ * GET /api/families/:id/completions
+ *
+ * List completions for all habits in a family (sponsor only). Supports ?days filter.
+ */
 export const GET = apiHandler(async (req, { session, db, params }) => {
   const familyId = params.id;
 
@@ -12,7 +17,7 @@ export const GET = apiHandler(async (req, { session, db, params }) => {
     .where(eq(families.id, familyId));
 
   if (family.length === 0) {
-    throw new NotFoundError("Familia");
+    throw new NotFoundError("Family");
   }
 
   // Verify user is a sponsor in this family
@@ -27,7 +32,7 @@ export const GET = apiHandler(async (req, { session, db, params }) => {
     );
 
   if (membership.length === 0 || membership[0].role !== "sponsor") {
-    throw new ForbiddenError("Solo sponsors pueden ver completaciones de la familia");
+    throw new ForbiddenError("sponsors_only");
   }
 
   // Parse days param (default 7)
