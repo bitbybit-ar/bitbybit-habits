@@ -29,6 +29,9 @@ export function InvoiceModal({
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const failCountRef = useRef(0);
 
+  // lightning: URI for QR codes, wallet links, and copy
+  const lightningUri = `lightning:${paymentRequest.toUpperCase()}`;
+
   const pollStatus = useCallback(async () => {
     try {
       const res = await fetch(`/api/payments/${paymentId}/status`, { cache: 'no-store' });
@@ -66,7 +69,7 @@ export function InvoiceModal({
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(paymentRequest);
+      await navigator.clipboard.writeText(lightningUri);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
@@ -93,7 +96,7 @@ export function InvoiceModal({
 
             <div className={styles.qrContainer}>
               <QRCode
-                value={paymentRequest}
+                value={lightningUri}
                 size={256}
                 bgColor="transparent"
                 fgColor="var(--qr-color, #F0E6D8)"
@@ -104,6 +107,10 @@ export function InvoiceModal({
             {pollError && (
               <p className={styles.pollError}>{t("pollError")}</p>
             )}
+
+            <a href={lightningUri} className={styles.walletLink}>
+              {t("openInWallet")}
+            </a>
 
             <button className={styles.copyButton} onClick={handleCopy}>
               {copied ? t("copied") : t("copyInvoice")}

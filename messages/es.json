@@ -174,14 +174,33 @@
     "noFamilies": "Todavía no estás en ninguna familia"
   },
   "wallet": {
+    "title": "Billetera",
+    "connect": "Conectar",
     "connectWallet": "Conectar wallet",
     "walletConnected": "Wallet conectada",
+    "notConnected": "Sin wallet",
     "balance": "Balance",
     "nwcUrl": "URL de NWC",
     "label": "Etiqueta (opcional)",
     "labelPlaceholder": "ej. Mi wallet de Alby",
     "disconnect": "Desconectar",
-    "connectExtension": "Conectar con {name}"
+    "connectExtension": "Conectar con {name}",
+    "send": "Enviar",
+    "receive": "Recibir",
+    "settings": "Ajustes",
+    "connection": "Conexion",
+    "invoiceToPay": "Invoice a pagar",
+    "payInvoice": "Pagar invoice",
+    "sending": "Enviando...",
+    "sendSuccess": "Pago enviado ⚡",
+    "sendError": "Error al enviar el pago",
+    "insufficientFunds": "Fondos insuficientes",
+    "amountSats": "Monto (sats)",
+    "description": "Descripcion (opcional)",
+    "descriptionPlaceholder": "ej. Pago a un amigo",
+    "generateInvoice": "Generar invoice",
+    "newInvoice": "Nuevo invoice",
+    "receiveError": "Error al generar el invoice"
   },
   "sats": {
     "sats": "sats",
@@ -202,7 +221,12 @@
     "unlinkNostr": "Desvincular Nostr",
     "nostrPubkey": "Clave pública",
     "unlinkNostrConfirm": "¿Desvincular tu identidad Nostr? Podrás volver a vincularla.",
-    "cannotUnlinkOnlyAuth": "No podés desvincular Nostr sin tener una contraseña configurada"
+    "cannotUnlinkOnlyAuth": "No podés desvincular Nostr sin tener una contraseña configurada",
+    "nostrSyncFromRelay": "Sincronizar desde Nostr",
+    "nostrSyncing": "Sincronizando...",
+    "nostrSyncFailed": "No se pudo sincronizar metadata desde los relays de Nostr",
+    "nostrAutoSyncHint": "Los cambios de perfil se publican automáticamente en los relays de Nostr",
+    "nostrImportPrompt": "¿Importar tu nombre y avatar desde Nostr?"
   },
   "emptyState": {
     "noHabitsTitle": "Todavía no hay hábitos",
@@ -653,6 +677,7 @@
     "paid": "¡Pago recibido! ⚡",
     "copied": "¡Copiado!",
     "copyInvoice": "Copiar invoice",
+    "openInWallet": "Abrir en wallet",
     "pollError": "Problemas de conexión. Seguimos verificando el pago...",
     "close": "Cerrar"
   },

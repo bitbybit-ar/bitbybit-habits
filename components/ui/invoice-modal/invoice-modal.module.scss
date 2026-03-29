@@ -90,6 +90,30 @@
   }
 }
 
+.walletLink {
+  display: block;
+  width: 100%;
+  padding: $spacing-12 $spacing-24;
+  background: $color-secondary;
+  color: $color-bg-dark;
+  border: none;
+  border-radius: $border-radius-md;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: lighten($color-secondary, 8%);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
 .copyButton {
   width: 100%;
   padding: $spacing-12 $spacing-24;

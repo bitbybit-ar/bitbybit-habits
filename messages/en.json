@@ -174,14 +174,33 @@
     "noFamilies": "You are not in any family yet"
   },
   "wallet": {
+    "title": "Wallet",
+    "connect": "Connect",
     "connectWallet": "Connect wallet",
     "walletConnected": "Wallet connected",
+    "notConnected": "No wallet",
     "balance": "Balance",
     "nwcUrl": "NWC URL",
     "label": "Label (optional)",
     "labelPlaceholder": "e.g. My Alby wallet",
     "disconnect": "Disconnect",
-    "connectExtension": "Connect with {name}"
+    "connectExtension": "Connect with {name}",
+    "send": "Send",
+    "receive": "Receive",
+    "settings": "Settings",
+    "connection": "Connection",
+    "invoiceToPay": "Invoice to pay",
+    "payInvoice": "Pay invoice",
+    "sending": "Sending...",
+    "sendSuccess": "Payment sent ⚡",
+    "sendError": "Failed to send payment",
+    "insufficientFunds": "Insufficient funds",
+    "amountSats": "Amount (sats)",
+    "description": "Description (optional)",
+    "descriptionPlaceholder": "e.g. Payment to a friend",
+    "generateInvoice": "Generate invoice",
+    "newInvoice": "New invoice",
+    "receiveError": "Failed to generate invoice"
   },
   "sats": {
     "sats": "sats",
@@ -202,7 +221,12 @@
     "unlinkNostr": "Unlink Nostr",
     "nostrPubkey": "Public key",
     "unlinkNostrConfirm": "Unlink your Nostr identity? You can re-link it later.",
-    "cannotUnlinkOnlyAuth": "You cannot unlink Nostr without having a password set"
+    "cannotUnlinkOnlyAuth": "You cannot unlink Nostr without having a password set",
+    "nostrSyncFromRelay": "Sync from Nostr",
+    "nostrSyncing": "Syncing...",
+    "nostrSyncFailed": "Failed to sync metadata from Nostr relays",
+    "nostrAutoSyncHint": "Profile changes are automatically published to Nostr relays",
+    "nostrImportPrompt": "Import your display name and avatar from Nostr?"
   },
   "emptyState": {
     "noHabitsTitle": "No habits yet",
@@ -653,6 +677,7 @@
     "paid": "Payment received! ⚡",
     "copied": "Copied!",
     "copyInvoice": "Copy invoice",
+    "openInWallet": "Open in wallet",
     "pollError": "Connection issues. Still checking for payment...",
     "close": "Close"
   },

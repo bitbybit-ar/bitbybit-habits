@@ -148,7 +148,7 @@ export default function KidDashboard() {
     { key: "habits", icon: <ListIcon size={20} />, label: t("dashboard.myHabits") },
     { key: "family", icon: <UsersIcon size={20} />, label: t("family.myFamily") },
     { key: "earnings", icon: <BoltIcon size={20} />, label: t("kidDashboard.earnings") },
-    { key: "wallet", icon: <WalletIcon size={20} />, label: t("wallet.connectWallet") },
+    { key: "wallet", icon: <WalletIcon size={20} />, label: t("wallet.title") },
   ];
 
   const headerExtra = (
@@ -266,7 +266,7 @@ export default function KidDashboard() {
       )}
       {activeTab === "wallet" && (
         <>
-          <h2 className={styles.sectionTitle}>{t("wallet.connectWallet")}</h2>
+          <h2 className={styles.sectionTitle}>{t("wallet.title")}</h2>
           <WalletConnect />
         </>
       )}
