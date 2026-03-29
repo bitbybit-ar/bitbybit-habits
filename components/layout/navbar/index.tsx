@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { usePathname, useRouter } from "next/navigation";
 import { Link } from "@/i18n/routing";
@@ -22,31 +22,26 @@ interface NavbarUser {
   role?: string | null;
 }
 
-interface NavbarProps {
-  user?: NavbarUser | null;
-}
-
-export const Navbar: React.FC<NavbarProps> = ({ user: userProp }) => {
+export const Navbar: React.FC = () => {
   const t = useTranslations();
   const pathname = usePathname();
   const router = useRouter();
   const [visible, setVisible] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
-  const [user, setUser] = useState<NavbarUser | null>(userProp ?? null);
-  const [checkedSession, setCheckedSession] = useState(!!userProp);
+  const [user, setUser] = useState<NavbarUser | null>(null);
+  const [checkedSession, setCheckedSession] = useState(false);
 
   const isLanding = /^\/(es|en)?\/?$/.test(pathname);
   const isLoginPage = /^\/(es|en)\/login\/?$/.test(pathname);
   const isRegisterPage = /^\/(es|en)\/register\/?$/.test(pathname);
   const isLoggedIn = !!user;
 
-  // Fetch session if not provided via prop
+  // Fetch session on mount and on route changes (login/logout navigates)
   useEffect(() => {
-    if (userProp !== undefined) return;
     let cancelled = false;
 
-    fetch("/api/auth/session", { cache: 'no-store' })
+    fetch("/api/auth/session", { cache: "no-store" })
       .then((res) => (res.ok ? res.json() : { success: false }))
       .then((data) => {
         if (!cancelled) {
@@ -55,13 +50,16 @@ export const Navbar: React.FC<NavbarProps> = ({ user: userProp }) => {
         }
       })
       .catch(() => {
-        if (!cancelled) setCheckedSession(true);
+        if (!cancelled) {
+          setUser(null);
+          setCheckedSession(true);
+        }
       });
 
     return () => {
       cancelled = true;
     };
-  }, [userProp]);
+  }, [pathname]);
 
   const LANDING_LINKS = [
     { href: "#how-it-works", label: t("landing.nav.howItWorks") },
@@ -70,25 +68,41 @@ export const Navbar: React.FC<NavbarProps> = ({ user: userProp }) => {
   ];
 
   const closeMenu = useCallback(() => setMenuOpen(false), []);
+  const lastScrollY = useRef(0);
 
+  // Hide on scroll down, show on scroll up (+ scroll progress on landing)
   useEffect(() => {
-    setVisible(true);
-  }, [isLanding]);
-
-  // Scroll progress for landing page
-  useEffect(() => {
-    if (!isLanding) return;
+    const SCROLL_THRESHOLD = 10;
 
     const handleScroll = () => {
       const scrollTop = window.scrollY;
-      const docHeight =
-        document.documentElement.scrollHeight - window.innerHeight;
-      setScrollProgress(docHeight > 0 ? (scrollTop / docHeight) * 100 : 0);
+
+      if (isLanding) {
+        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        setScrollProgress(docHeight > 0 ? (scrollTop / docHeight) * 100 : 0);
+      }
+
+      // Always visible on landing (has scroll progress bar)
+      if (isLanding) {
+        setVisible(true);
+      } else if (scrollTop <= 0) {
+        setVisible(true);
+      } else {
+        const delta = scrollTop - lastScrollY.current;
+        if (delta > SCROLL_THRESHOLD) {
+          setVisible(false);
+          closeMenu();
+        } else if (delta < -SCROLL_THRESHOLD) {
+          setVisible(true);
+        }
+      }
+
+      lastScrollY.current = scrollTop;
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [isLanding]);
+  }, [isLanding, closeMenu]);
 
   // Close mobile menu on route change
   useEffect(() => {
@@ -128,7 +142,7 @@ export const Navbar: React.FC<NavbarProps> = ({ user: userProp }) => {
 
           {checkedSession && isLoggedIn && (
             <>
-              {userProp && <NotificationBell />}
+              <NotificationBell />
               <Link
                 href="/settings"
                 className={styles.navBtn}

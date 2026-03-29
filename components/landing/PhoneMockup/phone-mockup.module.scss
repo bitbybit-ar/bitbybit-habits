@@ -39,6 +39,41 @@
   50% { transform: scale(1.08); }
 }
 
+@keyframes overlayFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes overlayFadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes celebrationPop {
+  0% { transform: scale(0); opacity: 0; }
+  40% { transform: scale(1.15); opacity: 1; }
+  60% { transform: scale(0.95); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes celebrationSatFloat {
+  0% { transform: translateY(0); opacity: 0; }
+  20% { transform: translateY(-4px); opacity: 1; }
+  80% { opacity: 1; }
+  100% { transform: translateY(-24px); opacity: 0; }
+}
+
+@keyframes phoneBurstParticle {
+  0% {
+    transform: rotate(var(--angle)) translateX(0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: rotate(var(--angle)) translateX(60px) scale(0);
+    opacity: 0;
+  }
+}
+
 // ============================================================
 // Phone frame
 // ============================================================
@@ -305,6 +340,22 @@ $virtual-w: 340px;
   margin-top: 8px;
 }
 
+.clickableCard {
+  cursor: pointer;
+  width: 100%;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+  border-radius: $border-radius-sm;
+
+  &:hover {
+    transform: scale(1.02);
+  }
+
+  &:active {
+    transform: scale(0.97);
+    opacity: 0.85;
+  }
+}
+
 // ============================================================
 // Celebration
 // ============================================================
@@ -327,6 +378,76 @@ $virtual-w: 340px;
     color: var(--color-primary);
     margin-top: 4px;
   }
+}
+
+// ============================================================
+// Celebration overlay
+// ============================================================
+
+.celebrationOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.45);
+  border-radius: 36px;
+  animation: overlayFadeIn 0.2s ease-out forwards,
+             overlayFadeOut 0.3s ease-in 1.7s forwards;
+  pointer-events: none;
+}
+
+.celebrationBurst {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+}
+
+.burstParticle {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  background: var(--celebration-color, #{$color-primary});
+  border-radius: 50%;
+  animation: phoneBurstParticle 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: var(--delay, 0s);
+  box-shadow: 0 0 6px var(--celebration-color, #{$color-primary});
+}
+
+.celebrationContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  animation: celebrationPop 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.celebrationIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(var(--glass-color), 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.celebrationHabitName {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  color: var(--color-text-primary);
+  text-align: center;
+}
+
+.celebrationSats {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-extrabold;
+  color: var(--color-primary);
+  animation: celebrationSatFloat 1.8s ease-out 0.3s forwards;
+  text-shadow: 0 0 12px alpha($color-primary, 50%);
 }
 
 // ============================================================

@@ -1167,7 +1167,10 @@ paths:
               example:
                 success: true
                 data:
-                  total_sats_earned: 1500
+                  totalSats: 1500
+                  todaySats: 100
+                  bestStreak: 5
+                  pendingCount: 2
                   streaks:
                     - habit_id: "660e8400-e29b-41d4-a716-446655440001"
                       habit_name: "Tender la cama"
@@ -1175,7 +1178,6 @@ paths:
                     - habit_id: "660e8400-e29b-41d4-a716-446655440099"
                       habit_name: "Leer 30 minutos"
                       current_streak: 3
-                  pending_completions: 2
         "401":
           description: No autenticado
           content:
@@ -2929,17 +2931,23 @@ components:
       type: object
       description: Estadisticas del kid
       properties:
-        total_sats_earned:
+        totalSats:
           type: integer
           description: Total de sats ganados (pagos con estado paid)
+        todaySats:
+          type: integer
+          description: Sats ganados hoy (completaciones aprobadas del dia)
+        bestStreak:
+          type: integer
+          description: Mejor racha actual entre todos los habitos
+        pendingCount:
+          type: integer
+          description: Completaciones pendientes de aprobacion
         streaks:
           type: array
           items:
             $ref: "#/components/schemas/HabitStreak"
           description: Rachas actuales por habito
-        pending_completions:
-          type: integer
-          description: Completaciones pendientes de aprobacion
 
     FamilyCompletion:
       type: object

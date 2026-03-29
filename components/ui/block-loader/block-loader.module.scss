@@ -5,11 +5,11 @@
 // --- Block colors (glass: bg ~30% opacity, border ~52% opacity) ---
 
 $block-colors: (
-  gold:   (bg: var(--color-primary),    border: var(--color-primary)),
-  teal:   (bg: var(--color-accent-alt), border: var(--color-accent-alt)),
-  purple: (bg: var(--color-nostr),      border: var(--color-nostr)),
-  coral:  (bg: var(--color-accent),     border: var(--color-accent)),
-  green:  (bg: var(--color-secondary),  border: var(--color-secondary)),
+  "gold":   $color-primary,
+  "teal":   $color-accent-alt,
+  "purple": $color-nostr,
+  "coral":  $color-accent,
+  "green":  $color-secondary,
 );
 
 // --- Drop animation with bounce ---
@@ -62,6 +62,7 @@ $block-colors: (
   justify-content: center;
   width: 200px;
   height: 260px;
+  margin: 0 auto;
   position: relative;
 }
 
@@ -115,24 +116,21 @@ $block-colors: (
 
 // --- Generate color variants ---
 
-@each $name, $tokens in $block-colors {
-  $bg: map-get($tokens, bg);
-  $border: map-get($tokens, border);
-
+@each $name, $color in $block-colors {
   .#{$name} {
-    background: color-mix(in srgb, #{$bg} 30%, transparent);
-    border: 1px solid color-mix(in srgb, #{$border} 52%, transparent);
-    box-shadow: 0 4px 12px color-mix(in srgb, #{$bg} 20%, transparent);
+    background: alpha($color, 30%);
+    border: 1px solid alpha($color, 52%);
+    box-shadow: 0 4px 12px alpha($color, 20%);
 
     .icon {
-      filter: drop-shadow(0 1px 4px color-mix(in srgb, #{$bg} 40%, transparent));
+      filter: drop-shadow(0 1px 4px alpha($color, 40%));
     }
   }
 
   .glow_#{$name} {
     background: radial-gradient(
       ellipse,
-      color-mix(in srgb, #{$bg} 35%, transparent) 0%,
+      alpha($color, 35%) 0%,
       transparent 70%
     );
   }

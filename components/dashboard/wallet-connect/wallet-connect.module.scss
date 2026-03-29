@@ -9,9 +9,11 @@
   padding: $spacing-24;
 }
 
-.loadingText {
-  color: var(--color-text-secondary);
-  font-size: $font-size-sm;
+.loaderWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
 }
 
 // ── Connect screen ──

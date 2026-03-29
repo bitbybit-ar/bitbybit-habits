@@ -2,9 +2,10 @@
 
 import { useTranslations } from "next-intl";
 import { UsersIcon } from "@/components/icons";
+import { DashboardSection } from "@/components/dashboard/dashboard-section";
+import { EmptyState } from "@/components/dashboard/empty-state";
 import { FamilyCard } from "@/components/dashboard/family-card";
 import type { FamilyWithMembers } from "@/lib/hooks/useFamilies";
-import styles from "../../../app/[locale]/(dashboard)/sponsor/sponsor.module.scss";
 
 interface SponsorFamilyTabProps {
   families: FamilyWithMembers[];
@@ -20,14 +21,13 @@ export function SponsorFamilyTab({ families, sessionUserId, onLeave, onDelete, o
   const t = useTranslations();
 
   return (
-    <div className={styles.section}>
-      <h2 className={styles.sectionTitle}>{t("family.myFamily")}</h2>
+    <DashboardSection title={t("family.myFamily")}>
       {families.length === 0 ? (
-        <div className={styles.emptyState}>
-          <span className={styles.emptyIcon}><UsersIcon size={48} /></span>
-          <h3 className={styles.emptyTitle}>{t("emptyState.noFamily")}</h3>
-          <p className={styles.emptySubtext}>{t("emptyState.noFamilySponsorDesc")}</p>
-        </div>
+        <EmptyState
+          icon={<UsersIcon size={48} />}
+          title={t("emptyState.noFamily")}
+          description={t("emptyState.noFamilySponsorDesc")}
+        />
       ) : (
         families.map((family) => {
           const myMembership = family.members.find((m) => m.user_id === sessionUserId);
@@ -48,6 +48,6 @@ export function SponsorFamilyTab({ families, sessionUserId, onLeave, onDelete, o
           );
         })
       )}
-    </div>
+    </DashboardSection>
   );
 }

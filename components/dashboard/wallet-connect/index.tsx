@@ -6,7 +6,7 @@ import _QRCode from "react-qr-code";
 // CJS/ESM interop: Turbopack may resolve default import as namespace object
 const QRCode = ((_QRCode as unknown as Record<string, typeof _QRCode>).default ?? _QRCode) as typeof _QRCode;
 import { WalletIcon, BoltIcon, SendIcon, ReceiveIcon, ScanIcon } from "@/components/icons";
-import { Spinner } from "@/components/ui/spinner";
+import { BlockLoader } from "@/components/ui/block-loader";
 import { FormInput, FormButton } from "@/components/ui/form";
 import { QRScanner } from "@/components/ui/qr-scanner";
 import { useWebLN } from "@/lib/hooks/useWebLN";
@@ -291,7 +291,7 @@ export function WalletConnect() {
   }
 
   if (loading) {
-    return <Spinner size="sm" />;
+    return <div className={styles.loaderWrapper}><BlockLoader /></div>;
   }
 
   // DEBUG: minimal render — no imported components, just HTML
