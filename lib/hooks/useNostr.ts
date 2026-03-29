@@ -84,9 +84,7 @@ export function useNostr(): UseNostrReturn {
     }
     const { challenge } = challengeData.data;
 
-    // Step 2: Get pubkey and sign challenge event
-    const pubkey = await window.nostr.getPublicKey();
-
+    // Step 2: Sign challenge event (NIP-07 extension adds pubkey automatically)
     const unsignedEvent: UnsignedNostrEvent = {
       kind: 22242,
       created_at: Math.floor(Date.now() / 1000),

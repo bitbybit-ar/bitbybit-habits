@@ -55,7 +55,7 @@ export function QRScanner({ onScan, onClose }: QRScannerProps) {
   useEffect(() => {
     start();
     return () => { stop(); };
-  }, [retryKey]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [retryKey]);
 
   const handleRetry = useCallback(async () => {
     await stop();

@@ -21,9 +21,7 @@ export function getDb(): NeonDb {
   if (!dbInstance) {
     if (isLocalDb(process.env.DATABASE_URL)) {
       // Local PostgreSQL via postgres.js
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const postgres = require("postgres");
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const { drizzle } = require("drizzle-orm/postgres-js");
       const client = postgres(process.env.DATABASE_URL);
       dbInstance = drizzle(client, { schema }) as NeonDb;
