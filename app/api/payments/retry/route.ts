@@ -49,4 +49,4 @@ export const POST = apiHandler(async (request, { session, db }) => {
     .where(eq(payments.id, payment_id!));
 
   return updated[0];
-});
+}, { rateLimit: "auth" });

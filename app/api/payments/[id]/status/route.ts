@@ -66,19 +66,17 @@ export const GET = apiHandler(async (_request, { session, db, params }) => {
     const result = await Promise.race([lookupPromise, timeoutPromise]);
 
     if (result.settled_at) {
-      console.log(`[Status] Payment ${paymentId.slice(0, 8)} settled`);
-      // Update payment to paid
+      // Atomic update: only set to "paid" if still pending (prevents duplicate updates)
       await db
         .update(payments)
         .set({ status: "paid", paid_at: new Date(), payment_method: "manual" })
-        .where(eq(payments.id, paymentId));
+        .where(and(eq(payments.id, paymentId), eq(payments.status, "pending")));
 
       return { settled: true };
     }
 
     return { settled: false };
-  } catch (err) {
-    console.error(`[Status] Payment ${paymentId.slice(0, 8)} lookup error:`, err instanceof Error ? err.message : err);
+  } catch {
     // Timeout or NWC error — return false, don't crash
     return { settled: false };
   } finally {

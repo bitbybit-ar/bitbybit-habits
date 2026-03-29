@@ -122,7 +122,7 @@ export const Navbar: React.FC = () => {
       aria-label="Main navigation"
     >
       <div className={styles.container}>
-        <Link href="/" className={styles.brand} aria-label="BitByBit home">
+        <Link href="/" className={styles.brand} aria-label={t("accessibility.homeLink")}>
           BitByBit
         </Link>
 
@@ -184,7 +184,7 @@ export const Navbar: React.FC = () => {
                 menuOpen && styles.hamburgerOpen
               )}
               onClick={() => setMenuOpen(!menuOpen)}
-              aria-label={menuOpen ? "Close menu" : "Open menu"}
+              aria-label={menuOpen ? t("accessibility.closeMenu") : t("accessibility.openMenu")}
               aria-expanded={menuOpen}
             >
               <span className={styles.hamburgerLine} />

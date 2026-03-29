@@ -72,7 +72,7 @@ export function NotificationBell() {
       <button
         className={styles.bell}
         onClick={() => setOpen(!open)}
-        aria-label="Notifications"
+        aria-label={t("accessibility.notifications")}
       >
         <BellIcon size={20} />
         {unreadCount > 0 && (

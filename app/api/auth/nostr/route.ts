@@ -1,35 +1,22 @@
 import { NextResponse } from "next/server";
 import { randomBytes } from "crypto";
 import { cookies } from "next/headers";
-import { apiHandler, BadRequestError, UnauthorizedError, RateLimitError } from "@/lib/api";
+import { apiHandler, BadRequestError, UnauthorizedError } from "@/lib/api";
 import { users, familyMembers } from "@/lib/db";
 import { createSession } from "@/lib/auth";
 import { validateAuthEvent } from "@/lib/nostr";
-import { createRateLimiter } from "@/lib/rate-limit";
-import { getClientIp } from "@/lib/request";
 import { eq } from "drizzle-orm";
 import type { ApiResponse } from "@/lib/types";
 import type { NostrEvent } from "@/lib/nostr";
-
-const nostrRateLimiter = createRateLimiter(5, 15 * 60 * 1000);
-const challengeRateLimiter = createRateLimiter(30, 60 * 1000); // 30 per minute
 
 /**
  * GET /api/auth/nostr
  *
  * Issue a random challenge for NIP-42 authentication.
  * The challenge is stored in an httpOnly cookie (5 min expiry).
+ * Rate limited via apiHandler (standard: 60/min).
  */
-export async function GET(request: Request) {
-  const ip = getClientIp(request);
-  const rateLimitResult = challengeRateLimiter.check(`nostr-challenge:${ip}`);
-  if (!rateLimitResult.success) {
-    return NextResponse.json<ApiResponse>(
-      { success: false, error: "rate_limited" },
-      { status: 429 }
-    );
-  }
-
+export const GET = apiHandler(async () => {
   const challenge = randomBytes(32).toString("hex");
 
   const cookieStore = await cookies();
@@ -45,7 +32,7 @@ export async function GET(request: Request) {
     success: true,
     data: { challenge },
   });
-}
+}, { auth: false });
 
 /**
  * POST /api/auth/nostr
@@ -54,12 +41,6 @@ export async function GET(request: Request) {
  * Creates user if first-time Nostr login.
  */
 export const POST = apiHandler(async (request, { db }) => {
-  const clientIp = getClientIp(request);
-  const rateLimitResult = nostrRateLimiter.check(clientIp);
-  if (!rateLimitResult.success) {
-    throw new RateLimitError(rateLimitResult.retryAfterMs ?? 0);
-  }
-
   const cookieStore = await cookies();
   const challenge = cookieStore.get("nostr_challenge")?.value;
   if (!challenge) {
@@ -175,4 +156,4 @@ export const POST = apiHandler(async (request, { db }) => {
   });
 
   return response;
-}, { auth: false });
+}, { auth: false, rateLimit: "strict" });

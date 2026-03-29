@@ -1,7 +1,7 @@
 import { apiHandler, ForbiddenError } from "@/lib/api";
 import { users, familyMembers, families, wallets } from "@/lib/db";
 import { isAdmin } from "@/lib/admin";
-import { eq, desc, ilike, or, sql, count, and, inArray } from "drizzle-orm";
+import { eq, desc, ilike, or, count, and, inArray } from "drizzle-orm";
 
 /**
  * GET /api/admin/users
@@ -107,7 +107,7 @@ export const GET = apiHandler(async (request, { session, db }) => {
     })
     .from(familyMembers)
     .innerJoin(families, eq(families.id, familyMembers.family_id))
-    .where(sql`${familyMembers.user_id} IN ${userIds}`);
+    .where(inArray(familyMembers.user_id, userIds));
 
   // Get wallet status
   const walletRows = await db
@@ -116,7 +116,7 @@ export const GET = apiHandler(async (request, { session, db }) => {
       active: wallets.active,
     })
     .from(wallets)
-    .where(sql`${wallets.user_id} IN ${userIds}`);
+    .where(inArray(wallets.user_id, userIds));
 
   // Index memberships and wallets by user_id
   const membershipsByUser = new Map<string, typeof membershipRows>();

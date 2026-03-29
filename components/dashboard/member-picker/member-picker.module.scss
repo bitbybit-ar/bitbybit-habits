@@ -32,7 +32,7 @@
 
   .avatar {
     background: $color-primary;
-    color: var(--color-on-primary);
+    color: $color-on-primary;
   }
 }
 
@@ -60,7 +60,7 @@
   justify-content: center;
   background: $color-primary;
   border-radius: $border-radius-full;
-  color: var(--color-on-primary);
+  color: $color-on-primary;
 }
 
 .memberName {

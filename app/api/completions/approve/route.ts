@@ -15,8 +15,6 @@ export const POST = apiHandler(async (request, { session, db }) => {
 
   requireFields({ completion_id }, ["completion_id"]);
 
-  console.log(`[Approve] Approving completion ${completion_id.slice(0, 8)} (sponsor: ${session.user_id.slice(0, 8)})`);
-
   // Get the completion and verify sponsor is in the same family
   const result = await db
     .select({
@@ -55,7 +53,6 @@ export const POST = apiHandler(async (request, { session, db }) => {
       .limit(1);
 
     if (kidWallet.length === 0) {
-      console.log(`[Approve] Kid ${completion.user_id.slice(0, 8)} has no wallet (reward: ${completion.sat_reward} sats)`);
       throw new BadRequestError("kid_no_wallet");
     }
   }
@@ -81,7 +78,6 @@ export const POST = apiHandler(async (request, { session, db }) => {
     }).returning();
     paymentStatus = "pending";
     paymentId = paymentRows[0].id;
-    console.log(`[Approve] Payment created: ${paymentId.slice(0, 8)} (${completion.sat_reward} sats)`);
   }
 
   // Notify the kid
@@ -95,9 +91,9 @@ export const POST = apiHandler(async (request, { session, db }) => {
       `Your habit "${habitName}" was approved!${reward > 0 ? ` +${reward} sats` : ""}`,
       { completion_id, habit_name: habitName, reward_sats: reward }
     );
-  } catch (notifError) {
-    console.error("Error creating notification:", notifError);
+  } catch {
+    // Notification is best-effort — don't fail the approval
   }
 
   return { ...updated[0], payment_status: paymentStatus, payment_id: paymentId };
-});
+}, { rateLimit: "auth" });

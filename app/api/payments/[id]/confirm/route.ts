@@ -1,7 +1,7 @@
 import { createHash } from "crypto";
 import { apiHandler, NotFoundError, ForbiddenError, BadRequestError } from "@/lib/api";
 import { payments } from "@/lib/db";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 
 /**
  * POST /api/payments/[id]/confirm
@@ -41,7 +41,6 @@ export const POST = apiHandler(async (request, { session, db, params }) => {
 
   // Already paid — idempotent
   if (payment.status === "paid") {
-    console.log(`[Confirm] Payment ${paymentId.slice(0, 8)} already paid`);
     return { confirmed: true, already_paid: true };
   }
 
@@ -56,7 +55,8 @@ export const POST = apiHandler(async (request, { session, db, params }) => {
     }
   }
 
-  await db
+  // Atomic update: only set to "paid" if still pending (prevents double-pay race condition)
+  const updated = await db
     .update(payments)
     .set({
       status: "paid",
@@ -64,8 +64,13 @@ export const POST = apiHandler(async (request, { session, db, params }) => {
       preimage,
       payment_method: "webln",
     })
-    .where(eq(payments.id, paymentId));
+    .where(and(eq(payments.id, paymentId), eq(payments.status, "pending")))
+    .returning({ id: payments.id });
 
-  console.log(`[Confirm] Payment ${paymentId.slice(0, 8)} confirmed via WebLN`);
+  if (updated.length === 0) {
+    // Another request already confirmed — treat as idempotent
+    return { confirmed: true, already_paid: true };
+  }
+
   return { confirmed: true };
-});
+}, { rateLimit: "auth" });

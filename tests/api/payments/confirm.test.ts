@@ -19,7 +19,11 @@ vi.mock("@/lib/db", () => ({
     update: () => ({
       set: (...args: unknown[]) => {
         mockUpdateSet(...args);
-        return { where: vi.fn() };
+        return {
+          where: () => ({
+            returning: () => Promise.resolve([{ id: UUID.payment1 }]),
+          }),
+        };
       },
     }),
   }),
@@ -28,6 +32,7 @@ vi.mock("@/lib/db", () => ({
 
 vi.mock("drizzle-orm", () => ({
   eq: vi.fn(),
+  and: vi.fn(),
 }));
 
 import { POST } from "@/app/api/payments/[id]/confirm/route";

@@ -1,10 +1,6 @@
-import { apiHandler, BadRequestError, RateLimitError } from "@/lib/api";
+import { apiHandler, BadRequestError } from "@/lib/api";
 import { getDecryptedNwcUrl } from "@/app/api/wallets/route";
 import { NWCClient } from "@getalby/sdk";
-import { createRateLimiter } from "@/lib/rate-limit";
-import { getClientIp } from "@/lib/request";
-
-const sendRateLimiter = createRateLimiter(20, 60 * 1000); // 20 per minute
 
 const BOLT11_RE = /^lnbc[0-9a-zA-Z]+1[qpzry9x8gf2tvdw0s3jn54khce6mua7l]+$/i;
 
@@ -12,14 +8,9 @@ const BOLT11_RE = /^lnbc[0-9a-zA-Z]+1[qpzry9x8gf2tvdw0s3jn54khce6mua7l]+$/i;
  * POST /api/wallets/send
  *
  * Pay a BOLT11 invoice from the authenticated user's NWC wallet.
+ * Rate limited (auth: 20/min).
  */
 export const POST = apiHandler(async (request, { session, db }) => {
-  const ip = getClientIp(request);
-  const rateLimitResult = sendRateLimiter.check(`wallet-send:${session.user_id}:${ip}`);
-  if (!rateLimitResult.success) {
-    throw new RateLimitError(rateLimitResult.retryAfterMs ?? 0);
-  }
-
   const body = await request.json();
   const { invoice } = body as { invoice: string };
 
@@ -59,4 +50,4 @@ export const POST = apiHandler(async (request, { session, db }) => {
   } finally {
     client.close();
   }
-});
+}, { rateLimit: "auth" });

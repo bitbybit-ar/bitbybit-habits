@@ -1,10 +1,6 @@
-import { apiHandler, BadRequestError, RateLimitError } from "@/lib/api";
+import { apiHandler, BadRequestError } from "@/lib/api";
 import { getDecryptedNwcUrl } from "@/app/api/wallets/route";
 import { NWCClient } from "@getalby/sdk";
-import { createRateLimiter } from "@/lib/rate-limit";
-import { getClientIp } from "@/lib/request";
-
-const receiveRateLimiter = createRateLimiter(20, 60 * 1000); // 20 per minute
 
 const MAX_INVOICE_SATS = 1_000_000;
 const MAX_DESCRIPTION_LENGTH = 500;
@@ -13,14 +9,9 @@ const MAX_DESCRIPTION_LENGTH = 500;
  * POST /api/wallets/receive
  *
  * Generate a Lightning invoice from the authenticated user's NWC wallet.
+ * Rate limited (auth: 20/min).
  */
 export const POST = apiHandler(async (request, { session, db }) => {
-  const ip = getClientIp(request);
-  const rateLimitResult = receiveRateLimiter.check(`wallet-receive:${session.user_id}:${ip}`);
-  if (!rateLimitResult.success) {
-    throw new RateLimitError(rateLimitResult.retryAfterMs ?? 0);
-  }
-
   const body = await request.json();
   const { amount_sats, description } = body as {
     amount_sats: number;
@@ -65,4 +56,4 @@ export const POST = apiHandler(async (request, { session, db }) => {
   } finally {
     client.close();
   }
-});
+}, { rateLimit: "auth" });

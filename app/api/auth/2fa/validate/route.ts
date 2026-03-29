@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { apiHandler, requireFields, BadRequestError } from "@/lib/api";
 import { users, familyMembers } from "@/lib/db";
 import { createSession, verifyPassword } from "@/lib/auth";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { TOTP } from "otpauth";
 import { jwtVerify } from "jose";
 import type { ApiResponse } from "@/lib/types";
@@ -84,7 +84,12 @@ export const POST = apiHandler(async (request, { db }) => {
     isValid = true;
   } else if (user.recovery_codes) {
     // Try recovery codes
-    const recoveryCodes = JSON.parse(user.recovery_codes) as string[];
+    let recoveryCodes: string[];
+    try {
+      recoveryCodes = JSON.parse(user.recovery_codes) as string[];
+    } catch {
+      throw new BadRequestError("invalid_recovery_codes");
+    }
 
     for (let i = 0; i < recoveryCodes.length; i++) {
       const match = await verifyPassword(code, recoveryCodes[i]);
@@ -92,12 +97,18 @@ export const POST = apiHandler(async (request, { db }) => {
         isValid = true;
         isRecoveryCode = true;
 
-        // Remove used recovery code
+        // Atomically remove used recovery code to prevent reuse from concurrent requests
         recoveryCodes.splice(i, 1);
-        await db
+        const result = await db
           .update(users)
           .set({ recovery_codes: JSON.stringify(recoveryCodes) })
-          .where(eq(users.id, user.id));
+          .where(and(eq(users.id, user.id), eq(users.recovery_codes, user.recovery_codes)))
+          .returning({ id: users.id });
+
+        // If no rows updated, another request already consumed a code — reject
+        if (result.length === 0) {
+          throw new BadRequestError("invalid_code");
+        }
         break;
       }
     }

@@ -1,8 +1,6 @@
 @use "@/styles/spacing" as *;
 @use "@/styles/media-mixins" as *;
 
-$navbar-height: 60px;
-
 .container {
   max-width: $container-max-width;
   margin: 0 auto;

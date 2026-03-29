@@ -2,7 +2,7 @@ import { apiHandler, UnauthorizedError } from "@/lib/api";
 import { users } from "@/lib/db";
 import { isAdmin } from "@/lib/admin";
 import { fetchNostrMetadataServer } from "@/lib/nostr/server-metadata";
-import { eq, isNotNull, sql } from "drizzle-orm";
+import { eq, and, isNotNull } from "drizzle-orm";
 
 export const dynamic = "force-dynamic";
 
@@ -27,9 +27,7 @@ export const POST = apiHandler(async (_req, { session, db }) => {
       avatar_url: users.avatar_url,
     })
     .from(users)
-    .where(
-      sql`${users.auth_provider} = 'nostr' AND ${isNotNull(users.nostr_pubkey)}`
-    );
+    .where(and(eq(users.auth_provider, "nostr"), isNotNull(users.nostr_pubkey)));
 
   let synced = 0;
   let failed = 0;

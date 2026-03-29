@@ -2,29 +2,13 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
-import _QRCode from "react-qr-code";
-// CJS/ESM interop: Turbopack may resolve default import as namespace object
-const QRCode = ((_QRCode as unknown as Record<string, typeof _QRCode>).default ?? _QRCode) as typeof _QRCode;
+import QRCode from "react-qr-code";
 import { WalletIcon, BoltIcon, SendIcon, ReceiveIcon, ScanIcon } from "@/components/icons";
-import { BlockLoader } from "@/components/ui/block-loader";
 import { FormInput, FormButton } from "@/components/ui/form";
 import { QRScanner } from "@/components/ui/qr-scanner";
 import { useWebLN } from "@/lib/hooks/useWebLN";
 import { useToast } from "@/components/ui/toast";
 import styles from "./wallet-connect.module.scss";
-
-// DEBUG: find undefined import
-console.log("[WalletConnect imports]", {
-  QRCode: typeof QRCode,
-  WalletIcon: typeof WalletIcon,
-  BoltIcon: typeof BoltIcon,
-  SendIcon: typeof SendIcon,
-  ReceiveIcon: typeof ReceiveIcon,
-  ScanIcon: typeof ScanIcon,
-  FormInput: typeof FormInput,
-  FormButton: typeof FormButton,
-  QRScanner: typeof QRScanner,
-});
 
 interface WalletPublic {
   id: string;
@@ -39,12 +23,6 @@ type WalletView = "main" | "send" | "receive" | "settings";
 type ScanTarget = "nwc" | "invoice" | null;
 
 export function WalletConnect() {
-  // DEBUG: find the undefined import
-  const _imports = { QRCode, WalletIcon, BoltIcon, SendIcon, ReceiveIcon, ScanIcon, FormInput, FormButton, QRScanner };
-  const _undef = Object.entries(_imports).filter(([,v]) => !v).map(([k]) => k);
-  if (_undef.length) console.error("UNDEFINED IMPORTS:", _undef);
-  else console.log("All imports OK:", Object.fromEntries(Object.entries(_imports).map(([k,v]) => [k, typeof v])));
-
   const t = useTranslations();
   const { showToast } = useToast();
   const { hasExtension, extensionName } = useWebLN();
@@ -184,7 +162,6 @@ export function WalletConnect() {
         body: JSON.stringify({ invoice: finalInvoice.trim() }),
       });
       const data = await res.json();
-      console.error("[wallets/send] Response:", res.status, data);
       if (data.success) {
         showToast(t("wallet.sendSuccess"), "success");
         setSendInvoice("");
@@ -283,24 +260,272 @@ export function WalletConnect() {
 
   // ── Render ──
 
-  // DEBUG: render import status directly in UI
-  const _allImports = { QRCode, WalletIcon, BoltIcon, SendIcon, ReceiveIcon, ScanIcon, FormInput, FormButton, QRScanner } as Record<string, unknown>;
-  const _broken = Object.entries(_allImports).filter(([,v]) => !v).map(([k]) => k);
-  if (_broken.length > 0) {
-    return <div style={{color:"red",fontSize:24,padding:40}}>BROKEN IMPORTS: {_broken.join(", ")}</div>;
-  }
-
   if (loading) {
-    return <div className={styles.loaderWrapper}><BlockLoader /></div>;
+    return <p className={styles.loadingText}>{t("common.loading")}</p>;
   }
 
-  // DEBUG: minimal render — no imported components, just HTML
+  const lightningUri = generatedInvoice
+    ? `lightning:${generatedInvoice.toUpperCase()}`
+    : null;
+
   return (
-    <div style={{padding: 20, border: "2px solid lime"}}>
-      <p>WalletConnect loaded OK. All imports defined.</p>
-      <p>Wallet: {wallet ? "connected" : "not connected"}</p>
-      <p>View: {view}</p>
-    </div>
+    <>
+      {/* QR Scanner modal */}
+      {scanning && (
+        <QRScanner
+          onScan={handleScanResult}
+          onClose={() => setScanning(null)}
+        />
+      )}
+
+      {/* ── Not connected ── */}
+      {!wallet && (
+        <div className={styles.card}>
+          <div className={styles.connectHeader}>
+            <WalletIcon size={32} />
+            <h3 className={styles.connectTitle}>{t("wallet.connectWallet")}</h3>
+            <p className={styles.connectDesc}>{t("wallet.connectDesc")}</p>
+          </div>
+
+          {/* Primary action: scan NWC QR */}
+          <button
+            className={styles.scanButton}
+            onClick={() => setScanning("nwc")}
+          >
+            <ScanIcon size={20} />
+            {t("wallet.scanNwcQR")}
+          </button>
+
+          {hasExtension && (
+            <button
+              className={styles.extensionButton}
+              onClick={handleExtensionConnect}
+              disabled={saving}
+            >
+              {t("wallet.connectExtension", { name: extensionName ?? "WebLN" })}
+            </button>
+          )}
+
+          {/* Manual paste (collapsed by default) */}
+          <details className={styles.manualSection}>
+            <summary className={styles.manualToggle}>
+              {t("wallet.pasteManually")}
+            </summary>
+            <div className={styles.form}>
+              <FormInput
+                id="nwc-url"
+                label={t("wallet.nwcUrl")}
+                placeholder="nostr+walletconnect://..."
+                value={nwcUrl}
+                onChange={setNwcUrl}
+              />
+              <FormInput
+                id="nwc-label"
+                label={t("wallet.label")}
+                placeholder={t("wallet.labelPlaceholder")}
+                value={label}
+                onChange={setLabel}
+              />
+              <FormButton
+                onClick={() => handleConnect()}
+                loading={saving}
+                loadingText={t("common.loading")}
+                disabled={!nwcUrl}
+              >
+                {t("wallet.connect")}
+              </FormButton>
+            </div>
+          </details>
+        </div>
+      )}
+
+      {/* ── Connected: Main view ── */}
+      {wallet && view === "main" && (
+        <div className={styles.card}>
+          <div className={styles.statusRow}>
+            <div className={styles.statusIndicator} data-connected="true" />
+            <span className={styles.statusText}>
+              {wallet.label || t("wallet.walletConnected")}
+            </span>
+            <button className={styles.settingsButton} onClick={() => setView("settings")}>
+              {t("wallet.settings")}
+            </button>
+          </div>
+
+          <div className={styles.balanceSection}>
+            <div className={styles.balanceIcon}><BoltIcon size={24} /></div>
+            <div className={styles.balanceInfo}>
+              {balanceLoading ? (
+                <span className={styles.balanceValue}>...</span>
+              ) : balance !== null ? (
+                <span className={styles.balanceValue}>{balance.toLocaleString()}</span>
+              ) : (
+                <span className={styles.balanceValue}>--</span>
+              )}
+              <span className={styles.balanceLabel}>{t("sats.sats")}</span>
+            </div>
+            <button className={styles.refreshButton} onClick={fetchBalance} disabled={balanceLoading}>
+              ↻
+            </button>
+          </div>
+
+          <div className={styles.actions}>
+            <button className={styles.actionButton} data-variant="send" onClick={() => setView("send")}>
+              <SendIcon size={20} />
+              <span>{t("wallet.send")}</span>
+            </button>
+            <button className={styles.actionButton} data-variant="receive" onClick={() => setView("receive")}>
+              <ReceiveIcon size={20} />
+              <span>{t("wallet.receive")}</span>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ── Send view ── */}
+      {wallet && view === "send" && (
+        <div className={styles.card}>
+          <div className={styles.viewHeader}>
+            <button className={styles.backButton} onClick={() => { setView("main"); setSendInvoice(""); }}>
+              &larr;
+            </button>
+            <h3 className={styles.viewTitle}>{t("wallet.send")}</h3>
+          </div>
+
+          <button
+            className={styles.scanButton}
+            onClick={() => setScanning("invoice")}
+          >
+            <ScanIcon size={20} />
+            {t("wallet.scanInvoiceQR")}
+          </button>
+
+          <div className={styles.divider}>
+            <span>{t("wallet.or")}</span>
+          </div>
+
+          <div className={styles.form}>
+            <FormInput
+              id="send-invoice"
+              label={t("wallet.invoiceToPay")}
+              placeholder="lnbc..."
+              value={sendInvoice}
+              onChange={setSendInvoice}
+            />
+            <FormButton
+              onClick={() => handleSend()}
+              loading={sending}
+              loadingText={t("wallet.sending")}
+              disabled={!sendInvoice.trim()}
+            >
+              <SendIcon size={16} />
+              {t("wallet.payInvoice")}
+            </FormButton>
+          </div>
+        </div>
+      )}
+
+      {/* ── Receive view ── */}
+      {wallet && view === "receive" && (
+        <div className={styles.card}>
+          <div className={styles.viewHeader}>
+            <button className={styles.backButton} onClick={resetReceive}>
+              &larr;
+            </button>
+            <h3 className={styles.viewTitle}>{t("wallet.receive")}</h3>
+          </div>
+
+          {generatedInvoice && lightningUri ? (
+            <div className={styles.invoiceResult}>
+              <div className={styles.qrContainer}>
+                <QRCode
+                  value={lightningUri}
+                  size={200}
+                  bgColor="transparent"
+                  fgColor="var(--qr-color, #F0E6D8)"
+                  level="M"
+                />
+              </div>
+
+              <a href={lightningUri} className={styles.walletLink}>
+                {t("invoiceModal.openInWallet")}
+              </a>
+
+              <button className={styles.copyButton} onClick={handleCopyInvoice}>
+                {invoiceCopied ? t("invoiceModal.copied") : t("invoiceModal.copyInvoice")}
+              </button>
+
+              <button className={styles.secondaryButton} onClick={resetReceive}>
+                {t("wallet.newInvoice")}
+              </button>
+            </div>
+          ) : (
+            <div className={styles.form}>
+              <FormInput
+                id="receive-amount"
+                label={t("wallet.amountSats")}
+                placeholder="100"
+                type="number"
+                value={receiveAmount}
+                onChange={setReceiveAmount}
+              />
+              <FormInput
+                id="receive-desc"
+                label={t("wallet.description")}
+                placeholder={t("wallet.descriptionPlaceholder")}
+                value={receiveDesc}
+                onChange={setReceiveDesc}
+              />
+              <FormButton
+                onClick={handleReceive}
+                loading={receiving}
+                loadingText={t("common.loading")}
+                disabled={!receiveAmount || parseInt(receiveAmount, 10) <= 0}
+              >
+                <ReceiveIcon size={16} />
+                {t("wallet.generateInvoice")}
+              </FormButton>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── Settings view ── */}
+      {wallet && view === "settings" && (
+        <div className={styles.card}>
+          <div className={styles.viewHeader}>
+            <button className={styles.backButton} onClick={() => setView("main")}>
+              &larr;
+            </button>
+            <h3 className={styles.viewTitle}>{t("wallet.settings")}</h3>
+          </div>
+
+          <div className={styles.settingsSection}>
+            <div className={styles.settingsRow}>
+              <span className={styles.settingsLabel}>{t("wallet.connection")}</span>
+              <span className={styles.badge}>NWC</span>
+            </div>
+            {wallet.label && (
+              <div className={styles.settingsRow}>
+                <span className={styles.settingsLabel}>{t("wallet.walletLabel")}</span>
+                <span className={styles.settingsValue}>{wallet.label}</span>
+              </div>
+            )}
+          </div>
+
+          <div className={styles.settingsActions}>
+            <button className={styles.changeWalletButton} onClick={() => {
+              handleDisconnect();
+            }}>
+              {t("wallet.changeWallet")}
+            </button>
+            <button className={styles.disconnectButton} onClick={handleDisconnect}>
+              {t("wallet.disconnect")}
+            </button>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 

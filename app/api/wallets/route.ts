@@ -31,8 +31,7 @@ export const GET = apiHandler(async (_req, { session, db }) => {
     .where(and(eq(wallets.user_id, session.user_id), eq(wallets.active, true)))
     .limit(1);
 
-  if (!result[0]) return null;
-  return toPublic(result[0]);
+  return result[0] ? toPublic(result[0]) : null;
 });
 
 export const POST = apiHandler(async (request, { session, db }) => {

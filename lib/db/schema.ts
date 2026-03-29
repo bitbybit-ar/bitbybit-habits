@@ -126,6 +126,8 @@ export const payments = pgTable("payments", {
 }, (t) => [
   index("idx_payments_completion").on(t.completion_id),
   index("idx_payments_status").on(t.status),
+  index("idx_payments_from_user").on(t.from_user_id),
+  index("idx_payments_to_user").on(t.to_user_id),
 ]);
 
 // ============================================================

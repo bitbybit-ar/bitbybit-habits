@@ -61,7 +61,7 @@ $tabbar-height: 52px;
   justify-content: center;
   font-size: $font-size-xl;
   font-weight: $font-weight-bold;
-  color: var(--color-on-gradient);
+  color: $color-on-gradient;
   flex-shrink: 0;
 }
 
