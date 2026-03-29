@@ -12,7 +12,9 @@ import { Onboarding } from "@/components/dashboard/onboarding";
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 import type { DashboardTab } from "@/components/dashboard/dashboard-layout";
 import { useToast } from "@/components/ui/toast";
-import { DashboardSkeleton } from "@/components/ui/skeleton";
+import { Container } from "@/components/ui/container";
+import { BlockLoader } from "@/components/ui/block-loader";
+import { Spinner } from "@/components/ui/spinner";
 import { FormInput, FormButton } from "@/components/ui/form";
 import { useSession } from "@/lib/hooks/useSession";
 import { useHabits } from "@/lib/hooks/useHabits";
@@ -131,7 +133,7 @@ export default function KidDashboard() {
     }
   }, [showToast, t, completions, stats]);
 
-  if (isLoading) return <DashboardSkeleton />;
+  if (isLoading) return <Container center><BlockLoader /></Container>;
 
   const displayName = session.data?.display_name ?? session.data?.username ?? "Kid";
   const level = Math.floor(stats.data.totalSats / 100) + 1;
@@ -233,7 +235,7 @@ export default function KidDashboard() {
         <>
           <h2 className={styles.sectionTitle}>{t("kidDashboard.earnings")}</h2>
           {kidPayments.isLoading ? (
-            <p className={styles.loadingText}>{t("common.loading")}</p>
+            <Spinner size="sm" />
           ) : kidPayments.data.length === 0 ? (
             <div className={styles.emptyState}>
               <span className={styles.emptyIcon}><BoltIcon size={48} /></span>

@@ -2,6 +2,7 @@
 @use "./typography" as *;
 @use "./spacing" as *;
 @use "./media-mixins" as *;
+@use "./glass" as *;
 @use "./theme";
 
 *, *::before, *::after {
@@ -25,6 +26,7 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
   padding-left: env(safe-area-inset-left);
   padding-right: env(safe-area-inset-right);
+  @include glass-background-orbs;
 }
 
 // iOS auto-zoom prevention: inputs below 16px trigger zoom on focus
