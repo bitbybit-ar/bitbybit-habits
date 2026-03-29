@@ -2,7 +2,7 @@
 // SCSS variables that alias CSS custom properties from _theme.scss.
 // Components use these $color-* variables — they resolve at runtime per theme.
 //
-// For transparency: use alpha($color, opacity) instead of rgba().
+// For transparency: use alpha($color, amount) instead of rgba().
 // Example: background: alpha($color-primary, 15%);
 // Outputs: background: color-mix(in srgb, var(--color-primary) 15%, transparent);
 
@@ -10,7 +10,7 @@
 /// @param {String} $color - A CSS var reference (e.g. $color-primary)
 /// @param {Number} $amount - Percentage (e.g. 15%)
 @function alpha($color, $amount) {
-  @return unquote('color-mix(in srgb, #{$color} #{$amount}, transparent)');
+  @return #{color-mix(in srgb, $color $amount, transparent)};
 }
 
 // Primary — Sats Gold

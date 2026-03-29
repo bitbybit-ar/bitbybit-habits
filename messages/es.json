@@ -103,6 +103,7 @@
     "emailPlaceholder": "email@ejemplo.com"
   },
   "dashboard": {
+    "title": "Panel",
     "welcome": "Bienvenido/a",
     "myHabits": "Mis hábitos",
     "pendingApproval": "Pendientes de aprobación",
