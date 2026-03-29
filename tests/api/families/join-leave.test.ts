@@ -49,18 +49,29 @@ describe("POST /api/families/join", () => {
     expect(status).toBe(400);
   });
 
+  it("returns 409 when user already has a family", async () => {
+    await setSessionCookie(testSession);
+    selectResults.push([{ id: "existing-membership" }]); // already in a family
+    const req = createRequest("POST", "/api/families/join", { invite_code: "ABC123" });
+    const { status, body } = await parseResponse(await join(req));
+    expect(status).toBe(409);
+    expect(body.error).toBe("already_has_family");
+  });
+
   it("returns 404 for invalid invite code", async () => {
     await setSessionCookie(testSession);
+    selectResults.push([]); // no existing membership
     selectResults.push([]); // family not found
     const req = createRequest("POST", "/api/families/join", { invite_code: "BADCODE" });
     const { status } = await parseResponse(await join(req));
     expect(status).toBe(404);
   });
 
-  it("returns 409 when already a member", async () => {
+  it("returns 409 when already a member of that family", async () => {
     await setSessionCookie(testSession);
+    selectResults.push([]); // no existing membership (single-family check)
     selectResults.push([{ id: UUID.family1 }]); // family found
-    selectResults.push([{ id: "existing" }]); // already member
+    selectResults.push([{ id: "existing" }]); // already member of this family
     const req = createRequest("POST", "/api/families/join", { invite_code: "ABC123" });
     const { status } = await parseResponse(await join(req));
     expect(status).toBe(409);
@@ -68,7 +79,8 @@ describe("POST /api/families/join", () => {
 
   it("joins family as kid by default", async () => {
     await setSessionCookie(testSession);
-    selectResults.push([{ id: UUID.family1, name: "Fam" }]); // family
+    selectResults.push([]); // no existing membership (single-family check)
+    selectResults.push([{ id: UUID.family1, name: "Fam" }]); // family found
     selectResults.push([]); // not a member yet
     mockInsertReturning.mockResolvedValue([{ family_id: UUID.family1, role: "kid" }]);
 

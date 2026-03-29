@@ -270,10 +270,11 @@ export default function SponsorDashboard() {
     if (ok) showToast(t("family.deleteSuccess"), "info");
   }, [families, showToast, t]);
 
-  const handleRoleChange = useCallback(async (familyId: string, userId: string, newRole: string) => {
-    const ok = await families.changeRole(familyId, userId, newRole);
-    if (ok) showToast(t("family.roleChanged"), "success");
-  }, [families, showToast, t]);
+  // ROADMAP: Multi-sponsor support (commented for MVP single-sponsor mode)
+  // const handleRoleChange = useCallback(async (familyId: string, userId: string, newRole: string) => {
+  //   const ok = await families.changeRole(familyId, userId, newRole);
+  //   if (ok) showToast(t("family.roleChanged"), "success");
+  // }, [families, showToast, t]);
 
   const handleRemoveMember = useCallback(async (familyId: string, userId: string) => {
     const ok = await families.removeMember(familyId, userId);
@@ -283,11 +284,20 @@ export default function SponsorDashboard() {
   if (isLoading) return <DashboardSkeleton />;
 
   const displayName = session.data?.display_name ?? session.data?.username ?? "Sponsor";
-  const allKids = families.data.flatMap((f) =>
-    f.members.filter((m) => m.role === "kid").map((m) => ({ user_id: m.user_id, display_name: m.display_name || m.username }))
-  );
-  const uniqueKids = allKids.filter((kid, i, self) => self.findIndex((k) => k.user_id === kid.user_id) === i);
-  const familyOptions = families.data.map((f) => ({ id: f.id, name: f.name }));
+
+  // MVP: Single-family mode
+  const family = families.data[0] ?? null;
+  const allKids = family
+    ? family.members.filter((m) => m.role === "kid").map((m) => ({ user_id: m.user_id, display_name: m.display_name || m.username }))
+    : [];
+  const familyId = family?.id ?? "";
+
+  // ROADMAP: Multi-family support (commented for MVP single-family mode)
+  // const allKids = families.data.flatMap((f) =>
+  //   f.members.filter((m) => m.role === "kid").map((m) => ({ user_id: m.user_id, display_name: m.display_name || m.username }))
+  // );
+  // const uniqueKids = allKids.filter((kid, i, self) => self.findIndex((k) => k.user_id === kid.user_id) === i);
+  // const familyOptions = families.data.map((f) => ({ id: f.id, name: f.name }));
 
   const tabs: DashboardTab[] = [
     { key: "byHabit", icon: <ListIcon size={20} />, label: t("sponsorDashboard.byHabit") },
@@ -334,11 +344,11 @@ export default function SponsorDashboard() {
       {activeTab === "create" && (
         <div className={styles.section}>
           <h2 className={styles.sectionTitle}>{t("habits.createHabit")}</h2>
-          <CreateHabitForm families={familyOptions} kids={uniqueKids} onSubmit={handleCreateHabit} />
+          <CreateHabitForm familyId={familyId} kids={allKids} onSubmit={handleCreateHabit} />
         </div>
       )}
       {activeTab === "family" && (
-        <SponsorFamilyTab families={families.data} sessionUserId={session.data?.user_id ?? ""} onLeave={handleLeaveFamily} onDelete={handleDeleteFamily} onRoleChange={handleRoleChange} onRemoveMember={handleRemoveMember} />
+        <SponsorFamilyTab families={families.data} sessionUserId={session.data?.user_id ?? ""} onLeave={handleLeaveFamily} onDelete={handleDeleteFamily} onRemoveMember={handleRemoveMember} />
       )}
       {activeTab === "payments" && (
         <SponsorPaymentsTab payments={payments.data} isLoading={payments.isLoading} onRetry={handleRetryPayment} />
