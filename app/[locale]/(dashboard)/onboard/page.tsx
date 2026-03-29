@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import Navbar from "@/components/layout/navbar";
 import { FormInput, FormButton } from "@/components/ui/form";
 import { resolveApiError } from "@/lib/error-messages";
 import styles from "./onboard.module.scss";
@@ -157,7 +156,6 @@ export default function OnboardPage() {
 
   return (
     <>
-      <Navbar />
       <div className={styles.page}>
         {step === "role" && (
           <>
