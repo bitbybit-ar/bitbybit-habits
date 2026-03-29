@@ -4,6 +4,8 @@ import { useState, useEffect, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import AuthCard from "@/components/auth/AuthCard";
+import { Container } from "@/components/ui/container";
+import { BlockLoader } from "@/components/ui/block-loader";
 import { FormInput, FormSelect, FormButton } from "@/components/ui/form";
 import { useFormValidation } from "@/lib/hooks/useFormValidation";
 import { useNostr } from "@/lib/hooks/useNostr";
@@ -248,11 +250,7 @@ export default function SettingsPage() {
   };
 
   if (loading) {
-    return (
-      <div className={styles.loadingContainer}>
-        <p className={styles.loadingText}>{t("common.loading")}</p>
-      </div>
-    );
+    return <Container center><BlockLoader /></Container>;
   }
 
   const dn = form.fieldProps("display_name");

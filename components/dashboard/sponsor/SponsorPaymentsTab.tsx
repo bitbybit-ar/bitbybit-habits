@@ -2,6 +2,7 @@
 
 import { useTranslations, useLocale } from "next-intl";
 import { BoltIcon } from "@/components/icons";
+import { Spinner } from "@/components/ui/spinner";
 import { formatDisplayDate } from "@/lib/date";
 import type { PaymentWithDetails } from "@/lib/types";
 import styles from "../../../app/[locale]/(dashboard)/sponsor/sponsor.module.scss";
@@ -26,7 +27,7 @@ export function SponsorPaymentsTab({ payments, isLoading, onRetry }: SponsorPaym
     <div className={styles.section}>
       <h2 className={styles.sectionTitle}>{t("payments.title")}</h2>
       {isLoading ? (
-        <p className={styles.loadingText}>{t("common.loading")}</p>
+        <Spinner size="sm" />
       ) : payments.length === 0 ? (
         <div className={styles.emptyState}>
           <span className={styles.emptyIcon}><BoltIcon size={48} /></span>

@@ -4,6 +4,7 @@ import { useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { useApi } from "@/lib/hooks/useApi";
 import { ShieldIcon, BoltIcon, UsersIcon } from "@/components/icons";
+import { Spinner } from "@/components/ui/spinner";
 import styles from "./admin-users-table.module.scss";
 
 interface AdminUser {
@@ -189,7 +190,7 @@ export function AdminUsersTable() {
 
       {/* Users table */}
       {usersLoading ? (
-        <div className={styles.loadingState}>{t("loading")}</div>
+        <Spinner size="sm" />
       ) : !usersData?.users.length ? (
         <div className={styles.emptyState}>{t("noUsers")}</div>
       ) : (

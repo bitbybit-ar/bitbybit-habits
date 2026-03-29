@@ -15,16 +15,3 @@ export function Spinner({ size = "md", className }: SpinnerProps) {
     </div>
   );
 }
-
-export function PageSpinner({ message }: { message?: string }) {
-  return (
-    <div className={styles.pageSpinner}>
-      <div className={styles.glassCard}>
-        <Spinner size="lg" />
-        {message && <p className={styles.message}>{message}</p>}
-      </div>
-    </div>
-  );
-}
-
-export default Spinner;

@@ -4,6 +4,7 @@ import React from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
 import { BoltIcon, CheckIcon, FlameIcon, NostrichIcon } from "@/components/icons";
+import { Container } from "@/components/ui/container";
 import { cn } from "@/lib/utils";
 import styles from "./auth-card.module.scss";
 
@@ -41,8 +42,8 @@ export function AuthCard({
   const t = useTranslations();
 
   return (
-    <div className={styles.container}>
-      <div className={styles.wrapper}>
+    <Container center>
+      <div className={cn(styles.wrapper, variant === "register" && styles.wrapperWide)}>
         {/* Floating decorative icons */}
         <div className={styles.floatingIcons} aria-hidden="true">
           <div className={cn(styles.floatingIcon, styles.iconBolt)}>
@@ -112,7 +113,7 @@ export function AuthCard({
           </div>
         </div>
       </div>
-    </div>
+    </Container>
   );
 }
 

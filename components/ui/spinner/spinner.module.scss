@@ -1,8 +1,3 @@
-@use "@/styles/colors" as *;
-@use "@/styles/spacing" as *;
-@use "@/styles/typography" as *;
-@use "@/styles/glass" as *;
-
 // --- Stacking blocks animation (BitByBit brand) ---
 
 @keyframes stackUp {
@@ -57,29 +52,4 @@
     height: 10px;
     border-radius: 3px;
   }
-}
-
-// --- Page-level spinner ---
-
-.pageSpinner {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 60vh;
-  padding: $spacing-24;
-}
-
-.glassCard {
-  @include glass-card;
-  padding: $spacing-40 $spacing-48;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: $spacing-20;
-}
-
-.message {
-  color: var(--color-text-secondary);
-  font-size: $font-size-sm;
-  margin: 0;
 }
