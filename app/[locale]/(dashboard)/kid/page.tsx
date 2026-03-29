@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useLocale } from "next-intl";
 import { BoltIcon, FlameIcon, ListIcon, UsersIcon, WalletIcon } from "@/components/icons";
@@ -31,6 +32,7 @@ type TabType = "habits" | "family" | "earnings" | "wallet";
 export default function KidDashboard() {
   const t = useTranslations();
   const locale = useLocale();
+  const router = useRouter();
   const { showToast } = useToast();
   const [activeTab, setActiveTab] = useState<TabType>("habits");
   const [joinCode, setJoinCode] = useState("");
@@ -134,6 +136,11 @@ export default function KidDashboard() {
   }, [showToast, t, completions, stats]);
 
   if (isLoading) return <Container center><BlockLoader /></Container>;
+
+  if (session.data?.role === "sponsor") {
+    router.replace("/sponsor");
+    return <Container center><BlockLoader /></Container>;
+  }
 
   const displayName = session.data?.display_name ?? session.data?.username ?? "Kid";
   const level = Math.floor(stats.data.totalSats / 100) + 1;

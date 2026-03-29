@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { Navbar } from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
+import { getSession } from "@/lib/auth";
 import { SwRegister } from "@/components/sw-register";
 import { ToastProvider } from "@/components/ui/toast";
 import { ThemeProvider } from "@/lib/theme-context";
@@ -86,6 +87,7 @@ export default async function LocaleLayout({
   }
 
   const messages = await getMessages();
+  const session = await getSession();
 
   return (
     <html lang={locale} suppressHydrationWarning>
@@ -118,7 +120,11 @@ export default async function LocaleLayout({
                   ? (messages.accessibility as Record<string, string>).skipToContent
                   : "Skip to content"}
               </a>
-              <Navbar />
+              <Navbar user={session ? {
+                user_id: session.user_id,
+                display_name: session.display_name,
+                role: session.role,
+              } : undefined} />
               <SwRegister />
               <main id="main-content">{children}</main>
               <Footer />

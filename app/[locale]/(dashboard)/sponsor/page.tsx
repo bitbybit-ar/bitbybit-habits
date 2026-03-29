@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { BoltIcon, ListIcon, PlusIcon, UsersIcon, WalletIcon, UserIcon } from "@/components/icons";
 import { SummaryBar } from "@/components/dashboard/summary-bar";
@@ -29,6 +30,7 @@ type TabType = "byHabit" | "byKid" | "create" | "family" | "payments" | "wallet"
 
 export default function SponsorDashboard() {
   const t = useTranslations();
+  const router = useRouter();
   const { showToast } = useToast();
   const { hasExtension: hasWebLN, sendPayment: weblnSendPayment, extensionName } = useWebLN();
   const [activeTab, setActiveTab] = useState<TabType>("byHabit");
@@ -249,6 +251,11 @@ export default function SponsorDashboard() {
   }, [families, showToast, t]);
 
   if (isLoading) return <Container center><BlockLoader /></Container>;
+
+  if (session.data?.role === "kid") {
+    router.replace("/kid");
+    return <Container center><BlockLoader /></Container>;
+  }
 
   const displayName = session.data?.display_name ?? session.data?.username ?? "Sponsor";
   const allKids = families.data.flatMap((f) =>
