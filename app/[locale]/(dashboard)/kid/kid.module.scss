@@ -28,7 +28,7 @@
   z-index: 9999;
   font-size: clamp(1.5rem, 5vw, 2.5rem);
   font-weight: $font-weight-extrabold;
-  color: var(--color-primary);
+  color: $color-primary;
   text-shadow: 0 2px 12px alpha($color-primary, 50%);
   pointer-events: none;
   animation: floatUp 2s ease-out forwards;
@@ -41,7 +41,7 @@
   padding: $spacing-4 $spacing-12;
   border-radius: $border-radius-full;
   background: alpha($color-primary, 15%);
-  color: var(--color-primary);
+  color: $color-primary;
   font-size: $font-size-xs;
   font-weight: $font-weight-bold;
   white-space: nowrap;
@@ -67,7 +67,7 @@
   height: 56px;
   border-radius: $border-radius-md;
   background: alpha($color-primary, 15%);
-  color: var(--color-primary);
+  color: $color-primary;
   flex-shrink: 0;
 }
 
@@ -81,13 +81,13 @@
 .heroSatsValue {
   font-size: clamp(2rem, 5vw, 3rem);
   font-weight: $font-weight-extrabold;
-  color: var(--color-primary);
+  color: $color-primary;
   line-height: 1;
 }
 
 .heroSatsLabel {
   font-size: $font-size-sm;
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -99,7 +99,7 @@
   padding: $spacing-8 $spacing-16;
   background: alpha($color-warning, 12%);
   border-radius: $border-radius-full;
-  color: var(--color-warning);
+  color: $color-warning;
   font-size: $font-size-lg;
   font-weight: $font-weight-bold;
   flex-shrink: 0;
@@ -114,7 +114,7 @@
 .joinTitle {
   font-size: $font-size-base;
   font-weight: $font-weight-semibold;
-  color: var(--color-text-primary);
+  color: $color-text-primary;
   margin: 0 0 $spacing-16;
 }
 
@@ -156,12 +156,12 @@
 
 .earningsHabit {
   font-weight: $font-weight-semibold;
-  color: var(--color-text-primary);
+  color: $color-text-primary;
 }
 
 .earningsDate {
   font-size: $font-size-xs;
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
 }
 
 .earningsAmount {
@@ -169,7 +169,7 @@
   align-items: center;
   gap: $spacing-8;
   font-weight: $font-weight-bold;
-  color: var(--color-primary);
+  color: $color-primary;
 }
 
 .earningsStatus {

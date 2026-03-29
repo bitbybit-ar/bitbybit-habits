@@ -18,13 +18,13 @@
 .title {
   font-size: $font-size-lg;
   font-weight: $font-weight-bold;
-  color: var(--color-text-primary);
+  color: $color-text-primary;
   margin: 0 0 $spacing-8;
 }
 
 .description {
   font-size: $font-size-sm;
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
   margin: 0 0 $spacing-24;
   max-width: 320px;
 }

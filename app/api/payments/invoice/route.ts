@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { apiHandler, BadRequestError, ForbiddenError } from "@/lib/api";
-import { completions, habits, payments, wallets } from "@/lib/db";
+import { completions, habits, payments, wallets, familyMembers } from "@/lib/db";
 import { decrypt } from "@/lib/crypto";
 import { eq, and } from "drizzle-orm";
 import { NWCClient } from "@getalby/sdk";
@@ -29,15 +29,26 @@ export const POST = apiHandler(async (request, { session, db }) => {
     throw new BadRequestError("missing_fields");
   }
 
-  // Look up the completion to find the kid
+  // Look up the completion and verify sponsor is in the same family
   const completionRows = await db
     .select({
       id: completions.id,
       user_id: completions.user_id,
       habit_id: completions.habit_id,
+      habit_name: habits.name,
     })
     .from(completions)
-    .where(eq(completions.id, completion_id))
+    .innerJoin(habits, eq(habits.id, completions.habit_id))
+    .innerJoin(
+      familyMembers,
+      and(
+        eq(familyMembers.family_id, habits.family_id),
+        eq(familyMembers.user_id, session.user_id)
+      )
+    )
+    .where(
+      and(eq(completions.id, completion_id), eq(familyMembers.role, "sponsor"))
+    )
     .limit(1);
 
   if (!completionRows[0]) {
@@ -46,15 +57,7 @@ export const POST = apiHandler(async (request, { session, db }) => {
 
   const completion = completionRows[0];
   const kidUserId = completion.user_id;
-
-  // Get habit name for the invoice description
-  const habitRows = await db
-    .select({ name: habits.name })
-    .from(habits)
-    .where(eq(habits.id, completion.habit_id))
-    .limit(1);
-
-  const habitName = habitRows[0]?.name ?? "Habit";
+  const habitName = completion.habit_name ?? "Habit";
 
   // Look up kid's active wallet
   const walletRows = await db

@@ -49,7 +49,7 @@
 .habitName {
   font-size: $font-size-base;
   font-weight: $font-weight-semibold;
-  color: var(--color-text-primary);
+  color: $color-text-primary;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -60,7 +60,7 @@
   align-items: center;
   gap: 4px;
   background: alpha($color-primary, 15%);
-  color: var(--color-primary);
+  color: $color-primary;
   padding: 2px $spacing-8;
   border-radius: $border-radius-full;
   font-size: $font-size-xs;
@@ -77,12 +77,12 @@
 }
 
 .kidName {
-  color: var(--color-secondary);
+  color: $color-secondary;
   font-weight: $font-weight-medium;
 }
 
 .date {
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
 }
 
 .actions {
@@ -140,7 +140,7 @@
   cursor: pointer;
   transition: transform 0.2s, background 0.2s, border-color 0.2s;
   background: transparent;
-  color: var(--color-error);
+  color: $color-error;
 
   @include mobile {
     flex: 1;
@@ -148,7 +148,7 @@
 
   &:hover {
     background: alpha($color-error, 10%);
-    border-color: var(--color-error);
+    border-color: $color-error;
   }
 
   &:disabled {
@@ -162,7 +162,7 @@
   text-align: center;
   padding: $spacing-40 $spacing-24;
   @include glass-subtle;
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -170,7 +170,7 @@
 }
 
 .emptyText {
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
   font-size: $font-size-sm;
   margin: 0;
 }

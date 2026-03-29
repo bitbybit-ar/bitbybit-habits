@@ -19,7 +19,7 @@
 
 .label {
   font-size: $font-size-sm;
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
   font-weight: $font-weight-medium;
 }
 
@@ -32,7 +32,7 @@
 .input {
   padding: $spacing-12 $spacing-16;
   border-radius: $border-radius-md;
-  color: var(--color-text-primary);
+  color: $color-text-primary;
   font-size: $font-size-base;
   font-family: $font-family-base;
   width: 100%;
@@ -42,7 +42,7 @@
   @include transition;
 
   &::placeholder {
-    color: var(--color-text-secondary);
+    color: $color-text-secondary;
     opacity: 0.4;
   }
 
@@ -87,8 +87,8 @@
   padding-right: $spacing-40;
 
   option {
-    background: var(--color-bg-3);
-    color: var(--color-text-primary);
+    background: $color-bg-3;
+    color: $color-text-primary;
   }
 }
 
@@ -146,7 +146,7 @@
 .forgotLink {
   background: none;
   border: none;
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
   font-size: $font-size-xs;
   font-family: $font-family-base;
   cursor: pointer;
@@ -158,7 +158,7 @@
   @include transition;
 
   &:hover {
-    color: var(--color-primary);
+    color: $color-primary;
   }
 }
 
@@ -211,8 +211,8 @@
 .outlineButton {
   composes: submitButton;
   background: transparent;
-  border: 1px solid var(--color-primary);
-  color: var(--color-primary);
+  border: 1px solid $color-primary;
+  color: $color-primary;
 
   &:hover:not(:disabled) {
     background: alpha($color-primary, 8%);

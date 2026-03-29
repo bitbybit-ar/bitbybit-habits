@@ -21,7 +21,7 @@
 .label {
   font-size: $font-size-sm;
   font-weight: $font-weight-semibold;
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -34,17 +34,17 @@
   border-radius: $border-radius-md;
   padding: $spacing-12 $spacing-16;
   font-size: $font-size-base;
-  color: var(--color-text-primary);
+  color: $color-text-primary;
   font-family: $font-family-base;
   outline: none;
   transition: border-color 0.2s ease;
 
   &:focus {
-    border-color: var(--color-primary);
+    border-color: $color-primary;
   }
 
   &::placeholder {
-    color: var(--color-text-secondary);
+    color: $color-text-secondary;
     opacity: 0.5;
   }
 }
@@ -63,8 +63,8 @@
   padding-right: $spacing-40;
 
   option {
-    background: var(--color-bg-3);
-    color: var(--color-text-primary);
+    background: $color-bg-3;
+    color: $color-text-primary;
   }
 }
 
@@ -89,7 +89,7 @@
 }
 
 .colorSelected {
-  border-color: var(--color-text-primary);
+  border-color: $color-text-primary;
   box-shadow: 0 0 0 2px rgba(var(--glass-color), 0.2);
   transform: scale(1.15);
 }
@@ -106,7 +106,7 @@
   gap: $spacing-4;
   cursor: pointer;
   padding: $spacing-8 $spacing-12;
-  background: var(--color-bg-3);
+  background: $color-bg-3;
   border-radius: $border-radius-md;
   border: 1px solid rgba(var(--glass-color), 0.1);
   transition: background 0.2s, border-color 0.2s;
@@ -118,36 +118,36 @@
 }
 
 .checkbox {
-  accent-color: var(--color-primary);
+  accent-color: $color-primary;
   cursor: pointer;
 }
 
 .dayLabel {
   font-size: $font-size-sm;
-  color: var(--color-text-primary);
+  color: $color-text-primary;
   font-weight: $font-weight-medium;
 }
 
 .required {
-  color: var(--color-accent);
+  color: $color-accent;
   margin-left: $spacing-4;
   font-weight: $font-weight-bold;
 }
 
 .fieldError {
   .label {
-    color: var(--color-accent);
+    color: $color-accent;
   }
 }
 
 .inputError {
-  border-color: var(--color-accent) !important;
+  border-color: $color-accent !important;
   box-shadow: 0 0 0 1px alpha($color-accent, 30%);
 }
 
 .errorText {
   font-size: $font-size-xs;
-  color: var(--color-accent);
+  color: $color-accent;
   margin-top: $spacing-4;
 }
 
@@ -163,7 +163,7 @@
   font-weight: $font-weight-bold;
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
-  background: var(--gradient-primary-bg);
+  background: $gradient-primary;
   color: white;
   margin-top: $spacing-8;
 

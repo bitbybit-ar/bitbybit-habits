@@ -6,7 +6,7 @@
 
 .demoPage {
   min-height: 100vh;
-  color: var(--color-text-primary);
+  color: $color-text-primary;
   padding: $spacing-32 $spacing-24;
   padding-top: calc(60px + #{$spacing-32});
   max-width: $container-max-width;
@@ -36,7 +36,7 @@
   position: absolute;
   right: 0;
   top: 0;
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
   text-decoration: none;
   font-size: $font-size-sm;
   padding: $spacing-8 $spacing-12;
@@ -44,7 +44,7 @@
   transition: color 0.2s, background 0.2s;
 
   &:hover {
-    color: var(--color-text-primary);
+    color: $color-text-primary;
     background: rgba(var(--glass-color), 0.1);
   }
 
@@ -82,7 +82,7 @@
 }
 
 .subtitle {
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
   font-size: $font-size-md;
   line-height: $line-height-base;
   max-width: 600px;
@@ -182,7 +182,7 @@
 .flipBack {
   transform: rotateY(180deg);
   border-radius: $border-radius-lg;
-  background: var(--color-bg-2);
+  background: $color-bg-2;
 
   @include mobile {
     display: none;
@@ -230,7 +230,7 @@
 .roleName {
   font-size: $font-size-lg;
   font-weight: $font-weight-bold;
-  color: var(--color-text-primary);
+  color: $color-text-primary;
   margin: 0 0 $spacing-8;
 
   @include mobile {
@@ -240,7 +240,7 @@
 }
 
 .roleDesc {
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
   font-size: $font-size-sm;
   line-height: $line-height-base;
   margin-bottom: $spacing-20;
@@ -255,7 +255,7 @@
   display: inline-flex;
   align-items: center;
   gap: $spacing-8;
-  background: var(--gradient-primary-bg);
+  background: $gradient-primary;
   color: var(--color-on-gradient);
   font-size: $font-size-sm;
   font-weight: $font-weight-bold;
@@ -305,14 +305,14 @@
   display: inline-flex;
   align-items: center;
   gap: $spacing-8;
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
   text-decoration: none;
   margin-bottom: $spacing-24;
   font-size: $font-size-sm;
   transition: color 0.2s;
 
   &:hover {
-    color: var(--color-primary);
+    color: $color-primary;
   }
 }
 

@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { useConfirm } from "@/lib/hooks/useConfirm";
+import { ConfirmModal } from "@/components/ui/confirm-modal";
 import { CheckIcon, FlameIcon, BoltIcon, ClockIcon, PencilIcon } from "@/components/icons";
 import { EditHabitModal } from "@/components/dashboard/edit-habit-modal";
 import CelebrationBurst from "@/components/ui/celebration-burst";
@@ -124,6 +126,7 @@ function getTodayStatus(habitId: string, completions: Completion[]): TodayStatus
 export function HabitCard({ habit, completions, onComplete, hideAction, currentUserId, onEdit, onDelete, streak, kids, compact }: HabitCardProps) {
   const t = useTranslations();
   const [editing, setEditing] = useState(false);
+  const { confirm, confirmState, handleConfirm, handleCancel } = useConfirm();
   const [justCompleted, setJustCompleted] = useState(false);
   const [showBurst, setShowBurst] = useState(false);
   const isCreator = currentUserId === habit.created_by;
@@ -132,9 +135,10 @@ export function HabitCard({ habit, completions, onComplete, hideAction, currentU
   const currentStreak = streak ?? calculateCurrentStreak(habit.id, completions);
   const todayStatus = getTodayStatus(habit.id, completions);
 
-  const habitCompletionDates = completions
+  const habitCompletionMap = new Map<string, "approved" | "pending">();
+  completions
     .filter((c) => c.habit_id === habit.id && (c.status === "approved" || c.status === "pending"))
-    .map((c) => c.date);
+    .forEach((c) => habitCompletionMap.set(c.date, c.status as "approved" | "pending"));
 
   const handleComplete = (habitId: string) => {
     setJustCompleted(true);
@@ -185,8 +189,10 @@ export function HabitCard({ habit, completions, onComplete, hideAction, currentU
               </button>
               <button
                 className={styles.deleteBtn}
-                onClick={() => {
-                  if (confirm(t("habits.confirmDelete"))) onDelete(habit.id);
+                onClick={async () => {
+                  const confirmed = await confirm(t("habits.confirmDelete"), "danger");
+                  if (!confirmed) return;
+                  onDelete(habit.id);
                 }}
                 title={t("common.delete")}
               >
@@ -206,14 +212,17 @@ export function HabitCard({ habit, completions, onComplete, hideAction, currentU
       <div className={styles.dateCircles}>
         {last7Days.map((date) => {
           const dateStr = formatDateStr(date);
-          const completed = habitCompletionDates.includes(dateStr);
+          const completionStatus = habitCompletionMap.get(dateStr);
+          const completed = !!completionStatus;
+          const isPending = completionStatus === "pending";
           const today = isToday(date);
           const future = isFuture(date);
 
           const dayLabel = date.toLocaleDateString(undefined, { weekday: "narrow" });
 
           let circleClass = styles.circleMissed;
-          if (completed) circleClass = styles.circleCompleted;
+          if (completed && isPending) circleClass = styles.circlePending;
+          else if (completed) circleClass = styles.circleCompleted;
           else if (future) circleClass = styles.circleFuture;
           else if (today) circleClass = styles.circleToday;
 
@@ -231,7 +240,8 @@ export function HabitCard({ habit, completions, onComplete, hideAction, currentU
                 tabIndex={canClickCircle ? 0 : undefined}
                 onKeyDown={canClickCircle ? (e) => { if (e.key === "Enter" || e.key === " ") handleComplete(habit.id); } : undefined}
               >
-                {completed && <CheckIcon size={14} color="white" />}
+                {completed && !isPending && <CheckIcon size={14} color="white" />}
+                {completed && isPending && <ClockIcon size={14} />}
               </div>
             </div>
           );
@@ -275,6 +285,14 @@ export function HabitCard({ habit, completions, onComplete, hideAction, currentU
             if (onEdit) onEdit(updated);
           }}
           onClose={() => setEditing(false)}
+        />
+      )}
+      {confirmState && (
+        <ConfirmModal
+          message={confirmState.message}
+          variant={confirmState.variant}
+          onConfirm={handleConfirm}
+          onCancel={handleCancel}
         />
       )}
     </div>

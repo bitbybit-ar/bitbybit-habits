@@ -1,0 +1,81 @@
+@use "@/styles/colors" as *;
+@use "@/styles/spacing" as *;
+@use "@/styles/typography" as *;
+@use "@/styles/glass" as *;
+@use "@/styles/common-mixins" as *;
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1100;
+  padding: $spacing-16;
+  animation: fadeIn 0.15s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal {
+  @include glass-modal;
+  max-width: 400px;
+  width: 100%;
+  padding: $spacing-24;
+}
+
+.message {
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+  line-height: 1.5;
+  margin: 0 0 $spacing-24;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: $spacing-8;
+}
+
+.cancelBtn,
+.confirmBtn {
+  padding: $spacing-8 $spacing-16;
+  border-radius: $border-radius-sm;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  cursor: pointer;
+  @include transition;
+}
+
+.cancelBtn {
+  background: transparent;
+  border: 1px solid rgba(var(--glass-color), 0.15);
+  color: $color-text-secondary;
+
+  &:hover {
+    color: $color-text-primary;
+  }
+}
+
+.confirmBtn {
+  background: $color-primary;
+  border: none;
+  color: #000;
+
+  &:hover {
+    opacity: 0.9;
+  }
+}
+
+.confirmBtnDanger {
+  background: $color-error;
+  color: white;
+
+  &:hover {
+    opacity: 0.9;
+  }
+}

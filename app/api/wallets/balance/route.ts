@@ -15,6 +15,8 @@ export const GET = apiHandler(async (_request, { session, db }) => {
     return { balance_sats: null };
   }
 
+  console.log(`[Wallet:Balance] Fetching balance (user: ${session.user_id.slice(0, 8)})`);
+
   const client = new NWCClient({ nostrWalletConnectUrl: nwcUrl });
 
   try {
@@ -24,9 +26,12 @@ export const GET = apiHandler(async (_request, { session, db }) => {
     );
 
     const result = await Promise.race([balancePromise, timeoutPromise]);
+    const balanceSats = Math.floor(result.balance / 1000);
+    console.log(`[Wallet:Balance] Balance: ${balanceSats} sats`);
     // NWC returns balance in millisats
-    return { balance_sats: Math.floor(result.balance / 1000) };
-  } catch {
+    return { balance_sats: balanceSats };
+  } catch (err) {
+    console.error("[Wallet:Balance] NWC getBalance error:", err);
     return { balance_sats: null };
   } finally {
     client.close();

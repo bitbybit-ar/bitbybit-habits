@@ -25,7 +25,7 @@
 }
 
 .variant-primary {
-  background: var(--gradient-primary-bg);
+  background: $gradient-primary;
   color: white;
 
   &:hover {
@@ -35,8 +35,8 @@
 
 .variant-outline {
   background: transparent;
-  border: 2px solid var(--color-primary);
-  color: var(--color-primary);
+  border: 2px solid $color-primary;
+  color: $color-primary;
 
   &:hover {
     background: alpha($color-primary, 10%);
@@ -45,10 +45,10 @@
 
 .variant-ghost {
   background: transparent;
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
 
   &:hover {
-    color: var(--color-text-primary);
+    color: $color-text-primary;
   }
 }
 

@@ -6,9 +6,13 @@ export interface User {
   id: string;
   email: string;
   username: string;
-  password_hash: string;
+  password_hash?: string | null;
   display_name: string;
   avatar_url?: string;
+  nostr_pubkey?: string | null;
+  auth_provider: "email" | "nostr";
+  nostr_metadata?: Record<string, unknown> | null;
+  nostr_metadata_updated_at?: string | null;
   locale: "es" | "en";
   created_at: string;
   updated_at: string;
@@ -47,6 +51,7 @@ export interface Habit {
   active: boolean;
   created_at: string;
   updated_at: string;
+  assigned_members?: string[];
 }
 
 export interface Completion {
@@ -113,6 +118,7 @@ export interface AuthSession {
   display_name: string;
   locale: "es" | "en";
   role: "sponsor" | "kid" | null;
+  nostr_pubkey?: string | null;
 }
 
 export interface ApiResponse<T = unknown> {

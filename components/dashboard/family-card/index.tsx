@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { useConfirm } from "@/lib/hooks/useConfirm";
+import { ConfirmModal } from "@/components/ui/confirm-modal";
 import { UserIcon, CheckIcon } from "@/components/icons";
 import styles from "./family-card.module.scss";
 
@@ -23,7 +25,8 @@ interface FamilyCardProps {
   currentUserRole?: string;
   onLeave?: (familyId: string) => void;
   onDelete?: (familyId: string) => void;
-  onRoleChange?: (familyId: string, userId: string, newRole: string) => void;
+  // ROADMAP: Multi-sponsor support (commented for MVP single-sponsor mode)
+  // onRoleChange?: (familyId: string, userId: string, newRole: string) => void;
   onRemoveMember?: (familyId: string, userId: string) => void;
 }
 
@@ -37,12 +40,12 @@ export function FamilyCard({
   currentUserRole,
   onLeave,
   onDelete,
-  onRoleChange,
   onRemoveMember,
 }: FamilyCardProps) {
   const t = useTranslations();
   const [copied, setCopied] = useState(false);
   const [confirmAction, setConfirmAction] = useState<"leave" | "delete" | null>(null);
+  const { confirm, confirmState, handleConfirm, handleCancel } = useConfirm();
 
   const isCreator = currentUserId === createdBy;
   const isSponsor = currentUserRole === "sponsor";
@@ -75,10 +78,11 @@ export function FamilyCard({
     }
   };
 
-  const handleRoleToggle = (userId: string, currentRole: string) => {
-    const newRole = currentRole === "sponsor" ? "kid" : "sponsor";
-    onRoleChange?.(familyId, userId, newRole);
-  };
+  // ROADMAP: Multi-sponsor support (commented for MVP single-sponsor mode)
+  // const handleRoleToggle = (userId: string, currentRole: string) => {
+  //   const newRole = currentRole === "sponsor" ? "kid" : "sponsor";
+  //   onRoleChange?.(familyId, userId, newRole);
+  // };
 
   return (
     <div className={styles.card}>
@@ -154,6 +158,7 @@ export function FamilyCard({
                   {member.role === "sponsor" ? t("auth.sponsor") : t("auth.kid")}
                 </span>
               </div>
+              {/* ROADMAP: Multi-sponsor support (commented for MVP single-sponsor mode)
               {isSponsor && onRoleChange && member.user_id !== currentUserId && (
                 <button
                   className={styles.roleToggle}
@@ -163,13 +168,14 @@ export function FamilyCard({
                   {member.role === "sponsor" ? "→ Kid" : "→ Sponsor"}
                 </button>
               )}
+              */}
               {isSponsor && onRemoveMember && member.user_id !== currentUserId && (
                 <button
                   className={styles.removeBtn}
-                  onClick={() => {
-                    if (confirm(t("family.confirmRemoveMember"))) {
-                      onRemoveMember(familyId, member.user_id);
-                    }
+                  onClick={async () => {
+                    const confirmed = await confirm(t("family.confirmRemoveMember"), "danger");
+                    if (!confirmed) return;
+                    onRemoveMember(familyId, member.user_id);
                   }}
                   title={t("family.removeMember")}
                 >
@@ -180,6 +186,14 @@ export function FamilyCard({
           ))}
         </div>
       </div>
+      {confirmState && (
+        <ConfirmModal
+          message={confirmState.message}
+          variant={confirmState.variant}
+          onConfirm={handleConfirm}
+          onCancel={handleCancel}
+        />
+      )}
     </div>
   );
 }

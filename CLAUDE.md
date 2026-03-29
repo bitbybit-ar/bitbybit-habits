@@ -84,6 +84,11 @@ bitbybit-habits/
 - **API routes**: siempre en `app/api/`, nunca dentro de `[locale]`
 - **Tipos**: centralizar en `lib/types.ts`
 - **Reutilizar componentes** entre dashboards kid y sponsor siempre que sea posible
+- **Componentes compartidos de dashboard** en `components/dashboard/`:
+  - `DashboardSection` — wrapper con titulo opcional y prop `center` para loading states
+  - `EmptyState` — estado vacio con icon, title, description y action opcional
+  - `BlockLoader` — loader animado (usar en lugar de `Spinner` en dashboards)
+  - Tab components en `components/dashboard/kid/` y `components/dashboard/sponsor/`
 
 ## Convenciones de codigo
 
@@ -101,18 +106,45 @@ bitbybit-habits/
 
 ### SCSS
 - Usar SCSS modules (`.module.scss`) para cada componente
-- Importar variables con `@use "@/styles/colors" as *`
-- Respetar la paleta de colores definida en `styles/_colors.scss`:
-  - Primary (Sats Gold): `$color-primary` (#F7A825)
-  - Secondary (Sage Green): `$color-secondary` (#4CAF7D)
-  - Accent: `$color-accent` (#FF6B6B), `$color-accent-alt` (#4DB6AC)
-  - Backgrounds dark: `$color-bg-dark`, `$color-bg-dark-2`, `$color-bg-dark-3`
-  - Texto: `$color-text-primary`, `$color-text-secondary`
-- Usar los mixins existentes: `container`, `gradient-text`, `card-base`, `transition`
-- Usar las variables de spacing: `$spacing-4` a `$spacing-100`
-- Usar las variables de border-radius: `$border-radius-sm` a `$border-radius-full`
-- Mobile-first con mixins `@include mobile`, `@include tablet`, `@include desktop`
+- Importar modulos de estilos con `@use`:
+  ```scss
+  @use "@/styles/colors" as *;
+  @use "@/styles/spacing" as *;
+  @use "@/styles/typography" as *;
+  @use "@/styles/common-mixins" as *;
+  @use "@/styles/media-mixins" as *;
+  @use "@/styles/glass" as *;
+  ```
+
+#### Variables obligatorias (NO hardcodear valores)
+- **Colores**: Siempre usar variables `$color-*` de `_colors.scss`, NUNCA `var(--color-*)` directo ni hex/rgb
+  - `$color-primary`, `$color-secondary`, `$color-accent`, `$color-accent-alt`
+  - `$color-success`, `$color-warning`, `$color-error`, `$color-info`, `$color-nostr`
+  - `$color-bg`, `$color-bg-2`, `$color-bg-3`, `$color-surface`
+  - `$color-text-primary`, `$color-text-secondary`
+- **Transparencia**: Usar `alpha($color, amount)` en lugar de `rgba()` o `color-mix()` directo
+  ```scss
+  // Correcto
+  background: alpha($color-primary, 15%);
+  // Incorrecto
+  background: rgba(var(--color-primary), 0.15);
+  background: color-mix(in srgb, var(--color-primary) 15%, transparent);
+  ```
+- **Spacing**: `$spacing-4` a `$spacing-100` (NO usar px sueltos como `10px`, `20px`)
+- **Border radius**: `$border-radius-sm` (8px) a `$border-radius-full` (100px)
+- **Font sizes**: `$font-size-xs` a `$font-size-hero` (NO usar `0.75rem`, `13px`, `11px`)
+- **Font weights**: `$font-weight-normal` (400) a `$font-weight-extrabold` (800) (NO usar `600` directo)
+
+#### Mixins disponibles
+- **Layout**: `@include container`, `@include section-padding`
+- **Efectos**: `@include gradient-text`, `@include transition`
+- **Glass system**: `@include glass-card`, `@include glass-subtle`, `@include glass-nav`, `@include glass-modal`, `@include glass(opacity, blur, border-opacity, radius)`
+- **Responsive** (mobile-first): `@include mobile`, `@include tablet`, `@include desktop`
+
+#### Reglas
 - Dark mode es el default (pensado para seguridad visual de ninos)
+- NO usar inline styles en JSX — crear clases SCSS
+- NO usar `var(--color-*)` en SCSS files — usar `$color-*` (son alias, se resuelven en runtime)
 
 ### Iconos
 - Crear SVG icons como React components en `components/icons/index.tsx`
@@ -134,11 +166,36 @@ bitbybit-habits/
 - Todas las responses usan el formato `ApiResponse<T>` con `{ success, data?, error? }`
 
 ### Base de datos
-- Drizzle ORM con Neon DB (PostgreSQL serverless)
+- Drizzle ORM con Neon DB (PostgreSQL serverless) en produccion
 - Conexion lazy via `getDb()` en `lib/db/index.ts`
-- Schema Drizzle en `lib/db/schema.ts`, schema SQL en `setup-database.sql`
+- Schema Drizzle en `lib/db/schema.ts` (source of truth), schema SQL de referencia en `setup-database.sql`
 - Tipos de DB mapeados en `lib/types.ts`
+- Migraciones en `drizzle/` — se ejecutan automaticamente en CI con `npx drizzle-kit push --force` al hacer push a main
 - NO usar string interpolation en queries (SQL injection)
+
+#### Setup local de PostgreSQL
+```bash
+# 1. Iniciar Postgres local (data dir en disco externo, puerto 5433)
+pg_ctl -D '/Volumes/Ext Disk/pg-data' -l '/Volumes/Ext Disk/pg-data/logfile' -o '-p 5433' start
+
+# 2. Crear la base de datos (solo la primera vez)
+createdb -p 5433 bitbybit
+
+# 3. Aplicar schema inicial (solo la primera vez, o para recrear desde cero)
+psql -p 5433 -d bitbybit -f setup-database.sql
+
+# 4. Aplicar migraciones de Drizzle (sincronizar con schema actual)
+npx drizzle-kit push --force
+
+# 5. Verificar conexion
+psql -p 5433 -d bitbybit -c "SELECT count(*) FROM users;"
+
+# Detener Postgres
+pg_ctl -D '/Volumes/Ext Disk/pg-data' stop
+```
+- **Puerto**: 5433 (no el default 5432, para evitar conflictos)
+- **User**: `fabricioacosta` (peer auth local, sin password)
+- **DATABASE_URL** en `.env.local`: `postgresql://fabricioacosta@localhost:5433/bitbybit`
 
 ### Auth
 - Sesion via cookie httpOnly (`session`)
@@ -190,7 +247,7 @@ npx tsc --noEmit     # Type-check sin compilar
 - Ani (repo owner) must approve the PR before it can be merged.
 - Git author for commits: `Analia Acosta <analia.a.acosta@gmail.com>`
 
-## Antes de commitear
+### Checklist pre-commit
 
 - [ ] `npx tsc --noEmit` pasa sin errores
 - [ ] Todas las strings de UI estan en ambos archivos de mensajes (es.json, en.json)

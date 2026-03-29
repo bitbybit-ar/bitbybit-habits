@@ -60,7 +60,7 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: var(--gradient-primary-bg);
+  background: $gradient-primary;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -122,7 +122,7 @@
   height: 48px;
   border-radius: $border-radius-md;
   background: alpha($color-primary, 10%);
-  color: var(--color-primary);
+  color: $color-primary;
   margin: 0 auto $spacing-16;
 
   @include mobile {
@@ -139,7 +139,7 @@
 }
 
 .stepDesc {
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
   font-size: $font-size-sm;
   line-height: $line-height-base;
 }

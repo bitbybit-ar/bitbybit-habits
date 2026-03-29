@@ -21,22 +21,22 @@
 }
 
 .link {
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
   text-decoration: none;
   transition: color 0.2s;
 
   &:hover {
-    color: var(--color-primary);
+    color: $color-primary;
   }
 }
 
 .separator {
   margin: 0 8px;
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
   opacity: 0.5;
 }
 
 .current {
-  color: var(--color-text-primary);
+  color: $color-text-primary;
   font-weight: 500;
 }

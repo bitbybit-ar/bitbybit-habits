@@ -2,11 +2,29 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
-import { WalletIcon, BoltIcon } from "@/components/icons";
+import _QRCode from "react-qr-code";
+// CJS/ESM interop: Turbopack may resolve default import as namespace object
+const QRCode = ((_QRCode as unknown as Record<string, typeof _QRCode>).default ?? _QRCode) as typeof _QRCode;
+import { WalletIcon, BoltIcon, SendIcon, ReceiveIcon, ScanIcon } from "@/components/icons";
 import { BlockLoader } from "@/components/ui/block-loader";
 import { FormInput, FormButton } from "@/components/ui/form";
+import { QRScanner } from "@/components/ui/qr-scanner";
 import { useWebLN } from "@/lib/hooks/useWebLN";
+import { useToast } from "@/components/ui/toast";
 import styles from "./wallet-connect.module.scss";
+
+// DEBUG: find undefined import
+console.log("[WalletConnect imports]", {
+  QRCode: typeof QRCode,
+  WalletIcon: typeof WalletIcon,
+  BoltIcon: typeof BoltIcon,
+  SendIcon: typeof SendIcon,
+  ReceiveIcon: typeof ReceiveIcon,
+  ScanIcon: typeof ScanIcon,
+  FormInput: typeof FormInput,
+  FormButton: typeof FormButton,
+  QRScanner: typeof QRScanner,
+});
 
 interface WalletPublic {
   id: string;
@@ -17,8 +35,18 @@ interface WalletPublic {
   created_at: string;
 }
 
+type WalletView = "main" | "send" | "receive" | "settings";
+type ScanTarget = "nwc" | "invoice" | null;
+
 export function WalletConnect() {
+  // DEBUG: find the undefined import
+  const _imports = { QRCode, WalletIcon, BoltIcon, SendIcon, ReceiveIcon, ScanIcon, FormInput, FormButton, QRScanner };
+  const _undef = Object.entries(_imports).filter(([,v]) => !v).map(([k]) => k);
+  if (_undef.length) console.error("UNDEFINED IMPORTS:", _undef);
+  else console.log("All imports OK:", Object.fromEntries(Object.entries(_imports).map(([k,v]) => [k, typeof v])));
+
   const t = useTranslations();
+  const { showToast } = useToast();
   const { hasExtension, extensionName } = useWebLN();
   const [wallet, setWallet] = useState<WalletPublic | null>(null);
   const [nwcUrl, setNwcUrl] = useState("");
@@ -26,6 +54,20 @@ export function WalletConnect() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [balance, setBalance] = useState<number | null>(null);
+  const [balanceLoading, setBalanceLoading] = useState(false);
+  const [view, setView] = useState<WalletView>("main");
+  const [scanning, setScanning] = useState<ScanTarget>(null);
+
+  // Send state
+  const [sendInvoice, setSendInvoice] = useState("");
+  const [sending, setSending] = useState(false);
+
+  // Receive state
+  const [receiveAmount, setReceiveAmount] = useState("");
+  const [receiveDesc, setReceiveDesc] = useState("");
+  const [receiving, setReceiving] = useState(false);
+  const [generatedInvoice, setGeneratedInvoice] = useState<string | null>(null);
+  const [invoiceCopied, setInvoiceCopied] = useState(false);
 
   const fetchWallet = useCallback(async () => {
     try {
@@ -41,42 +83,43 @@ export function WalletConnect() {
     }
   }, []);
 
+  const fetchBalance = useCallback(async () => {
+    setBalanceLoading(true);
+    try {
+      const res = await fetch("/api/wallets/balance");
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.data?.balance_sats != null) {
+          setBalance(data.data.balance_sats);
+        }
+      }
+    } catch {
+      // Balance fetch is best-effort
+    } finally {
+      setBalanceLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     fetchWallet();
   }, [fetchWallet]);
 
-  // Fetch balance when wallet is connected
   useEffect(() => {
-    if (!wallet) {
-      setBalance(null);
-      return;
-    }
+    if (wallet) fetchBalance();
+    else setBalance(null);
+  }, [wallet, fetchBalance]);
 
-    async function fetchBalance() {
-      try {
-        const res = await fetch("/api/wallets/balance");
-        if (res.ok) {
-          const data = await res.json();
-          if (data.success && data.data?.balance_sats != null) {
-            setBalance(data.data.balance_sats);
-          }
-        }
-      } catch {
-        // Balance fetch is best-effort
-      }
-    }
+  // ── Connect ──
 
-    fetchBalance();
-  }, [wallet]);
-
-  const handleConnect = useCallback(async () => {
-    if (!nwcUrl) return;
+  const handleConnect = useCallback(async (url?: string) => {
+    const finalUrl = url ?? nwcUrl;
+    if (!finalUrl) return;
     setSaving(true);
     try {
       const res = await fetch("/api/wallets", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ nwc_url: nwcUrl, label: label || undefined }),
+        body: JSON.stringify({ nwc_url: finalUrl, label: label || undefined }),
       });
       if (res.ok) {
         const data = await res.json();
@@ -84,14 +127,17 @@ export function WalletConnect() {
           setWallet(data.data);
           setNwcUrl("");
           setLabel("");
+          showToast(t("wallet.walletConnected"), "success");
         }
+      } else {
+        showToast(t("wallet.connectError"), "error");
       }
     } catch {
-      // Silently handle
+      showToast(t("wallet.connectError"), "error");
     } finally {
       setSaving(false);
     }
-  }, [nwcUrl, label]);
+  }, [nwcUrl, label, showToast, t]);
 
   const handleExtensionConnect = useCallback(async () => {
     setSaving(true);
@@ -99,17 +145,9 @@ export function WalletConnect() {
       const webln = (window as unknown as { webln?: { enable: () => Promise<void>; getInfo?: () => Promise<{ node?: { alias?: string } }> } }).webln;
       if (!webln) return;
       await webln.enable();
-
-      // Try to get the NWC URL from the extension's provider
-      // Alby exposes nostr.getRelays() and NWC URL via the provider
-      const nostr = (window as unknown as { nostr?: { getRelays?: () => Promise<Record<string, unknown>>; nip04?: unknown } }).nostr;
-      if (nostr) {
-        // For Alby, the NWC URL is typically configured by the user
-        // We prompt to enter it manually but with extension info
-        const info = webln.getInfo ? await webln.getInfo() : null;
-        const extensionLabel = info?.node?.alias ?? extensionName ?? "WebLN Extension";
-        setLabel(extensionLabel);
-      }
+      const info = webln.getInfo ? await webln.getInfo() : null;
+      const extensionLabel = info?.node?.alias ?? extensionName ?? "WebLN Extension";
+      setLabel(extensionLabel);
     } catch {
       // Extension connection failed
     } finally {
@@ -125,6 +163,7 @@ export function WalletConnect() {
         if (data.success) {
           setWallet(null);
           setBalance(null);
+          setView("main");
         }
       }
     } catch {
@@ -132,75 +171,135 @@ export function WalletConnect() {
     }
   }, []);
 
+  // ── Send ──
+
+  const handleSend = useCallback(async (invoice?: string) => {
+    const finalInvoice = invoice ?? sendInvoice;
+    if (!finalInvoice.trim()) return;
+    setSending(true);
+    try {
+      const res = await fetch("/api/wallets/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ invoice: finalInvoice.trim() }),
+      });
+      const data = await res.json();
+      console.error("[wallets/send] Response:", res.status, data);
+      if (data.success) {
+        showToast(t("wallet.sendSuccess"), "success");
+        setSendInvoice("");
+        setView("main");
+        fetchBalance();
+      } else {
+        const errorKey = data.error === "insufficient_funds"
+          ? "wallet.insufficientFunds"
+          : "wallet.sendError";
+        showToast(t(errorKey), "error");
+      }
+    } catch {
+      showToast(t("wallet.sendError"), "error");
+    } finally {
+      setSending(false);
+    }
+  }, [sendInvoice, showToast, t, fetchBalance]);
+
+  // ── Receive ──
+
+  const handleReceive = useCallback(async () => {
+    const amount = parseInt(receiveAmount, 10);
+    if (!amount || amount <= 0) return;
+    setReceiving(true);
+    try {
+      const res = await fetch("/api/wallets/receive", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          amount_sats: amount,
+          description: receiveDesc || undefined,
+        }),
+      });
+      const data = await res.json();
+      if (data.success && data.data?.payment_request) {
+        setGeneratedInvoice(data.data.payment_request);
+      } else {
+        showToast(t("wallet.receiveError"), "error");
+      }
+    } catch {
+      showToast(t("wallet.receiveError"), "error");
+    } finally {
+      setReceiving(false);
+    }
+  }, [receiveAmount, receiveDesc, showToast, t]);
+
+  const handleCopyInvoice = useCallback(async () => {
+    if (!generatedInvoice) return;
+    try {
+      await navigator.clipboard.writeText(`lightning:${generatedInvoice.toUpperCase()}`);
+      setInvoiceCopied(true);
+      setTimeout(() => setInvoiceCopied(false), 2000);
+    } catch {
+      // Fallback
+    }
+  }, [generatedInvoice]);
+
+  const resetReceive = useCallback(() => {
+    setGeneratedInvoice(null);
+    setReceiveAmount("");
+    setReceiveDesc("");
+    setInvoiceCopied(false);
+    setView("main");
+  }, []);
+
+  // ── QR Scan handler ──
+
+  const handleScanResult = useCallback((value: string) => {
+    setScanning(null);
+
+    if (scanning === "nwc") {
+      // NWC QR codes might have the raw URL or be wrapped
+      const url = value.startsWith("nostr+walletconnect://") ? value : value;
+      if (url.startsWith("nostr+walletconnect://")) {
+        setNwcUrl(url);
+        handleConnect(url);
+      } else {
+        setNwcUrl(value);
+        showToast(t("wallet.scanNwcHint"), "info");
+      }
+      return;
+    }
+
+    if (scanning === "invoice") {
+      // Strip lightning: prefix, handle both cases
+      const cleaned = value.replace(/^lightning:/i, "");
+      if (cleaned.toLowerCase().startsWith("lnbc")) {
+        setSendInvoice(cleaned);
+        handleSend(cleaned);
+      } else {
+        setSendInvoice(value);
+        showToast(t("wallet.scanInvoiceHint"), "info");
+      }
+    }
+  }, [scanning, handleConnect, handleSend, showToast, t]);
+
+  // ── Render ──
+
+  // DEBUG: render import status directly in UI
+  const _allImports = { QRCode, WalletIcon, BoltIcon, SendIcon, ReceiveIcon, ScanIcon, FormInput, FormButton, QRScanner } as Record<string, unknown>;
+  const _broken = Object.entries(_allImports).filter(([,v]) => !v).map(([k]) => k);
+  if (_broken.length > 0) {
+    return <div style={{color:"red",fontSize:24,padding:40}}>BROKEN IMPORTS: {_broken.join(", ")}</div>;
+  }
+
   if (loading) {
     return <div className={styles.loaderWrapper}><BlockLoader /></div>;
   }
 
-  if (wallet) {
-    return (
-      <div className={styles.card}>
-        <div className={styles.statusRow}>
-          <div className={styles.statusIndicator} data-connected="true" />
-          <span className={styles.statusText}>{t("wallet.walletConnected")}</span>
-          <span className={styles.badge}>NWC</span>
-        </div>
-        {wallet.label && <p className={styles.label}>{wallet.label}</p>}
-        {balance !== null && (
-          <div className={styles.balanceRow}>
-            <BoltIcon size={14} />
-            <span className={styles.balanceValue}>{balance.toLocaleString()}</span>
-            <span className={styles.balanceLabel}>{t("sats.sats")}</span>
-          </div>
-        )}
-        <button className={styles.disconnectButton} onClick={handleDisconnect}>
-          {t("wallet.disconnect")}
-        </button>
-      </div>
-    );
-  }
-
+  // DEBUG: minimal render — no imported components, just HTML
   return (
-    <div className={styles.card}>
-      <div className={styles.statusRow}>
-        <div className={styles.statusIndicator} data-connected="false" />
-        <span className={styles.statusText}>{t("wallet.connectWallet")}</span>
-      </div>
-
-      {hasExtension && (
-        <button
-          className={styles.extensionButton}
-          onClick={handleExtensionConnect}
-          disabled={saving}
-        >
-          {t("wallet.connectExtension", { name: extensionName ?? "WebLN" })}
-        </button>
-      )}
-
-      <div className={styles.form}>
-        <FormInput
-          id="nwc-url"
-          label={t("wallet.nwcUrl")}
-          placeholder="nostr+walletconnect://..."
-          value={nwcUrl}
-          onChange={setNwcUrl}
-        />
-        <FormInput
-          id="nwc-label"
-          label={t("wallet.label")}
-          placeholder={t("wallet.labelPlaceholder")}
-          value={label}
-          onChange={setLabel}
-        />
-        <FormButton
-          onClick={handleConnect}
-          loading={saving}
-          loadingText={t("common.loading")}
-          disabled={!nwcUrl}
-        >
-          <WalletIcon size={16} />
-          {t("wallet.connectWallet")}
-        </FormButton>
-      </div>
+    <div style={{padding: 20, border: "2px solid lime"}}>
+      <p>WalletConnect loaded OK. All imports defined.</p>
+      <p>Wallet: {wallet ? "connected" : "not connected"}</p>
+      <p>View: {view}</p>
     </div>
   );
 }

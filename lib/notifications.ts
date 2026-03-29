@@ -5,7 +5,8 @@ export type NotificationType =
   | "completion_approved"
   | "completion_rejected"
   | "payment_received"
-  | "payment_failed";
+  | "payment_failed"
+  | "member_joined";
 
 /**
  * Create a notification for a user.

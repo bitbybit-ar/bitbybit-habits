@@ -2,10 +2,11 @@
 @use "@/styles/spacing" as *;
 @use "@/styles/typography" as *;
 @use "@/styles/glass" as *;
+@use "@/styles/media-mixins" as *;
 
 .card {
   @include glass-card;
-  padding: $spacing-20;
+  padding: $spacing-24;
 }
 
 .loaderWrapper {
@@ -15,11 +16,116 @@
   min-height: 300px;
 }
 
+// ── Connect screen ──
+
+.connectHeader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $spacing-8;
+  text-align: center;
+  margin-bottom: $spacing-24;
+  color: $color-primary;
+}
+
+.connectTitle {
+  font-size: 1.2rem;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  margin: 0;
+}
+
+.connectDesc {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  margin: 0;
+  max-width: 280px;
+}
+
+.scanButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-8;
+  width: 100%;
+  padding: $spacing-16;
+  margin-bottom: $spacing-12;
+  border-radius: $border-radius-md;
+  border: 2px solid alpha($color-primary, 40%);
+  background: alpha($color-primary, 8%);
+  color: $color-primary;
+  font-size: $font-size-base;
+  font-weight: $font-weight-bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: alpha($color-primary, 15%);
+    border-color: $color-primary;
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+.extensionButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-8;
+  width: 100%;
+  padding: $spacing-12 $spacing-16;
+  margin-bottom: $spacing-12;
+  border-radius: $border-radius-md;
+  border: 1px solid rgba(var(--glass-color, 255, 255, 255), 0.15);
+  background: rgba(var(--glass-color, 255, 255, 255), 0.04);
+  color: $color-text-primary;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+
+  &:hover:not(:disabled) {
+    background: rgba(var(--glass-color, 255, 255, 255), 0.08);
+    border-color: rgba(var(--glass-color, 255, 255, 255), 0.25);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.manualSection {
+  margin-top: $spacing-8;
+}
+
+.manualToggle {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  cursor: pointer;
+  padding: $spacing-8 0;
+  user-select: none;
+  list-style: none;
+  text-align: center;
+
+  &::-webkit-details-marker {
+    display: none;
+  }
+
+  &:hover {
+    color: $color-text-primary;
+  }
+}
+
+// ── Status row ──
+
 .statusRow {
   display: flex;
   align-items: center;
   gap: $spacing-8;
-  margin-bottom: $spacing-16;
+  margin-bottom: $spacing-20;
 }
 
 .statusIndicator {
@@ -33,7 +139,7 @@
   }
 
   &[data-connected="false"] {
-    background: var(--color-text-secondary);
+    background: $color-text-secondary;
     opacity: 0.5;
   }
 }
@@ -41,11 +147,10 @@
 .statusText {
   font-size: $font-size-base;
   font-weight: $font-weight-semibold;
-  color: var(--color-text-primary);
+  color: $color-text-primary;
 }
 
 .badge {
-  margin-left: auto;
   padding: 2px $spacing-8;
   border-radius: $border-radius-sm;
   background: alpha($color-primary, 15%);
@@ -55,29 +160,75 @@
   letter-spacing: 0.5px;
 }
 
-.label {
-  font-size: $font-size-sm;
-  color: var(--color-text-primary);
-  margin: 0 0 $spacing-4;
+.settingsButton {
+  margin-left: auto;
+  padding: $spacing-4 $spacing-12;
+  border-radius: $border-radius-sm;
+  border: 1px solid rgba(var(--glass-color, 255, 255, 255), 0.1);
+  background: transparent;
+  color: $color-text-secondary;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    color: $color-text-primary;
+    border-color: rgba(var(--glass-color, 255, 255, 255), 0.2);
+  }
 }
 
-.balanceRow {
+// ── Balance ──
+
+.balanceSection {
   display: flex;
   align-items: center;
-  gap: $spacing-4;
-  margin-bottom: $spacing-16;
+  gap: $spacing-12;
+  padding: $spacing-20;
+  margin-bottom: $spacing-20;
+  background: alpha($color-primary, 6%);
+  border-radius: $border-radius-lg;
+  border: 1px solid alpha($color-primary, 10%);
+}
+
+.balanceIcon {
   color: $color-primary;
+  display: flex;
+  align-items: center;
+}
+
+.balanceInfo {
+  display: flex;
+  align-items: baseline;
+  gap: $spacing-8;
+  flex: 1;
 }
 
 .balanceValue {
-  font-size: $font-size-lg;
+  font-size: 2rem;
   font-weight: $font-weight-bold;
-  color: var(--color-text-primary);
+  color: $color-text-primary;
+  line-height: 1;
 }
 
 .balanceLabel {
   font-size: $font-size-sm;
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
+}
+
+.refreshButton {
+  padding: $spacing-4 $spacing-8;
+  border: none;
+  background: transparent;
+  color: $color-text-secondary;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: transform 0.3s ease, color 0.2s ease;
+
+  &:hover:not(:disabled) {
+    color: $color-primary;
+    transform: rotate(180deg);
+  }
 }
 
 .extensionButton {
@@ -95,7 +246,7 @@
   font-size: $font-size-sm;
   font-weight: $font-weight-semibold;
   cursor: pointer;
-  transition: background 0.2s, border-color 0.2s;
+  transition: transform 0.3s ease, color 0.2s ease;
 
   &:hover:not(:disabled) {
     background: alpha($color-primary, 15%);
@@ -103,25 +254,165 @@
   }
 
   &:disabled {
-    opacity: 0.5;
+    opacity: 0.3;
     cursor: not-allowed;
   }
 }
 
-.maskedUrl {
-  font-size: $font-size-xs;
-  color: var(--color-text-secondary);
-  font-family: monospace;
-  margin: 0 0 $spacing-16;
-  word-break: break-all;
+// ── Action buttons ──
+
+.actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $spacing-12;
+}
+
+.actionButton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $spacing-8;
+  padding: $spacing-16;
+  border-radius: $border-radius-md;
+  border: 1px solid rgba(var(--glass-color, 255, 255, 255), 0.1);
+  background: rgba(var(--glass-color, 255, 255, 255), 0.03);
+  color: $color-text-primary;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(var(--glass-color, 255, 255, 255), 0.06);
+    border-color: rgba(var(--glass-color, 255, 255, 255), 0.2);
+  }
+
+  &:active {
+    transform: scale(0.97);
+  }
+
+  &[data-variant="send"]:hover {
+    border-color: alpha($color-accent, 40%);
+    color: $color-accent;
+  }
+
+  &[data-variant="receive"]:hover {
+    border-color: alpha($color-secondary, 40%);
+    color: $color-secondary;
+  }
+}
+
+// ── Sub-views ──
+
+.viewHeader {
+  display: flex;
+  align-items: center;
+  gap: $spacing-12;
+  margin-bottom: $spacing-20;
+}
+
+.backButton {
+  padding: $spacing-4 $spacing-8;
+  border: none;
+  background: transparent;
+  color: $color-text-secondary;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: color 0.2s;
+
+  &:hover {
+    color: $color-text-primary;
+  }
+}
+
+.viewTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin: 0;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: $spacing-12;
+  margin: $spacing-8 0 $spacing-16;
+
+  &::before,
+  &::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: rgba(var(--glass-color, 255, 255, 255), 0.1);
+  }
+
+  span {
+    font-size: $font-size-xs;
+    color: $color-text-secondary;
+    text-transform: lowercase;
+  }
+}
+
+// ── Settings ──
+
+.settingsSection {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-12;
+  margin-bottom: $spacing-20;
+}
+
+.settingsRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-12;
+  border-radius: $border-radius-md;
+  background: rgba(var(--glass-color, 255, 255, 255), 0.03);
+}
+
+.settingsLabel {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.settingsValue {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.settingsActions {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-8;
+}
+
+.changeWalletButton {
+  width: 100%;
+  padding: $spacing-12 $spacing-16;
+  border-radius: $border-radius-md;
+  border: 1px solid rgba(var(--glass-color, 255, 255, 255), 0.15);
+  background: transparent;
+  color: $color-text-primary;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(var(--glass-color, 255, 255, 255), 0.06);
+    border-color: rgba(var(--glass-color, 255, 255, 255), 0.25);
+  }
 }
 
 .disconnectButton {
-  padding: $spacing-8 $spacing-16;
+  width: 100%;
+  padding: $spacing-12 $spacing-16;
   border-radius: $border-radius-md;
   border: 1px solid alpha($color-error, 30%);
   background: alpha($color-error, 10%);
-  color: var(--color-error);
+  color: $color-error;
   font-size: $font-size-sm;
   font-weight: $font-weight-semibold;
   cursor: pointer;
@@ -129,9 +420,98 @@
 
   &:hover {
     background: alpha($color-error, 20%);
-    border-color: var(--color-error);
+    border-color: $color-error;
   }
 }
+
+// ── Receive invoice result ──
+
+.invoiceResult {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $spacing-12;
+}
+
+.qrContainer {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: $border-radius-lg;
+  padding: $spacing-20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: $spacing-4;
+
+  svg {
+    width: 100% !important;
+    height: auto !important;
+    max-width: 200px;
+  }
+}
+
+.walletLink {
+  display: block;
+  width: 100%;
+  padding: $spacing-12 $spacing-24;
+  background: $color-secondary;
+  color: var(--color-on-primary);
+  border: none;
+  border-radius: $border-radius-md;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    filter: brightness(1.1);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+.copyButton {
+  width: 100%;
+  padding: $spacing-12 $spacing-24;
+  background: $color-primary;
+  color: var(--color-on-primary);
+  border: none;
+  border-radius: $border-radius-md;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: $color-primary-light;
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+.secondaryButton {
+  width: 100%;
+  padding: $spacing-12 $spacing-24;
+  background: transparent;
+  color: $color-text-secondary;
+  border: 1px solid rgba(var(--glass-color, 255, 255, 255), 0.1);
+  border-radius: $border-radius-md;
+  font-size: $font-size-sm;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(var(--glass-color, 255, 255, 255), 0.05);
+    color: $color-text-primary;
+  }
+}
+
+// ── Form ──
 
 .form {
   display: flex;
@@ -147,7 +527,7 @@
 
 .fieldLabel {
   font-size: $font-size-xs;
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
   font-weight: $font-weight-semibold;
 }
 
@@ -155,19 +535,19 @@
   padding: $spacing-12;
   border-radius: $border-radius-md;
   border: 1px solid rgba(var(--glass-color), 0.1);
-  background: var(--color-bg);
-  color: var(--color-text-primary);
+  background: $color-bg;
+  color: $color-text-primary;
   font-size: $font-size-sm;
   outline: none;
   transition: border-color 0.2s;
 
   &::placeholder {
-    color: var(--color-text-secondary);
+    color: $color-text-secondary;
     opacity: 0.5;
   }
 
   &:focus {
-    border-color: var(--color-primary);
+    border-color: $color-primary;
   }
 }
 
@@ -179,7 +559,7 @@
   padding: $spacing-12 $spacing-16;
   border-radius: $border-radius-md;
   border: none;
-  background: var(--gradient-primary-bg);
+  background: $gradient-primary;
   color: white;
   font-size: $font-size-sm;
   font-weight: $font-weight-bold;

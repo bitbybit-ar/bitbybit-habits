@@ -39,7 +39,7 @@ export function useApi<T>(
     setIsLoading(true);
     setError(null);
     try {
-      const res = await fetch(url, { signal: controller.signal });
+      const res = await fetch(url, { signal: controller.signal, cache: 'no-store' });
       if (controller.signal.aborted) return;
       if (res.ok) {
         const json = await res.json();

@@ -90,6 +90,30 @@
   }
 }
 
+.walletLink {
+  display: block;
+  width: 100%;
+  padding: $spacing-12 $spacing-24;
+  background: $color-secondary;
+  color: var(--color-on-primary);
+  border: none;
+  border-radius: $border-radius-md;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    filter: brightness(1.15);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
 .copyButton {
   width: 100%;
   padding: $spacing-12 $spacing-24;
@@ -113,7 +137,7 @@
 
 .pollError {
   text-align: center;
-  color: var(--color-warning, #{$color-warning});
+  color: $color-warning;
   font-size: 0.85rem;
   margin-bottom: $spacing-8;
 }

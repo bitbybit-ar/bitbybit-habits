@@ -19,7 +19,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-text-primary);
+  color: $color-text-primary;
 }
 
 .badge {
@@ -46,7 +46,7 @@
   width: 320px;
   max-height: 400px;
   overflow-y: auto;
-  background: var(--color-bg-2);
+  background: $color-bg-2;
   border: 1px solid rgba(var(--glass-color), 0.1);
   border-radius: 8px;
   box-shadow: 0 8px 24px rgba(var(--shadow-color), 0.4);
@@ -65,7 +65,7 @@
 .empty {
   padding: $spacing-16;
   text-align: center;
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
   font-size: 0.875rem;
 }
 
@@ -92,18 +92,18 @@
   strong {
     display: block;
     font-size: 0.85rem;
-    color: var(--color-text-primary);
+    color: $color-text-primary;
   }
 
   p {
     margin: $spacing-4 0;
     font-size: 0.8rem;
-    color: var(--color-text-secondary);
+    color: $color-text-secondary;
   }
 
   time {
     font-size: 0.75rem;
-    color: var(--color-text-secondary);
+    color: $color-text-secondary;
   }
 }
 

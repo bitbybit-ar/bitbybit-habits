@@ -68,26 +68,26 @@
 }
 
 .role {
-  color: var(--color-primary);
+  color: $color-primary;
   font-size: $font-size-sm;
   font-weight: 500;
   font-style: italic;
 }
 
 .description {
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
   font-size: $font-size-sm;
   margin-top: $spacing-4;
 }
 
 .github {
-  color: var(--color-accent-alt);
+  color: $color-accent-alt;
   font-size: $font-size-xs;
   text-decoration: none;
   margin-top: $spacing-8;
   transition: color 0.2s;
 
   &:hover {
-    color: var(--color-primary);
+    color: $color-primary;
   }
 }

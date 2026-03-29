@@ -18,6 +18,10 @@ export const GET = apiHandler(async (_req, { session, db }) => {
       display_name: users.display_name,
       avatar_url: users.avatar_url,
       locale: users.locale,
+      nostr_pubkey: users.nostr_pubkey,
+      auth_provider: users.auth_provider,
+      nostr_metadata: users.nostr_metadata,
+      has_password: users.password_hash,
     })
     .from(users)
     .where(eq(users.id, session.user_id));
@@ -26,7 +30,19 @@ export const GET = apiHandler(async (_req, { session, db }) => {
     throw new NotFoundError("User");
   }
 
-  return result[0];
+  const profile = result[0];
+  return {
+    id: profile.id,
+    email: profile.email,
+    username: profile.username,
+    display_name: profile.display_name,
+    avatar_url: profile.avatar_url,
+    locale: profile.locale,
+    nostr_pubkey: profile.nostr_pubkey,
+    auth_provider: profile.auth_provider,
+    nostr_metadata: profile.nostr_metadata,
+    has_password: !!profile.has_password,
+  };
 });
 
 /**
@@ -36,12 +52,13 @@ export const GET = apiHandler(async (_req, { session, db }) => {
  */
 export const PATCH = apiHandler(async (request, { session, db }) => {
   const body = await request.json();
-  const { display_name, username, email, avatar_url, locale } = body as {
+  const { display_name, username, email, avatar_url, locale, nostr_metadata } = body as {
     display_name?: string;
     username?: string;
     email?: string;
     avatar_url?: string;
     locale?: "es" | "en";
+    nostr_metadata?: Record<string, unknown>;
   };
 
   if (locale && !["es", "en"].includes(locale)) {
@@ -62,6 +79,10 @@ export const PATCH = apiHandler(async (request, { session, db }) => {
   if (email !== undefined) updates.email = email.trim();
   if (avatar_url !== undefined) updates.avatar_url = avatar_url.trim();
   if (locale !== undefined) updates.locale = locale;
+  if (nostr_metadata !== undefined) {
+    updates.nostr_metadata = nostr_metadata;
+    updates.nostr_metadata_updated_at = new Date();
+  }
 
   const updated = await db
     .update(users)
@@ -74,6 +95,9 @@ export const PATCH = apiHandler(async (request, { session, db }) => {
       display_name: users.display_name,
       avatar_url: users.avatar_url,
       locale: users.locale,
+      nostr_pubkey: users.nostr_pubkey,
+      auth_provider: users.auth_provider,
+      nostr_metadata: users.nostr_metadata,
     });
 
   return updated[0];

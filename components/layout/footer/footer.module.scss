@@ -9,7 +9,7 @@
   border-top: 1px solid rgba(var(--glass-color), 0.05);
 
   p {
-    color: var(--color-text-secondary);
+    color: $color-text-secondary;
     font-size: 0.9rem;
     margin-bottom: $spacing-8;
   }

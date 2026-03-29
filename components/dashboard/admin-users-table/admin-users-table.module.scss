@@ -1,0 +1,448 @@
+@use "@/styles/colors" as *;
+@use "@/styles/spacing" as *;
+@use "@/styles/typography" as *;
+@use "@/styles/common-mixins" as *;
+@use "@/styles/media-mixins" as *;
+@use "@/styles/glass" as *;
+
+// ── DB indicator ──
+.dbIndicator {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-8;
+  padding: $spacing-4 $spacing-12;
+  border-radius: $border-radius-full;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  margin-bottom: $spacing-16;
+}
+
+.dbLocal {
+  background: alpha($color-secondary, 15%);
+  color: $color-secondary;
+}
+
+.dbProd {
+  background: alpha($color-error, 15%);
+  color: $color-error;
+}
+
+// ── Stats grid ──
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: $spacing-12;
+  margin-bottom: $spacing-24;
+}
+
+.statCard {
+  @include glass(0.08, 16px, 0.06, $border-radius-md);
+  padding: $spacing-16;
+  text-align: center;
+}
+
+.statValue {
+  font-size: $font-size-2xl;
+  font-weight: $font-weight-bold;
+  color: $color-primary;
+  margin: 0;
+}
+
+.statLabel {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: $spacing-4;
+}
+
+// ── Search bar ──
+.searchBar {
+  display: flex;
+  gap: $spacing-12;
+  margin-bottom: $spacing-16;
+  align-items: center;
+
+  @include mobile {
+    flex-direction: column;
+  }
+}
+
+.searchInput {
+  flex: 1;
+  padding: $spacing-12 $spacing-16;
+  border-radius: $border-radius-md;
+  border: 1px solid rgba(var(--glass-color), 0.15);
+  background: rgba(var(--glass-color), 0.06);
+  color: $color-text-primary;
+  font-size: $font-size-sm;
+  @include transition;
+
+  &::placeholder {
+    color: $color-text-secondary;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: $color-primary;
+    box-shadow: 0 0 0 2px alpha($color-primary, 20%);
+  }
+}
+
+.familySelect {
+  padding: $spacing-12 $spacing-16;
+  border-radius: $border-radius-md;
+  border: 1px solid rgba(var(--glass-color), 0.15);
+  background: rgba(var(--glass-color), 0.06);
+  color: $color-text-primary;
+  font-size: $font-size-sm;
+  min-width: 160px;
+  cursor: pointer;
+  @include transition;
+
+  &:focus {
+    outline: none;
+    border-color: $color-primary;
+    box-shadow: 0 0 0 2px alpha($color-primary, 20%);
+  }
+
+  option {
+    background: $color-bg-2;
+    color: $color-text-primary;
+  }
+}
+
+.searchCount {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  white-space: nowrap;
+}
+
+// ── Table ──
+.tableWrapper {
+  overflow-x: auto;
+  @include glass(0.06, 16px, 0.04, $border-radius-lg);
+
+  &::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(var(--glass-color), 0.15);
+    border-radius: 3px;
+  }
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 700px;
+}
+
+.table th {
+  text-align: left;
+  padding: $spacing-12 $spacing-16;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  color: $color-text-secondary;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid rgba(var(--glass-color), 0.1);
+  white-space: nowrap;
+}
+
+.table td {
+  padding: $spacing-12 $spacing-16;
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+  border-bottom: 1px solid rgba(var(--glass-color), 0.06);
+  vertical-align: middle;
+}
+
+.table tbody tr {
+  @include transition;
+
+  &:hover {
+    background: rgba(var(--glass-color), 0.04);
+  }
+}
+
+// ── User cell ──
+.userCell {
+  display: flex;
+  align-items: center;
+  gap: $spacing-12;
+}
+
+.userAvatar {
+  width: 32px;
+  height: 32px;
+  border-radius: $border-radius-full;
+  background: $gradient-primary;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-bold;
+  color: var(--color-on-gradient);
+  flex-shrink: 0;
+}
+
+.userInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.userName {
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.userEmail {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+}
+
+// ── Badges ──
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-4;
+  padding: 2px $spacing-8;
+  border-radius: $border-radius-full;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  white-space: nowrap;
+}
+
+.noFamily {
+  color: $color-text-secondary;
+  font-size: $font-size-xs;
+}
+
+.badgeFamily {
+  background: alpha($color-accent-alt, 15%);
+  color: $color-accent-alt;
+}
+
+.badgeSponsor {
+  background: alpha($color-primary, 15%);
+  color: $color-primary;
+}
+
+.badgeKid {
+  background: alpha($color-secondary, 15%);
+  color: $color-secondary;
+}
+
+.badgeLocked {
+  background: alpha($color-error, 15%);
+  color: $color-error;
+}
+
+.badgeWallet {
+  background: alpha($color-primary, 15%);
+  color: $color-primary;
+}
+
+.badge2fa {
+  background: alpha($color-info, 15%);
+  color: $color-info;
+}
+
+.familyBadges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-4;
+}
+
+// ── Actions ──
+.actions {
+  display: flex;
+  gap: $spacing-8;
+}
+
+.actionBtn {
+  padding: $spacing-4 $spacing-8;
+  border-radius: $border-radius-sm;
+  border: 1px solid rgba(var(--glass-color), 0.15);
+  background: transparent;
+  color: $color-text-secondary;
+  font-size: $font-size-xs;
+  cursor: pointer;
+  @include transition;
+
+  &:hover {
+    color: $color-text-primary;
+    border-color: $color-primary;
+    background: alpha($color-primary, 8%);
+  }
+}
+
+.actionBtnDanger {
+  &:hover {
+    color: $color-error;
+    border-color: $color-error;
+    background: alpha($color-error, 8%);
+  }
+}
+
+.actionBtnSuccess {
+  &:hover {
+    color: $color-success;
+    border-color: $color-success;
+    background: alpha($color-success, 8%);
+  }
+}
+
+// ── Pagination ──
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-12;
+  margin-top: $spacing-16;
+  padding: $spacing-12 0;
+}
+
+.pageBtn {
+  padding: $spacing-8 $spacing-16;
+  border-radius: $border-radius-sm;
+  border: 1px solid rgba(var(--glass-color), 0.15);
+  background: transparent;
+  color: $color-text-secondary;
+  font-size: $font-size-sm;
+  cursor: pointer;
+  @include transition;
+
+  &:hover:not(:disabled) {
+    color: $color-text-primary;
+    border-color: $color-primary;
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+.pageInfo {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+// ── Edit modal ──
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: $spacing-16;
+}
+
+.modal {
+  @include glass(0.12, 24px, 0.08, $border-radius-lg);
+  background: $color-bg-2;
+  padding: $spacing-24;
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modalTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  margin: 0 0 $spacing-20 0;
+}
+
+.modalField {
+  margin-bottom: $spacing-16;
+}
+
+.modalLabel {
+  display: block;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  color: $color-text-secondary;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: $spacing-4;
+}
+
+.modalInput {
+  width: 100%;
+  padding: $spacing-8 $spacing-12;
+  border-radius: $border-radius-sm;
+  border: 1px solid rgba(var(--glass-color), 0.15);
+  background: rgba(var(--glass-color), 0.06);
+  color: $color-text-primary;
+  font-size: $font-size-sm;
+
+  &:focus {
+    outline: none;
+    border-color: $color-primary;
+  }
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: $spacing-8;
+  margin-top: $spacing-20;
+}
+
+.modalBtn {
+  padding: $spacing-8 $spacing-16;
+  border-radius: $border-radius-sm;
+  border: none;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  cursor: pointer;
+  @include transition;
+}
+
+.modalBtnCancel {
+  background: transparent;
+  border: 1px solid rgba(var(--glass-color), 0.15);
+  color: $color-text-secondary;
+
+  &:hover {
+    color: $color-text-primary;
+  }
+}
+
+.modalBtnSave {
+  background: $color-primary;
+  color: #000;
+
+  &:hover {
+    opacity: 0.9;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+
+// ── Responsive ──
+.mobileCard {
+  display: none;
+
+  @include mobile {
+    display: block;
+  }
+}
+
+.desktopTable {
+  @include mobile {
+    display: none;
+  }
+}

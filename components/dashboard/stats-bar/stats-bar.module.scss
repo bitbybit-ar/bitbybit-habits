@@ -46,22 +46,22 @@
 
 .iconSats {
   background: alpha($color-primary, 15%);
-  color: var(--color-primary);
+  color: $color-primary;
 }
 
 .iconStreak {
   background: alpha($color-warning, 15%);
-  color: var(--color-warning);
+  color: $color-warning;
 }
 
 .iconPending {
   background: alpha($color-accent-alt, 15%);
-  color: var(--color-accent-alt);
+  color: $color-accent-alt;
 }
 
 .iconHabits {
   background: alpha($color-secondary, 15%);
-  color: var(--color-secondary);
+  color: $color-secondary;
 }
 
 .statContent {
@@ -73,18 +73,18 @@
 .statValue {
   font-size: $font-size-xl;
   font-weight: $font-weight-bold;
-  color: var(--color-text-primary);
+  color: $color-text-primary;
   line-height: $line-height-tight;
 }
 
 .statValueHighlight {
   font-size: clamp(1.6rem, 3vw, 2rem);
-  color: var(--color-primary);
+  color: $color-primary;
 }
 
 .statLabel {
   font-size: $font-size-xs;
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }

@@ -1,15 +1,23 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
-import { BoltIcon, UserIcon } from "@/components/icons";
+import { useConfirm } from "@/lib/hooks/useConfirm";
+import { ConfirmModal } from "@/components/ui/confirm-modal";
+import { BoltIcon, UserIcon, PencilIcon } from "@/components/icons";
 import { DashboardSection } from "@/components/dashboard/dashboard-section";
 import { EmptyState } from "@/components/dashboard/empty-state";
 import { WeeklyTracker } from "@/components/dashboard/weekly-tracker";
+import { EditHabitModal } from "@/components/dashboard/edit-habit-modal";
 import type { Habit } from "@/lib/types";
 import type { FamilyWithMembers } from "@/lib/hooks/useFamilies";
 import type { FamilyCompletion } from "@/lib/hooks/useFamilyData";
 import styles from "../../../app/[locale]/(dashboard)/sponsor/sponsor.module.scss";
+
+interface KidMember {
+  user_id: string;
+  display_name: string;
+}
 
 interface SponsorHabitsTabProps {
   habits: Habit[];
@@ -17,10 +25,16 @@ interface SponsorHabitsTabProps {
   familyCompletions: FamilyCompletion[];
   onApprove: (completionId: string) => Promise<void>;
   onCreateHabit: () => void;
+  onEdit?: (habit: Habit) => void;
+  onDelete?: (habitId: string) => void;
+  currentUserId?: string;
+  kids?: KidMember[];
 }
 
-export function SponsorHabitsTab({ habits, families, familyCompletions, onApprove, onCreateHabit }: SponsorHabitsTabProps) {
+export function SponsorHabitsTab({ habits, families, familyCompletions, onApprove, onCreateHabit, onEdit, onDelete, currentUserId, kids }: SponsorHabitsTabProps) {
   const t = useTranslations();
+  const [editingHabit, setEditingHabit] = useState<Habit | null>(null);
+  const { confirm, confirmState, handleConfirm, handleCancel } = useConfirm();
 
   const byHabitGroups = useMemo(() => {
     const groups: Record<string, { habitId: string; habitName: string; satReward: number; kids: Record<string, { userId: string; displayName: string }> }> = {};
@@ -36,11 +50,16 @@ export function SponsorHabitsTab({ habits, families, familyCompletions, onApprov
       groups[c.habit_id].kids[c.kid_user_id] = { userId: c.kid_user_id, displayName: c.kid_display_name };
     }
 
+    // MVP: Single-family mode — show all assigned kids (from assigned_to + habitAssignments)
+    const members = families[0]?.members ?? [];
     for (const habit of habits) {
       if (groups[habit.id]) {
-        const kid = families.flatMap((f) => f.members).find((m) => m.user_id === habit.assigned_to);
-        if (kid && kid.role === "kid") {
-          groups[habit.id].kids[kid.user_id] = { userId: kid.user_id, displayName: kid.display_name || kid.username };
+        const assignedIds = habit.assigned_members ?? [habit.assigned_to];
+        for (const userId of assignedIds) {
+          const kid = members.find((m) => m.user_id === userId);
+          if (kid && kid.role === "kid") {
+            groups[habit.id].kids[kid.user_id] = { userId: kid.user_id, displayName: kid.display_name || kid.username };
+          }
         }
       }
     }
@@ -78,6 +97,28 @@ export function SponsorHabitsTab({ habits, families, familyCompletions, onApprov
                     <BoltIcon size={12} />
                     {group.satReward} {t("sats.sats")}
                   </div>
+                  {currentUserId && habit?.created_by === currentUserId && onEdit && onDelete && (
+                    <div className={styles.habitActions}>
+                      <button
+                        className={styles.editBtn}
+                        onClick={() => { if (habit) setEditingHabit(habit); }}
+                        title={t("common.edit")}
+                      >
+                        <PencilIcon size={14} />
+                      </button>
+                      <button
+                        className={styles.deleteBtn}
+                        onClick={async () => {
+                          const confirmed = await confirm(t("habits.confirmDelete"), "danger");
+                          if (!confirmed) return;
+                          onDelete(group.habitId);
+                        }}
+                        title={t("common.delete")}
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  )}
                 </div>
                 {kidList.length === 0 ? (
                   <p className={styles.noKidsText}>{t("sponsorDashboard.noKidsAssigned")}</p>
@@ -107,6 +148,25 @@ export function SponsorHabitsTab({ habits, families, familyCompletions, onApprov
           })}
         </div>
       )}
+      {editingHabit && (
+        <EditHabitModal
+          habit={editingHabit}
+          kids={kids}
+          onSave={(updated) => {
+            setEditingHabit(null);
+            if (onEdit) onEdit(updated);
+          }}
+          onClose={() => setEditingHabit(null)}
+        />
+      )}
+      {confirmState && (
+        <ConfirmModal
+          message={confirmState.message}
+          variant={confirmState.variant}
+          onConfirm={handleConfirm}
+          onCancel={handleCancel}
+        />
+      )}
     </DashboardSection>
   );
 }
@@ -126,13 +186,23 @@ export function SponsorByKidTab({ habits, families, familyCompletions, onApprove
   const byKidGroups = useMemo(() => {
     const groups: Record<string, { userId: string; displayName: string; avatarUrl: string | null; habits: Record<string, { habitId: string; habitName: string; satReward: number }> }> = {};
 
-    for (const family of families) {
+    // MVP: Single-family mode
+    const family = families[0];
+    if (family) {
       for (const member of family.members) {
         if (member.role === "kid" && !groups[member.user_id]) {
           groups[member.user_id] = { userId: member.user_id, displayName: member.display_name || member.username, avatarUrl: member.avatar_url, habits: {} };
         }
       }
     }
+    // ROADMAP: Multi-family support (commented for MVP single-family mode)
+    // for (const family of families) {
+    //   for (const member of family.members) {
+    //     if (member.role === "kid" && !groups[member.user_id]) {
+    //       groups[member.user_id] = { userId: member.user_id, displayName: member.display_name || member.username, avatarUrl: member.avatar_url, habits: {} };
+    //     }
+    //   }
+    // }
 
     for (const c of familyCompletions) {
       if (!groups[c.kid_user_id]) {
@@ -142,8 +212,11 @@ export function SponsorByKidTab({ habits, families, familyCompletions, onApprove
     }
 
     for (const habit of habits) {
-      if (groups[habit.assigned_to]) {
-        groups[habit.assigned_to].habits[habit.id] = { habitId: habit.id, habitName: habit.name, satReward: habit.sat_reward };
+      const assignedIds = habit.assigned_members ?? [habit.assigned_to];
+      for (const userId of assignedIds) {
+        if (groups[userId]) {
+          groups[userId].habits[habit.id] = { habitId: habit.id, habitName: habit.name, satReward: habit.sat_reward };
+        }
       }
     }
 

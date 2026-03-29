@@ -3,12 +3,17 @@
 import { useState, useEffect, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
+import { useConfirm } from "@/lib/hooks/useConfirm";
+import { ConfirmModal } from "@/components/ui/confirm-modal";
 import AuthCard from "@/components/auth/AuthCard";
 import { Container } from "@/components/ui/container";
 import { BlockLoader } from "@/components/ui/block-loader";
 import { FormInput, FormSelect, FormButton } from "@/components/ui/form";
 import { useFormValidation } from "@/lib/hooks/useFormValidation";
+import { useNostr } from "@/lib/hooks/useNostr";
+import { NostrichIcon } from "@/components/icons";
 import { resolveApiError } from "@/lib/error-messages";
+import type { NostrMetadata } from "@/lib/nostr/types";
 import formStyles from "@/components/ui/form/form.module.scss";
 import styles from "./settings.module.scss";
 
@@ -19,17 +24,34 @@ interface Profile {
   display_name: string;
   avatar_url: string | null;
   locale: "es" | "en";
+  nostr_pubkey: string | null;
+  auth_provider: "email" | "nostr";
+  nostr_metadata: NostrMetadata | null;
+  has_password: boolean;
 }
 
 export default function SettingsPage() {
   const t = useTranslations();
   const router = useRouter();
+  const {
+    hasExtension: nostrAvailable,
+    linkAccount,
+    unlinkAccount,
+    fetchAndSyncMetadata,
+    publishProfileToNostr,
+    isLoading: nostrLoading,
+  } = useNostr();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState("");
+  const [nostrError, setNostrError] = useState("");
+  const [nostrSyncing, setNostrSyncing] = useState(false);
   const [locale, setLocale] = useState<"es" | "en">("es");
+
+  const { confirm, confirmState, handleConfirm, handleCancel } = useConfirm();
+  const isNostrOrigin = profile?.auth_provider === "nostr";
 
   const form = useFormValidation({
     initialValues: {
@@ -117,6 +139,21 @@ export default function SettingsPage() {
       if (res.ok && data.success) {
         setSaved(true);
         setProfile(data.data);
+
+        // For Nostr-origin users: auto-publish merged metadata to relays
+        if (isNostrOrigin && nostrAvailable) {
+          publishProfileToNostr(
+            {
+              display_name: form.values.display_name,
+              username: form.values.username,
+              avatar_url: form.values.avatar_url || null,
+            },
+            profile?.nostr_metadata,
+          ).catch(() => {
+            // Non-blocking: local save succeeded even if relay publish fails
+          });
+        }
+
         if (profile && locale !== profile.locale) {
           router.push(`/${locale}/settings`);
         }
@@ -127,6 +164,92 @@ export default function SettingsPage() {
       setError(t("auth.connectionError"));
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleLinkNostr = async () => {
+    setNostrError("");
+    const result = await linkAccount();
+    if (!result.success) {
+      setNostrError(resolveApiError(result.error || "nostr_link_failed", t));
+      return;
+    }
+    // Refresh profile to show the linked pubkey
+    const res = await fetch("/api/auth/profile");
+    const data = await res.json();
+    if (data.success && data.data) {
+      setProfile(data.data);
+      // Email user just linked Nostr: prompt to import metadata
+      if (data.data.auth_provider === "email" && data.data.nostr_pubkey) {
+        const wantImport = await confirm(t("settings.nostrImportPrompt"), "danger");
+        if (wantImport) {
+          setNostrSyncing(true);
+          try {
+            const metadata = await fetchAndSyncMetadata(data.data.nostr_pubkey);
+            if (metadata) {
+              // Refresh form with imported data
+              const refreshRes = await fetch("/api/auth/profile");
+              const refreshData = await refreshRes.json();
+              if (refreshData.success && refreshData.data) {
+                setProfile(refreshData.data);
+                form.setValues({
+                  display_name: refreshData.data.display_name,
+                  username: refreshData.data.username,
+                  email: refreshData.data.email,
+                  avatar_url: refreshData.data.avatar_url ?? "",
+                });
+              }
+            }
+          } catch {
+            // Non-blocking
+          } finally {
+            setNostrSyncing(false);
+          }
+        }
+      }
+    }
+  };
+
+  const handleUnlinkNostr = async () => {
+    setNostrError("");
+    const confirmed = await confirm(t("settings.unlinkNostrConfirm"), "danger");
+    if (!confirmed) return;
+    const result = await unlinkAccount();
+    if (!result.success) {
+      setNostrError(resolveApiError(result.error || "nostr_unlink_failed", t));
+      return;
+    }
+    // Refresh profile
+    const res = await fetch("/api/auth/profile");
+    const data = await res.json();
+    if (data.success && data.data) setProfile(data.data);
+  };
+
+  /** Manual sync: pull latest kind 0 from relays into local profile */
+  const handleSyncFromNostr = async () => {
+    if (!profile?.nostr_pubkey) return;
+    setNostrSyncing(true);
+    setNostrError("");
+    try {
+      const metadata = await fetchAndSyncMetadata(profile.nostr_pubkey);
+      if (metadata) {
+        // Refresh form with synced data
+        const res = await fetch("/api/auth/profile");
+        const data = await res.json();
+        if (data.success && data.data) {
+          setProfile(data.data);
+          form.setValues({
+            display_name: data.data.display_name,
+            username: data.data.username,
+            email: data.data.email,
+            avatar_url: data.data.avatar_url ?? "",
+          });
+        }
+      }
+    } catch {
+      setNostrError(t("settings.nostrSyncFailed"));
+    } finally {
+      setNostrSyncing(false);
     }
   };
 
@@ -230,6 +353,72 @@ export default function SettingsPage() {
           <option value="en">English</option>
         </FormSelect>
 
+        {/* Nostr Identity Section */}
+        <div className={styles.nostrSection}>
+          <div className={styles.nostrSectionTitle}>
+            <NostrichIcon size={16} />
+            {t("settings.nostrIdentity")}
+          </div>
+
+          {profile?.nostr_pubkey ? (
+            <>
+              <div className={styles.nostrLinkedInfo}>
+                <div>
+                  <div style={{ fontSize: "0.75rem", color: "var(--color-text-secondary)", marginBottom: 4 }}>
+                    {t("settings.nostrPubkey")}
+                  </div>
+                  <div className={styles.nostrPubkey}>
+                    {profile.nostr_pubkey.slice(0, 16)}...{profile.nostr_pubkey.slice(-8)}
+                  </div>
+                </div>
+                {profile.has_password && (
+                  <button
+                    className={styles.nostrUnlinkButton}
+                    onClick={handleUnlinkNostr}
+                    disabled={nostrLoading}
+                    type="button"
+                  >
+                    {t("settings.unlinkNostr")}
+                  </button>
+                )}
+              </div>
+              {/* Sync from Nostr button */}
+              {nostrAvailable && (
+                <button
+                  className={styles.nostrSyncButton}
+                  onClick={handleSyncFromNostr}
+                  disabled={nostrSyncing}
+                  type="button"
+                >
+                  <NostrichIcon size={14} />
+                  {nostrSyncing ? t("settings.nostrSyncing") : t("settings.nostrSyncFromRelay")}
+                </button>
+              )}
+              {isNostrOrigin && nostrAvailable && (
+                <p className={styles.nostrAutoSyncHint}>
+                  {t("settings.nostrAutoSyncHint")}
+                </p>
+              )}
+            </>
+          ) : nostrAvailable ? (
+            <button
+              className={styles.nostrLinkButton}
+              onClick={handleLinkNostr}
+              disabled={nostrLoading}
+              type="button"
+            >
+              <NostrichIcon size={16} />
+              {t("settings.linkNostr")}
+            </button>
+          ) : (
+            <p style={{ fontSize: "0.8rem", color: "var(--color-text-secondary)" }}>
+              {t("auth.nostrExtensionRequired")}
+            </p>
+          )}
+
+          {nostrError && <p className={styles.nostrError}>{nostrError}</p>}
+        </div>
+
         {saved && (
           <p className={styles.savedText}>{t("settings.saved")}</p>
         )}
@@ -238,6 +427,14 @@ export default function SettingsPage() {
           {t("common.save")}
         </FormButton>
       </form>
+      {confirmState && (
+        <ConfirmModal
+          message={confirmState.message}
+          variant={confirmState.variant}
+          onConfirm={handleConfirm}
+          onCancel={handleCancel}
+        />
+      )}
     </AuthCard>
   );
 }

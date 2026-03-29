@@ -38,7 +38,7 @@
   border-radius: $border-radius-md;
   border: 1px solid rgba(var(--glass-color), 0.1);
   background: transparent;
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
   font-size: $font-size-xs;
   font-weight: $font-weight-semibold;
   cursor: pointer;
@@ -52,13 +52,13 @@
 
 .leaveButton {
   &:hover {
-    color: var(--color-accent);
+    color: $color-accent;
     border-color: alpha($color-accent, 30%);
   }
 }
 
 .deleteButton {
-  color: var(--color-accent);
+  color: $color-accent;
   border-color: alpha($color-accent, 30%);
 
   &:hover {
@@ -68,7 +68,7 @@
 
 .confirmText {
   font-size: $font-size-sm;
-  color: var(--color-accent);
+  color: $color-accent;
   margin: 0 0 $spacing-16;
   padding: $spacing-12;
   background: alpha($color-accent, 8%);
@@ -78,7 +78,7 @@
 .familyName {
   font-size: $font-size-lg;
   font-weight: $font-weight-bold;
-  color: var(--color-text-primary);
+  color: $color-text-primary;
   margin: 0;
 }
 
@@ -88,7 +88,7 @@
   border-radius: $border-radius-md;
   border: 1px solid alpha($color-primary, 30%);
   background: transparent;
-  color: var(--color-primary);
+  color: $color-primary;
   font-size: $font-size-xs;
   font-weight: $font-weight-semibold;
   cursor: pointer;
@@ -97,7 +97,7 @@
 
   &:hover {
     background: alpha($color-primary, 10%);
-    border-color: var(--color-primary);
+    border-color: $color-primary;
   }
 }
 
@@ -108,7 +108,7 @@
 .codeLabel {
   font-size: $font-size-xs;
   font-weight: $font-weight-semibold;
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   display: block;
@@ -127,13 +127,13 @@
 }
 
 .code {
-  background: var(--color-bg-3);
+  background: $color-bg-3;
   border: 1px solid rgba(var(--glass-color), 0.1);
   border-radius: $border-radius-md;
   padding: $spacing-12 $spacing-20;
   font-size: $font-size-xl;
   font-weight: $font-weight-bold;
-  color: var(--color-primary);
+  color: $color-primary;
   letter-spacing: 0.15em;
   text-align: center;
   flex: 1;
@@ -148,7 +148,7 @@
   border-radius: $border-radius-md;
   border: 1px solid alpha($color-primary, 30%);
   background: transparent;
-  color: var(--color-primary);
+  color: $color-primary;
   font-size: $font-size-sm;
   font-weight: $font-weight-semibold;
   cursor: pointer;
@@ -157,7 +157,7 @@
 
   &:hover {
     background: alpha($color-primary, 10%);
-    border-color: var(--color-primary);
+    border-color: $color-primary;
   }
 }
 
@@ -169,7 +169,7 @@
 .membersLabel {
   font-size: $font-size-xs;
   font-weight: $font-weight-semibold;
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   display: block;
@@ -195,11 +195,11 @@
   width: 32px;
   height: 32px;
   border-radius: $border-radius-full;
-  background: var(--color-bg-3);
+  background: $color-bg-3;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
   flex-shrink: 0;
 }
 
@@ -213,12 +213,12 @@
 .memberName {
   font-size: $font-size-sm;
   font-weight: $font-weight-medium;
-  color: var(--color-text-primary);
+  color: $color-text-primary;
 }
 
 .memberRole {
   font-size: $font-size-xs;
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
 }
 
 .removeBtn {
@@ -230,7 +230,7 @@
   border: none;
   border-radius: $border-radius-full;
   background: rgba(var(--glass-color), 0.05);
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
   cursor: pointer;
   font-size: 12px;
   flex-shrink: 0;
@@ -239,6 +239,6 @@
 
   &:hover {
     background: alpha($color-accent, 15%);
-    color: var(--color-accent);
+    color: $color-accent;
   }
 }

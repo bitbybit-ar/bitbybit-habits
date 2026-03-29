@@ -7,6 +7,7 @@ import AuthCard from "@/components/auth/AuthCard";
 import { FormInput, FormButton } from "@/components/ui/form";
 import { useToast } from "@/components/ui/toast";
 import { useFormValidation } from "@/lib/hooks/useFormValidation";
+import { useNostr } from "@/lib/hooks/useNostr";
 import { resolveApiError } from "@/lib/error-messages";
 import styles from "@/components/ui/form/form.module.scss";
 
@@ -14,6 +15,7 @@ export default function LoginPage() {
   const router = useRouter();
   const t = useTranslations();
   const { showToast } = useToast();
+  const { hasExtension: nostrAvailable, login: nostrLogin, isLoading: nostrLoading } = useNostr();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -57,6 +59,19 @@ export default function LoginPage() {
     }
   };
 
+  const handleNostrLogin = async () => {
+    setError("");
+    const result = await nostrLogin();
+    if (!result.success) {
+      setError(resolveApiError(result.error || "nostr_login_failed", t));
+      return;
+    }
+    const role = result.data?.role;
+    if (role === "kid") router.push("/kid");
+    else if (role === "sponsor") router.push("/sponsor");
+    else router.push("/onboard");
+  };
+
   const loginField = form.fieldProps("login");
   const passwordField = form.fieldProps("password");
 
@@ -67,6 +82,9 @@ export default function LoginPage() {
       switchLabel={t("auth.register")}
       switchHref="/register"
       showNostr
+      onNostrLogin={handleNostrLogin}
+      nostrAvailable={nostrAvailable}
+      nostrLoading={nostrLoading}
       error={error}
       variant="login"
     >

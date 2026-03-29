@@ -52,7 +52,7 @@
   box-shadow: 0 8px 32px rgba(var(--shadow-color), 0.4);
   font-size: $font-size-sm;
   font-weight: $font-weight-medium;
-  color: var(--color-text-primary);
+  color: $color-text-primary;
   pointer-events: auto;
   animation: slideIn 0.3s ease-out forwards;
   min-width: 280px;
@@ -85,28 +85,28 @@
 }
 
 .toastSuccess {
-  border-left: 3px solid var(--color-primary);
+  border-left: 3px solid $color-primary;
 
   .toastIcon {
     background: alpha($color-success, 15%);
-    color: var(--color-success);
+    color: $color-success;
   }
 }
 
 .toastError {
-  border-left: 3px solid var(--color-error);
+  border-left: 3px solid $color-error;
 
   .toastIcon {
     background: alpha($color-error, 15%);
-    color: var(--color-error);
+    color: $color-error;
   }
 }
 
 .toastInfo {
-  border-left: 3px solid var(--color-primary);
+  border-left: 3px solid $color-primary;
 
   .toastIcon {
     background: alpha($color-primary, 15%);
-    color: var(--color-primary);
+    color: $color-primary;
   }
 }

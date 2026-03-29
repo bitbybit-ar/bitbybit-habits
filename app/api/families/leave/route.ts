@@ -25,32 +25,46 @@ export const POST = apiHandler(async (request, { session, db }) => {
 
   const userRole = membership[0].role;
 
-  // If sponsor, check that there's at least one other sponsor
+  // MVP: Single-sponsor mode — sponsor cannot leave if any other members exist
   if (userRole === "sponsor") {
-    const otherSponsors = await db
+    const otherMembers = await db
       .select({ id: familyMembers.id })
       .from(familyMembers)
       .where(
-        and(
-          eq(familyMembers.family_id, family_id),
-          ne(familyMembers.user_id, session.user_id),
-          eq(familyMembers.role, "sponsor")
-        )
+        and(eq(familyMembers.family_id, family_id), ne(familyMembers.user_id, session.user_id))
       );
 
-    if (otherSponsors.length === 0) {
-      const otherMembers = await db
-        .select({ id: familyMembers.id })
-        .from(familyMembers)
-        .where(
-          and(eq(familyMembers.family_id, family_id), ne(familyMembers.user_id, session.user_id))
-        );
-
-      if (otherMembers.length > 0) {
-        throw new BadRequestError("last_sponsor");
-      }
+    if (otherMembers.length > 0) {
+      throw new BadRequestError("last_sponsor");
     }
   }
+
+  // ROADMAP: Multi-sponsor support (commented for MVP single-sponsor mode)
+  // if (userRole === "sponsor") {
+  //   const otherSponsors = await db
+  //     .select({ id: familyMembers.id })
+  //     .from(familyMembers)
+  //     .where(
+  //       and(
+  //         eq(familyMembers.family_id, family_id),
+  //         ne(familyMembers.user_id, session.user_id),
+  //         eq(familyMembers.role, "sponsor")
+  //       )
+  //     );
+  //
+  //   if (otherSponsors.length === 0) {
+  //     const otherMembers = await db
+  //       .select({ id: familyMembers.id })
+  //       .from(familyMembers)
+  //       .where(
+  //         and(eq(familyMembers.family_id, family_id), ne(familyMembers.user_id, session.user_id))
+  //       );
+  //
+  //     if (otherMembers.length > 0) {
+  //       throw new BadRequestError("last_sponsor");
+  //     }
+  //   }
+  // }
 
   // Remove the member
   await db

@@ -40,7 +40,7 @@
   }
 
   p {
-    color: var(--color-text-secondary);
+    color: $color-text-secondary;
     font-size: $font-size-base;
     line-height: 1.7;
   }
@@ -51,7 +51,7 @@
   }
 
   li {
-    color: var(--color-text-secondary);
+    color: $color-text-secondary;
     padding: 6px 0;
     padding-left: $spacing-24;
     position: relative;
@@ -82,13 +82,13 @@
 }
 
 .useCase:nth-child(1) .iconCircle {
-  color: var(--color-primary);
+  color: $color-primary;
   background: alpha($color-primary, 12%);
   border-color: alpha($color-primary, 15%);
 }
 
 .useCase:nth-child(2) .iconCircle {
-  color: var(--color-secondary);
+  color: $color-secondary;
   background: alpha($color-secondary, 12%);
   border-color: alpha($color-secondary, 15%);
 }

@@ -219,7 +219,7 @@ const SponsorDemo: React.FC = () => {
       <p className={styles.stepDesc}>{t("step3Desc")}</p>
       {!createdHabit ? (
         <CreateHabitForm
-          families={[{ id: MOCK_FAMILY_ID, name: "Familia Nakamoto" }]}
+          familyId={MOCK_FAMILY_ID}
           kids={[{ user_id: MOCK_KID_ID, display_name: "Satoshi Jr." }]}
           onSubmit={handleCreateHabit}
         />

@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { useRouter } from "@/i18n/routing";
 import { BoltIcon, ListIcon, PlusIcon, UsersIcon, WalletIcon, UserIcon } from "@/components/icons";
 import { SummaryBar } from "@/components/dashboard/summary-bar";
 import { CreateHabitForm } from "@/components/dashboard/create-habit-form";
@@ -25,6 +25,7 @@ import { DashboardSection } from "@/components/dashboard/dashboard-section";
 import { SponsorHabitsTab, SponsorByKidTab } from "@/components/dashboard/sponsor/SponsorHabitsTab";
 import { SponsorPaymentsTab } from "@/components/dashboard/sponsor/SponsorPaymentsTab";
 import { SponsorFamilyTab } from "@/components/dashboard/sponsor/SponsorFamilyTab";
+import type { Habit } from "@/lib/types";
 
 type TabType = "byHabit" | "byKid" | "create" | "family" | "payments" | "wallet";
 
@@ -50,6 +51,13 @@ export default function SponsorDashboard() {
 
   const isLoading = session.isLoading || habits.isLoading || families.isLoading;
 
+  // Role guard: redirect non-sponsors away
+  useEffect(() => {
+    if (!session.isLoading && session.data && session.data.role !== "sponsor") {
+      router.replace(session.data.role === "kid" ? "/kid" : "/dashboard");
+    }
+  }, [session.isLoading, session.data, router]);
+
   useEffect(() => {
     if (!isLoading && habits.data.length === 0 && families.data.length === 0) {
       const dismissed = localStorage.getItem("bitbybit_onboarding_done");
@@ -74,6 +82,8 @@ export default function SponsorDashboard() {
    * 4. Fall back to QR invoice modal
    */
   const runPaymentCascade = useCallback(async (completionId: string, amountSats: number, habitName: string, existingPaymentId?: string) => {
+    console.log(`[Cascade] Starting for completion ${completionId.slice(0, 8)} (${amountSats} sats, "${habitName}")`);
+
     // Generate invoice from kid's wallet
     const invoiceRes = await fetch("/api/payments/invoice", {
       method: "POST",
@@ -82,17 +92,22 @@ export default function SponsorDashboard() {
     });
 
     if (!invoiceRes.ok) {
+      const errData = await invoiceRes.json().catch(() => null);
+      console.error(`[Cascade] Invoice generation failed: ${invoiceRes.status}`, errData);
       showToast(t("payments.paymentError"), "error");
       return;
     }
 
     const invoiceData = await invoiceRes.json();
     if (!invoiceData.success || !invoiceData.data) {
+      console.error("[Cascade] Invoice response missing data:", invoiceData);
       showToast(t("payments.paymentError"), "error");
       return;
     }
 
     const { paymentRequest, payment_id: paymentId } = invoiceData.data;
+
+    console.log(`[Cascade] Invoice created, payment: ${paymentId}`);
 
     // Tier 1: WebLN (browser extension — invisible to user)
     if (hasWebLN) {
@@ -114,8 +129,11 @@ export default function SponsorDashboard() {
         if (msg.includes("rejected") || msg.includes("denied") || msg.includes("cancelled")) {
           showToast(t("payments.weblnRejected"), "info");
         }
+        console.warn(`[Cascade] Tier 1 (WebLN): rejected/failed — ${msg}`);
         // Fall through to NWC
       }
+    } else {
+      console.log("[Cascade] Tier 1 (WebLN): skipped — no extension");
     }
 
     // Tier 2: NWC auto-pay (invisible to user)
@@ -124,19 +142,24 @@ export default function SponsorDashboard() {
       if (payRes.ok) {
         const payData = await payRes.json();
         if (payData.success && payData.data?.paid) {
+          console.log(`[Cascade] Tier 2 (NWC): payment successful`);
           showToast(t("payments.autoPaidSuccess", { amount: amountSats }), "success");
           return;
         }
       } else {
         const payData = await payRes.json().catch(() => null);
+        console.warn(`[Cascade] Tier 2 (NWC): ${payRes.status} → ${payData?.error ?? "unknown"}`);
         if (payData?.error === "insufficient_funds") {
           showToast(t("payments.insufficientFunds"), "error");
         }
         // sponsor_no_wallet or other — fall through to QR
       }
-    } catch { /* network error — fall through to QR */ }
+    } catch (err) {
+      console.error("[Cascade] Tier 2 (NWC): network error", err);
+    }
 
     // Tier 3: Show QR invoice modal
+    console.log("[Cascade] Tier 3: showing QR invoice modal");
     setInvoiceModal({ paymentRequest, paymentId, amountSats, habitName });
     showToast(t("payments.scanInvoice", { amount: amountSats }), "info");
   }, [hasWebLN, weblnSendPayment, extensionName, showToast, t]);
@@ -216,6 +239,23 @@ export default function SponsorDashboard() {
     }
   }, [showToast, t, habits]);
 
+  const handleEditHabit = useCallback((updated: Habit) => {
+    habits.setData((prev) => prev.map((h) => (h.id === updated.id ? updated : h)));
+    showToast(t("habits.editSuccess"), "success");
+  }, [habits, showToast, t]);
+
+  const handleDeleteHabit = useCallback(async (habitId: string) => {
+    try {
+      const res = await fetch(`/api/habits/${habitId}`, { method: "DELETE" });
+      if (res.ok) {
+        habits.setData((prev) => prev.filter((h) => h.id !== habitId));
+        showToast(t("habits.deleteSuccess"), "success");
+      }
+    } catch {
+      showToast(t("auth.connectionError"), "error");
+    }
+  }, [habits, showToast, t]);
+
   const handleRetryPayment = useCallback(async (paymentId: string) => {
     const result = await payments.retryPayment(paymentId);
     if (!result.success) {
@@ -240,17 +280,18 @@ export default function SponsorDashboard() {
     if (ok) showToast(t("family.deleteSuccess"), "info");
   }, [families, showToast, t]);
 
-  const handleRoleChange = useCallback(async (familyId: string, userId: string, newRole: string) => {
-    const ok = await families.changeRole(familyId, userId, newRole);
-    if (ok) showToast(t("family.roleChanged"), "success");
-  }, [families, showToast, t]);
+  // ROADMAP: Multi-sponsor support (commented for MVP single-sponsor mode)
+  // const handleRoleChange = useCallback(async (familyId: string, userId: string, newRole: string) => {
+  //   const ok = await families.changeRole(familyId, userId, newRole);
+  //   if (ok) showToast(t("family.roleChanged"), "success");
+  // }, [families, showToast, t]);
 
   const handleRemoveMember = useCallback(async (familyId: string, userId: string) => {
     const ok = await families.removeMember(familyId, userId);
     if (ok) showToast(t("family.memberRemoved"), "info");
   }, [families, showToast, t]);
 
-  if (isLoading) return <Container center><BlockLoader /></Container>;
+  if (isLoading || (session.data && session.data.role !== "sponsor")) return <Container center><BlockLoader /></Container>;
 
   if (session.data?.role === "kid") {
     router.replace("/kid");
@@ -258,11 +299,20 @@ export default function SponsorDashboard() {
   }
 
   const displayName = session.data?.display_name ?? session.data?.username ?? "Sponsor";
-  const allKids = families.data.flatMap((f) =>
-    f.members.filter((m) => m.role === "kid").map((m) => ({ user_id: m.user_id, display_name: m.display_name || m.username }))
-  );
-  const uniqueKids = allKids.filter((kid, i, self) => self.findIndex((k) => k.user_id === kid.user_id) === i);
-  const familyOptions = families.data.map((f) => ({ id: f.id, name: f.name }));
+
+  // MVP: Single-family mode
+  const family = families.data[0] ?? null;
+  const allKids = family
+    ? family.members.filter((m) => m.role === "kid").map((m) => ({ user_id: m.user_id, display_name: m.display_name || m.username }))
+    : [];
+  const familyId = family?.id ?? "";
+
+  // ROADMAP: Multi-family support (commented for MVP single-family mode)
+  // const allKids = families.data.flatMap((f) =>
+  //   f.members.filter((m) => m.role === "kid").map((m) => ({ user_id: m.user_id, display_name: m.display_name || m.username }))
+  // );
+  // const uniqueKids = allKids.filter((kid, i, self) => self.findIndex((k) => k.user_id === kid.user_id) === i);
+  // const familyOptions = families.data.map((f) => ({ id: f.id, name: f.name }));
 
   const tabs: DashboardTab[] = [
     { key: "byHabit", icon: <ListIcon size={20} />, label: t("sponsorDashboard.byHabit") },
@@ -270,7 +320,7 @@ export default function SponsorDashboard() {
     { key: "create", icon: <PlusIcon size={20} />, label: t("habits.createHabit") },
     { key: "family", icon: <UsersIcon size={20} />, label: t("family.myFamily") },
     { key: "payments", icon: <BoltIcon size={20} />, label: t("payments.title") },
-    { key: "wallet", icon: <WalletIcon size={20} />, label: t("wallet.connectWallet") },
+    { key: "wallet", icon: <WalletIcon size={20} />, label: t("wallet.title") },
   ];
 
   const statsBar = (
@@ -301,24 +351,24 @@ export default function SponsorDashboard() {
   return (
     <DashboardLayout displayName={`${t("dashboard.welcome")}, ${displayName}`} statsBar={statsBar} tabs={tabs} activeTab={activeTab} onTabChange={(key) => setActiveTab(key as TabType)} breadcrumbs={breadcrumbs}>
       {activeTab === "byHabit" && (
-        <SponsorHabitsTab habits={habits.data} families={families.data} familyCompletions={familyData.completions} onApprove={handleApprove} onCreateHabit={() => setActiveTab("create")} />
+        <SponsorHabitsTab habits={habits.data} families={families.data} familyCompletions={familyData.completions} onApprove={handleApprove} onCreateHabit={() => setActiveTab("create")} onEdit={handleEditHabit} onDelete={handleDeleteHabit} currentUserId={session.data?.user_id} kids={allKids} />
       )}
       {activeTab === "byKid" && (
         <SponsorByKidTab habits={habits.data} families={families.data} familyCompletions={familyData.completions} onApprove={handleApprove} />
       )}
       {activeTab === "create" && (
         <DashboardSection title={t("habits.createHabit")}>
-          <CreateHabitForm families={familyOptions} kids={uniqueKids} onSubmit={handleCreateHabit} />
+          <CreateHabitForm familyId={familyId} kids={allKids} onSubmit={handleCreateHabit} />
         </DashboardSection>
       )}
       {activeTab === "family" && (
-        <SponsorFamilyTab families={families.data} sessionUserId={session.data?.user_id ?? ""} onLeave={handleLeaveFamily} onDelete={handleDeleteFamily} onRoleChange={handleRoleChange} onRemoveMember={handleRemoveMember} />
+        <SponsorFamilyTab families={families.data} sessionUserId={session.data?.user_id ?? ""} onLeave={handleLeaveFamily} onDelete={handleDeleteFamily} onRemoveMember={handleRemoveMember} />
       )}
       {activeTab === "payments" && (
         <SponsorPaymentsTab payments={payments.data} isLoading={payments.isLoading} onRetry={handleRetryPayment} />
       )}
       {activeTab === "wallet" && (
-        <DashboardSection title={t("wallet.connectWallet")}>
+        <DashboardSection title={t("wallet.title")}>
           <WalletConnect />
         </DashboardSection>
       )}

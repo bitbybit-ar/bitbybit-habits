@@ -73,17 +73,17 @@
 
 .iconCompleted {
   background: alpha($color-success, 15%);
-  color: var(--color-success);
+  color: $color-success;
 }
 
 .iconPending {
   background: alpha($color-warning, 15%);
-  color: var(--color-warning);
+  color: $color-warning;
 }
 
 .iconSats {
   background: alpha($color-primary, 15%);
-  color: var(--color-primary);
+  color: $color-primary;
 }
 
 .cardContent {
@@ -96,7 +96,7 @@
 .cardValue {
   font-size: $font-size-xl;
   font-weight: $font-weight-bold;
-  color: var(--color-text-primary);
+  color: $color-text-primary;
   line-height: $line-height-tight;
   display: flex;
   align-items: center;
@@ -104,12 +104,12 @@
 }
 
 .valueSats {
-  color: var(--color-primary);
+  color: $color-primary;
 }
 
 .cardLabel {
   font-size: $font-size-xs;
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   white-space: nowrap;
@@ -123,7 +123,7 @@
   height: 20px;
   padding: 0 6px;
   border-radius: $border-radius-full;
-  background: var(--color-warning);
+  background: $color-warning;
   color: #fff;
   font-size: 11px;
   font-weight: $font-weight-bold;

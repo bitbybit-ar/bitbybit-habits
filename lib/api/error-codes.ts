@@ -64,4 +64,10 @@ export const ERROR_CODES = {
 
   // Wallets
   INVALID_NWC_URL: "invalid_nwc_url",
+  NO_WALLET: "no_wallet",
+  MISSING_INVOICE: "missing_invoice",
+  INVALID_INVOICE: "invalid_invoice",
+  INVALID_AMOUNT: "invalid_amount",
+  PAYMENT_FAILED: "payment_failed",
+  INVOICE_FAILED: "invoice_failed",
 } as const;

@@ -45,6 +45,13 @@ export default function KidDashboard() {
 
   const isLoading = session.isLoading || habits.isLoading || completions.isLoading || families.isLoading || stats.isLoading;
 
+  // Role guard: redirect non-kids away
+  useEffect(() => {
+    if (!session.isLoading && session.data && session.data.role !== "kid") {
+      router.replace(session.data.role === "sponsor" ? "/sponsor" : "/dashboard");
+    }
+  }, [session.isLoading, session.data, router]);
+
   // Track approved completions for sats animation
   useEffect(() => {
     const approvedCount = completions.data.filter((c) => c.status === "approved").length;
@@ -111,7 +118,7 @@ export default function KidDashboard() {
     }
   }, [showToast, t, completions, stats]);
 
-  if (isLoading) return <Container center><BlockLoader /></Container>;
+  if (isLoading || (session.data && session.data.role !== "kid")) return <Container center><BlockLoader /></Container>;
 
   if (session.data?.role === "sponsor") {
     router.replace("/sponsor");
@@ -126,7 +133,7 @@ export default function KidDashboard() {
     { key: "habits", icon: <ListIcon size={20} />, label: t("dashboard.myHabits") },
     { key: "family", icon: <UsersIcon size={20} />, label: t("family.myFamily") },
     { key: "earnings", icon: <BoltIcon size={20} />, label: t("kidDashboard.earnings") },
-    { key: "wallet", icon: <WalletIcon size={20} />, label: t("wallet.connectWallet") },
+    { key: "wallet", icon: <WalletIcon size={20} />, label: t("wallet.title") },
   ];
 
   const headerExtra = (

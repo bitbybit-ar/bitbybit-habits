@@ -78,6 +78,7 @@ describe("/api/families", () => {
 
     it("creates family and adds creator as sponsor", async () => {
       await setSessionCookie(testSession);
+      selectResults.push([]); // no existing membership (single-family check)
       mockInsertReturning
         .mockResolvedValueOnce([{ id: UUID.family1, name: "New Family", invite_code: "XYZ789" }]);
 
@@ -85,6 +86,16 @@ describe("/api/families", () => {
       const { status, body } = await parseResponse(await POST(req));
       expect(status).toBe(201);
       expect(body.data.name).toBe("New Family");
+    });
+
+    it("returns 409 when user already has a family", async () => {
+      await setSessionCookie(testSession);
+      selectResults.push([{ id: "existing-membership" }]); // user already in a family
+
+      const req = createRequest("POST", "/api/families", { name: "Second Family" });
+      const { status, body } = await parseResponse(await POST(req));
+      expect(status).toBe(409);
+      expect(body.error).toBe("already_has_family");
     });
   });
 });

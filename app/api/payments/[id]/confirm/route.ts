@@ -41,6 +41,7 @@ export const POST = apiHandler(async (request, { session, db, params }) => {
 
   // Already paid — idempotent
   if (payment.status === "paid") {
+    console.log(`[Confirm] Payment ${paymentId.slice(0, 8)} already paid`);
     return { confirmed: true, already_paid: true };
   }
 
@@ -65,5 +66,6 @@ export const POST = apiHandler(async (request, { session, db, params }) => {
     })
     .where(eq(payments.id, paymentId));
 
+  console.log(`[Confirm] Payment ${paymentId.slice(0, 8)} confirmed via WebLN`);
   return { confirmed: true };
 });

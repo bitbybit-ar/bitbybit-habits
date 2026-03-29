@@ -83,7 +83,7 @@
 .habitName {
   font-size: $font-size-base;
   font-weight: $font-weight-semibold;
-  color: var(--color-text-primary);
+  color: $color-text-primary;
   margin: 0;
   white-space: nowrap;
   overflow: hidden;
@@ -92,7 +92,7 @@
 
 .habitDescription {
   font-size: $font-size-xs;
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
   margin: 2px 0 0;
 }
 
@@ -116,7 +116,7 @@
 
   &.streakActive {
     background: alpha($color-warning, 12%);
-    color: var(--color-warning);
+    color: $color-warning;
   }
 }
 
@@ -125,7 +125,7 @@
   align-items: center;
   gap: 4px;
   background: alpha($color-primary, 15%);
-  color: var(--color-primary);
+  color: $color-primary;
   padding: 4px $spacing-8;
   border-radius: $border-radius-full;
   font-size: $font-size-xs;
@@ -149,20 +149,20 @@
   border: none;
   border-radius: $border-radius-full;
   background: rgba(var(--glass-color), 0.05);
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
   cursor: pointer;
   font-size: 12px;
   transition: background 0.2s, color 0.2s;
 
   &:hover {
     background: rgba(var(--glass-color), 0.1);
-    color: var(--color-text-primary);
+    color: $color-text-primary;
   }
 }
 
 .deleteBtn:hover {
   background: alpha($color-error, 15%);
-  color: var(--color-error);
+  color: $color-error;
 }
 
 .meta {
@@ -173,7 +173,7 @@
 }
 
 .schedule {
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
 }
 
 // Date circles row
@@ -193,12 +193,12 @@
 
 .dayLabel {
   font-size: 10px;
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
   text-transform: uppercase;
 }
 
 .dayLabelToday {
-  color: var(--color-primary);
+  color: $color-primary;
   font-weight: $font-weight-bold;
 }
 
@@ -221,12 +221,18 @@
 
 .circleCompleted {
   background: $color-success;
-  border-color: var(--color-success);
+  border-color: $color-success;
   color: white;
 }
 
+.circlePending {
+  background: alpha($color-warning, 15%);
+  border-color: $color-warning;
+  color: $color-warning;
+}
+
 .circleToday {
-  border-color: var(--color-primary);
+  border-color: $color-primary;
   box-shadow: 0 0 0 2px alpha($color-primary, 20%);
 }
 
@@ -243,8 +249,8 @@
 
   &:active {
     transform: scale(0.9);
-    background: var(--color-success);
-    border-color: var(--color-success);
+    background: $color-success;
+    border-color: $color-success;
     transition-duration: 0.1s;
     animation: none;
   }
@@ -281,7 +287,7 @@
   border-radius: $border-radius-md;
   font-size: $font-size-sm;
   font-weight: $font-weight-bold;
-  color: var(--color-success);
+  color: $color-success;
   background: alpha($color-success, 12%);
   animation: fadeUpOut 1.5s ease-out forwards;
 }
@@ -299,7 +305,7 @@
   font-weight: $font-weight-bold;
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
-  background: var(--gradient-primary-bg);
+  background: $gradient-primary;
   color: white;
 
   &:hover {
@@ -334,12 +340,12 @@
 
 .statusPending {
   background: alpha($color-warning, 12%);
-  color: var(--color-warning);
+  color: $color-warning;
 }
 
 .statusCompleted {
   background: alpha($color-success, 12%);
-  color: var(--color-success);
+  color: $color-success;
 }
 
 // --- Compact variant (for phone mockup / small containers) ---

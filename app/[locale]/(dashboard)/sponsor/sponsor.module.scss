@@ -15,7 +15,7 @@
   padding: $spacing-12 $spacing-24;
   border-radius: $border-radius-md;
   border: none;
-  background: var(--gradient-primary-bg);
+  background: $gradient-primary;
   color: white;
   font-size: $font-size-sm;
   font-weight: $font-weight-bold;
@@ -46,11 +46,11 @@
 
     th {
       font-weight: $font-weight-semibold;
-      color: var(--color-text-primary);
+      color: $color-text-primary;
     }
 
     td {
-      color: var(--color-text-secondary);
+      color: $color-text-secondary;
     }
   }
 }
@@ -112,7 +112,7 @@
 .groupName {
   font-size: $font-size-base;
   font-weight: $font-weight-semibold;
-  color: var(--color-text-primary);
+  color: $color-text-primary;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -120,7 +120,7 @@
 
 .groupDescription {
   font-size: $font-size-xs;
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
 }
 
 .satBadge {
@@ -128,13 +128,44 @@
   align-items: center;
   gap: 4px;
   background: alpha($color-primary, 15%);
-  color: var(--color-primary);
+  color: $color-primary;
   padding: 4px $spacing-8;
   border-radius: $border-radius-full;
   font-size: $font-size-xs;
   font-weight: $font-weight-bold;
   flex-shrink: 0;
   line-height: 1;
+}
+
+.habitActions {
+  display: flex;
+  gap: 4px;
+}
+
+.editBtn,
+.deleteBtn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: $border-radius-full;
+  background: rgba(var(--glass-color), 0.05);
+  color: $color-text-secondary;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background 0.2s, color 0.2s;
+
+  &:hover {
+    background: rgba(var(--glass-color), 0.1);
+    color: $color-text-primary;
+  }
+}
+
+.deleteBtn:hover {
+  background: alpha($color-error, 15%);
+  color: $color-error;
 }
 
 .kidRows {
@@ -162,7 +193,7 @@
   justify-content: center;
   border-radius: $border-radius-full;
   background: alpha($color-secondary, 15%);
-  color: var(--color-secondary);
+  color: $color-secondary;
   font-weight: $font-weight-bold;
   flex-shrink: 0;
 }
@@ -182,7 +213,7 @@
 .kidName {
   font-size: $font-size-sm;
   font-weight: $font-weight-semibold;
-  color: var(--color-text-primary);
+  color: $color-text-primary;
   white-space: nowrap;
   min-width: 80px;
   flex-shrink: 0;
@@ -211,13 +242,13 @@
   align-items: center;
   gap: 2px;
   font-size: $font-size-xs;
-  color: var(--color-primary);
+  color: $color-primary;
   font-weight: $font-weight-bold;
 }
 
 .noKidsText {
   font-size: $font-size-sm;
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
   padding: $spacing-8 0;
   margin: 0;
 }

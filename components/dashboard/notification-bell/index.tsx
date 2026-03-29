@@ -11,6 +11,7 @@ export function NotificationBell() {
   const t = useTranslations();
   const locale = useLocale();
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [authenticated, setAuthenticated] = useState(true);
   const [open, setOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const unreadCount = notifications.filter((n) => !n.read).length;
@@ -32,6 +33,10 @@ export function NotificationBell() {
   const fetchNotifications = useCallback(async () => {
     try {
       const res = await fetch("/api/notifications");
+      if (res.status === 401) {
+        setAuthenticated(false);
+        return;
+      }
       const json = await res.json();
       if (json.success) setNotifications(json.data ?? []);
     } catch {
@@ -59,6 +64,8 @@ export function NotificationBell() {
       // Silently fail
     }
   };
+
+  if (!authenticated) return null;
 
   return (
     <div className={styles.wrapper} ref={wrapperRef}>

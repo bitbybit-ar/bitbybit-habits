@@ -9,12 +9,8 @@
 .wrapper {
   position: relative;
   width: 100%;
-  max-width: 440px;
+  max-width: 480px;
   z-index: 1;
-}
-
-.wrapperWide {
-  max-width: 520px;
 }
 
 // ── Floating decorative icons ──
@@ -151,7 +147,7 @@
 }
 
 .subtitle {
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
   font-size: $font-size-base;
   margin-bottom: $spacing-24;
 }
@@ -181,7 +177,7 @@
 
   span {
     font-size: $font-size-xs;
-    color: var(--color-text-secondary);
+    color: $color-text-secondary;
     white-space: nowrap;
   }
 }
@@ -210,6 +206,27 @@
   }
 }
 
+.nostrButtonActive {
+  cursor: pointer;
+  opacity: 1;
+
+  &:hover {
+    opacity: 1;
+    background: alpha($color-nostr, 12%);
+    border-color: alpha($color-nostr, 40%);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  &:disabled {
+    cursor: wait;
+    opacity: 0.7;
+  }
+}
+
 .comingSoon {
   font-size: $font-size-xs;
   background: alpha($color-nostr, 15%);
@@ -223,7 +240,7 @@
   text-align: center;
   margin-top: $spacing-20;
   font-size: $font-size-sm;
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
 
   a {
     color: $color-primary;

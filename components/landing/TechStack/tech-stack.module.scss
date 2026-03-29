@@ -34,7 +34,7 @@
   }
 
   p {
-    color: var(--color-text-secondary);
+    color: $color-text-secondary;
     font-size: $font-size-sm;
   }
 }
@@ -63,7 +63,7 @@
   margin-top: $spacing-8;
   background: none;
   border: none;
-  color: var(--color-accent-alt);
+  color: $color-accent-alt;
   font-size: $font-size-sm;
   font-weight: $font-weight-medium;
   cursor: pointer;
@@ -71,7 +71,7 @@
   transition: color 0.2s;
 
   &:hover {
-    color: var(--color-primary);
+    color: $color-primary;
   }
 }
 
@@ -146,7 +146,7 @@
   right: $spacing-12;
   background: none;
   border: none;
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
   font-size: $font-size-lg;
   cursor: pointer;
   padding: $spacing-8;
@@ -159,7 +159,7 @@
   justify-content: center;
 
   &:hover {
-    color: var(--color-text-primary);
+    color: $color-text-primary;
   }
 }
 
@@ -203,12 +203,12 @@
   h4 {
     font-size: $font-size-base;
     font-weight: $font-weight-semibold;
-    color: var(--color-text-primary);
+    color: $color-text-primary;
     margin-bottom: $spacing-4;
   }
 
   p {
-    color: var(--color-text-secondary);
+    color: $color-text-secondary;
     font-size: $font-size-sm;
     line-height: $line-height-base;
   }
@@ -217,6 +217,6 @@
 .modalStat {
   font-size: $font-size-sm;
   font-weight: $font-weight-bold;
-  color: var(--color-primary);
+  color: $color-primary;
   margin-bottom: $spacing-4;
 }
