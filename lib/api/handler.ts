@@ -122,8 +122,12 @@ export function apiHandler<T = unknown>(
         }, { status: 201 }));
       }
 
-      if (result === undefined || result === null) {
+      if (result === undefined) {
         return withCacheHeaders(NextResponse.json<ApiResponse>({ success: true }));
+      }
+
+      if (result === null) {
+        return withCacheHeaders(NextResponse.json<ApiResponse>({ success: true, data: null }));
       }
 
       return withCacheHeaders(NextResponse.json<ApiResponse>({

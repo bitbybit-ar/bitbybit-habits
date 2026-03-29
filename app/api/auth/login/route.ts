@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { apiHandler, BadRequestError, ForbiddenError, UnauthorizedError } from "@/lib/api";
 import { users, familyMembers } from "@/lib/db";
 import { verifyPassword, createSession, createTempToken } from "@/lib/auth";
-import { eq, or } from "drizzle-orm";
+import { eq, or, sql } from "drizzle-orm";
 import type { ApiResponse } from "@/lib/types";
 
 /**
@@ -47,29 +47,25 @@ export const POST = apiHandler(async (request, { db }) => {
     throw new ForbiddenError("account_locked");
   }
 
-  // Nostr-only accounts have no password
+  // Nostr-only accounts have no password — return same error to prevent account enumeration
   if (!user.password_hash) {
-    throw new UnauthorizedError("nostr_only_account");
+    throw new UnauthorizedError("invalid_credentials");
   }
 
   const valid = await verifyPassword(password, user.password_hash);
 
   if (!valid) {
-    const newFailedAttempts = (user.failed_login_attempts ?? 0) + 1;
-    const shouldLock = newFailedAttempts >= 10;
-    const lockedUntil = shouldLock
-      ? new Date(Date.now() + 30 * 60 * 1000)
-      : null;
-
+    // Atomic increment to prevent race conditions with concurrent failed logins
     await db
       .update(users)
       .set({
-        failed_login_attempts: newFailedAttempts,
-        locked_until: lockedUntil,
+        failed_login_attempts: sql`COALESCE(${users.failed_login_attempts}, 0) + 1`,
+        locked_until: sql`CASE WHEN COALESCE(${users.failed_login_attempts}, 0) + 1 >= 10 THEN NOW() + INTERVAL '30 minutes' ELSE ${users.locked_until} END`,
       })
       .where(eq(users.id, user.id));
 
-    if (shouldLock) {
+    const newFailedAttempts = (user.failed_login_attempts ?? 0) + 1;
+    if (newFailedAttempts >= 10) {
       throw new ForbiddenError("too_many_attempts");
     }
 

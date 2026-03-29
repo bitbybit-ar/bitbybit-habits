@@ -256,7 +256,7 @@
   align-items: center;
   gap: $spacing-8;
   background: $gradient-primary;
-  color: var(--color-on-gradient);
+  color: $color-on-gradient;
   font-size: $font-size-sm;
   font-weight: $font-weight-bold;
   padding: $spacing-8 $spacing-24;

@@ -454,7 +454,7 @@
   width: 100%;
   padding: $spacing-12 $spacing-24;
   background: $color-secondary;
-  color: var(--color-on-primary);
+  color: $color-on-primary;
   border: none;
   border-radius: $border-radius-md;
   font-size: $font-size-sm;
@@ -477,7 +477,7 @@
   width: 100%;
   padding: $spacing-12 $spacing-24;
   background: $color-primary;
-  color: var(--color-on-primary);
+  color: $color-on-primary;
   border: none;
   border-radius: $border-radius-md;
   font-size: $font-size-sm;

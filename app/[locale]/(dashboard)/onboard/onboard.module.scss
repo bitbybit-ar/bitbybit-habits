@@ -204,7 +204,7 @@
   border-radius: $border-radius-md;
   border: none;
   background: $color-primary;
-  color: var(--color-on-primary);
+  color: $color-on-primary;
   font-size: $font-size-base;
   font-weight: $font-weight-bold;
   cursor: pointer;

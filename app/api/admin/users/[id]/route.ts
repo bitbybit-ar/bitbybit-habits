@@ -1,7 +1,7 @@
 import { apiHandler, ForbiddenError, NotFoundError, BadRequestError } from "@/lib/api";
 import { users, familyMembers, completions, payments, habits, wallets, notifications } from "@/lib/db";
 import { isAdmin } from "@/lib/admin";
-import { eq, count, sql } from "drizzle-orm";
+import { eq, or, count, sql } from "drizzle-orm";
 
 /**
  * GET /api/admin/users/[id]
@@ -46,7 +46,7 @@ export const GET = apiHandler(async (_request, { session, db, params }) => {
     db.select({
       total_earned: sql<number>`COALESCE(SUM(CASE WHEN ${payments.to_user_id} = ${userId} AND ${payments.status} = 'paid' THEN ${payments.amount_sats} ELSE 0 END), 0)`,
       total_sent: sql<number>`COALESCE(SUM(CASE WHEN ${payments.from_user_id} = ${userId} AND ${payments.status} = 'paid' THEN ${payments.amount_sats} ELSE 0 END), 0)`,
-    }).from(payments).where(sql`${payments.from_user_id} = ${userId} OR ${payments.to_user_id} = ${userId}`),
+    }).from(payments).where(or(eq(payments.from_user_id, userId), eq(payments.to_user_id, userId))),
     db.select({ total: count() }).from(habits).where(eq(habits.assigned_to, userId)),
     db.select({ id: wallets.id, active: wallets.active, label: wallets.label, created_at: wallets.created_at })
       .from(wallets).where(eq(wallets.user_id, userId)),

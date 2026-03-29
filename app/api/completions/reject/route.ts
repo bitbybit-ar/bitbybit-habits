@@ -61,8 +61,8 @@ export const POST = apiHandler(async (request, { session, db }) => {
       `Your habit "${completion.habit_name}" was not approved.`,
       { completion_id, habit_name: completion.habit_name }
     );
-  } catch (notifError) {
-    console.error("Error creating notification:", notifError);
+  } catch {
+    // Notification is best-effort
   }
 
   return updated[0];

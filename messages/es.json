@@ -276,7 +276,17 @@
     "backHome": "Volver al inicio"
   },
   "accessibility": {
-    "skipToContent": "Saltar al contenido"
+    "skipToContent": "Saltar al contenido",
+    "homeLink": "Inicio de BitByBit",
+    "openMenu": "Abrir menú",
+    "closeMenu": "Cerrar menú",
+    "switchToLightMode": "Cambiar a modo claro",
+    "switchToDarkMode": "Cambiar a modo oscuro",
+    "lightMode": "Modo claro",
+    "darkMode": "Modo oscuro",
+    "loading": "Cargando",
+    "notifications": "Notificaciones",
+    "closeModal": "Cerrar"
   },
   "memberPicker": {
     "noKids": "No hay kids en la familia — compartí tu código de invitación"

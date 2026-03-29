@@ -19,6 +19,7 @@ interface TechItem {
 
 export const TechStack: React.FC = () => {
   const t = useTranslations("landing.techStack");
+  const tA11y = useTranslations("accessibility");
   const [activeModal, setActiveModal] = useState<number | null>(null);
 
   const TECH: TechItem[] = [
@@ -104,7 +105,7 @@ export const TechStack: React.FC = () => {
       {activeModal !== null && (
         <div className={styles.overlay} onClick={closeModal}>
           <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-            <button className={styles.closeButton} onClick={closeModal} aria-label="Close">
+            <button className={styles.closeButton} onClick={closeModal} aria-label={tA11y("closeModal")}>
               ✕
             </button>
             <div className={styles.modalHeader}>

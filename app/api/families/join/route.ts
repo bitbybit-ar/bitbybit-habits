@@ -72,8 +72,8 @@ export const POST = apiHandler(async (request, { session, db }) => {
         { family_id: family.id, kid_user_id: session.user_id, kid_name: displayName }
       );
     }
-  } catch (notifError) {
-    console.error("Error creating join notification:", notifError);
+  } catch {
+    // Notification is best-effort
   }
 
   return created({ family, member: members[0] });

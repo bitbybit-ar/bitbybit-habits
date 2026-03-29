@@ -36,11 +36,8 @@ export const POST = apiHandler(async (_request, { session, db, params }) => {
   }
 
   if (payment.status === "paid") {
-    console.log(`[NWC Pay] Payment ${paymentId.slice(0, 8)} already paid`);
     return { already_paid: true };
   }
-
-  console.log(`[NWC Pay] Attempting payment ${paymentId.slice(0, 8)} (${payment.amount_sats} sats, sponsor: ${session.user_id.slice(0, 8)})`);
 
   // Get sponsor's wallet
   const sponsorWalletRows = await db
@@ -50,17 +47,14 @@ export const POST = apiHandler(async (_request, { session, db, params }) => {
     .limit(1);
 
   if (!sponsorWalletRows[0]) {
-    console.log(`[NWC Pay] Sponsor has no wallet`);
     throw new BadRequestError("sponsor_no_wallet");
   }
 
   // If payment has an invoice, pay it
   if (!payment.payment_request) {
-    console.log(`[NWC Pay] Payment has no invoice`);
     throw new BadRequestError("no_invoice");
   }
 
-  console.log(`[NWC Pay] Connecting to sponsor's NWC wallet...`);
   const nwcUrl = decrypt(sponsorWalletRows[0].nwc_url_encrypted);
   const client = new NWCClient({ nostrWalletConnectUrl: nwcUrl });
 
@@ -68,8 +62,6 @@ export const POST = apiHandler(async (_request, { session, db, params }) => {
     const result = await client.payInvoice({
       invoice: payment.payment_request,
     });
-
-    console.log(`[NWC Pay] Payment successful, preimage: ${result.preimage?.slice(0, 8)}...`);
 
     // Update payment to paid
     await db
@@ -84,8 +76,6 @@ export const POST = apiHandler(async (_request, { session, db, params }) => {
 
     return { paid: true, preimage: result.preimage };
   } catch (error) {
-    console.error("[NWC Pay] payInvoice error:", error);
-
     // Mark as failed
     await db
       .update(payments)

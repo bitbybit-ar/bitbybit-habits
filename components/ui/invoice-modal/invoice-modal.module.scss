@@ -1,5 +1,6 @@
 @use "@/styles/colors" as *;
 @use "@/styles/spacing" as *;
+@use "@/styles/typography" as *;
 @use "@/styles/glass" as *;
 @use "@/styles/media-mixins" as *;
 
@@ -47,22 +48,22 @@
 }
 
 .habitName {
-  font-size: 1.1rem;
-  font-weight: 600;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
   color: var(--text-primary, #{$color-text-primary});
   margin: 0 0 $spacing-8;
 }
 
 .amount {
-  font-size: 2rem;
-  font-weight: 700;
+  font-size: $font-size-display;
+  font-weight: $font-weight-bold;
   color: $color-primary;
   margin: 0;
 }
 
 .satsLabel {
-  font-size: 1rem;
-  font-weight: 400;
+  font-size: $font-size-base;
+  font-weight: $font-weight-normal;
   color: var(--text-secondary, #{$color-text-secondary});
 }
 
@@ -95,11 +96,11 @@
   width: 100%;
   padding: $spacing-12 $spacing-24;
   background: $color-secondary;
-  color: var(--color-on-primary);
+  color: $color-on-primary;
   border: none;
   border-radius: $border-radius-md;
-  font-size: 0.95rem;
-  font-weight: 600;
+  font-size: $font-size-body;
+  font-weight: $font-weight-semibold;
   text-align: center;
   text-decoration: none;
   cursor: pointer;
@@ -118,11 +119,11 @@
   width: 100%;
   padding: $spacing-12 $spacing-24;
   background: $color-primary;
-  color: var(--color-on-primary);
+  color: $color-on-primary;
   border: none;
   border-radius: $border-radius-md;
-  font-size: 0.95rem;
-  font-weight: 600;
+  font-size: $font-size-body;
+  font-weight: $font-weight-semibold;
   cursor: pointer;
   transition: all 0.2s ease;
 
@@ -138,7 +139,7 @@
 .pollError {
   text-align: center;
   color: $color-warning;
-  font-size: 0.85rem;
+  font-size: $font-size-sm;
   margin-bottom: $spacing-8;
 }
 
@@ -149,7 +150,7 @@
   color: var(--text-secondary, #{$color-text-secondary});
   border: 1px solid rgba(var(--glass-color, 255, 255, 255), 0.1);
   border-radius: $border-radius-md;
-  font-size: 0.95rem;
+  font-size: $font-size-body;
   cursor: pointer;
   transition: all 0.2s ease;
 
@@ -174,8 +175,8 @@
 }
 
 .successText {
-  font-size: 1.3rem;
-  font-weight: 600;
+  font-size: $font-size-xl;
+  font-weight: $font-weight-semibold;
   color: $color-success;
   margin: 0;
 }

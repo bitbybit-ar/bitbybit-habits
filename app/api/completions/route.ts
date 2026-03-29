@@ -6,6 +6,13 @@ import { todayDateStr } from "@/lib/date";
 
 const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
+/** Validates that a string is a real ISO date (not just matching the regex pattern) */
+function isValidDate(dateStr: string): boolean {
+  if (!ISO_DATE_RE.test(dateStr)) return false;
+  const d = new Date(`${dateStr}T00:00:00Z`);
+  return !isNaN(d.getTime()) && d.toISOString().startsWith(dateStr);
+}
+
 /**
  * POST /api/completions
  *
@@ -112,8 +119,8 @@ export const POST = apiHandler(async (request, { session, db }) => {
           { completion_id: result[0].id, habit_id: habit.id, kid_name: displayName }
         );
       }
-    } catch (notifError) {
-      console.error("Error creating notification:", notifError);
+    } catch {
+      // Notification is best-effort — don't fail the completion
     }
   }
 
@@ -130,11 +137,11 @@ export const GET = apiHandler(async (request, { session, db }) => {
   const dateFrom = searchParams.get("from");
   const dateTo = searchParams.get("to");
 
-  // Validate date formats
-  if (dateFrom && !ISO_DATE_RE.test(dateFrom)) {
+  // Validate date formats (must be real dates, not just matching regex)
+  if (dateFrom && !isValidDate(dateFrom)) {
     throw new BadRequestError("invalid_date_format");
   }
-  if (dateTo && !ISO_DATE_RE.test(dateTo)) {
+  if (dateTo && !isValidDate(dateTo)) {
     throw new BadRequestError("invalid_date_format");
   }
   if (dateFrom && dateTo && dateFrom > dateTo) {

@@ -276,7 +276,17 @@
     "backHome": "Back to home"
   },
   "accessibility": {
-    "skipToContent": "Skip to content"
+    "skipToContent": "Skip to content",
+    "homeLink": "BitByBit home",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "switchToLightMode": "Switch to light mode",
+    "switchToDarkMode": "Switch to dark mode",
+    "lightMode": "Light mode",
+    "darkMode": "Dark mode",
+    "loading": "Loading",
+    "notifications": "Notifications",
+    "closeModal": "Close"
   },
   "memberPicker": {
     "noKids": "No kids in family yet — share your invite code"
