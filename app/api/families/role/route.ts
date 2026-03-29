@@ -1,6 +1,6 @@
 import { apiHandler, BadRequestError, ForbiddenError, NotFoundError } from "@/lib/api";
 import { familyMembers } from "@/lib/db";
-import { eq, and, ne } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 
 /**
  * PATCH /api/families/role
