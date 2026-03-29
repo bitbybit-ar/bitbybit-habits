@@ -1,4 +1,3 @@
-@use "sass:color";
 @use "@/styles/colors" as *;
 @use "@/styles/spacing" as *;
 @use "@/styles/typography" as *;
@@ -86,7 +85,7 @@
 
   &:hover {
     transform: translateY(-1px);
-    box-shadow: 0 4px 16px rgba($color-primary, 0.3);
+    box-shadow: 0 4px 16px alpha($color-primary, 30%);
   }
 }
 
@@ -138,7 +137,7 @@
   transition: background 0.15s;
 
   &:hover {
-    background: color.adjust($color-error, $lightness: -10%);
+    background: $color-error-hover;
   }
 }
 
@@ -146,7 +145,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: rgba($color-warning, 0.2);
+  background: alpha($color-warning, 20%);
   color: var(--color-warning);
   font-size: $font-size-xs;
   font-weight: $font-weight-bold;
@@ -204,7 +203,7 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  background: rgba($color-primary, 0.15);
+  background: alpha($color-primary, 15%);
   color: var(--color-primary);
   padding: 4px $spacing-8;
   border-radius: $border-radius-full;
@@ -238,7 +237,7 @@
   align-items: center;
   justify-content: center;
   border-radius: $border-radius-full;
-  background: rgba($color-secondary, 0.15);
+  background: alpha($color-secondary, 15%);
   color: var(--color-secondary);
   font-weight: $font-weight-bold;
   flex-shrink: 0;
