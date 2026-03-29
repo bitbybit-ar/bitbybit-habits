@@ -4,6 +4,7 @@ import { useApi } from "./useApi";
 
 export interface StatsData {
   totalSats: number;
+  todaySats: number;
   bestStreak: number;
   pendingCount: number;
 }
@@ -11,6 +12,7 @@ export interface StatsData {
 export function useStats() {
   const result = useApi<StatsData>("/api/stats", {
     totalSats: 0,
+    todaySats: 0,
     bestStreak: 0,
     pendingCount: 0,
   });

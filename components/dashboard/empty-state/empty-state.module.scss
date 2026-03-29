@@ -1,0 +1,30 @@
+@use "@/styles/colors" as *;
+@use "@/styles/spacing" as *;
+@use "@/styles/typography" as *;
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: $spacing-64 $spacing-24;
+}
+
+.icon {
+  font-size: 3rem;
+  margin-bottom: $spacing-16;
+}
+
+.title {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: var(--color-text-primary);
+  margin: 0 0 $spacing-8;
+}
+
+.description {
+  font-size: $font-size-sm;
+  color: var(--color-text-secondary);
+  margin: 0 0 $spacing-24;
+  max-width: 320px;
+}
