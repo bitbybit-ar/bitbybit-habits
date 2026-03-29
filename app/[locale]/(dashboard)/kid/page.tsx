@@ -211,22 +211,25 @@ export default function KidDashboard() {
               />
             ))
           )}
-          <div className={styles.joinSection}>
-            <h3 className={styles.joinTitle}>{t("family.joinFamily")}</h3>
-            <form onSubmit={handleJoinFamily} className={styles.joinForm}>
-              <FormInput
-                id="join-code"
-                placeholder={t("family.enterInviteCode")}
-                maxLength={6}
-                value={joinCode}
-                onChange={(v) => setJoinCode(v.toUpperCase())}
-                error={joinError || undefined}
-              />
-              <FormButton type="submit" loading={joinLoading} loadingText={t("common.loading")} disabled={!joinCode.trim()}>
-                {t("family.join")}
-              </FormButton>
-            </form>
-          </div>
+          {/* MVP: Single-family mode — only show join form when kid has no family */}
+          {families.data.length === 0 && (
+            <div className={styles.joinSection}>
+              <h3 className={styles.joinTitle}>{t("family.joinFamily")}</h3>
+              <form onSubmit={handleJoinFamily} className={styles.joinForm}>
+                <FormInput
+                  id="join-code"
+                  placeholder={t("family.enterInviteCode")}
+                  maxLength={6}
+                  value={joinCode}
+                  onChange={(v) => setJoinCode(v.toUpperCase())}
+                  error={joinError || undefined}
+                />
+                <FormButton type="submit" loading={joinLoading} loadingText={t("common.loading")} disabled={!joinCode.trim()}>
+                  {t("family.join")}
+                </FormButton>
+              </form>
+            </div>
+          )}
         </>
       )}
       {activeTab === "earnings" && (

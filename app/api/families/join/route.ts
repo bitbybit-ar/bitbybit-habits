@@ -15,6 +15,16 @@ export const POST = apiHandler(async (request, { session, db }) => {
     throw new BadRequestError("invite_code_required");
   }
 
+  // MVP: Single-family mode — user can only belong to one family
+  const existingMembership = await db
+    .select({ id: familyMembers.id })
+    .from(familyMembers)
+    .where(eq(familyMembers.user_id, session.user_id));
+
+  if (existingMembership.length > 0) {
+    throw new ConflictError("already_has_family");
+  }
+
   // Find the family by invite code
   const result = await db
     .select()

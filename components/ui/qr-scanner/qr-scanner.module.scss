@@ -1,0 +1,98 @@
+@use "@/styles/colors" as *;
+@use "@/styles/spacing" as *;
+@use "@/styles/glass" as *;
+
+.overlay {
+  @include glass-overlay;
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-16;
+}
+
+.modal {
+  @include glass-modal;
+  max-width: 400px;
+  width: 100%;
+  padding: $spacing-24;
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-16;
+}
+
+.title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.closeButton {
+  padding: $spacing-4 $spacing-8;
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-size: 1.5rem;
+  cursor: pointer;
+  line-height: 1;
+
+  &:hover {
+    color: var(--color-text-primary);
+  }
+}
+
+.scannerContainer {
+  border-radius: $border-radius-lg;
+  overflow: hidden;
+  background: #000;
+
+  // Style the html5-qrcode rendered elements
+  :global(#qr-scanner-region) {
+    width: 100%;
+
+    video {
+      border-radius: $border-radius-lg;
+    }
+  }
+
+  // Hide the default file upload UI from html5-qrcode
+  :global(#qr-scanner-region__dashboard_section) {
+    display: none !important;
+  }
+
+  :global(#qr-scanner-region__scan_region) {
+    min-height: 280px;
+
+    video {
+      width: 100% !important;
+      border-radius: $border-radius-md;
+    }
+  }
+}
+
+.error {
+  text-align: center;
+  color: $color-error;
+  font-size: 0.85rem;
+  padding: $spacing-16;
+  margin: 0;
+}

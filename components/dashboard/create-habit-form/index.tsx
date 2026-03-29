@@ -13,13 +13,15 @@ interface KidOption {
   display_name: string;
 }
 
-interface FamilyOption {
-  id: string;
-  name: string;
-}
+// ROADMAP: Multi-family support (commented for MVP single-family mode)
+// interface FamilyOption {
+//   id: string;
+//   name: string;
+// }
 
 interface CreateHabitFormProps {
-  families: FamilyOption[];
+  // MVP: Single-family mode — receive a single familyId instead of a list
+  familyId: string;
   kids: KidOption[];
   onSubmit: (data: CreateHabitData) => Promise<void>;
 }
@@ -48,7 +50,7 @@ const DAY_KEYS = [
   "kidDashboard.daySat",
 ] as const;
 
-export function CreateHabitForm({ families, kids, onSubmit }: CreateHabitFormProps) {
+export function CreateHabitForm({ familyId, kids, onSubmit }: CreateHabitFormProps) {
   const t = useTranslations();
   const [color, setColor] = useState(PRESET_COLORS[0]);
   const [scheduleType, setScheduleType] = useState<"daily" | "specific_days" | "times_per_week">("daily");
@@ -61,10 +63,9 @@ export function CreateHabitForm({ families, kids, onSubmit }: CreateHabitFormPro
   const [assignedToError, setAssignedToError] = useState("");
 
   const form = useFormValidation({
-    initialValues: { name: "", description: "", satReward: "10", familyId: "" },
+    initialValues: { name: "", description: "", satReward: "10" },
     validators: {
       name: (v) => !(v as string).trim() ? t("validation.required") : undefined,
-      familyId: (v) => !(v as string) ? t("validation.required") : undefined,
       satReward: (v) => {
         const n = parseInt(v as string);
         if (isNaN(n) || n < 0) return t("validation.minZero");
@@ -116,7 +117,7 @@ export function CreateHabitForm({ families, kids, onSubmit }: CreateHabitFormPro
         schedule_times_per_week: timesPerWeek,
         verification_type: verificationType,
         assigned_to: assignedTo,
-        family_id: form.values.familyId,
+        family_id: familyId,
       });
       form.reset();
       setColor(PRESET_COLORS[0]);
@@ -135,7 +136,6 @@ export function CreateHabitForm({ families, kids, onSubmit }: CreateHabitFormPro
   const nameField = form.fieldProps("name");
   const descField = form.fieldProps("description");
   const satField = form.fieldProps("satReward");
-  const famField = form.fieldProps("familyId");
 
   return (
     <form className={styles.form} onSubmit={handleSubmit} noValidate>
@@ -235,6 +235,7 @@ export function CreateHabitForm({ families, kids, onSubmit }: CreateHabitFormPro
         <option value="self_verify">{t("habits.selfVerify")}</option>
       </FormSelect>
 
+      {/* ROADMAP: Multi-family support (commented for MVP single-family mode)
       <FormSelect
         id="habit-family"
         label={t("family.myFamily")}
@@ -249,6 +250,7 @@ export function CreateHabitForm({ families, kids, onSubmit }: CreateHabitFormPro
           <option key={f.id} value={f.id}>{f.name}</option>
         ))}
       </FormSelect>
+      */}
 
       <FormField label={t("habits.assignTo")} required error={assignedToError}>
         <MemberPicker

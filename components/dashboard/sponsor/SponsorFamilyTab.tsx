@@ -11,11 +11,12 @@ interface SponsorFamilyTabProps {
   sessionUserId: string;
   onLeave: (familyId: string) => void;
   onDelete: (familyId: string) => void;
-  onRoleChange: (familyId: string, userId: string, newRole: string) => void;
+  // ROADMAP: Multi-sponsor support (commented for MVP single-sponsor mode)
+  // onRoleChange: (familyId: string, userId: string, newRole: string) => void;
   onRemoveMember: (familyId: string, userId: string) => void;
 }
 
-export function SponsorFamilyTab({ families, sessionUserId, onLeave, onDelete, onRoleChange, onRemoveMember }: SponsorFamilyTabProps) {
+export function SponsorFamilyTab({ families, sessionUserId, onLeave, onDelete, onRemoveMember }: SponsorFamilyTabProps) {
   const t = useTranslations();
 
   return (
@@ -42,7 +43,6 @@ export function SponsorFamilyTab({ families, sessionUserId, onLeave, onDelete, o
               currentUserRole={myMembership?.role}
               onLeave={onLeave}
               onDelete={onDelete}
-              onRoleChange={onRoleChange}
               onRemoveMember={onRemoveMember}
             />
           );

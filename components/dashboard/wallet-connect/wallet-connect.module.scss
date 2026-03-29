@@ -2,6 +2,7 @@
 @use "@/styles/spacing" as *;
 @use "@/styles/typography" as *;
 @use "@/styles/glass" as *;
+@use "@/styles/media-mixins" as *;
 
 .card {
   @include glass-card;
@@ -11,6 +12,109 @@
 .loadingText {
   color: var(--color-text-secondary);
   font-size: $font-size-sm;
+}
+
+// ── Connect screen ──
+
+.connectHeader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $spacing-8;
+  text-align: center;
+  margin-bottom: $spacing-24;
+  color: $color-primary;
+}
+
+.connectTitle {
+  font-size: 1.2rem;
+  font-weight: $font-weight-bold;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.connectDesc {
+  font-size: $font-size-sm;
+  color: var(--color-text-secondary);
+  margin: 0;
+  max-width: 280px;
+}
+
+.scanButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-8;
+  width: 100%;
+  padding: $spacing-16;
+  margin-bottom: $spacing-12;
+  border-radius: $border-radius-md;
+  border: 2px solid rgba($color-primary, 0.4);
+  background: rgba($color-primary, 0.08);
+  color: $color-primary;
+  font-size: $font-size-base;
+  font-weight: $font-weight-bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba($color-primary, 0.15);
+    border-color: $color-primary;
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+.extensionButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-8;
+  width: 100%;
+  padding: $spacing-12 $spacing-16;
+  margin-bottom: $spacing-12;
+  border-radius: $border-radius-md;
+  border: 1px solid rgba(var(--glass-color, 255, 255, 255), 0.15);
+  background: rgba(var(--glass-color, 255, 255, 255), 0.04);
+  color: var(--color-text-primary);
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+
+  &:hover:not(:disabled) {
+    background: rgba(var(--glass-color, 255, 255, 255), 0.08);
+    border-color: rgba(var(--glass-color, 255, 255, 255), 0.25);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.manualSection {
+  margin-top: $spacing-8;
+}
+
+.manualToggle {
+  font-size: $font-size-xs;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  padding: $spacing-8 0;
+  user-select: none;
+  list-style: none;
+  text-align: center;
+
+  &::-webkit-details-marker {
+    display: none;
+  }
+
+  &:hover {
+    color: var(--color-text-primary);
+  }
 }
 
 // ── Status row ──
@@ -162,18 +266,14 @@
     transform: scale(0.97);
   }
 
-  &[data-variant="send"] {
-    &:hover {
-      border-color: rgba($color-accent, 0.4);
-      color: $color-accent;
-    }
+  &[data-variant="send"]:hover {
+    border-color: rgba($color-accent, 0.4);
+    color: $color-accent;
   }
 
-  &[data-variant="receive"] {
-    &:hover {
-      border-color: rgba($color-secondary, 0.4);
-      color: $color-secondary;
-    }
+  &[data-variant="receive"]:hover {
+    border-color: rgba($color-secondary, 0.4);
+    color: $color-secondary;
   }
 }
 
@@ -207,6 +307,27 @@
   margin: 0;
 }
 
+.divider {
+  display: flex;
+  align-items: center;
+  gap: $spacing-12;
+  margin: $spacing-8 0 $spacing-16;
+
+  &::before,
+  &::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: rgba(var(--glass-color, 255, 255, 255), 0.1);
+  }
+
+  span {
+    font-size: $font-size-xs;
+    color: var(--color-text-secondary);
+    text-transform: lowercase;
+  }
+}
+
 // ── Settings ──
 
 .settingsSection {
@@ -236,13 +357,55 @@
   color: var(--color-text-primary);
 }
 
+.settingsActions {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-8;
+}
+
+.changeWalletButton {
+  width: 100%;
+  padding: $spacing-12 $spacing-16;
+  border-radius: $border-radius-md;
+  border: 1px solid rgba(var(--glass-color, 255, 255, 255), 0.15);
+  background: transparent;
+  color: var(--color-text-primary);
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(var(--glass-color, 255, 255, 255), 0.06);
+    border-color: rgba(var(--glass-color, 255, 255, 255), 0.25);
+  }
+}
+
+.disconnectButton {
+  width: 100%;
+  padding: $spacing-12 $spacing-16;
+  border-radius: $border-radius-md;
+  border: 1px solid rgba($color-error, 0.3);
+  background: rgba($color-error, 0.1);
+  color: var(--color-error);
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+
+  &:hover {
+    background: rgba($color-error, 0.2);
+    border-color: var(--color-error);
+  }
+}
+
 // ── Receive invoice result ──
 
 .invoiceResult {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: $spacing-16;
+  gap: $spacing-12;
 }
 
 .qrContainer {
@@ -252,11 +415,36 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-bottom: $spacing-4;
 
   svg {
     width: 100% !important;
     height: auto !important;
     max-width: 200px;
+  }
+}
+
+.walletLink {
+  display: block;
+  width: 100%;
+  padding: $spacing-12 $spacing-24;
+  background: $color-secondary;
+  color: $color-bg-dark;
+  border: none;
+  border-radius: $border-radius-md;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    filter: brightness(1.1);
+  }
+
+  &:active {
+    transform: scale(0.98);
   }
 }
 
@@ -298,53 +486,7 @@
   }
 }
 
-// ── Connect form & common ──
-
-.extensionButton {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: $spacing-8;
-  width: 100%;
-  padding: $spacing-12 $spacing-16;
-  margin-bottom: $spacing-16;
-  border-radius: $border-radius-md;
-  border: 1px solid rgba($color-primary, 0.3);
-  background: rgba($color-primary, 0.08);
-  color: $color-primary;
-  font-size: $font-size-sm;
-  font-weight: $font-weight-semibold;
-  cursor: pointer;
-  transition: background 0.2s, border-color 0.2s;
-
-  &:hover:not(:disabled) {
-    background: rgba($color-primary, 0.15);
-    border-color: $color-primary;
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-}
-
-.disconnectButton {
-  width: 100%;
-  padding: $spacing-12 $spacing-16;
-  border-radius: $border-radius-md;
-  border: 1px solid rgba($color-error, 0.3);
-  background: rgba($color-error, 0.1);
-  color: var(--color-error);
-  font-size: $font-size-sm;
-  font-weight: $font-weight-semibold;
-  cursor: pointer;
-  transition: background 0.2s, border-color 0.2s;
-
-  &:hover {
-    background: rgba($color-error, 0.2);
-    border-color: var(--color-error);
-  }
-}
+// ── Form ──
 
 .form {
   display: flex;

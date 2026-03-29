@@ -23,7 +23,8 @@ interface FamilyCardProps {
   currentUserRole?: string;
   onLeave?: (familyId: string) => void;
   onDelete?: (familyId: string) => void;
-  onRoleChange?: (familyId: string, userId: string, newRole: string) => void;
+  // ROADMAP: Multi-sponsor support (commented for MVP single-sponsor mode)
+  // onRoleChange?: (familyId: string, userId: string, newRole: string) => void;
   onRemoveMember?: (familyId: string, userId: string) => void;
 }
 
@@ -37,7 +38,6 @@ export function FamilyCard({
   currentUserRole,
   onLeave,
   onDelete,
-  onRoleChange,
   onRemoveMember,
 }: FamilyCardProps) {
   const t = useTranslations();
@@ -75,10 +75,11 @@ export function FamilyCard({
     }
   };
 
-  const handleRoleToggle = (userId: string, currentRole: string) => {
-    const newRole = currentRole === "sponsor" ? "kid" : "sponsor";
-    onRoleChange?.(familyId, userId, newRole);
-  };
+  // ROADMAP: Multi-sponsor support (commented for MVP single-sponsor mode)
+  // const handleRoleToggle = (userId: string, currentRole: string) => {
+  //   const newRole = currentRole === "sponsor" ? "kid" : "sponsor";
+  //   onRoleChange?.(familyId, userId, newRole);
+  // };
 
   return (
     <div className={styles.card}>
@@ -154,6 +155,7 @@ export function FamilyCard({
                   {member.role === "sponsor" ? t("auth.sponsor") : t("auth.kid")}
                 </span>
               </div>
+              {/* ROADMAP: Multi-sponsor support (commented for MVP single-sponsor mode)
               {isSponsor && onRoleChange && member.user_id !== currentUserId && (
                 <button
                   className={styles.roleToggle}
@@ -163,6 +165,7 @@ export function FamilyCard({
                   {member.role === "sponsor" ? "→ Kid" : "→ Sponsor"}
                 </button>
               )}
+              */}
               {isSponsor && onRemoveMember && member.user_id !== currentUserId && (
                 <button
                   className={styles.removeBtn}

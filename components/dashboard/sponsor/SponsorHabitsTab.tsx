@@ -34,14 +34,25 @@ export function SponsorHabitsTab({ habits, families, familyCompletions, onApprov
       groups[c.habit_id].kids[c.kid_user_id] = { userId: c.kid_user_id, displayName: c.kid_display_name };
     }
 
+    // MVP: Single-family mode
+    const members = families[0]?.members ?? [];
     for (const habit of habits) {
       if (groups[habit.id]) {
-        const kid = families.flatMap((f) => f.members).find((m) => m.user_id === habit.assigned_to);
+        const kid = members.find((m) => m.user_id === habit.assigned_to);
         if (kid && kid.role === "kid") {
           groups[habit.id].kids[kid.user_id] = { userId: kid.user_id, displayName: kid.display_name || kid.username };
         }
       }
     }
+    // ROADMAP: Multi-family support (commented for MVP single-family mode)
+    // for (const habit of habits) {
+    //   if (groups[habit.id]) {
+    //     const kid = families.flatMap((f) => f.members).find((m) => m.user_id === habit.assigned_to);
+    //     if (kid && kid.role === "kid") {
+    //       groups[habit.id].kids[kid.user_id] = { userId: kid.user_id, displayName: kid.display_name || kid.username };
+    //     }
+    //   }
+    // }
 
     return Object.values(groups);
   }, [habits, familyCompletions, families]);
@@ -123,13 +134,23 @@ export function SponsorByKidTab({ habits, families, familyCompletions, onApprove
   const byKidGroups = useMemo(() => {
     const groups: Record<string, { userId: string; displayName: string; avatarUrl: string | null; habits: Record<string, { habitId: string; habitName: string; satReward: number }> }> = {};
 
-    for (const family of families) {
+    // MVP: Single-family mode
+    const family = families[0];
+    if (family) {
       for (const member of family.members) {
         if (member.role === "kid" && !groups[member.user_id]) {
           groups[member.user_id] = { userId: member.user_id, displayName: member.display_name || member.username, avatarUrl: member.avatar_url, habits: {} };
         }
       }
     }
+    // ROADMAP: Multi-family support (commented for MVP single-family mode)
+    // for (const family of families) {
+    //   for (const member of family.members) {
+    //     if (member.role === "kid" && !groups[member.user_id]) {
+    //       groups[member.user_id] = { userId: member.user_id, displayName: member.display_name || member.username, avatarUrl: member.avatar_url, habits: {} };
+    //     }
+    //   }
+    // }
 
     for (const c of familyCompletions) {
       if (!groups[c.kid_user_id]) {

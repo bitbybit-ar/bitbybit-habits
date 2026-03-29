@@ -25,8 +25,10 @@ const ERROR_CODE_TO_I18N: Record<string, string> = {
   invite_code_required: "errors.inviteCodeRequired",
   invalid_invite_code: "errors.invalidInviteCode",
   already_member: "errors.alreadyMember",
+  already_has_family: "errors.alreadyHasFamily",
   last_sponsor: "errors.lastSponsor",
   cannot_demote_last_sponsor: "errors.cannotDemoteLastSponsor",
+  single_sponsor_only: "errors.singleSponsorOnly",
   sponsors_only: "errors.sponsorsOnly",
 
   // Habits
