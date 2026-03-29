@@ -4,12 +4,14 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { formatDisplayDate } from "@/lib/date";
 import type { Notification } from "@/lib/types";
+import { useRouter } from "@/i18n/routing";
 import { BellIcon } from "@/components/icons";
 import styles from "./notification-bell.module.scss";
 
 export function NotificationBell() {
   const t = useTranslations();
   const locale = useLocale();
+  const router = useRouter();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [open, setOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -60,6 +62,25 @@ export function NotificationBell() {
     }
   };
 
+  const handleNotificationClick = (n: Notification) => {
+    if (!n.read) markAsRead(n.id);
+    let path: string | null = null;
+    switch (n.type) {
+      case "completion_pending":
+      case "member_joined":
+        path = "/sponsor";
+        break;
+      case "completion_approved":
+      case "completion_rejected":
+      case "payment_received":
+      case "payment_failed":
+        path = "/kid";
+        break;
+    }
+    if (path) router.push(path);
+    setOpen(false);
+  };
+
   return (
     <div className={styles.wrapper} ref={wrapperRef}>
       <button
@@ -83,7 +104,7 @@ export function NotificationBell() {
                 <li
                   key={n.id}
                   className={`${styles.item} ${n.read ? styles.read : styles.unread}`}
-                  onClick={() => !n.read && markAsRead(n.id)}
+                  onClick={() => handleNotificationClick(n)}
                 >
                   <strong>{n.title}</strong>
                   <p>{n.body}</p>

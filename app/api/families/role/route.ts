@@ -43,23 +43,33 @@ export const PATCH = apiHandler(async (request, { session, db }) => {
     throw new NotFoundError("User is not a member of this family");
   }
 
-  // If demoting from sponsor, check there's at least one other sponsor
-  if (targetMembership[0].role === "sponsor" && new_role === "kid") {
-    const otherSponsors = await db
-      .select({ id: familyMembers.id })
-      .from(familyMembers)
-      .where(
-        and(
-          eq(familyMembers.family_id, family_id),
-          ne(familyMembers.user_id, user_id),
-          eq(familyMembers.role, "sponsor")
-        )
-      );
-
-    if (otherSponsors.length === 0) {
-      throw new BadRequestError("cannot_demote_last_sponsor");
-    }
+  // MVP: Single-sponsor mode — only one sponsor per family allowed
+  if (new_role === "sponsor") {
+    throw new BadRequestError("single_sponsor_only");
   }
+
+  // MVP: Single-sponsor mode — the only sponsor cannot be demoted
+  if (targetMembership[0].role === "sponsor" && new_role === "kid") {
+    throw new BadRequestError("cannot_demote_last_sponsor");
+  }
+
+  // ROADMAP: Multi-sponsor support (commented for MVP single-sponsor mode)
+  // if (targetMembership[0].role === "sponsor" && new_role === "kid") {
+  //   const otherSponsors = await db
+  //     .select({ id: familyMembers.id })
+  //     .from(familyMembers)
+  //     .where(
+  //       and(
+  //         eq(familyMembers.family_id, family_id),
+  //         ne(familyMembers.user_id, user_id),
+  //         eq(familyMembers.role, "sponsor")
+  //       )
+  //     );
+  //
+  //   if (otherSponsors.length === 0) {
+  //     throw new BadRequestError("cannot_demote_last_sponsor");
+  //   }
+  // }
 
   await db
     .update(familyMembers)

@@ -43,39 +43,48 @@ export function useFamilyData(families: FamilyWithMembers[]) {
     setIsLoading(true);
 
     try {
-      const requests = families.flatMap((f) => [
-        fetch(`/api/families/${f.id}/completions?days=7`),
-        fetch(`/api/families/${f.id}/stats`),
+      // MVP: Single-family mode — fetch data for the one family only
+      const family = families[0];
+      const [compRes, statsRes] = await Promise.all([
+        fetch(`/api/families/${family.id}/completions?days=7`),
+        fetch(`/api/families/${family.id}/stats`),
       ]);
 
-      const responses = await Promise.all(requests);
       if (!mountedRef.current) return;
 
       let allCompletions: FamilyCompletion[] = [];
       const aggregated = { ...EMPTY_STATS };
 
-      for (let i = 0; i < families.length; i++) {
-        const compRes = responses[i * 2];
-        const statsRes = responses[i * 2 + 1];
+      if (compRes.ok) {
+        const data = await compRes.json();
+        if (data.success) allCompletions = data.data ?? [];
+      }
 
-        if (compRes.ok) {
-          const data = await compRes.json();
-          if (data.success) allCompletions = [...allCompletions, ...(data.data ?? [])];
-        }
-
-        if (statsRes.ok) {
-          const data = await statsRes.json();
-          if (data.success && data.data) {
-            aggregated.completedToday += data.data.completedToday ?? 0;
-            aggregated.totalToday += data.data.totalToday ?? 0;
-            aggregated.pendingApprovals += data.data.pendingApprovals ?? 0;
-            aggregated.totalSatsPaid += data.data.totalSatsPaid ?? 0;
-          }
+      if (statsRes.ok) {
+        const data = await statsRes.json();
+        if (data.success && data.data) {
+          aggregated.completedToday = data.data.completedToday ?? 0;
+          aggregated.totalToday = data.data.totalToday ?? 0;
+          aggregated.pendingApprovals = data.data.pendingApprovals ?? 0;
+          aggregated.totalSatsPaid = data.data.totalSatsPaid ?? 0;
         }
       }
 
       setCompletions(allCompletions);
       setStats(aggregated);
+
+      // ROADMAP: Multi-family support (commented for MVP single-family mode)
+      // const requests = families.flatMap((f) => [
+      //   fetch(`/api/families/${f.id}/completions?days=7`),
+      //   fetch(`/api/families/${f.id}/stats`),
+      // ]);
+      // const responses = await Promise.all(requests);
+      // for (let i = 0; i < families.length; i++) {
+      //   const compRes = responses[i * 2];
+      //   const statsRes = responses[i * 2 + 1];
+      //   if (compRes.ok) { ... }
+      //   if (statsRes.ok) { ... }
+      // }
     } catch {
       // Silently handle
     } finally {

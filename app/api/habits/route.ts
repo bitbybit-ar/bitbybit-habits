@@ -20,7 +20,7 @@ export const GET = apiHandler(async (request, { session, db }) => {
   const whereCondition = and(
     or(
       and(isNull(habits.family_id), or(eq(habits.assigned_to, session.user_id), eq(habits.created_by, session.user_id))),
-      and(isNotNull(habits.family_id), isNotNull(familyMembers.id))
+      and(isNotNull(habits.family_id), isNotNull(familyMembers.id), or(eq(habits.assigned_to, session.user_id), eq(habits.created_by, session.user_id)))
     ),
     eq(habits.active, true)
   );

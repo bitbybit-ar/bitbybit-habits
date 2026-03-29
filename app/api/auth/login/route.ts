@@ -40,6 +40,7 @@ export const POST = apiHandler(async (request, { db }) => {
       password_hash: users.password_hash,
       display_name: users.display_name,
       locale: users.locale,
+      nostr_pubkey: users.nostr_pubkey,
       failed_login_attempts: users.failed_login_attempts,
       locked_until: users.locked_until,
       totp_enabled: users.totp_enabled,
@@ -116,6 +117,7 @@ export const POST = apiHandler(async (request, { db }) => {
     display_name: user.display_name,
     locale: user.locale as "es" | "en",
     role,
+    nostr_pubkey: user.nostr_pubkey ?? null,
   });
 
   const responseData: Record<string, unknown> = {

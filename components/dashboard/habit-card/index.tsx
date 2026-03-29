@@ -132,9 +132,10 @@ export function HabitCard({ habit, completions, onComplete, hideAction, currentU
   const currentStreak = streak ?? calculateCurrentStreak(habit.id, completions);
   const todayStatus = getTodayStatus(habit.id, completions);
 
-  const habitCompletionDates = completions
+  const habitCompletionMap = new Map<string, "approved" | "pending">();
+  completions
     .filter((c) => c.habit_id === habit.id && (c.status === "approved" || c.status === "pending"))
-    .map((c) => c.date);
+    .forEach((c) => habitCompletionMap.set(c.date, c.status as "approved" | "pending"));
 
   const handleComplete = (habitId: string) => {
     setJustCompleted(true);
@@ -206,14 +207,17 @@ export function HabitCard({ habit, completions, onComplete, hideAction, currentU
       <div className={styles.dateCircles}>
         {last7Days.map((date) => {
           const dateStr = formatDateStr(date);
-          const completed = habitCompletionDates.includes(dateStr);
+          const completionStatus = habitCompletionMap.get(dateStr);
+          const completed = !!completionStatus;
+          const isPending = completionStatus === "pending";
           const today = isToday(date);
           const future = isFuture(date);
 
           const dayLabel = date.toLocaleDateString(undefined, { weekday: "narrow" });
 
           let circleClass = styles.circleMissed;
-          if (completed) circleClass = styles.circleCompleted;
+          if (completed && isPending) circleClass = styles.circlePending;
+          else if (completed) circleClass = styles.circleCompleted;
           else if (future) circleClass = styles.circleFuture;
           else if (today) circleClass = styles.circleToday;
 
@@ -231,7 +235,8 @@ export function HabitCard({ habit, completions, onComplete, hideAction, currentU
                 tabIndex={canClickCircle ? 0 : undefined}
                 onKeyDown={canClickCircle ? (e) => { if (e.key === "Enter" || e.key === " ") handleComplete(habit.id); } : undefined}
               >
-                {completed && <CheckIcon size={14} color="white" />}
+                {completed && !isPending && <CheckIcon size={14} color="white" />}
+                {completed && isPending && <ClockIcon size={14} />}
               </div>
             </div>
           );

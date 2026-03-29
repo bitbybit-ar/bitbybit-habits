@@ -35,6 +35,7 @@ export const testSession: AuthSession = {
   display_name: "Test User",
   locale: "en",
   role: "sponsor",
+  nostr_pubkey: null,
 };
 
 export const kidSession: AuthSession = {
@@ -44,6 +45,7 @@ export const kidSession: AuthSession = {
   display_name: "Kid User",
   locale: "en",
   role: "kid",
+  nostr_pubkey: null,
 };
 
 /**

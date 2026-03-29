@@ -113,6 +113,7 @@ export interface AuthSession {
   display_name: string;
   locale: "es" | "en";
   role: "sponsor" | "kid" | null;
+  nostr_pubkey: string | null;
 }
 
 export interface ApiResponse<T = unknown> {

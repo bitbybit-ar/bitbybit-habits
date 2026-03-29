@@ -1,13 +1,19 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
-import { BoltIcon, UserIcon } from "@/components/icons";
+import { BoltIcon, UserIcon, PencilIcon } from "@/components/icons";
 import { WeeklyTracker } from "@/components/dashboard/weekly-tracker";
+import { EditHabitModal } from "@/components/dashboard/edit-habit-modal";
 import type { Habit } from "@/lib/types";
 import type { FamilyWithMembers } from "@/lib/hooks/useFamilies";
 import type { FamilyCompletion } from "@/lib/hooks/useFamilyData";
 import styles from "../../../app/[locale]/(dashboard)/sponsor/sponsor.module.scss";
+
+interface KidMember {
+  user_id: string;
+  display_name: string;
+}
 
 interface SponsorHabitsTabProps {
   habits: Habit[];
@@ -15,10 +21,15 @@ interface SponsorHabitsTabProps {
   familyCompletions: FamilyCompletion[];
   onApprove: (completionId: string) => Promise<void>;
   onCreateHabit: () => void;
+  onEdit?: (habit: Habit) => void;
+  onDelete?: (habitId: string) => void;
+  currentUserId?: string;
+  kids?: KidMember[];
 }
 
-export function SponsorHabitsTab({ habits, families, familyCompletions, onApprove, onCreateHabit }: SponsorHabitsTabProps) {
+export function SponsorHabitsTab({ habits, families, familyCompletions, onApprove, onCreateHabit, onEdit, onDelete, currentUserId, kids }: SponsorHabitsTabProps) {
   const t = useTranslations();
+  const [editingHabit, setEditingHabit] = useState<Habit | null>(null);
 
   const byHabitGroups = useMemo(() => {
     const groups: Record<string, { habitId: string; habitName: string; satReward: number; kids: Record<string, { userId: string; displayName: string }> }> = {};
@@ -75,6 +86,26 @@ export function SponsorHabitsTab({ habits, families, familyCompletions, onApprov
                     <BoltIcon size={12} />
                     {group.satReward} {t("sats.sats")}
                   </div>
+                  {currentUserId && habit?.created_by === currentUserId && onEdit && onDelete && (
+                    <div className={styles.habitActions}>
+                      <button
+                        className={styles.editBtn}
+                        onClick={() => { if (habit) setEditingHabit(habit); }}
+                        title={t("common.edit")}
+                      >
+                        <PencilIcon size={14} />
+                      </button>
+                      <button
+                        className={styles.deleteBtn}
+                        onClick={() => {
+                          if (confirm(t("habits.confirmDelete"))) onDelete(group.habitId);
+                        }}
+                        title={t("common.delete")}
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  )}
                 </div>
                 {kidList.length === 0 ? (
                   <p className={styles.noKidsText}>{t("sponsorDashboard.noKidsAssigned")}</p>
@@ -103,6 +134,17 @@ export function SponsorHabitsTab({ habits, families, familyCompletions, onApprov
             );
           })}
         </div>
+      )}
+      {editingHabit && (
+        <EditHabitModal
+          habit={editingHabit}
+          kids={kids}
+          onSave={(updated) => {
+            setEditingHabit(null);
+            if (onEdit) onEdit(updated);
+          }}
+          onClose={() => setEditingHabit(null)}
+        />
       )}
     </div>
   );

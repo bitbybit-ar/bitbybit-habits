@@ -25,8 +25,10 @@ const ERROR_CODE_TO_I18N: Record<string, string> = {
   invite_code_required: "errors.inviteCodeRequired",
   invalid_invite_code: "errors.invalidInviteCode",
   already_member: "errors.alreadyMember",
+  already_has_family: "errors.alreadyHasFamily",
   last_sponsor: "errors.lastSponsor",
   cannot_demote_last_sponsor: "errors.cannotDemoteLastSponsor",
+  single_sponsor_only: "errors.singleSponsorOnly",
   sponsors_only: "errors.sponsorsOnly",
 
   // Habits
@@ -64,6 +66,12 @@ const ERROR_CODE_TO_I18N: Record<string, string> = {
 
   // Wallets
   invalid_nwc_url: "errors.invalidNwcUrl",
+  no_wallet: "errors.noWallet",
+  missing_invoice: "errors.missingInvoice",
+  invalid_invoice: "errors.invalidInvoice",
+  invalid_amount: "errors.invalidAmount",
+  payment_failed: "errors.paymentFailed",
+  invoice_failed: "errors.invoiceFailed",
 
   // Generic
   Unauthorized: "errors.unauthorized",

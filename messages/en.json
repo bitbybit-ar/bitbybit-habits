@@ -16,8 +16,10 @@
     "inviteCodeRequired": "Invite code is required",
     "invalidInviteCode": "Invalid invite code",
     "alreadyMember": "You are already a member of this family",
-    "lastSponsor": "Cannot leave: you are the last sponsor. Promote another member first or delete the family",
-    "cannotDemoteLastSponsor": "Cannot demote the last sponsor",
+    "alreadyHasFamily": "You already belong to a family. Leave your current family first.",
+    "lastSponsor": "Cannot leave: you are the only sponsor. Remove all members first or delete the family",
+    "cannotDemoteLastSponsor": "Cannot demote the only sponsor",
+    "singleSponsorOnly": "Each family can only have one sponsor.",
     "sponsorsOnly": "Only sponsors can perform this action",
     "invalidScheduleType": "Invalid schedule_type",
     "invalidVerificationType": "Invalid verification_type",
@@ -49,7 +51,13 @@
     "unauthorized": "Not authenticated",
     "forbidden": "Not authorized",
     "resourceExists": "Resource already exists",
-    "internalError": "Internal server error"
+    "internalError": "Internal server error",
+    "noWallet": "No wallet connected. Connect one first.",
+    "missingInvoice": "Paste or scan a Lightning invoice to pay",
+    "invalidInvoice": "Invalid invoice. Must be a BOLT11 Lightning invoice (starts with lnbc)",
+    "invalidAmount": "Enter a valid amount in sats",
+    "paymentFailed": "Payment failed. Check your wallet connection and try again.",
+    "invoiceFailed": "Could not generate invoice. Check your wallet connection."
   },
   "common": {
     "appName": "BitByBit",
@@ -435,7 +443,8 @@
       "completion_approved": "Habit approved",
       "completion_rejected": "Habit rejected",
       "payment_received": "Payment received",
-      "payment_failed": "Payment failed"
+      "payment_failed": "Payment failed",
+      "member_joined": "New member"
     }
   },
   "summaryBar": {
@@ -629,5 +638,43 @@
   "seo": {
     "tagline": "Earn sats. Build habits. Change lives.",
     "description": "A habit tracker powered by Bitcoin Lightning Network that rewards task completion with real sats. Built for La Crypta Hackathons 2026."
+  },
+  "admin": {
+    "title": "Admin Panel",
+    "subtitle": "Manage users and monitor platform activity",
+    "loading": "Loading...",
+    "accessDenied": "Access Denied",
+    "accessDeniedText": "You need admin privileges to access this page.",
+    "statUsers": "Users",
+    "statFamilies": "Families",
+    "statHabits": "Habits",
+    "statApproved": "Approved",
+    "statPayments": "Payments",
+    "statSats": "Total Sats",
+    "searchPlaceholder": "Search by name, email, or username...",
+    "allFamilies": "All families",
+    "usersFound": "users",
+    "noUsers": "No users found",
+    "colUser": "User",
+    "colFamilies": "Families",
+    "colStatus": "Status",
+    "colCreated": "Created",
+    "colActions": "Actions",
+    "locked": "Locked",
+    "wallet": "Wallet",
+    "edit": "Edit",
+    "unlock": "Unlock",
+    "delete": "Delete",
+    "confirmDelete": "Are you sure you want to delete {name}? This action cannot be undone.",
+    "prev": "Previous",
+    "next": "Next",
+    "editUser": "Edit User",
+    "fieldDisplayName": "Display Name",
+    "fieldUsername": "Username",
+    "fieldEmail": "Email",
+    "fieldLocale": "Language",
+    "cancel": "Cancel",
+    "save": "Save",
+    "saving": "Saving..."
   }
 }

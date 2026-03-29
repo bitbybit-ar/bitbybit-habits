@@ -13,6 +13,11 @@ CREATE TABLE IF NOT EXISTS users (
     display_name TEXT NOT NULL,
     avatar_url TEXT,
     locale TEXT NOT NULL DEFAULT 'es',
+    failed_login_attempts INTEGER NOT NULL DEFAULT 0,
+    locked_until TIMESTAMP,
+    totp_secret TEXT,
+    totp_enabled BOOLEAN NOT NULL DEFAULT false,
+    recovery_codes TEXT,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW()
 );
@@ -104,6 +109,9 @@ CREATE TABLE IF NOT EXISTS payments (
     paid_at TIMESTAMP,
     created_at TIMESTAMP DEFAULT NOW()
 );
+
+CREATE INDEX idx_payments_from ON payments(from_user_id);
+CREATE INDEX idx_payments_to ON payments(to_user_id);
 
 CREATE INDEX idx_payments_completion ON payments(completion_id);
 CREATE INDEX idx_payments_status ON payments(status);

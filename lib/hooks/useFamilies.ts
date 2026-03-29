@@ -78,8 +78,12 @@ export function useFamilies() {
     return false;
   }, [result]);
 
+  // MVP: Single-family mode convenience accessor
+  const family = result.data.length > 0 ? result.data[0] : null;
+
   return {
     ...result,
+    family,
     leaveFamily,
     deleteFamily,
     changeRole,

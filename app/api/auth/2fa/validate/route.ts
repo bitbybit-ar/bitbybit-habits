@@ -51,6 +51,7 @@ export const POST = apiHandler(async (request, { db }) => {
       username: users.username,
       display_name: users.display_name,
       locale: users.locale,
+      nostr_pubkey: users.nostr_pubkey,
       totp_secret: users.totp_secret,
       totp_enabled: users.totp_enabled,
       recovery_codes: users.recovery_codes,
@@ -124,6 +125,7 @@ export const POST = apiHandler(async (request, { db }) => {
     display_name: user.display_name,
     locale: user.locale as "es" | "en",
     role,
+    nostr_pubkey: user.nostr_pubkey ?? null,
   });
 
   const response = NextResponse.json<ApiResponse>({

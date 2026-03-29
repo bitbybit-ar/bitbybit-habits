@@ -29,6 +29,8 @@ export const POST = apiHandler(async (request, { session, db }) => {
     throw new BadRequestError("missing_fields");
   }
 
+  console.log(`[Payment] Generating invoice: ${amount_sats} sats for completion ${completion_id.slice(0, 8)} (payment: ${payment_id?.slice(0, 8) ?? "new"})`);
+
   // Look up the completion to find the kid
   const completionRows = await db
     .select({
@@ -64,12 +66,14 @@ export const POST = apiHandler(async (request, { session, db }) => {
     .limit(1);
 
   if (!walletRows[0]) {
+    console.log(`[Payment] Kid ${kidUserId.slice(0, 8)} has no wallet`);
     return NextResponse.json<ApiResponse>(
       { success: false, error: "kid_no_wallet" },
       { status: 422 }
     );
   }
 
+  console.log(`[Payment] Connecting to kid's NWC wallet to create invoice...`);
   const nwcUrl = decrypt(walletRows[0].nwc_url_encrypted);
   const client = new NWCClient({ nostrWalletConnectUrl: nwcUrl });
 
@@ -78,6 +82,8 @@ export const POST = apiHandler(async (request, { session, db }) => {
       amount: amount_sats * 1000, // millisats
       description: `BitByBit: ${habitName}`,
     });
+
+    console.log(`[Payment] Invoice created, hash: ${transaction.payment_hash?.slice(0, 12)}...`);
 
     // If we have a payment_id from approve, update that record.
     // Otherwise create a new one (backward compatibility for retry).
@@ -114,6 +120,7 @@ export const POST = apiHandler(async (request, { session, db }) => {
       completion_id,
     };
   } catch (error) {
+    console.error("[Payment] NWC makeInvoice error:", error);
     const msg = error instanceof Error ? error.message : "";
     throw new BadRequestError(
       msg.includes("timeout") ? "nwc_timeout" : "nwc_invoice_failed"

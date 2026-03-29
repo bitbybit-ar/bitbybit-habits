@@ -225,6 +225,12 @@
   color: white;
 }
 
+.circlePending {
+  background: alpha($color-warning, 15%);
+  border-color: var(--color-warning);
+  color: var(--color-warning);
+}
+
 .circleToday {
   border-color: var(--color-primary);
   box-shadow: 0 0 0 2px alpha($color-primary, 20%);

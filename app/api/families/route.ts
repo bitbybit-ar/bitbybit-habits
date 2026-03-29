@@ -1,4 +1,4 @@
-import { apiHandler, created, BadRequestError } from "@/lib/api";
+import { apiHandler, created, BadRequestError, ConflictError } from "@/lib/api";
 import { families, familyMembers, users } from "@/lib/db";
 import { eq, desc, asc, inArray } from "drizzle-orm";
 
@@ -76,6 +76,16 @@ export const POST = apiHandler(async (request, { session, db }) => {
 
   if (!name || name.trim().length === 0) {
     throw new BadRequestError("family_name_required");
+  }
+
+  // MVP: Single-family mode — user can only belong to one family
+  const existingMembership = await db
+    .select({ id: familyMembers.id })
+    .from(familyMembers)
+    .where(eq(familyMembers.user_id, session.user_id));
+
+  if (existingMembership.length > 0) {
+    throw new ConflictError("already_has_family");
   }
 
   const inviteCode = generateInviteCode();

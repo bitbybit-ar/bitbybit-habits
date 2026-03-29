@@ -213,6 +213,37 @@
   line-height: 1;
 }
 
+.habitActions {
+  display: flex;
+  gap: 4px;
+}
+
+.editBtn,
+.deleteBtn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: $border-radius-full;
+  background: rgba(var(--glass-color), 0.05);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  font-size: 12px;
+  transition: background 0.2s, color 0.2s;
+
+  &:hover {
+    background: rgba(var(--glass-color), 0.1);
+    color: var(--color-text-primary);
+  }
+}
+
+.deleteBtn:hover {
+  background: alpha($color-error, 15%);
+  color: var(--color-error);
+}
+
 .kidRows {
   display: flex;
   flex-direction: column;

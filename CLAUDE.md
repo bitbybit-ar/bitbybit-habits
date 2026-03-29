@@ -134,11 +134,36 @@ bitbybit-habits/
 - Todas las responses usan el formato `ApiResponse<T>` con `{ success, data?, error? }`
 
 ### Base de datos
-- Drizzle ORM con Neon DB (PostgreSQL serverless)
+- Drizzle ORM con Neon DB (PostgreSQL serverless) en produccion
 - Conexion lazy via `getDb()` en `lib/db/index.ts`
-- Schema Drizzle en `lib/db/schema.ts`, schema SQL en `setup-database.sql`
+- Schema Drizzle en `lib/db/schema.ts` (source of truth), schema SQL de referencia en `setup-database.sql`
 - Tipos de DB mapeados en `lib/types.ts`
+- Migraciones en `drizzle/` — se ejecutan automaticamente en CI con `npx drizzle-kit push --force` al hacer push a main
 - NO usar string interpolation en queries (SQL injection)
+
+#### Setup local de PostgreSQL
+```bash
+# 1. Iniciar Postgres local (data dir en disco externo, puerto 5433)
+pg_ctl -D '/Volumes/Ext Disk/pg-data' -l '/Volumes/Ext Disk/pg-data/logfile' -o '-p 5433' start
+
+# 2. Crear la base de datos (solo la primera vez)
+createdb -p 5433 bitbybit
+
+# 3. Aplicar schema inicial (solo la primera vez, o para recrear desde cero)
+psql -p 5433 -d bitbybit -f setup-database.sql
+
+# 4. Aplicar migraciones de Drizzle (sincronizar con schema actual)
+npx drizzle-kit push --force
+
+# 5. Verificar conexion
+psql -p 5433 -d bitbybit -c "SELECT count(*) FROM users;"
+
+# Detener Postgres
+pg_ctl -D '/Volumes/Ext Disk/pg-data' stop
+```
+- **Puerto**: 5433 (no el default 5432, para evitar conflictos)
+- **User**: `fabricioacosta` (peer auth local, sin password)
+- **DATABASE_URL** en `.env.local`: `postgresql://fabricioacosta@localhost:5433/bitbybit`
 
 ### Auth
 - Sesion via cookie httpOnly (`session`)

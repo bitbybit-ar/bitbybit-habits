@@ -53,12 +53,42 @@ npm install
 cp .env.example .env.local
 # Edit .env.local with your values (see below)
 
-# Create database tables
-# Run setup-database.sql against your Neon DB
+# Database setup (see Database section below)
+npm run db:migrate
 
 # Start dev server
 npm run dev
 ```
+
+### Database
+
+BitByBit uses [Neon DB](https://neon.tech) (PostgreSQL serverless) with [Drizzle ORM](https://orm.drizzle.team/).
+
+**First-time setup:**
+
+1. Create a free project on [neon.tech](https://neon.tech)
+2. Copy the connection string into `DATABASE_URL` in `.env.local`
+3. Run migrations to create all tables:
+   ```bash
+   npm run db:migrate
+   ```
+
+**Database commands:**
+
+```bash
+npm run db:migrate    # Apply pending migrations to your Neon DB
+npm run db:generate   # Generate a new migration after changing lib/db/schema.ts
+npm run db:studio     # Open Drizzle Studio (visual DB browser)
+```
+
+**Workflow when changing the schema:**
+
+1. Edit `lib/db/schema.ts` (Drizzle schema — source of truth)
+2. Run `npm run db:generate` to create a new migration file in `drizzle/`
+3. Run `npm run db:migrate` to apply it to your database
+4. Update `setup-database.sql` to match (used as reference, not for migrations)
+
+> **Note:** Each developer needs their own Neon DB project (or shared credentials). The `DATABASE_URL` in `.env.local` is gitignored. The `setup-database.sql` file is a reference schema — Drizzle migrations in `drizzle/` are the actual source for DB setup.
 
 ### Environment Variables
 
@@ -120,7 +150,8 @@ bitbybit-habits/
 ## Commands
 
 ```bash
-npm run dev          # Dev server
+npm run dev          # Dev server (HTTP)
+npm run dev:https    # Dev server with HTTPS (required for NIP-07 Nostr extensions)
 npm run build        # Production build
 npm run lint         # ESLint
 npm test             # Run all tests (Vitest)
@@ -128,6 +159,42 @@ npm run test:watch   # Tests in watch mode
 npm run test:coverage # Tests with coverage report
 npx tsc --noEmit     # Type-check without compiling
 ```
+
+### HTTPS Local Dev (required for NIP-07)
+
+NIP-07 Nostr browser extensions (Alby, nos2x) require a secure HTTPS connection — `window.nostr` won't be injected on plain `http://localhost`. To set up local HTTPS:
+
+1. **Install mkcert** (one-time):
+   ```bash
+   brew install mkcert
+   mkcert -install    # installs the local CA in your system trust store
+   ```
+
+2. **Generate certificates** (one-time, already in `certificates/`):
+   ```bash
+   cd certificates
+   mkcert -key-file localhost-key.pem -cert-file localhost.pem localhost 127.0.0.1
+   ```
+
+3. **To also access from other devices on your network** (phone, another laptop), add your local IP:
+   ```bash
+   cd certificates
+   mkcert -key-file localhost-key.pem -cert-file localhost.pem localhost 127.0.0.1 192.168.0.35
+   ```
+   Replace `192.168.0.35` with your actual local IP (`ifconfig | grep "inet "` to find it).
+
+4. **Start the HTTPS dev server**:
+   ```bash
+   npm run dev:https
+   ```
+   This runs on `https://localhost:3000` and `https://<your-ip>:3000`.
+
+5. **If network access doesn't work**, explicitly bind to all interfaces:
+   ```bash
+   npx next dev -H 0.0.0.0 --experimental-https --experimental-https-key certificates/localhost-key.pem --experimental-https-cert certificates/localhost.pem
+   ```
+
+> **Note:** The `certificates/` directory is gitignored. Each developer generates their own certs locally.
 
 ## Troubleshooting
 

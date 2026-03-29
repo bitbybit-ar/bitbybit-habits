@@ -78,6 +78,7 @@ export function apiHandler<T = unknown>(
       }
 
       if (error instanceof ApiError) {
+        console.error(`[API ${error.statusCode}] ${request.method} ${request.nextUrl.pathname} → ${error.message}`);
         return NextResponse.json<ApiResponse>(
           { success: false, error: error.message },
           { status: error.statusCode }

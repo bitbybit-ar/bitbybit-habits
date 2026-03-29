@@ -16,8 +16,10 @@
     "inviteCodeRequired": "El código de invitación es obligatorio",
     "invalidInviteCode": "Código de invitación inválido",
     "alreadyMember": "Ya sos miembro de esta familia",
-    "lastSponsor": "No podés irte: sos el último sponsor. Promové a otro miembro primero o eliminá la familia",
-    "cannotDemoteLastSponsor": "No se puede degradar al último sponsor",
+    "alreadyHasFamily": "Ya pertenecés a una familia. Salí de tu familia actual primero.",
+    "lastSponsor": "No podés irte: sos el único sponsor. Eliminá a los miembros primero o borrá la familia",
+    "cannotDemoteLastSponsor": "No se puede degradar al único sponsor",
+    "singleSponsorOnly": "Cada familia solo puede tener un sponsor.",
     "sponsorsOnly": "Solo sponsors pueden realizar esta acción",
     "invalidScheduleType": "schedule_type inválido",
     "invalidVerificationType": "verification_type inválido",
@@ -49,7 +51,13 @@
     "unauthorized": "No autenticado",
     "forbidden": "No autorizado",
     "resourceExists": "El recurso ya existe",
-    "internalError": "Error interno del servidor"
+    "internalError": "Error interno del servidor",
+    "noWallet": "No tenés una wallet conectada. Conectá una primero.",
+    "missingInvoice": "Pegá o escaneá un Lightning invoice para pagar",
+    "invalidInvoice": "Invoice inválido. Debe ser un invoice BOLT11 de Lightning (empieza con lnbc)",
+    "invalidAmount": "Ingresá un monto válido en sats",
+    "paymentFailed": "El pago falló. Revisá la conexión de tu wallet e intentá de nuevo.",
+    "invoiceFailed": "No se pudo generar el invoice. Revisá la conexión de tu wallet."
   },
   "common": {
     "appName": "BitByBit",
@@ -435,7 +443,8 @@
       "completion_approved": "Hábito aprobado",
       "completion_rejected": "Hábito rechazado",
       "payment_received": "Pago recibido",
-      "payment_failed": "Pago fallido"
+      "payment_failed": "Pago fallido",
+      "member_joined": "Nuevo miembro"
     }
   },
   "summaryBar": {
@@ -629,5 +638,43 @@
   "seo": {
     "tagline": "Ganá sats. Creá hábitos. Cambiá vidas.",
     "description": "Un habit tracker con Bitcoin Lightning Network que recompensa completar tareas con sats reales. Creado para La Crypta Hackathons 2026."
+  },
+  "admin": {
+    "title": "Panel de Admin",
+    "subtitle": "Gestionar usuarios y monitorear actividad de la plataforma",
+    "loading": "Cargando...",
+    "accessDenied": "Acceso Denegado",
+    "accessDeniedText": "Necesitás privilegios de admin para acceder a esta página.",
+    "statUsers": "Usuarios",
+    "statFamilies": "Familias",
+    "statHabits": "Hábitos",
+    "statApproved": "Aprobados",
+    "statPayments": "Pagos",
+    "statSats": "Sats Totales",
+    "searchPlaceholder": "Buscar por nombre, email o usuario...",
+    "allFamilies": "Todas las familias",
+    "usersFound": "usuarios",
+    "noUsers": "No se encontraron usuarios",
+    "colUser": "Usuario",
+    "colFamilies": "Familias",
+    "colStatus": "Estado",
+    "colCreated": "Creado",
+    "colActions": "Acciones",
+    "locked": "Bloqueado",
+    "wallet": "Wallet",
+    "edit": "Editar",
+    "unlock": "Desbloquear",
+    "delete": "Eliminar",
+    "confirmDelete": "¿Estás seguro de que querés eliminar a {name}? Esta acción no se puede deshacer.",
+    "prev": "Anterior",
+    "next": "Siguiente",
+    "editUser": "Editar Usuario",
+    "fieldDisplayName": "Nombre",
+    "fieldUsername": "Usuario",
+    "fieldEmail": "Email",
+    "fieldLocale": "Idioma",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "saving": "Guardando..."
   }
 }

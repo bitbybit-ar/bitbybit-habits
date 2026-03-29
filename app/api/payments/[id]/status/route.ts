@@ -61,6 +61,7 @@ export const GET = apiHandler(async (_request, { session: _session, db, params }
     const result = await Promise.race([lookupPromise, timeoutPromise]);
 
     if (result.settled_at) {
+      console.log(`[Status] Payment ${paymentId.slice(0, 8)} settled`);
       // Update payment to paid
       await db
         .update(payments)
@@ -71,7 +72,8 @@ export const GET = apiHandler(async (_request, { session: _session, db, params }
     }
 
     return { settled: false };
-  } catch {
+  } catch (err) {
+    console.error(`[Status] Payment ${paymentId.slice(0, 8)} lookup error:`, err instanceof Error ? err.message : err);
     // Timeout or NWC error — return false, don't crash
     return { settled: false };
   } finally {
