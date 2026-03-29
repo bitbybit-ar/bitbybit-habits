@@ -1,6 +1,7 @@
 import { apiHandler } from "@/lib/api";
 import { payments, completions, habits } from "@/lib/db";
 import { eq, and, sum, count, desc, sql, inArray } from "drizzle-orm";
+import { todayDateStr } from "@/lib/date";
 
 interface HabitStreak {
   habit_id: string;
@@ -9,17 +10,21 @@ interface HabitStreak {
 }
 
 interface KidStats {
-  total_sats_earned: number;
+  totalSats: number;
+  todaySats: number;
+  bestStreak: number;
+  pendingCount: number;
   streaks: HabitStreak[];
-  pending_completions: number;
 }
 
 /**
  * GET /api/stats
  *
- * User stats: total sats earned, current streaks per habit, and pending completions.
+ * User stats: total sats earned, today's sats, best streak, and pending completions.
  */
 export const GET = apiHandler(async (_req, { session, db }) => {
+  const today = todayDateStr();
+
   // Total sats earned (sum of paid payments)
   const satsResult = await db
     .select({ total: sql<number>`COALESCE(${sum(payments.amount_sats)}, 0)` })
@@ -27,6 +32,21 @@ export const GET = apiHandler(async (_req, { session, db }) => {
     .where(and(eq(payments.to_user_id, session.user_id), eq(payments.status, "paid")));
 
   const totalSatsEarned = Number(satsResult[0].total);
+
+  // Today's sats: sum of sat_reward for today's approved completions
+  const todaySatsResult = await db
+    .select({ total: sql<number>`COALESCE(${sum(habits.sat_reward)}, 0)` })
+    .from(completions)
+    .innerJoin(habits, eq(habits.id, completions.habit_id))
+    .where(
+      and(
+        eq(completions.user_id, session.user_id),
+        eq(completions.date, today),
+        eq(completions.status, "approved")
+      )
+    );
+
+  const todaySats = Number(todaySatsResult[0].total);
 
   // Pending completions count
   const pendingResult = await db
@@ -110,10 +130,16 @@ export const GET = apiHandler(async (_req, { session, db }) => {
     }
   }
 
+  const bestStreak = streaks.length > 0
+    ? Math.max(...streaks.map((s) => s.current_streak))
+    : 0;
+
   const stats: KidStats = {
-    total_sats_earned: totalSatsEarned,
+    totalSats: totalSatsEarned,
+    todaySats,
+    bestStreak,
+    pendingCount: pendingCompletions,
     streaks,
-    pending_completions: pendingCompletions,
   };
 
   return stats;

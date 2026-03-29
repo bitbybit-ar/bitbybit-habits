@@ -44,8 +44,9 @@ describe("GET /api/stats", () => {
 
   it("returns stats with streaks", async () => {
     await setSessionCookie(testSession);
-    selectResults.push([{ total: 500 }]); // sats
-    selectResults.push([{ pending_count: 2 }]); // pending
+    selectResults.push([{ total: 500 }]); // totalSats
+    selectResults.push([{ total: 50 }]); // todaySats
+    selectResults.push([{ pending_count: 2 }]); // pendingCount
     selectResults.push([{ id: UUID.habit1, name: "Read" }]); // active habits
     // Completions for streak calc - 3 consecutive days (now batched with habit_id)
     const today = new Date();
@@ -59,8 +60,10 @@ describe("GET /api/stats", () => {
     const req = createRequest("GET", "/api/stats");
     const { status, body } = await parseResponse(await GET(req));
     expect(status).toBe(200);
-    expect(body.data.total_sats_earned).toBe(500);
-    expect(body.data.pending_completions).toBe(2);
+    expect(body.data.totalSats).toBe(500);
+    expect(body.data.todaySats).toBe(50);
+    expect(body.data.pendingCount).toBe(2);
+    expect(body.data.bestStreak).toBeGreaterThanOrEqual(1);
     expect(body.data.streaks).toHaveLength(1);
     expect(body.data.streaks[0].current_streak).toBeGreaterThanOrEqual(1);
   });

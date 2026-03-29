@@ -3,6 +3,8 @@
 import { useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { BoltIcon, UserIcon } from "@/components/icons";
+import { DashboardSection } from "@/components/dashboard/dashboard-section";
+import { EmptyState } from "@/components/dashboard/empty-state";
 import { WeeklyTracker } from "@/components/dashboard/weekly-tracker";
 import type { Habit } from "@/lib/types";
 import type { FamilyWithMembers } from "@/lib/hooks/useFamilies";
@@ -47,17 +49,18 @@ export function SponsorHabitsTab({ habits, families, familyCompletions, onApprov
   }, [habits, familyCompletions, families]);
 
   return (
-    <div className={styles.section}>
-      <h2 className={styles.sectionTitle}>{t("sponsorDashboard.byHabit")}</h2>
+    <DashboardSection title={t("sponsorDashboard.byHabit")}>
       {byHabitGroups.length === 0 ? (
-        <div className={styles.emptyState}>
-          <span className={styles.emptyIcon}><BoltIcon size={48} /></span>
-          <h3 className={styles.emptyTitle}>{t("emptyState.noHabitsTitle")}</h3>
-          <p className={styles.emptySubtext}>{t("emptyState.sponsorNoHabitsDesc")}</p>
-          <button className={styles.emptyCtaButton} onClick={onCreateHabit}>
-            {t("emptyState.createFirstHabit")}
-          </button>
-        </div>
+        <EmptyState
+          icon={<BoltIcon size={48} />}
+          title={t("emptyState.noHabitsTitle")}
+          description={t("emptyState.sponsorNoHabitsDesc")}
+          action={
+            <button className={styles.emptyCtaButton} onClick={onCreateHabit}>
+              {t("emptyState.createFirstHabit")}
+            </button>
+          }
+        />
       ) : (
         <div className={styles.habitGrid}>
           {byHabitGroups.map((group) => {
@@ -104,7 +107,7 @@ export function SponsorHabitsTab({ habits, families, familyCompletions, onApprov
           })}
         </div>
       )}
-    </div>
+    </DashboardSection>
   );
 }
 
@@ -148,14 +151,13 @@ export function SponsorByKidTab({ habits, families, familyCompletions, onApprove
   }, [families, familyCompletions, habits]);
 
   return (
-    <div className={styles.section}>
-      <h2 className={styles.sectionTitle}>{t("sponsorDashboard.byKid")}</h2>
+    <DashboardSection title={t("sponsorDashboard.byKid")}>
       {byKidGroups.length === 0 ? (
-        <div className={styles.emptyState}>
-          <span className={styles.emptyIcon}><UserIcon size={48} /></span>
-          <h3 className={styles.emptyTitle}>{t("sponsorDashboard.noKids")}</h3>
-          <p className={styles.emptySubtext}>{t("sponsorDashboard.noKidsDesc")}</p>
-        </div>
+        <EmptyState
+          icon={<UserIcon size={48} />}
+          title={t("sponsorDashboard.noKids")}
+          description={t("sponsorDashboard.noKidsDesc")}
+        />
       ) : (
         <div className={styles.habitGrid}>
           {byKidGroups.map((kid) => {
@@ -205,6 +207,6 @@ export function SponsorByKidTab({ habits, families, familyCompletions, onApprove
           })}
         </div>
       )}
-    </div>
+    </DashboardSection>
   );
 }

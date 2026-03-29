@@ -2,7 +2,9 @@
 
 import { useTranslations, useLocale } from "next-intl";
 import { BoltIcon } from "@/components/icons";
-import { Spinner } from "@/components/ui/spinner";
+import { DashboardSection } from "@/components/dashboard/dashboard-section";
+import { EmptyState } from "@/components/dashboard/empty-state";
+import { BlockLoader } from "@/components/ui/block-loader";
 import { formatDisplayDate } from "@/lib/date";
 import type { PaymentWithDetails } from "@/lib/types";
 import styles from "../../../app/[locale]/(dashboard)/sponsor/sponsor.module.scss";
@@ -23,17 +25,18 @@ export function SponsorPaymentsTab({ payments, isLoading, onRetry }: SponsorPaym
   const t = useTranslations();
   const locale = useLocale();
 
+  if (isLoading) {
+    return <DashboardSection center><BlockLoader /></DashboardSection>;
+  }
+
   return (
-    <div className={styles.section}>
-      <h2 className={styles.sectionTitle}>{t("payments.title")}</h2>
-      {isLoading ? (
-        <Spinner size="sm" />
-      ) : payments.length === 0 ? (
-        <div className={styles.emptyState}>
-          <span className={styles.emptyIcon}><BoltIcon size={48} /></span>
-          <h3 className={styles.emptyTitle}>{t("emptyState.noPayments")}</h3>
-          <p className={styles.emptySubtext}>{t("emptyState.noPaymentsDesc")}</p>
-        </div>
+    <DashboardSection title={t("payments.title")}>
+      {payments.length === 0 ? (
+        <EmptyState
+          icon={<BoltIcon size={48} />}
+          title={t("emptyState.noPayments")}
+          description={t("emptyState.noPaymentsDesc")}
+        />
       ) : (
         <div className={styles.paymentTable}>
           <table>
@@ -72,6 +75,6 @@ export function SponsorPaymentsTab({ payments, isLoading, onRetry }: SponsorPaym
           </table>
         </div>
       )}
-    </div>
+    </DashboardSection>
   );
 }

@@ -16,20 +16,8 @@
   }
 }
 
-.container {
-  @include container;
-  min-height: 100vh;
-  padding-top: $spacing-32;
-  padding-bottom: $spacing-40;
+.animationWrapper {
   position: relative;
-
-  @include mobile {
-    padding-bottom: 100px;
-  }
-
-  @include desktop {
-    padding-top: $spacing-48;
-  }
 }
 
 .satsAnimation {
@@ -117,48 +105,6 @@
   flex-shrink: 0;
 }
 
-.sectionTitle {
-  font-size: $font-size-lg;
-  font-weight: $font-weight-semibold;
-  color: var(--color-text-primary);
-  margin: 0 0 $spacing-16;
-}
-
-.loadingText {
-  color: var(--color-text-secondary);
-  text-align: center;
-  padding-top: $spacing-80;
-  font-size: $font-size-base;
-}
-
-// Empty state
-.emptyState {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  padding: $spacing-64 $spacing-24;
-}
-
-.emptyIcon {
-  font-size: 3rem;
-  margin-bottom: $spacing-16;
-}
-
-.emptyTitle {
-  font-size: $font-size-lg;
-  font-weight: $font-weight-bold;
-  color: var(--color-text-primary);
-  margin: 0 0 $spacing-8;
-}
-
-.emptySubtext {
-  font-size: $font-size-sm;
-  color: var(--color-text-secondary);
-  margin: 0;
-  max-width: 320px;
-}
-
 .joinSection {
   @include glass-card;
   margin-top: $spacing-24;
@@ -179,52 +125,6 @@
   @include mobile {
     flex-direction: column;
   }
-}
-
-.joinInput {
-  flex: 1;
-  padding: $spacing-12 $spacing-16;
-  border-radius: $border-radius-md;
-  border: 1px solid rgba(var(--glass-color), 0.1);
-  background: rgba(var(--glass-color), 0.04);
-  color: var(--color-text-primary);
-  font-size: $font-size-base;
-  text-align: center;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-
-  &:focus {
-    outline: none;
-    border-color: var(--color-primary);
-  }
-}
-
-.joinButton {
-  padding: $spacing-12 $spacing-24;
-  border-radius: $border-radius-md;
-  border: none;
-  background: var(--color-primary);
-  color: var(--color-on-primary);
-  font-size: $font-size-base;
-  font-weight: $font-weight-bold;
-  cursor: pointer;
-  transition: opacity 0.2s;
-  white-space: nowrap;
-
-  &:hover {
-    opacity: 0.9;
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-}
-
-.joinError {
-  color: var(--color-accent);
-  font-size: $font-size-sm;
-  margin-top: $spacing-8;
 }
 
 // ── Earnings list ──
@@ -292,10 +192,4 @@
     color: $color-error;
     background: alpha($color-error, 12%);
   }
-}
-
-.loadingText {
-  color: var(--color-text-secondary);
-  text-align: center;
-  padding: $spacing-24;
 }
