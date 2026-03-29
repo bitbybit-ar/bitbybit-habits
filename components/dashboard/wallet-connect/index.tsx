@@ -33,6 +33,14 @@ export function WalletConnect() {
   const [saving, setSaving] = useState(false);
   const [balance, setBalance] = useState<number | null>(null);
   const [balanceLoading, setBalanceLoading] = useState(false);
+  const [nodeInfo, setNodeInfo] = useState<{
+    alias: string | null;
+    pubkey: string | null;
+    network: string | null;
+    methods: string[];
+    color: string | null;
+    block_height: number | null;
+  } | null>(null);
   const [view, setView] = useState<WalletView>("main");
   const [scanning, setScanning] = useState<ScanTarget>(null);
 
@@ -67,8 +75,13 @@ export function WalletConnect() {
       const res = await fetch("/api/wallets/balance");
       if (res.ok) {
         const data = await res.json();
-        if (data.success && data.data?.balance_sats != null) {
-          setBalance(data.data.balance_sats);
+        if (data.success) {
+          if (data.data?.balance_sats != null) {
+            setBalance(data.data.balance_sats);
+          }
+          if (data.data?.node_info) {
+            setNodeInfo(data.data.node_info);
+          }
         }
       }
     } catch {
@@ -141,6 +154,7 @@ export function WalletConnect() {
         if (data.success) {
           setWallet(null);
           setBalance(null);
+          setNodeInfo(null);
           setView("main");
         }
       }

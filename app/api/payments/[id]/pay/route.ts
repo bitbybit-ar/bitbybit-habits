@@ -2,7 +2,7 @@ import { apiHandler, NotFoundError, ForbiddenError, BadRequestError } from "@/li
 import { payments, wallets } from "@/lib/db";
 import { decrypt } from "@/lib/crypto";
 import { eq, and } from "drizzle-orm";
-import { NWCClient } from "@getalby/sdk";
+import { NWCClient, Nip47WalletError, Nip47TimeoutError, Nip47NetworkError } from "@getalby/sdk";
 
 /**
  * POST /api/payments/[id]/pay
@@ -82,12 +82,29 @@ export const POST = apiHandler(async (_request, { session, db, params }) => {
       .set({ status: "failed" })
       .where(eq(payments.id, paymentId));
 
-    const msg = error instanceof Error ? error.message.toLowerCase() : "";
-    if (msg.includes("insufficient") || msg.includes("not enough")) {
-      throw new BadRequestError("insufficient_funds");
+    if (error instanceof Nip47WalletError) {
+      const code = error.code?.toUpperCase() ?? "";
+      if (code.includes("INSUFFICIENT") || code === "INSUFFICIENT_BALANCE") {
+        throw new BadRequestError("insufficient_funds");
+      }
+      if (code === "QUOTA_EXCEEDED") {
+        throw new BadRequestError("quota_exceeded");
+      }
+      throw new BadRequestError(`nwc_payment_failed: ${error.code}`);
     }
+    if (error instanceof Nip47TimeoutError) {
+      throw new BadRequestError("nwc_timeout");
+    }
+    if (error instanceof Nip47NetworkError) {
+      throw new BadRequestError("nwc_relay_error");
+    }
+
+    const msg = error instanceof Error ? error.message.toLowerCase() : "";
     if (msg.includes("timeout")) {
       throw new BadRequestError("nwc_timeout");
+    }
+    if (msg.includes("insufficient") || msg.includes("not enough")) {
+      throw new BadRequestError("insufficient_funds");
     }
     throw new BadRequestError("nwc_payment_failed");
   } finally {

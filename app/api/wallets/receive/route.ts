@@ -1,6 +1,6 @@
 import { apiHandler, BadRequestError } from "@/lib/api";
 import { getDecryptedNwcUrl } from "@/app/api/wallets/route";
-import { NWCClient } from "@getalby/sdk";
+import { NWCClient, Nip47WalletError, Nip47TimeoutError, Nip47NetworkError } from "@getalby/sdk";
 
 const MAX_INVOICE_SATS = 1_000_000;
 const MAX_DESCRIPTION_LENGTH = 500;
@@ -35,6 +35,7 @@ export const POST = apiHandler(async (request, { session, db }) => {
     throw new BadRequestError("no_wallet");
   }
 
+  console.log(`[Wallet:Receive] Creating invoice for ${amount_sats} sats (user: ${session.user_id.slice(0, 8)})`);
   const client = new NWCClient({ nostrWalletConnectUrl: nwcUrl });
 
   try {
@@ -47,11 +48,34 @@ export const POST = apiHandler(async (request, { session, db }) => {
     );
 
     const result = await Promise.race([invoicePromise, timeoutPromise]);
+    console.log(`[Wallet:Receive] Invoice created, hash: ${result.payment_hash?.slice(0, 8)}...`);
     return {
       payment_request: result.invoice,
       payment_hash: result.payment_hash,
     };
-  } catch {
+  } catch (err) {
+    console.error("[Wallet:Receive] makeInvoice error:", err);
+
+    if (err instanceof Nip47WalletError) {
+      if (err.code === "NOT_IMPLEMENTED") {
+        throw new BadRequestError("make_invoice_not_supported");
+      }
+      if (err.code === "RATE_LIMITED") {
+        throw new BadRequestError("wallet_rate_limited");
+      }
+      throw new BadRequestError(`wallet_error: ${err.code}`);
+    }
+    if (err instanceof Nip47TimeoutError) {
+      throw new BadRequestError("nwc_timeout");
+    }
+    if (err instanceof Nip47NetworkError) {
+      throw new BadRequestError("nwc_relay_error");
+    }
+
+    const msg = err instanceof Error ? err.message : "";
+    if (msg === "timeout") {
+      throw new BadRequestError("nwc_timeout");
+    }
     throw new BadRequestError("invoice_failed");
   } finally {
     client.close();

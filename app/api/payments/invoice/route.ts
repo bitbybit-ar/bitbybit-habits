@@ -3,7 +3,7 @@ import { apiHandler, BadRequestError, ForbiddenError } from "@/lib/api";
 import { completions, habits, payments, wallets, familyMembers } from "@/lib/db";
 import { decrypt } from "@/lib/crypto";
 import { eq, and } from "drizzle-orm";
-import { NWCClient } from "@getalby/sdk";
+import { NWCClient, Nip47WalletError, Nip47TimeoutError, Nip47NetworkError } from "@getalby/sdk";
 import type { ApiResponse } from "@/lib/types";
 
 /**
@@ -117,9 +117,23 @@ export const POST = apiHandler(async (request, { session, db }) => {
       completion_id,
     };
   } catch (error) {
+    console.error("[Payments:Invoice] makeInvoice error:", error);
+
+    if (error instanceof Nip47WalletError) {
+      if (error.code === "NOT_IMPLEMENTED") {
+        throw new BadRequestError("make_invoice_not_supported");
+      }
+      throw new BadRequestError(`wallet_error: ${error.code}`);
+    }
+    if (error instanceof Nip47TimeoutError) {
+      throw new BadRequestError("nwc_timeout");
+    }
+    if (error instanceof Nip47NetworkError) {
+      throw new BadRequestError("nwc_relay_error");
+    }
     const msg = error instanceof Error ? error.message : "";
     throw new BadRequestError(
-      msg.includes("timeout") ? "nwc_timeout" : "nwc_invoice_failed"
+      msg === "timeout" ? "nwc_timeout" : "nwc_invoice_failed"
     );
   } finally {
     client.close();
