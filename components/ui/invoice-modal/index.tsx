@@ -25,7 +25,9 @@ export function InvoiceModal({
   const t = useTranslations("invoiceModal");
   const [copied, setCopied] = useState(false);
   const [settled, setSettled] = useState(false);
+  const [pollError, setPollError] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const failCountRef = useRef(0);
 
   const pollStatus = useCallback(async () => {
     try {
@@ -34,8 +36,14 @@ export function InvoiceModal({
       if (json.success && json.data?.settled) {
         setSettled(true);
       }
+      failCountRef.current = 0;
+      setPollError(false);
     } catch {
-      // Silently continue polling
+      failCountRef.current += 1;
+      // Show error after 3 consecutive failures (12 seconds)
+      if (failCountRef.current >= 3) {
+        setPollError(true);
+      }
     }
   }, [paymentId]);
 
@@ -62,7 +70,7 @@ export function InvoiceModal({
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      // Clipboard not available
+      // Fallback: select the text for manual copy
     }
   };
 
@@ -92,6 +100,10 @@ export function InvoiceModal({
                 level="M"
               />
             </div>
+
+            {pollError && (
+              <p className={styles.pollError}>{t("pollError")}</p>
+            )}
 
             <button className={styles.copyButton} onClick={handleCopy}>
               {copied ? t("copied") : t("copyInvoice")}

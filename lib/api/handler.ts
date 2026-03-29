@@ -86,16 +86,16 @@ export function apiHandler<T = unknown>(
 
       console.error(`[API Error] ${request.method} ${request.nextUrl.pathname}:`, error);
 
-      const message = error instanceof Error ? error.message : "Error interno";
+      const message = error instanceof Error ? error.message : "Internal error";
       if (message.includes("duplicate key") || message.includes("unique")) {
         return NextResponse.json<ApiResponse>(
-          { success: false, error: "El recurso ya existe" },
+          { success: false, error: "Resource already exists" },
           { status: 409 }
         );
       }
 
       return NextResponse.json<ApiResponse>(
-        { success: false, error: "Error interno del servidor" },
+        { success: false, error: "Internal server error" },
         { status: 500 }
       );
     }

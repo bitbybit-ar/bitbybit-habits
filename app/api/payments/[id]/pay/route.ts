@@ -15,7 +15,7 @@ export const POST = apiHandler(async (_request, { session, db, params }) => {
   const paymentId = params.id;
 
   if (session.role !== "sponsor") {
-    throw new ForbiddenError("Solo sponsors pueden realizar pagos");
+    throw new ForbiddenError("sponsors_only");
   }
 
   // Look up the payment record
@@ -26,13 +26,13 @@ export const POST = apiHandler(async (_request, { session, db, params }) => {
     .limit(1);
 
   if (!paymentRows[0]) {
-    throw new NotFoundError("Pago");
+    throw new NotFoundError("Payment");
   }
 
   const payment = paymentRows[0];
 
   if (payment.from_user_id !== session.user_id) {
-    throw new ForbiddenError("No autorizado para este pago");
+    throw new ForbiddenError();
   }
 
   if (payment.status === "paid") {
@@ -69,6 +69,8 @@ export const POST = apiHandler(async (_request, { session, db, params }) => {
       .set({
         status: "paid",
         paid_at: new Date(),
+        preimage: result.preimage,
+        payment_method: "nwc",
       })
       .where(eq(payments.id, paymentId));
 
@@ -80,9 +82,11 @@ export const POST = apiHandler(async (_request, { session, db, params }) => {
       .set({ status: "failed" })
       .where(eq(payments.id, paymentId));
 
-    throw new BadRequestError(
-      `Error al pagar: ${error instanceof Error ? error.message : "Error desconocido"}`
-    );
+    const msg = error instanceof Error ? error.message.toLowerCase() : "";
+    if (msg.includes("insufficient") || msg.includes("not enough")) {
+      throw new BadRequestError("insufficient_funds");
+    }
+    throw new BadRequestError("nwc_payment_failed");
   } finally {
     client.close();
   }

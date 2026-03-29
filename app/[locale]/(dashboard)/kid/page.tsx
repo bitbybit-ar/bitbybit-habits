@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useLocale } from "next-intl";
 import { BoltIcon, FlameIcon, ListIcon, UsersIcon, WalletIcon } from "@/components/icons";
@@ -12,7 +13,9 @@ import { Onboarding } from "@/components/dashboard/onboarding";
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 import type { DashboardTab } from "@/components/dashboard/dashboard-layout";
 import { useToast } from "@/components/ui/toast";
-import { DashboardSkeleton } from "@/components/ui/skeleton";
+import { Container } from "@/components/ui/container";
+import { BlockLoader } from "@/components/ui/block-loader";
+import { Spinner } from "@/components/ui/spinner";
 import { FormInput, FormButton } from "@/components/ui/form";
 import { useSession } from "@/lib/hooks/useSession";
 import { useHabits } from "@/lib/hooks/useHabits";
@@ -21,6 +24,7 @@ import { useFamilies } from "@/lib/hooks/useFamilies";
 import { useStats } from "@/lib/hooks/useStats";
 import { usePayments } from "@/lib/hooks/usePayments";
 import { formatDisplayDate } from "@/lib/date";
+import { resolveApiError } from "@/lib/error-messages";
 import styles from "./kid.module.scss";
 
 type TabType = "habits" | "family" | "earnings" | "wallet";
@@ -28,6 +32,7 @@ type TabType = "habits" | "family" | "earnings" | "wallet";
 export default function KidDashboard() {
   const t = useTranslations();
   const locale = useLocale();
+  const router = useRouter();
   const { showToast } = useToast();
   const [activeTab, setActiveTab] = useState<TabType>("habits");
   const [joinCode, setJoinCode] = useState("");
@@ -96,7 +101,7 @@ export default function KidDashboard() {
         showToast(t("family.joinSuccess"), "success");
         families.refetch();
       } else {
-        setJoinError(data.error);
+        setJoinError(resolveApiError(data.error, t));
       }
     } catch {
       setJoinError("Error");
@@ -130,7 +135,12 @@ export default function KidDashboard() {
     }
   }, [showToast, t, completions, stats]);
 
-  if (isLoading) return <DashboardSkeleton />;
+  if (isLoading) return <Container center><BlockLoader /></Container>;
+
+  if (session.data?.role === "sponsor") {
+    router.replace("/sponsor");
+    return <Container center><BlockLoader /></Container>;
+  }
 
   const displayName = session.data?.display_name ?? session.data?.username ?? "Kid";
   const level = Math.floor(stats.data.totalSats / 100) + 1;
@@ -232,7 +242,7 @@ export default function KidDashboard() {
         <>
           <h2 className={styles.sectionTitle}>{t("kidDashboard.earnings")}</h2>
           {kidPayments.isLoading ? (
-            <p className={styles.loadingText}>{t("common.loading")}</p>
+            <Spinner size="sm" />
           ) : kidPayments.data.length === 0 ? (
             <div className={styles.emptyState}>
               <span className={styles.emptyIcon}><BoltIcon size={48} /></span>
@@ -284,6 +294,10 @@ export default function KidDashboard() {
         tabs={tabs}
         activeTab={activeTab}
         onTabChange={(key) => setActiveTab(key as TabType)}
+        breadcrumbs={[
+          { label: t("dashboard.title"), href: "/kid" },
+          { label: tabs.find((tb) => tb.key === activeTab)?.label ?? "" },
+        ]}
       >
         {showOnboarding ? (
           <Onboarding displayName={displayName} onDismiss={handleDismissOnboarding} />

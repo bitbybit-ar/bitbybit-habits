@@ -1,0 +1,183 @@
+@use "@/styles/colors" as *;
+@use "@/styles/spacing" as *;
+@use "@/styles/typography" as *;
+
+// --- Block colors (glass: bg ~30% opacity, border ~52% opacity) ---
+
+$block-colors: (
+  gold:   (bg: var(--color-primary),    border: var(--color-primary)),
+  teal:   (bg: var(--color-accent-alt), border: var(--color-accent-alt)),
+  purple: (bg: var(--color-nostr),      border: var(--color-nostr)),
+  coral:  (bg: var(--color-accent),     border: var(--color-accent)),
+  green:  (bg: var(--color-secondary),  border: var(--color-secondary)),
+);
+
+// --- Drop animation with bounce ---
+
+@keyframes dropIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-80px) scale(0.9);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(6px) scale(1.02);
+  }
+  75% {
+    transform: translateY(-3px) scale(0.99);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes fadeOutTower {
+  0% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.94) translateY(12px);
+  }
+}
+
+@keyframes dotBounce {
+  0%, 80%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-5px); }
+}
+
+@keyframes glowPulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.7; }
+}
+
+// --- Stage ---
+
+.stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 200px;
+  height: 260px;
+  position: relative;
+}
+
+// --- Tower ---
+
+.tower {
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  gap: 4px;
+  position: relative;
+  z-index: 1;
+}
+
+.towerFade {
+  animation: fadeOutTower 400ms ease-in forwards;
+}
+
+// --- Individual block ---
+
+.block {
+  width: 52px;
+  height: 52px;
+  border-radius: 10px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: dropIn 550ms cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
+
+.glassHighlight {
+  position: absolute;
+  inset: 1px;
+  border-radius: 9px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.25) 0%,
+    rgba(255, 255, 255, 0.05) 50%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
+.icon {
+  position: relative;
+  z-index: 1;
+  color: rgba(255, 255, 255, 0.9);
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.3));
+}
+
+// --- Generate color variants ---
+
+@each $name, $tokens in $block-colors {
+  $bg: map-get($tokens, bg);
+  $border: map-get($tokens, border);
+
+  .#{$name} {
+    background: color-mix(in srgb, #{$bg} 30%, transparent);
+    border: 1px solid color-mix(in srgb, #{$border} 52%, transparent);
+    box-shadow: 0 4px 12px color-mix(in srgb, #{$bg} 20%, transparent);
+
+    .icon {
+      filter: drop-shadow(0 1px 4px color-mix(in srgb, #{$bg} 40%, transparent));
+    }
+  }
+
+  .glow_#{$name} {
+    background: radial-gradient(
+      ellipse,
+      color-mix(in srgb, #{$bg} 35%, transparent) 0%,
+      transparent 70%
+    );
+  }
+}
+
+// --- Glow beneath tower ---
+
+.glow {
+  position: absolute;
+  bottom: 40px;
+  width: 120px;
+  height: 40px;
+  border-radius: 50%;
+  filter: blur(12px);
+  z-index: 0;
+  animation: glowPulse 2s ease-in-out infinite;
+  transition: background 300ms ease;
+}
+
+// --- Label with bouncing dots ---
+
+.label {
+  margin-top: $spacing-20;
+  color: var(--color-text-secondary);
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  z-index: 1;
+}
+
+.dots {
+  display: inline-flex;
+  gap: 3px;
+  margin-left: 2px;
+}
+
+.dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--color-text-secondary);
+  animation: dotBounce 1.4s ease-in-out infinite;
+
+  &:nth-child(2) { animation-delay: 0.16s; }
+  &:nth-child(3) { animation-delay: 0.32s; }
+}

@@ -10,7 +10,7 @@
 }
 
 .useCase {
-  @include glass-card-tinted($color-primary, 0.04);
+  @include glass-card-tinted($color-primary, 4%);
   border-radius: $border-radius-xl;
   padding: $spacing-48;
   display: grid;
@@ -23,10 +23,10 @@
 
   &:hover {
     transform: translateY(-4px) scale(1.01);
-    border-color: rgba($color-accent-alt, 0.3);
+    border-color: alpha($color-accent-alt, 30%);
     box-shadow:
       inset 0 1px 0 var(--glass-inner-glow),
-      0 12px 40px rgba($color-accent-alt, 0.08);
+      0 12px 40px alpha($color-accent-alt, 8%);
   }
 
   @include mobile {
@@ -83,12 +83,12 @@
 
 .useCase:nth-child(1) .iconCircle {
   color: var(--color-primary);
-  background: rgba($color-primary, 0.12);
-  border-color: rgba($color-primary, 0.15);
+  background: alpha($color-primary, 12%);
+  border-color: alpha($color-primary, 15%);
 }
 
 .useCase:nth-child(2) .iconCircle {
   color: var(--color-secondary);
-  background: rgba($color-secondary, 0.12);
-  border-color: rgba($color-secondary, 0.15);
+  background: alpha($color-secondary, 12%);
+  border-color: alpha($color-secondary, 15%);
 }

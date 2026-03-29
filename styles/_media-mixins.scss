@@ -14,14 +14,28 @@ $breakpoint-desktop: 1200px;
   }
 }
 
+// Covers the 1024-1199px gap between tablet and full desktop
+@mixin tabletLarge {
+  @media (min-width: $breakpoint-tablet) and (max-width: #{$breakpoint-desktop - 1}) {
+    @content;
+  }
+}
+
 @mixin mobileAndTablet {
   @media (max-width: #{$breakpoint-tablet - 1}) {
     @content;
   }
 }
 
+// All non-mobile devices (768px+)
+@mixin tabletAndUp {
+  @media (min-width: $breakpoint-mobile) {
+    @content;
+  }
+}
+
 @mixin desktop {
-  @media (min-width: $breakpoint-tablet) {
+  @media (min-width: $breakpoint-desktop) {
     @content;
   }
 }

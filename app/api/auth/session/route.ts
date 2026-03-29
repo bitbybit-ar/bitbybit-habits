@@ -1,11 +1,24 @@
 import { NextResponse } from "next/server";
 import { apiHandler } from "@/lib/api";
 import { familyMembers } from "@/lib/db";
-import { createSession } from "@/lib/auth";
+import { getSession, createSession } from "@/lib/auth";
 import { eq } from "drizzle-orm";
 import type { ApiResponse } from "@/lib/types";
 
-export const GET = apiHandler(async (_request, { session, db }) => {
+/**
+ * GET /api/auth/session
+ *
+ * Verify current session and return user data.
+ * Returns { success: false } with 200 when not authenticated (no 401).
+ * Refreshes the JWT if the role was stale (e.g. after onboarding).
+ */
+export const GET = apiHandler(async (_request, { db }) => {
+  const session = await getSession();
+
+  if (!session) {
+    return NextResponse.json<ApiResponse>({ success: false, data: null });
+  }
+
   // If role is null (stale JWT from before onboarding), refresh from DB
   if (!session.role) {
     const memberResult = await db
@@ -34,5 +47,5 @@ export const GET = apiHandler(async (_request, { session, db }) => {
     }
   }
 
-  return session;
-});
+  return NextResponse.json<ApiResponse>({ success: true, data: session });
+}, { auth: false });

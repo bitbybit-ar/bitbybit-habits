@@ -81,7 +81,7 @@
 
 .satIcon {
   font-size: 24px;
-  filter: drop-shadow(0 0 8px rgba($color-primary, 0.6));
+  filter: drop-shadow(0 0 8px alpha($color-primary, 60%));
   animation: coinSpin 0.6s ease-out;
 
   @media (prefers-reduced-motion: reduce) {
@@ -99,5 +99,5 @@
   font-weight: $font-weight-extrabold;
   color: var(--color-primary);
   white-space: nowrap;
-  text-shadow: 0 0 12px rgba($color-primary, 0.4);
+  text-shadow: 0 0 12px alpha($color-primary, 40%);
 }

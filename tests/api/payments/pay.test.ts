@@ -33,7 +33,7 @@ vi.mock("@/lib/db", () => ({
       },
     }),
   }),
-  payments: { id: "id", from_user_id: "f", status: "s", payment_request: "pr", payment_hash: "ph", paid_at: "pa" },
+  payments: { id: "id", from_user_id: "f", status: "s", payment_request: "pr", payment_hash: "ph", paid_at: "pa", preimage: "pi", payment_method: "pm" },
   wallets: { user_id: "u", active: "a", nwc_url_encrypted: "nwc" },
 }));
 
@@ -129,6 +129,11 @@ describe("POST /api/payments/[id]/pay", () => {
     expect(status).toBe(200);
     expect(body.data.paid).toBe(true);
     expect(body.data.preimage).toBe("preimage123");
+    expect(mockUpdateSet).toHaveBeenCalledWith(expect.objectContaining({
+      status: "paid",
+      preimage: "preimage123",
+      payment_method: "nwc",
+    }));
     expect(mockClose).toHaveBeenCalled();
   });
 
@@ -149,7 +154,7 @@ describe("POST /api/payments/[id]/pay", () => {
     const req = createRequest("POST", `/api/payments/${UUID.payment1}/pay`);
     const { status, body } = await parseResponse(await POST(req, routeCtx));
     expect(status).toBe(400);
-    expect(body.error).toContain("Insufficient balance");
+    expect(body.error).toBe("insufficient_funds");
     expect(mockUpdateSet).toHaveBeenCalledWith(expect.objectContaining({ status: "failed" }));
     expect(mockClose).toHaveBeenCalled();
   });

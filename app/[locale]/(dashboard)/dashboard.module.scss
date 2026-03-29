@@ -2,11 +2,9 @@
 @use "@/styles/spacing" as *;
 @use "@/styles/typography" as *;
 @use "@/styles/common-mixins" as *;
-@use "@/styles/glass" as *;
 
 .container {
   @include container;
-  @include glass-background-orbs;
   min-height: 100vh;
   padding-top: $spacing-80;
   padding-bottom: $spacing-40;

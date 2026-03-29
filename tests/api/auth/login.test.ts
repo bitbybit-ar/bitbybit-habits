@@ -103,7 +103,7 @@ describe("POST /api/auth/login", () => {
     const { status, body } = await parseResponse(await POST(req));
     expect(status).toBe(401);
     expect(body.success).toBe(false);
-    expect(body.error).toContain("Credenciales");
+    expect(body.error).toContain("invalid_credentials");
   });
 
   it("returns 403 when account is locked", async () => {
@@ -128,7 +128,7 @@ describe("POST /api/auth/login", () => {
     const { status, body } = await parseResponse(await POST(req));
     expect(status).toBe(403);
     expect(body.success).toBe(false);
-    expect(body.error).toContain("bloqueada");
+    expect(body.error).toContain("account_locked");
   });
 
   it("increments failed attempts on wrong password", async () => {
@@ -178,7 +178,7 @@ describe("POST /api/auth/login", () => {
     const { status, body } = await parseResponse(await POST(req));
     expect(status).toBe(403);
     expect(body.success).toBe(false);
-    expect(body.error).toContain("bloqueada");
+    expect(body.error).toContain("too_many_attempts");
   });
 
   it("returns 200 with user data and session cookie on success", async () => {
@@ -262,6 +262,6 @@ describe("POST /api/auth/login", () => {
     const { status, body } = await parseResponse(lastResponse!);
     expect(status).toBe(429);
     expect(body.success).toBe(false);
-    expect(body.error).toContain("intentos");
+    expect(body.error).toContain("Too many requests");
   });
 });

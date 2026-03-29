@@ -5,28 +5,11 @@
 @use "@/styles/media-mixins" as *;
 @use "@/styles/glass" as *;
 
-$navbar-height: 60px;
 $tabbar-height: 52px;
-
-.layout {
-  min-height: 100vh;
-  @include glass-background-orbs;
-  position: relative;
-}
-
-// ── Container ──
-.container {
-  @include container;
-  padding-top: calc($navbar-height + $spacing-24);
-
-  @include mobile {
-    padding-top: calc($navbar-height + $spacing-16);
-  }
-}
 
 // ── Header card ──
 .headerCard {
-  @include glass-prominent($color-primary, 0.06);
+  @include glass-prominent($color-primary, 6%);
   @include glass-highlight;
   padding: $spacing-24;
   margin-bottom: $spacing-16;
@@ -138,9 +121,9 @@ $tabbar-height: 52px;
 
 .tabItemActive {
   color: var(--color-primary);
-  background: rgba($color-primary, 0.18);
+  background: alpha($color-primary, 18%);
   border-bottom: 2px solid var(--color-primary);
-  box-shadow: 0 0 12px rgba($color-primary, 0.12);
+  box-shadow: 0 0 12px alpha($color-primary, 12%);
 
   .tabIcon {
     transform: scale(1.1);

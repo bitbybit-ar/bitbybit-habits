@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useCallback, useEffect } from "react";
+import Image from "next/image";
 import { useTranslations } from "next-intl";
 import Section from "@/components/ui/section";
 import SectionTitle from "@/components/ui/section-title";
@@ -22,7 +23,7 @@ export const TechStack: React.FC = () => {
 
   const TECH: TechItem[] = [
     {
-      icon: <img src="https://upload.wikimedia.org/wikipedia/commons/5/5a/Lightning_Network.svg" alt="Lightning Network" className={styles.logoImg} />,
+      icon: <Image src="https://upload.wikimedia.org/wikipedia/commons/5/5a/Lightning_Network.svg" alt="Lightning Network" width={40} height={40} className={styles.logoImg} />,
       title: "Lightning Network",
       description: t("lightningDesc"),
       linkLabel: t("lightningLink"),
@@ -35,8 +36,8 @@ export const TechStack: React.FC = () => {
       ],
     },
     {
-      icon: <img src="https://user-images.githubusercontent.com/99301796/223592277-34058d0e-af30-411d-8dfe-87c42dacdcf2.png" alt="Nostr" className={styles.logoImg} />,
-      title: "Nostr",
+      icon: <Image src="https://avatars.githubusercontent.com/u/259148082?v=4" alt="Nostr WoT" width={40} height={40} className={styles.logoImg} />,
+      title: "Nostr WoT",
       description: t("nostrDesc"),
       linkLabel: t("nostrLink"),
       detailTitle: t("nostrDetailTitle"),
@@ -47,7 +48,7 @@ export const TechStack: React.FC = () => {
       ],
     },
     {
-      icon: <img src="https://github.com/openclaw.png?size=64" alt="OpenClaw" className={styles.logoImg} />,
+      icon: <Image src="https://github.com/openclaw.png?size=64" alt="OpenClaw" width={40} height={40} className={styles.logoImg} />,
       title: "OpenClaw",
       description: t("openclawDesc"),
       linkLabel: t("openclawLink"),
@@ -58,18 +59,6 @@ export const TechStack: React.FC = () => {
         { stat: t("openclaw3Stat"), title: t("openclaw3Title"), desc: t("openclaw3Desc") },
       ],
     },
-    // Whisper — coming soon
-    // {
-    //   emoji: "🗣️",
-    //   title: "Whisper",
-    //   description: t("whisperDesc"),
-    //   linkLabel: t("whisperLink"),
-    //   detailTitle: t("whisperDetailTitle"),
-    //   detailItems: [
-    //     { stat: t("whisper1Stat"), title: t("whisper1Title"), desc: t("whisper1Desc") },
-    //     { stat: t("whisper2Stat"), title: t("whisper2Title"), desc: t("whisper2Desc") },
-    //   ],
-    // },
   ];
 
   const closeModal = useCallback(() => setActiveModal(null), []);

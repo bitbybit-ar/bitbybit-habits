@@ -1,6 +1,9 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { Breadcrumb } from "@/components/ui/breadcrumb";
+import type { BreadcrumbItem } from "@/components/ui/breadcrumb";
+import { Container } from "@/components/ui/container";
 import styles from "./dashboard-layout.module.scss";
 
 export interface DashboardTab {
@@ -17,6 +20,7 @@ interface DashboardLayoutProps {
   tabs: DashboardTab[];
   activeTab: string;
   onTabChange: (key: string) => void;
+  breadcrumbs?: BreadcrumbItem[];
   children: React.ReactNode;
 }
 
@@ -27,12 +31,12 @@ export function DashboardLayout({
   tabs,
   activeTab,
   onTabChange,
+  breadcrumbs,
   children,
 }: DashboardLayoutProps) {
   return (
-    <div className={styles.layout}>
-      {/* Header card */}
-      <div className={styles.container}>
+    <Container>
+      {breadcrumbs && <Breadcrumb items={breadcrumbs} />}
         <div className={styles.headerCard}>
           <div className={styles.headerTop}>
             <div className={styles.headerWelcome}>
@@ -75,8 +79,7 @@ export function DashboardLayout({
         <div className={styles.contentArea}>
           {children}
         </div>
-      </div>
-    </div>
+    </Container>
   );
 }
 

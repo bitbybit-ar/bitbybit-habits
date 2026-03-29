@@ -10,6 +10,12 @@ import type { ApiResponse } from "@/lib/types";
 // Rate limiter: 5 attempts per 15 minutes per IP
 const loginRateLimiter = createRateLimiter(5, 15 * 60 * 1000);
 
+/**
+ * POST /api/auth/login
+ *
+ * Authenticate user with email/username + password. Rate limited (5/15min).
+ * Returns a temp token for 2FA validation if TOTP is enabled.
+ */
 export const POST = apiHandler(async (request, { db }) => {
   const clientIp = getClientIp(request);
   const rateLimitResult = loginRateLimiter.check(clientIp);
@@ -21,7 +27,7 @@ export const POST = apiHandler(async (request, { db }) => {
   const { login, password } = await request.json();
 
   if (!login || !password) {
-    throw new BadRequestError("Faltan campos requeridos");
+    throw new BadRequestError("missing_fields");
   }
 
   const loginLower = login.trim().toLowerCase();
@@ -43,13 +49,13 @@ export const POST = apiHandler(async (request, { db }) => {
     .limit(1);
 
   if (result.length === 0) {
-    throw new UnauthorizedError("Credenciales invalidas");
+    throw new UnauthorizedError("invalid_credentials");
   }
 
   const user = result[0];
 
   if (user.locked_until && new Date(user.locked_until) > new Date()) {
-    throw new ForbiddenError("Cuenta temporalmente bloqueada. Intenta de nuevo mas tarde");
+    throw new ForbiddenError("account_locked");
   }
 
   const valid = await verifyPassword(password, user.password_hash);
@@ -70,10 +76,10 @@ export const POST = apiHandler(async (request, { db }) => {
       .where(eq(users.id, user.id));
 
     if (shouldLock) {
-      throw new ForbiddenError("Cuenta bloqueada por demasiados intentos fallidos");
+      throw new ForbiddenError("too_many_attempts");
     }
 
-    throw new UnauthorizedError("Credenciales invalidas");
+    throw new UnauthorizedError("invalid_credentials");
   }
 
   // Reset failed login attempts on successful login

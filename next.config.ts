@@ -4,6 +4,17 @@ import createNextIntlPlugin from "next-intl/plugin";
 const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 
 const nextConfig: NextConfig = {
+  sassOptions: {
+    includePaths: [process.cwd()],
+  },
+  images: {
+    remotePatterns: [
+      { protocol: "https", hostname: "github.com" },
+      { protocol: "https", hostname: "avatars.githubusercontent.com" },
+      { protocol: "https", hostname: "user-images.githubusercontent.com" },
+      { protocol: "https", hostname: "upload.wikimedia.org" },
+    ],
+  },
   async headers() {
     return [
       {

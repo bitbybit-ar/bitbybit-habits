@@ -17,7 +17,8 @@ interface UseApiOptions {
 
 /**
  * Generic hook for fetching from the API.
- * Handles loading, error, and the standard { success, data } response shape.
+ * Handles loading, error, the standard { success, data } response shape,
+ * and cancels in-flight requests on unmount or URL change.
  */
 export function useApi<T>(
   url: string,
@@ -27,14 +28,19 @@ export function useApi<T>(
   const [data, setData] = useState<T>(initialData);
   const [isLoading, setIsLoading] = useState(!options?.skip);
   const [error, setError] = useState<string | null>(null);
-  const mountedRef = useRef(true);
+  const abortRef = useRef<AbortController | null>(null);
 
   const fetchData = useCallback(async () => {
+    // Cancel any in-flight request before starting a new one
+    abortRef.current?.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
+
     setIsLoading(true);
     setError(null);
     try {
-      const res = await fetch(url);
-      if (!mountedRef.current) return;
+      const res = await fetch(url, { signal: controller.signal });
+      if (controller.signal.aborted) return;
       if (res.ok) {
         const json = await res.json();
         if (json.success) {
@@ -45,17 +51,21 @@ export function useApi<T>(
       } else {
         setError(`HTTP ${res.status}`);
       }
-    } catch {
-      if (mountedRef.current) setError("Network error");
+    } catch (err) {
+      // Don't set error state if the request was intentionally aborted
+      if (err instanceof DOMException && err.name === "AbortError") return;
+      if (!controller.signal.aborted) setError("Network error");
     } finally {
-      if (mountedRef.current) setIsLoading(false);
+      if (!controller.signal.aborted) setIsLoading(false);
     }
   }, [url]); // initialData intentionally excluded — only for default value
 
   useEffect(() => {
-    mountedRef.current = true;
     if (!options?.skip) fetchData();
-    return () => { mountedRef.current = false; };
+    return () => {
+      // Cancel in-flight request on unmount or dependency change
+      abortRef.current?.abort();
+    };
   }, [fetchData, options?.skip]);
 
   return { data, isLoading, error, refetch: fetchData, setData };

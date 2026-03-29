@@ -6,6 +6,12 @@ import { todayDateStr } from "@/lib/date";
 
 const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
+/**
+ * POST /api/completions
+ *
+ * Create a habit completion for today. Auto-approves for self-verify habits,
+ * otherwise sets status to pending and notifies family sponsors.
+ */
 export const POST = apiHandler(async (request, { session, db }) => {
   const body = await request.json();
   const { habit_id, note, evidence_url } = body as {
@@ -21,13 +27,13 @@ export const POST = apiHandler(async (request, { session, db }) => {
     try {
       new URL(evidence_url);
     } catch {
-      throw new BadRequestError("evidence_url debe ser una URL valida");
+      throw new BadRequestError("invalid_evidence_url");
     }
   }
 
   // Validate note length
   if (note && note.length > 1000) {
-    throw new BadRequestError("La nota no puede superar los 1000 caracteres");
+    throw new BadRequestError("note_too_long");
   }
 
   // Verify the habit exists and user can complete it
@@ -51,7 +57,7 @@ export const POST = apiHandler(async (request, { session, db }) => {
     );
 
   if (habitResult.length === 0) {
-    throw new NotFoundError("Habito no encontrado o no asignado a vos");
+    throw new NotFoundError("habit_not_assigned");
   }
 
   const habit = habitResult[0].habits;
@@ -70,7 +76,7 @@ export const POST = apiHandler(async (request, { session, db }) => {
     );
 
   if (existing.length > 0) {
-    throw new ConflictError("Ya completaste este habito hoy");
+    throw new ConflictError("already_completed_today");
   }
 
   // Status depends on verification type
@@ -114,6 +120,11 @@ export const POST = apiHandler(async (request, { session, db }) => {
   return created(result[0]);
 });
 
+/**
+ * GET /api/completions
+ *
+ * List the authenticated user's completions, with optional date range filters (?from, ?to).
+ */
 export const GET = apiHandler(async (request, { session, db }) => {
   const { searchParams } = new URL(request.url);
   const dateFrom = searchParams.get("from");
@@ -121,13 +132,13 @@ export const GET = apiHandler(async (request, { session, db }) => {
 
   // Validate date formats
   if (dateFrom && !ISO_DATE_RE.test(dateFrom)) {
-    throw new BadRequestError("Parametro 'from' debe tener formato YYYY-MM-DD");
+    throw new BadRequestError("invalid_date_format");
   }
   if (dateTo && !ISO_DATE_RE.test(dateTo)) {
-    throw new BadRequestError("Parametro 'to' debe tener formato YYYY-MM-DD");
+    throw new BadRequestError("invalid_date_format");
   }
   if (dateFrom && dateTo && dateFrom > dateTo) {
-    throw new BadRequestError("'from' no puede ser posterior a 'to'");
+    throw new BadRequestError("invalid_date_range");
   }
 
   const conditions = [

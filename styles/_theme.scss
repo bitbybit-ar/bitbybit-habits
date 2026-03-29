@@ -1,78 +1,176 @@
 // Theme CSS Custom Properties
 // Dark mode is the default. Light mode is toggled via data-theme="light" on <html>.
+// All theme-aware colors are defined here as CSS custom properties.
+// SCSS variables in _colors.scss alias these vars so components use $color-* as usual.
+// For transparency, use the alpha() function from _colors.scss.
+
+@use "sass:map";
+
+$themes: (
+  dark: (
+    // Backgrounds
+    color-bg: #0f0f18,
+    color-bg-2: #1A1A2E,
+    color-bg-3: #242442,
+    color-surface: #242442,
+
+    // Text
+    color-text-primary: #F0E6D8,
+    color-text-secondary: #D4C4B0,
+
+    // Glass / overlay channels
+    glass-color: "255, 255, 255",
+    glass-text-color: "255, 255, 255",
+    shadow-color: "0, 0, 0",
+    glass-fallback-bg: rgba(26, 26, 46, 0.9),
+
+    // Glass level backgrounds
+    glass-prominent-bg: rgba(255, 255, 255, 0.12),
+    glass-prominent-border: rgba(255, 255, 255, 0.12),
+    glass-card-bg: rgba(255, 255, 255, 0.08),
+    glass-card-border: rgba(255, 255, 255, 0.10),
+    glass-subtle-bg: rgba(255, 255, 255, 0.04),
+    glass-subtle-border: rgba(255, 255, 255, 0.06),
+    glass-nav-bg: rgba(255, 255, 255, 0.06),
+    glass-nav-border: rgba(255, 255, 255, 0.08),
+    glass-modal-bg: rgba(255, 255, 255, 0.10),
+    glass-modal-border: rgba(255, 255, 255, 0.12),
+    glass-toast-bg: rgba(255, 255, 255, 0.12),
+    glass-toast-border: rgba(255, 255, 255, 0.14),
+
+    // Inner glow intensity
+    glass-inner-glow: rgba(255, 255, 255, 0.06),
+    glass-inner-glow-subtle: rgba(255, 255, 255, 0.04),
+
+    // Accent colors (bright on dark backgrounds)
+    color-primary: #F7A825,
+    color-primary-light: #FBC96B,
+    color-primary-hover: #FBC96B,
+    color-secondary: #4CAF7D,
+    color-accent: #FF6B6B,
+    color-accent-alt: #4DB6AC,
+    color-success: #4CAF7D,
+    color-warning: #FF9F43,
+    color-error: #EE5A5A,
+    color-error-hover: #D63636,
+    color-info: #4DB6AC,
+    color-nostr: #8B5CF6,
+
+    // Gradients
+    gradient-primary-text: "linear-gradient(135deg, #F7A825, #4CAF7D)",
+    gradient-primary-bg: "linear-gradient(135deg, #F7A825, #4CAF7D)",
+
+    // Orb colors
+    orb-color-1: rgba(247, 168, 37, 0.06),
+    orb-color-2: rgba(76, 175, 125, 0.05),
+
+    // Text on colored backgrounds
+    color-on-primary: #000,
+    color-on-gradient: #fff,
+
+    // Scrollbar
+    scrollbar-thumb: rgba(255, 255, 255, 0.1),
+  ),
+  light: (
+    // Backgrounds
+    color-bg: #FFF3E8,
+    color-bg-2: #FFEADB,
+    color-bg-3: #F5E8DC,
+    color-surface: #FFEADB,
+
+    // Text
+    color-text-primary: #2D2416,
+    color-text-secondary: #5C4D3F,
+
+    // Glass / overlay channels
+    glass-color: "255, 255, 255",
+    glass-text-color: "0, 0, 0",
+    shadow-color: "100, 80, 60",
+    glass-fallback-bg: rgba(255, 248, 240, 0.92),
+
+    // Glass level backgrounds — higher opacity for visibility on gradient
+    glass-prominent-bg: rgba(255, 255, 255, 0.65),
+    glass-prominent-border: rgba(255, 255, 255, 0.70),
+    glass-card-bg: rgba(255, 255, 255, 0.55),
+    glass-card-border: rgba(255, 255, 255, 0.50),
+    glass-subtle-bg: rgba(255, 255, 255, 0.40),
+    glass-subtle-border: rgba(255, 255, 255, 0.35),
+    glass-nav-bg: rgba(255, 255, 255, 0.50),
+    glass-nav-border: rgba(255, 255, 255, 0.45),
+    glass-modal-bg: rgba(255, 255, 255, 0.70),
+    glass-modal-border: rgba(255, 255, 255, 0.60),
+    glass-toast-bg: rgba(255, 255, 255, 0.65),
+    glass-toast-border: rgba(255, 255, 255, 0.55),
+
+    // Inner glow — brighter in light mode
+    glass-inner-glow: rgba(255, 255, 255, 0.30),
+    glass-inner-glow-subtle: rgba(255, 255, 255, 0.20),
+
+    // Accent colors — DARKER for readability on light backgrounds
+    color-primary: #C47F0A,
+    color-primary-light: #D4950E,
+    color-primary-hover: #A66800,
+    color-secondary: #2E7D52,
+    color-accent: #D04444,
+    color-accent-alt: #0F6E56,
+    color-success: #2E7D52,
+    color-warning: #D47A20,
+    color-error: #C43030,
+    color-error-hover: #A12626,
+    color-info: #0F6E56,
+    color-nostr: #6D3DD4,
+
+    // Gradients — darker for readability
+    gradient-primary-text: "linear-gradient(135deg, #B37209, #1D7D4A)",
+    gradient-primary-bg: "linear-gradient(135deg, #C47F0A, #2E7D52)",
+
+    // Orb colors — stronger, purple instead of green
+    orb-color-1: rgba(247, 168, 37, 0.12),
+    orb-color-2: rgba(160, 100, 200, 0.10),
+
+    // Text on colored backgrounds
+    color-on-primary: #fff,
+    color-on-gradient: #fff,
+
+    // Scrollbar
+    scrollbar-thumb: rgba(0, 0, 0, 0.1),
+  ),
+);
+
+// Generate CSS custom properties from theme map
+@mixin theme-properties($theme-name) {
+  $theme-map: map.get($themes, $theme-name);
+
+  @if $theme-map == null {
+    @error "Theme `#{$theme-name}` is not defined in `$themes`.";
+  }
+
+  @each $property, $value in $theme-map {
+    --#{$property}: #{$value};
+  }
+}
 
 :root,
 [data-theme="dark"] {
-  // Backgrounds
-  --color-bg: #0f0f18;
-  --color-bg-2: #1A1A2E;
-  --color-bg-3: #242442;
-  --color-surface: #242442;
+  @include theme-properties(dark);
 
-  // Text
-  --color-text-primary: #F0E6D8;
-  --color-text-secondary: #B8A898;
-
-  // Glass / overlay channels
-  --glass-color: 255, 255, 255;
-  --glass-text-color: 255, 255, 255;
-  --shadow-color: 0, 0, 0;
-  --glass-fallback-bg: rgba(26, 26, 46, 0.9);
-
-  // Glass level backgrounds
-  --glass-prominent-bg: rgba(255, 255, 255, 0.12);
-  --glass-prominent-border: rgba(255, 255, 255, 0.12);
-  --glass-card-bg: rgba(255, 255, 255, 0.08);
-  --glass-card-border: rgba(255, 255, 255, 0.10);
-  --glass-subtle-bg: rgba(255, 255, 255, 0.04);
-  --glass-subtle-border: rgba(255, 255, 255, 0.06);
-  --glass-nav-bg: rgba(255, 255, 255, 0.06);
-  --glass-nav-border: rgba(255, 255, 255, 0.08);
-  --glass-modal-bg: rgba(255, 255, 255, 0.10);
-  --glass-modal-border: rgba(255, 255, 255, 0.12);
-  --glass-toast-bg: rgba(255, 255, 255, 0.12);
-  --glass-toast-border: rgba(255, 255, 255, 0.14);
-
-  // Inner glow intensity
-  --glass-inner-glow: rgba(255, 255, 255, 0.06);
-  --glass-inner-glow-subtle: rgba(255, 255, 255, 0.04);
-
-  // Accent colors for text and borders (bright on dark backgrounds)
-  --color-primary: #F7A825;
-  --color-primary-light: #FBC96B;
-  --color-primary-hover: #FBC96B;
-  --color-secondary: #4CAF7D;
-  --color-accent: #FF6B6B;
-  --color-accent-alt: #4DB6AC;
-  --color-success: #4CAF7D;
-  --color-warning: #FF9F43;
-  --color-error: #EE5A5A;
-  --color-info: #4DB6AC;
-
-  // Gradients
-  --gradient-primary-text: linear-gradient(135deg, #F7A825, #4CAF7D);
-  --gradient-primary-bg: linear-gradient(135deg, #F7A825, #4CAF7D);
-
-  // Orb colors
-  --orb-color-1: rgba(247, 168, 37, 0.06);
-  --orb-color-2: rgba(76, 175, 125, 0.05);
-
-  // Text on colored backgrounds
-  --color-on-primary: #000;
-  --color-on-gradient: #fff;
-
-  // Scrollbar
-  --scrollbar-thumb: rgba(255, 255, 255, 0.1);
+  // Dark mode gradient background
+  background: linear-gradient(
+    135deg,
+    #0f0f18 0%,
+    #1A1A2E 25%,
+    #1E1E3A 55%,
+    #242442 85%,
+    #1A1A2E 100%
+  );
+  background-attachment: fixed;
+  min-height: 100vh;
 }
 
 [data-theme="light"] {
-  // Backgrounds
-  --color-bg: #FFF3E8;
-  --color-bg-2: #FFEADB;
-  --color-bg-3: #F5E8DC;
-  --color-surface: #FFEADB;
+  @include theme-properties(light);
 
-  // Gradient background on root
+  // Light mode gradient background (non-custom-property styles)
   background: linear-gradient(
     135deg,
     #FFF3E8 0%,
@@ -83,59 +181,4 @@
   );
   background-attachment: fixed;
   min-height: 100vh;
-
-  // Text
-  --color-text-primary: #2D2416;
-  --color-text-secondary: #5C4D3F;
-
-  // Glass / overlay channels
-  --glass-color: 255, 255, 255;
-  --glass-text-color: 0, 0, 0;
-  --shadow-color: 100, 80, 60;
-  --glass-fallback-bg: rgba(255, 248, 240, 0.92);
-
-  // Glass level backgrounds — higher opacity for visibility on gradient
-  --glass-prominent-bg: rgba(255, 255, 255, 0.65);
-  --glass-prominent-border: rgba(255, 255, 255, 0.70);
-  --glass-card-bg: rgba(255, 255, 255, 0.55);
-  --glass-card-border: rgba(255, 255, 255, 0.50);
-  --glass-subtle-bg: rgba(255, 255, 255, 0.40);
-  --glass-subtle-border: rgba(255, 255, 255, 0.35);
-  --glass-nav-bg: rgba(255, 255, 255, 0.50);
-  --glass-nav-border: rgba(255, 255, 255, 0.45);
-  --glass-modal-bg: rgba(255, 255, 255, 0.70);
-  --glass-modal-border: rgba(255, 255, 255, 0.60);
-  --glass-toast-bg: rgba(255, 255, 255, 0.65);
-  --glass-toast-border: rgba(255, 255, 255, 0.55);
-
-  // Inner glow — brighter in light mode
-  --glass-inner-glow: rgba(255, 255, 255, 0.30);
-  --glass-inner-glow-subtle: rgba(255, 255, 255, 0.20);
-
-  // Accent colors — DARKER for readability on light backgrounds
-  --color-primary: #C47F0A;
-  --color-primary-light: #D4950E;
-  --color-primary-hover: #A66800;
-  --color-secondary: #2E7D52;
-  --color-accent: #D04444;
-  --color-accent-alt: #0F6E56;
-  --color-success: #2E7D52;
-  --color-warning: #D47A20;
-  --color-error: #C43030;
-  --color-info: #0F6E56;
-
-  // Gradients — darker for readability
-  --gradient-primary-text: linear-gradient(135deg, #B37209, #1D7D4A);
-  --gradient-primary-bg: linear-gradient(135deg, #C47F0A, #2E7D52);
-
-  // Orb colors — stronger, purple instead of green
-  --orb-color-1: rgba(247, 168, 37, 0.12);
-  --orb-color-2: rgba(160, 100, 200, 0.10);
-
-  // Text on colored backgrounds
-  --color-on-primary: #fff;
-  --color-on-gradient: #fff;
-
-  // Scrollbar
-  --scrollbar-thumb: rgba(0, 0, 0, 0.1);
 }

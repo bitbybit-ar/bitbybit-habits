@@ -1,8 +1,14 @@
-import { apiHandler, requireFields, NotFoundError } from "@/lib/api";
+import { apiHandler, requireFields, NotFoundError, BadRequestError } from "@/lib/api";
 import { createNotification } from "@/lib/notifications";
 import { completions, habits, familyMembers, payments, wallets } from "@/lib/db";
 import { eq, and, sql } from "drizzle-orm";
 
+/**
+ * POST /api/completions/approve
+ *
+ * Approve a pending completion (sponsor only). Creates a payment record
+ * if the habit has a sat reward. Fails if kid has no wallet when reward > 0.
+ */
 export const POST = apiHandler(async (request, { session, db }) => {
   const body = await request.json();
   const { completion_id } = body as { completion_id: string };
@@ -33,10 +39,23 @@ export const POST = apiHandler(async (request, { session, db }) => {
     );
 
   if (result.length === 0) {
-    throw new NotFoundError("Completacion no encontrada o ya procesada");
+    throw new NotFoundError("completion_not_found");
   }
 
   const completion = result[0];
+
+  // If there's a sat reward, verify kid has a wallet to receive payment
+  if (completion.sat_reward > 0) {
+    const kidWallet = await db
+      .select({ id: wallets.id })
+      .from(wallets)
+      .where(and(eq(wallets.user_id, completion.user_id), eq(wallets.active, true)))
+      .limit(1);
+
+    if (kidWallet.length === 0) {
+      throw new BadRequestError("kid_no_wallet");
+    }
+  }
 
   // Update completion status
   const updated = await db
@@ -45,29 +64,20 @@ export const POST = apiHandler(async (request, { session, db }) => {
     .where(eq(completions.id, completion_id))
     .returning();
 
-  // Check wallet and create payment record if reward > 0
-  let paymentStatus: "no_wallet" | "pending" | "none" = "none";
+  // Create payment record if reward > 0
+  let paymentStatus: "pending" | "none" = "none";
+  let paymentId: string | null = null;
 
   if (completion.sat_reward > 0) {
-    // Check if sponsor has a connected wallet
-    const walletResult = await db
-      .select({ id: wallets.id })
-      .from(wallets)
-      .where(and(eq(wallets.user_id, session.user_id), eq(wallets.active, true)))
-      .limit(1);
-
-    if (walletResult.length === 0) {
-      paymentStatus = "no_wallet";
-    } else {
-      await db.insert(payments).values({
-        completion_id,
-        from_user_id: session.user_id,
-        to_user_id: completion.user_id,
-        amount_sats: completion.sat_reward,
-        status: "pending",
-      });
-      paymentStatus = "pending";
-    }
+    const paymentRows = await db.insert(payments).values({
+      completion_id,
+      from_user_id: session.user_id,
+      to_user_id: completion.user_id,
+      amount_sats: completion.sat_reward,
+      status: "pending",
+    }).returning();
+    paymentStatus = "pending";
+    paymentId = paymentRows[0].id;
   }
 
   // Notify the kid
@@ -85,5 +95,5 @@ export const POST = apiHandler(async (request, { session, db }) => {
     console.error("Error creating notification:", notifError);
   }
 
-  return { ...updated[0], payment_status: paymentStatus };
+  return { ...updated[0], payment_status: paymentStatus, payment_id: paymentId };
 });

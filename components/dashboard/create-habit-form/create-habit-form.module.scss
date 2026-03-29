@@ -57,7 +57,7 @@
 .select {
   cursor: pointer;
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23B8A898' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23D4C4B0' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right $spacing-16 center;
   padding-right: $spacing-40;
@@ -112,8 +112,8 @@
   transition: background 0.2s, border-color 0.2s;
 
   &:has(.checkbox:checked) {
-    background: rgba($color-primary, 0.15);
-    border-color: rgba($color-primary, 0.3);
+    background: alpha($color-primary, 15%);
+    border-color: alpha($color-primary, 30%);
   }
 }
 
@@ -142,7 +142,7 @@
 
 .inputError {
   border-color: var(--color-accent) !important;
-  box-shadow: 0 0 0 1px rgba($color-accent, 0.3);
+  box-shadow: 0 0 0 1px alpha($color-accent, 30%);
 }
 
 .errorText {
@@ -169,7 +169,7 @@
 
   &:hover {
     transform: translateY(-1px);
-    box-shadow: 0 4px 16px rgba($color-primary, 0.3);
+    box-shadow: 0 4px 16px alpha($color-primary, 30%);
   }
 
   &:active {
