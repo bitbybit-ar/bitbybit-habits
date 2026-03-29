@@ -1,4 +1,52 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
-  <rect width="512" height="512" rx="96" fill="#1A1A2E"/>
-  <text x="256" y="340" font-size="300" text-anchor="middle" fill="#F7A825">⚡</text>
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="50%" r="60%">
+      <stop offset="0%" stop-color="#18182e"/>
+      <stop offset="100%" stop-color="#0f0f18"/>
+    </radialGradient>
+    <linearGradient id="gold" x1="0.2" y1="0" x2="0.8" y2="1">
+      <stop offset="0%" stop-color="#FDD881"/>
+      <stop offset="40%" stop-color="#F7A825"/>
+      <stop offset="100%" stop-color="#E89A1E"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-15%" width="140%" height="130%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur"/>
+      <feColorMatrix in="blur" type="matrix"
+        values="1 0 0 0 0  0 0.65 0 0 0  0 0 0.15 0 0  0 0 0 0.2 0"/>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <rect width="512" height="512" rx="96" fill="url(#bg)"/>
+
+  <g filter="url(#glow)">
+    <!-- ₿ — Bitcoin B with two bowls -->
+    <path fill-rule="evenodd" d="
+      M 148 120
+      L 278 120
+      C 356 120, 356 256, 278 256
+      C 382 256, 382 392, 294 392
+      L 148 392
+      Z
+      M 192 158
+      L 254 158
+      C 312 158, 312 234, 254 234
+      L 192 234
+      Z
+      M 192 278
+      L 266 278
+      C 336 278, 336 358, 266 358
+      L 192 358
+      Z
+    " fill="url(#gold)"/>
+
+    <!-- Vertical strokes extending above and below -->
+    <rect x="196" y="68" width="22" height="52" rx="5" fill="url(#gold)"/>
+    <rect x="256" y="68" width="22" height="52" rx="5" fill="url(#gold)"/>
+    <rect x="196" y="392" width="22" height="52" rx="5" fill="url(#gold)"/>
+    <rect x="256" y="392" width="22" height="52" rx="5" fill="url(#gold)"/>
+  </g>
 </svg>

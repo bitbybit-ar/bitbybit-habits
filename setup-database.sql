@@ -9,9 +9,13 @@ CREATE TABLE IF NOT EXISTS users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     email TEXT UNIQUE NOT NULL,
     username TEXT UNIQUE NOT NULL,
-    password_hash TEXT NOT NULL,
+    password_hash TEXT,
     display_name TEXT NOT NULL,
     avatar_url TEXT,
+    nostr_pubkey TEXT UNIQUE,
+    auth_provider TEXT NOT NULL DEFAULT 'email',
+    nostr_metadata JSONB,
+    nostr_metadata_updated_at TIMESTAMP,
     locale TEXT NOT NULL DEFAULT 'es',
     failed_login_attempts INTEGER NOT NULL DEFAULT 0,
     locked_until TIMESTAMP,
@@ -24,6 +28,7 @@ CREATE TABLE IF NOT EXISTS users (
 
 CREATE INDEX idx_users_email ON users(email);
 CREATE INDEX idx_users_username ON users(username);
+CREATE INDEX idx_users_nostr_pubkey ON users(nostr_pubkey);
 
 -- ============================================================
 -- FAMILIAS / GRUPOS

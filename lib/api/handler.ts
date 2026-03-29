@@ -20,6 +20,12 @@ export function created<T>(data: T): CreatedResponse<T> {
   return new CreatedResponse(data);
 }
 
+/** Adds security headers to prevent browsers from caching sensitive API data */
+function withCacheHeaders(response: NextResponse): NextResponse {
+  response.headers.set("Cache-Control", "private, no-store");
+  return response;
+}
+
 type HandlerFn<T = unknown> = (
   request: NextRequest,
   ctx: HandlerContext
@@ -49,24 +55,24 @@ export function apiHandler<T = unknown>(
 
       // Allow handlers to return raw NextResponse (e.g., for setting cookies)
       if (result instanceof NextResponse) {
-        return result;
+        return withCacheHeaders(result);
       }
 
       if (result instanceof CreatedResponse) {
-        return NextResponse.json<ApiResponse>({
+        return withCacheHeaders(NextResponse.json<ApiResponse>({
           success: true,
           data: result.data,
-        }, { status: 201 });
+        }, { status: 201 }));
       }
 
       if (result === undefined || result === null) {
-        return NextResponse.json<ApiResponse>({ success: true });
+        return withCacheHeaders(NextResponse.json<ApiResponse>({ success: true }));
       }
 
-      return NextResponse.json<ApiResponse>({
+      return withCacheHeaders(NextResponse.json<ApiResponse>({
         success: true,
         data: result,
-      });
+      }));
     } catch (error) {
       if (error instanceof RateLimitError) {
         const response = NextResponse.json<ApiResponse>(
@@ -74,31 +80,32 @@ export function apiHandler<T = unknown>(
           { status: 429 }
         );
         response.headers.set("Retry-After", Math.ceil(error.retryAfterMs / 1000).toString());
-        return response;
+        return withCacheHeaders(response);
       }
 
       if (error instanceof ApiError) {
-        console.error(`[API ${error.statusCode}] ${request.method} ${request.nextUrl.pathname} → ${error.message}`);
-        return NextResponse.json<ApiResponse>(
+        return withCacheHeaders(NextResponse.json<ApiResponse>(
           { success: false, error: error.message },
           { status: error.statusCode }
-        );
+        ));
       }
 
       console.error(`[API Error] ${request.method} ${request.nextUrl.pathname}:`, error);
 
       const message = error instanceof Error ? error.message : "Internal error";
-      if (message.includes("duplicate key") || message.includes("unique")) {
-        return NextResponse.json<ApiResponse>(
+      const causeMessage = error instanceof Error && error.cause instanceof Error ? error.cause.message : "";
+      if (message.includes("duplicate key") || message.includes("unique") ||
+          causeMessage.includes("duplicate key") || causeMessage.includes("unique")) {
+        return withCacheHeaders(NextResponse.json<ApiResponse>(
           { success: false, error: "Resource already exists" },
           { status: 409 }
-        );
+        ));
       }
 
-      return NextResponse.json<ApiResponse>(
+      return withCacheHeaders(NextResponse.json<ApiResponse>(
         { success: false, error: "Internal server error" },
         { status: 500 }
-      );
+      ));
     }
   };
 }

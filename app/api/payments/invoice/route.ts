@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { apiHandler, BadRequestError, ForbiddenError } from "@/lib/api";
-import { completions, habits, payments, wallets } from "@/lib/db";
+import { completions, habits, payments, wallets, familyMembers } from "@/lib/db";
 import { decrypt } from "@/lib/crypto";
 import { eq, and } from "drizzle-orm";
 import { NWCClient } from "@getalby/sdk";
@@ -29,17 +29,26 @@ export const POST = apiHandler(async (request, { session, db }) => {
     throw new BadRequestError("missing_fields");
   }
 
-  console.log(`[Payment] Generating invoice: ${amount_sats} sats for completion ${completion_id.slice(0, 8)} (payment: ${payment_id?.slice(0, 8) ?? "new"})`);
-
-  // Look up the completion to find the kid
+  // Look up the completion and verify sponsor is in the same family
   const completionRows = await db
     .select({
       id: completions.id,
       user_id: completions.user_id,
       habit_id: completions.habit_id,
+      habit_name: habits.name,
     })
     .from(completions)
-    .where(eq(completions.id, completion_id))
+    .innerJoin(habits, eq(habits.id, completions.habit_id))
+    .innerJoin(
+      familyMembers,
+      and(
+        eq(familyMembers.family_id, habits.family_id),
+        eq(familyMembers.user_id, session.user_id)
+      )
+    )
+    .where(
+      and(eq(completions.id, completion_id), eq(familyMembers.role, "sponsor"))
+    )
     .limit(1);
 
   if (!completionRows[0]) {
@@ -48,15 +57,7 @@ export const POST = apiHandler(async (request, { session, db }) => {
 
   const completion = completionRows[0];
   const kidUserId = completion.user_id;
-
-  // Get habit name for the invoice description
-  const habitRows = await db
-    .select({ name: habits.name })
-    .from(habits)
-    .where(eq(habits.id, completion.habit_id))
-    .limit(1);
-
-  const habitName = habitRows[0]?.name ?? "Habit";
+  const habitName = completion.habit_name ?? "Habit";
 
   // Look up kid's active wallet
   const walletRows = await db
@@ -66,14 +67,12 @@ export const POST = apiHandler(async (request, { session, db }) => {
     .limit(1);
 
   if (!walletRows[0]) {
-    console.log(`[Payment] Kid ${kidUserId.slice(0, 8)} has no wallet`);
     return NextResponse.json<ApiResponse>(
       { success: false, error: "kid_no_wallet" },
       { status: 422 }
     );
   }
 
-  console.log(`[Payment] Connecting to kid's NWC wallet to create invoice...`);
   const nwcUrl = decrypt(walletRows[0].nwc_url_encrypted);
   const client = new NWCClient({ nostrWalletConnectUrl: nwcUrl });
 
@@ -82,8 +81,6 @@ export const POST = apiHandler(async (request, { session, db }) => {
       amount: amount_sats * 1000, // millisats
       description: `BitByBit: ${habitName}`,
     });
-
-    console.log(`[Payment] Invoice created, hash: ${transaction.payment_hash?.slice(0, 12)}...`);
 
     // If we have a payment_id from approve, update that record.
     // Otherwise create a new one (backward compatibility for retry).
@@ -120,7 +117,6 @@ export const POST = apiHandler(async (request, { session, db }) => {
       completion_id,
     };
   } catch (error) {
-    console.error("[Payment] NWC makeInvoice error:", error);
     const msg = error instanceof Error ? error.message : "";
     throw new BadRequestError(
       msg.includes("timeout") ? "nwc_timeout" : "nwc_invoice_failed"

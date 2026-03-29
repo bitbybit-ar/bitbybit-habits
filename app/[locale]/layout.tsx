@@ -95,10 +95,7 @@ export default async function LocaleLayout({
             document.documentElement.setAttribute('data-theme', theme);
           })();
         `}} />
-        <link
-          rel="icon"
-          href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>"
-        />
+        <link rel="icon" type="image/svg+xml" href="/icons/icon.svg" />
         <link rel="manifest" href="/manifest.json" />
         <link rel="apple-touch-icon" href="/icons/icon.svg" />
         <meta name="theme-color" content="#F7A825" />

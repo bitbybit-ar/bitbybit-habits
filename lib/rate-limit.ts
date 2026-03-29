@@ -13,6 +13,13 @@ interface RateLimitResult {
 }
 
 export function createRateLimiter(maxAttempts: number, windowMs: number) {
+  // Disable rate limiting in development
+  if (process.env.NODE_ENV !== "production") {
+    return {
+      check: (): RateLimitResult => ({ success: true, remaining: maxAttempts }),
+    };
+  }
+
   const store = new Map<string, RateLimitEntry>();
 
   // Cleanup expired entries every 5 minutes to avoid memory leaks

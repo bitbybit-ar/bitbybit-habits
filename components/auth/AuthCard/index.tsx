@@ -16,6 +16,9 @@ interface AuthCardProps {
   switchHref?: string;
   showNostr?: boolean;
   nostrLabel?: string;
+  onNostrLogin?: () => void;
+  nostrAvailable?: boolean;
+  nostrLoading?: boolean;
   error?: string;
   variant?: "login" | "register";
 }
@@ -29,6 +32,9 @@ export function AuthCard({
   switchHref,
   showNostr = true,
   nostrLabel,
+  onNostrLogin,
+  nostrAvailable = false,
+  nostrLoading = false,
   error,
   variant = "login",
 }: AuthCardProps) {
@@ -36,7 +42,7 @@ export function AuthCard({
 
   return (
     <div className={styles.container}>
-      <div className={cn(styles.wrapper, variant === "register" && styles.wrapperWide)}>
+      <div className={styles.wrapper}>
         {/* Floating decorative icons */}
         <div className={styles.floatingIcons} aria-hidden="true">
           <div className={cn(styles.floatingIcon, styles.iconBolt)}>
@@ -73,13 +79,27 @@ export function AuthCard({
                     {nostrLabel ? t("auth.orRegisterWith") : t("auth.orLoginWith")}
                   </span>
                 </div>
-                <button className={styles.nostrButton} disabled>
-                  <NostrichIcon size={18} />
-                  {nostrLabel || t("auth.loginWithNostr")}
-                  <span className={styles.comingSoon}>
-                    {t("common.comingSoon")}
-                  </span>
-                </button>
+                {nostrAvailable && onNostrLogin ? (
+                  <button
+                    className={cn(styles.nostrButton, styles.nostrButtonActive)}
+                    onClick={onNostrLogin}
+                    disabled={nostrLoading}
+                    type="button"
+                  >
+                    <NostrichIcon size={18} />
+                    {nostrLoading
+                      ? t("auth.nostrLoginInProgress")
+                      : nostrLabel || t("auth.loginWithNostr")}
+                  </button>
+                ) : (
+                  <button className={styles.nostrButton} disabled type="button">
+                    <NostrichIcon size={18} />
+                    {nostrLabel || t("auth.loginWithNostr")}
+                    <span className={styles.comingSoon}>
+                      {t("auth.nostrExtensionRequired")}
+                    </span>
+                  </button>
+                )}
               </>
             )}
 

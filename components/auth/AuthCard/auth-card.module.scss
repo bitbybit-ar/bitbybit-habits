@@ -22,12 +22,8 @@
 .wrapper {
   position: relative;
   width: 100%;
-  max-width: 440px;
+  max-width: 480px;
   z-index: 1;
-}
-
-.wrapperWide {
-  max-width: 520px;
 }
 
 // ── Floating decorative icons ──
@@ -220,6 +216,27 @@
   &:hover {
     opacity: 0.85;
     border-color: alpha($color-nostr, 35%);
+  }
+}
+
+.nostrButtonActive {
+  cursor: pointer;
+  opacity: 1;
+
+  &:hover {
+    opacity: 1;
+    background: alpha($color-nostr, 12%);
+    border-color: alpha($color-nostr, 40%);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  &:disabled {
+    cursor: wait;
+    opacity: 0.7;
   }
 }
 

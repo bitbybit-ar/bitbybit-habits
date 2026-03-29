@@ -215,7 +215,7 @@ npx tsc --noEmit     # Type-check sin compilar
 - Ani (repo owner) must approve the PR before it can be merged.
 - Git author for commits: `Analia Acosta <analia.a.acosta@gmail.com>`
 
-## Antes de commitear
+### Checklist pre-commit
 
 - [ ] `npx tsc --noEmit` pasa sin errores
 - [ ] Todas las strings de UI estan en ambos archivos de mensajes (es.json, en.json)

@@ -1,4 +1,4 @@
-import { apiHandler, NotFoundError } from "@/lib/api";
+import { apiHandler, NotFoundError, ForbiddenError } from "@/lib/api";
 import { payments, wallets } from "@/lib/db";
 import { decrypt } from "@/lib/crypto";
 import { eq, and } from "drizzle-orm";
@@ -10,7 +10,7 @@ import { NWCClient } from "@getalby/sdk";
  * Checks the payment status of a Lightning invoice via the kid's NWC wallet.
  * Updates the payment record to "paid" if the invoice has been settled.
  */
-export const GET = apiHandler(async (_request, { session: _session, db, params }) => {
+export const GET = apiHandler(async (_request, { session, db, params }) => {
   const paymentId = params.id;
 
   // Look up the payment record
@@ -25,6 +25,11 @@ export const GET = apiHandler(async (_request, { session: _session, db, params }
   }
 
   const payment = paymentRows[0];
+
+  // Only the payer (sponsor) or payee (kid) can check this payment's status
+  if (payment.from_user_id !== session.user_id && payment.to_user_id !== session.user_id) {
+    throw new ForbiddenError();
+  }
 
   // Already paid — no need to check NWC
   if (payment.status === "paid") {

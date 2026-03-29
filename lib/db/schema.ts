@@ -18,16 +18,16 @@ export const users = pgTable("users", {
   id: uuid("id").primaryKey().defaultRandom(),
   email: text("email").unique().notNull(),
   username: text("username").unique().notNull(),
-  password_hash: text("password_hash").notNull(),
+  password_hash: text("password_hash"),
   display_name: text("display_name").notNull(),
   avatar_url: text("avatar_url"),
+  nostr_pubkey: text("nostr_pubkey").unique(),
+  auth_provider: text("auth_provider").notNull().default("email").$type<"email" | "nostr">(),
+  nostr_metadata: jsonb("nostr_metadata").$type<Record<string, unknown> | null>(),
+  nostr_metadata_updated_at: timestamp("nostr_metadata_updated_at"),
   locale: text("locale").notNull().default("es"),
   failed_login_attempts: integer("failed_login_attempts").notNull().default(0),
   locked_until: timestamp("locked_until"),
-  nostr_pubkey: text("nostr_pubkey"),
-  auth_provider: text("auth_provider").notNull().default("email"),
-  nostr_metadata: jsonb("nostr_metadata").$type<Record<string, unknown> | null>(),
-  nostr_metadata_updated_at: timestamp("nostr_metadata_updated_at"),
   totp_secret: text("totp_secret"),
   totp_enabled: boolean("totp_enabled").notNull().default(false),
   recovery_codes: text("recovery_codes"),
@@ -36,6 +36,7 @@ export const users = pgTable("users", {
 }, (t) => [
   index("idx_users_email").on(t.email),
   index("idx_users_username").on(t.username),
+  index("idx_users_nostr_pubkey").on(t.nostr_pubkey),
 ]);
 
 // ============================================================

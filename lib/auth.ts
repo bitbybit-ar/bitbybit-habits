@@ -78,8 +78,7 @@ export async function getSession(): Promise<AuthSession | null> {
 
     const validLocale = locale === "es" || locale === "en" ? locale : "es";
     const validRole = role === "sponsor" || role === "kid" ? role : null;
-
-    const nostr_pubkey = typeof payload.nostr_pubkey === "string" ? payload.nostr_pubkey : null;
+    const validNostrPubkey = typeof payload.nostr_pubkey === "string" ? payload.nostr_pubkey : null;
 
     return {
       user_id,
@@ -88,7 +87,7 @@ export async function getSession(): Promise<AuthSession | null> {
       display_name,
       locale: validLocale,
       role: validRole,
-      nostr_pubkey,
+      nostr_pubkey: validNostrPubkey,
     };
   } catch {
     return null;

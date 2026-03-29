@@ -27,8 +27,6 @@ export const POST = apiHandler(async (request, { session, db }) => {
     throw new BadRequestError("no_wallet");
   }
 
-  console.log(`[Wallet:Send] Paying invoice ${bolt11.slice(0, 20)}... (user: ${session.user_id.slice(0, 8)})`);
-
   const client = new NWCClient({ nostrWalletConnectUrl: nwcUrl });
 
   try {
@@ -38,16 +36,11 @@ export const POST = apiHandler(async (request, { session, db }) => {
     );
 
     const result = await Promise.race([payPromise, timeoutPromise]);
-    console.log(`[Wallet:Send] Payment successful, preimage: ${result.preimage?.slice(0, 8)}...`);
     return { preimage: result.preimage };
   } catch (err) {
-    console.error("[Wallet:Send] NWC payInvoice error:", err);
-    const msg = err instanceof Error ? err.message.toLowerCase() : "";
-    if (msg.includes("insufficient") || msg.includes("not enough")) {
+    const msg = err instanceof Error ? err.message : "payment_failed";
+    if (msg.includes("insufficient") || msg.includes("INSUFFICIENT")) {
       throw new BadRequestError("insufficient_funds");
-    }
-    if (msg.includes("timeout")) {
-      throw new BadRequestError("nwc_timeout");
     }
     throw new BadRequestError("payment_failed");
   } finally {

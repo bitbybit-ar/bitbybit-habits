@@ -47,7 +47,9 @@ export function useWebLN(): UseWebLNReturn {
       throw new Error("No WebLN extension available");
     }
     await provider.enable();
-    return provider.sendPayment(invoice);
+    // WebLN expects raw BOLT11, strip lightning: URI prefix if present
+    const bolt11 = invoice.replace(/^lightning:/i, "");
+    return provider.sendPayment(bolt11);
   }, []);
 
   return { hasExtension, extensionName, sendPayment };

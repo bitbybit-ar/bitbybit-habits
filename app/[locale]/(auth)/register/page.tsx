@@ -7,6 +7,7 @@ import { useTranslations } from "next-intl";
 import AuthCard from "@/components/auth/AuthCard";
 import { FormInput, FormButton } from "@/components/ui/form";
 import { useFormValidation } from "@/lib/hooks/useFormValidation";
+import { useNostr } from "@/lib/hooks/useNostr";
 import { resolveApiError } from "@/lib/error-messages";
 import styles from "@/components/ui/form/form.module.scss";
 
@@ -30,6 +31,7 @@ const STRENGTH_COLORS = [
 export default function RegisterPage() {
   const router = useRouter();
   const t = useTranslations();
+  const { hasExtension: nostrAvailable, login: nostrLogin, isLoading: nostrLoading } = useNostr();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -123,6 +125,19 @@ export default function RegisterPage() {
     }
   };
 
+  const handleNostrRegister = async () => {
+    setError("");
+    const result = await nostrLogin();
+    if (!result.success) {
+      setError(resolveApiError(result.error || "nostr_login_failed", t));
+      return;
+    }
+    const role = result.data?.role;
+    if (role === "kid") router.push("/kid");
+    else if (role === "sponsor") router.push("/sponsor");
+    else router.push("/onboard");
+  };
+
   const dn = form.fieldProps("display_name");
   const un = form.fieldProps("username");
   const em = form.fieldProps("email");
@@ -137,6 +152,9 @@ export default function RegisterPage() {
       switchHref="/login"
       showNostr
       nostrLabel={t("auth.registerWithNostr")}
+      onNostrLogin={handleNostrRegister}
+      nostrAvailable={nostrAvailable}
+      nostrLoading={nostrLoading}
       error={error}
       variant="register"
     >

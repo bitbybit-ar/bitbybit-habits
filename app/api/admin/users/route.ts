@@ -13,6 +13,7 @@ import { eq, desc, ilike, or, sql, count, and, inArray } from "drizzle-orm";
  *   page    — page number (default 1)
  *   limit   — items per page (default 50, max 200)
  *   search  — filter by email, username, or display_name (case-insensitive)
+ *   family  — filter by family_id
  */
 export const GET = apiHandler(async (request, { session, db }) => {
   if (!isAdmin(session)) {

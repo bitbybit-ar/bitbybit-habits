@@ -9,7 +9,6 @@ import {
   UserPlusIcon,
   LogOutIcon,
   SettingsIcon,
-  DashboardIcon,
 } from "@/components/icons";
 import { NotificationBell } from "@/components/dashboard/notification-bell";
 import { LanguageSwitcher } from "@/components/layout/language-switcher";
@@ -47,7 +46,7 @@ export const Navbar: React.FC<NavbarProps> = ({ user: userProp }) => {
     if (userProp !== undefined) return;
     let cancelled = false;
 
-    fetch("/api/auth/session")
+    fetch("/api/auth/session", { cache: 'no-store' })
       .then((res) => (res.ok ? res.json() : { success: false }))
       .then((data) => {
         if (!cancelled) {
@@ -129,14 +128,7 @@ export const Navbar: React.FC<NavbarProps> = ({ user: userProp }) => {
 
           {checkedSession && isLoggedIn && (
             <>
-              <Link
-                href={user?.role === "kid" ? "/kid" : "/sponsor"}
-                className={styles.navBtn}
-                aria-label={t("dashboard.welcome")}
-              >
-                <DashboardIcon size={18} />
-              </Link>
-              <NotificationBell />
+              {userProp && <NotificationBell />}
               <Link
                 href="/settings"
                 className={styles.navBtn}

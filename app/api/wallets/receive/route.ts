@@ -23,8 +23,6 @@ export const POST = apiHandler(async (request, { session, db }) => {
     throw new BadRequestError("no_wallet");
   }
 
-  console.log(`[Wallet:Receive] Creating invoice: ${amount_sats} sats (user: ${session.user_id.slice(0, 8)})`);
-
   const client = new NWCClient({ nostrWalletConnectUrl: nwcUrl });
 
   try {
@@ -37,17 +35,11 @@ export const POST = apiHandler(async (request, { session, db }) => {
     );
 
     const result = await Promise.race([invoicePromise, timeoutPromise]);
-    console.log(`[Wallet:Receive] Invoice created, hash: ${result.payment_hash?.slice(0, 12)}...`);
     return {
       payment_request: result.invoice,
       payment_hash: result.payment_hash,
     };
-  } catch (err) {
-    console.error("[Wallet:Receive] NWC makeInvoice error:", err);
-    const msg = err instanceof Error ? err.message.toLowerCase() : "";
-    if (msg.includes("timeout")) {
-      throw new BadRequestError("nwc_timeout");
-    }
+  } catch {
     throw new BadRequestError("invoice_failed");
   } finally {
     client.close();
