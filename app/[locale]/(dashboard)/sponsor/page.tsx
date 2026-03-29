@@ -305,7 +305,7 @@ export default function SponsorDashboard() {
     { key: "create", icon: <PlusIcon size={20} />, label: t("habits.createHabit") },
     { key: "family", icon: <UsersIcon size={20} />, label: t("family.myFamily") },
     { key: "payments", icon: <BoltIcon size={20} />, label: t("payments.title") },
-    { key: "wallet", icon: <WalletIcon size={20} />, label: t("wallet.connectWallet") },
+    { key: "wallet", icon: <WalletIcon size={20} />, label: t("wallet.title") },
   ];
 
   const statsBar = (
@@ -355,7 +355,7 @@ export default function SponsorDashboard() {
       )}
       {activeTab === "wallet" && (
         <div className={styles.section}>
-          <h2 className={styles.sectionTitle}>{t("wallet.connectWallet")}</h2>
+          <h2 className={styles.sectionTitle}>{t("wallet.title")}</h2>
           <WalletConnect />
         </div>
       )}

@@ -74,17 +74,8 @@ export function useFamilyData(families: FamilyWithMembers[]) {
       setStats(aggregated);
 
       // ROADMAP: Multi-family support (commented for MVP single-family mode)
-      // const requests = families.flatMap((f) => [
-      //   fetch(`/api/families/${f.id}/completions?days=7`),
-      //   fetch(`/api/families/${f.id}/stats`),
-      // ]);
-      // const responses = await Promise.all(requests);
-      // for (let i = 0; i < families.length; i++) {
-      //   const compRes = responses[i * 2];
-      //   const statsRes = responses[i * 2 + 1];
-      //   if (compRes.ok) { ... }
-      //   if (statsRes.ok) { ... }
-      // }
+      // Original code fetched completions + stats for ALL families in parallel
+      // and aggregated the results. Now simplified to single-family fetch above.
     } catch {
       // Silently handle
     } finally {

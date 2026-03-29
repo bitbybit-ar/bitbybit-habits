@@ -55,6 +55,15 @@ export function SponsorHabitsTab({ habits, families, familyCompletions, onApprov
         }
       }
     }
+    // ROADMAP: Multi-family support (commented for MVP single-family mode)
+    // for (const habit of habits) {
+    //   if (groups[habit.id]) {
+    //     const kid = families.flatMap((f) => f.members).find((m) => m.user_id === habit.assigned_to);
+    //     if (kid && kid.role === "kid") {
+    //       groups[habit.id].kids[kid.user_id] = { userId: kid.user_id, displayName: kid.display_name || kid.username };
+    //     }
+    //   }
+    // }
 
     return Object.values(groups);
   }, [habits, familyCompletions, families]);
@@ -176,6 +185,14 @@ export function SponsorByKidTab({ habits, families, familyCompletions, onApprove
         }
       }
     }
+    // ROADMAP: Multi-family support (commented for MVP single-family mode)
+    // for (const family of families) {
+    //   for (const member of family.members) {
+    //     if (member.role === "kid" && !groups[member.user_id]) {
+    //       groups[member.user_id] = { userId: member.user_id, displayName: member.display_name || member.username, avatarUrl: member.avatar_url, habits: {} };
+    //     }
+    //   }
+    // }
 
     for (const c of familyCompletions) {
       if (!groups[c.kid_user_id]) {

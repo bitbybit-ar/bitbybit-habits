@@ -20,6 +20,7 @@ interface KidOption {
 // }
 
 interface CreateHabitFormProps {
+  // MVP: Single-family mode — receive a single familyId instead of a list
   familyId: string;
   kids: KidOption[];
   onSubmit: (data: CreateHabitData) => Promise<void>;

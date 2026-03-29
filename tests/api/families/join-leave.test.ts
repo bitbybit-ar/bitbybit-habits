@@ -114,10 +114,9 @@ describe("POST /api/families/leave", () => {
     expect(status).toBe(404);
   });
 
-  it("prevents last sponsor from leaving when others exist", async () => {
+  it("prevents sponsor from leaving when other members exist", async () => {
     await setSessionCookie(testSession);
     selectResults.push([{ id: "m1", role: "sponsor" }]); // user is sponsor
-    selectResults.push([]); // no other sponsors
     selectResults.push([{ id: "m2" }]); // other members exist
     const req = createRequest("POST", "/api/families/leave", { family_id: UUID.family1 });
     const { status } = await parseResponse(await leave(req));
