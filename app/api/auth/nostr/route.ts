@@ -97,6 +97,7 @@ export const POST = apiHandler(async (request, { db }) => {
         username: `nostr_${pubkeyShort8}`,
         display_name: `Nostr ${pubkeyShort8}`,
         nostr_pubkey: pubkey,
+        auth_provider: "nostr",
         locale: "es",
       })
       .returning({

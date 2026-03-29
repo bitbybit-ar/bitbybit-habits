@@ -35,3 +35,6 @@ next-env.d.ts
 
 # IDE
 .idea/
+
+# Claude
+CLAUDE.md

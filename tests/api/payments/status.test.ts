@@ -33,7 +33,7 @@ vi.mock("@/lib/db", () => ({
       },
     }),
   }),
-  payments: { id: "id", to_user_id: "t", status: "s", payment_hash: "ph", paid_at: "pa" },
+  payments: { id: "id", from_user_id: "f", to_user_id: "t", status: "s", payment_hash: "ph", paid_at: "pa" },
   wallets: { user_id: "u", active: "a", nwc_url_encrypted: "nwc" },
 }));
 
@@ -70,12 +70,27 @@ describe("GET /api/payments/[id]/status", () => {
     expect(body.success).toBe(false);
   });
 
+  it("returns 403 when user is not payer or payee", async () => {
+    await setSessionCookie(testSession);
+    mockSelectResult.mockReturnValueOnce([{
+      id: UUID.payment1,
+      status: "pending",
+      payment_hash: "abc123",
+      from_user_id: UUID.user3,
+      to_user_id: UUID.user2,
+    }]);
+    const req = createRequest("GET", `/api/payments/${UUID.payment1}/status`);
+    const { status } = await parseResponse(await GET(req, routeCtx));
+    expect(status).toBe(403);
+  });
+
   it("returns settled: true for already paid payment", async () => {
     await setSessionCookie(testSession);
     mockSelectResult.mockReturnValueOnce([{
       id: UUID.payment1,
       status: "paid",
       payment_hash: "abc123",
+      from_user_id: UUID.user1,
       to_user_id: UUID.user2,
     }]);
     const req = createRequest("GET", `/api/payments/${UUID.payment1}/status`);
@@ -90,6 +105,7 @@ describe("GET /api/payments/[id]/status", () => {
       id: UUID.payment1,
       status: "pending",
       payment_hash: null,
+      from_user_id: UUID.user1,
       to_user_id: UUID.user2,
     }]);
     const req = createRequest("GET", `/api/payments/${UUID.payment1}/status`);
@@ -104,6 +120,7 @@ describe("GET /api/payments/[id]/status", () => {
       id: UUID.payment1,
       status: "pending",
       payment_hash: "abc123",
+      from_user_id: UUID.user1,
       to_user_id: UUID.user2,
     }]);
     mockSelectResult.mockReturnValueOnce([]); // no wallet
@@ -119,6 +136,7 @@ describe("GET /api/payments/[id]/status", () => {
       id: UUID.payment1,
       status: "pending",
       payment_hash: "abc123",
+      from_user_id: UUID.user1,
       to_user_id: UUID.user2,
     }]);
     mockSelectResult.mockReturnValueOnce([{
@@ -142,6 +160,7 @@ describe("GET /api/payments/[id]/status", () => {
       id: UUID.payment1,
       status: "pending",
       payment_hash: "abc123",
+      from_user_id: UUID.user1,
       to_user_id: UUID.user2,
     }]);
     mockSelectResult.mockReturnValueOnce([{
@@ -162,6 +181,7 @@ describe("GET /api/payments/[id]/status", () => {
       id: UUID.payment1,
       status: "pending",
       payment_hash: "abc123",
+      from_user_id: UUID.user1,
       to_user_id: UUID.user2,
     }]);
     mockSelectResult.mockReturnValueOnce([{

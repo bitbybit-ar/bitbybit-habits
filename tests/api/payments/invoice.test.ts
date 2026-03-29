@@ -30,7 +30,8 @@ vi.mock("@/lib/db", () => ({
     insert: () => ({ values: () => ({ returning: mockInsertReturning }) }),
   }),
   completions: { id: "id", user_id: "u", habit_id: "h", status: "s" },
-  habits: { id: "id", name: "n" },
+  habits: { id: "id", name: "n", family_id: "f" },
+  familyMembers: { family_id: "f", user_id: "u", role: "r" },
   payments: { id: "id", completion_id: "c", from_user_id: "f", to_user_id: "t", amount_sats: "a", payment_request: "pr", payment_hash: "ph", status: "s" },
   wallets: { user_id: "u", active: "a", nwc_url_encrypted: "nwc" },
 }));
@@ -90,18 +91,29 @@ describe("POST /api/payments/invoice", () => {
     expect(body.error).toContain("completion_not_found");
   });
 
+  it("returns 400 when sponsor is not in same family as completion", async () => {
+    await setSessionCookie(testSession);
+    // Combined query returns empty — sponsor not in family
+    mockSelectResult.mockReturnValueOnce([]);
+    const req = createRequest("POST", "/api/payments/invoice", {
+      completion_id: UUID.completion1,
+      amount_sats: 50,
+    });
+    const { status, body } = await parseResponse(await POST(req));
+    expect(status).toBe(400);
+    expect(body.error).toContain("completion_not_found");
+  });
+
   it("returns 422 when kid has no wallet", async () => {
     await setSessionCookie(testSession);
-    // First select: completion found
+    // First select: combined completion+habit+familyMembers query
     mockSelectResult.mockReturnValueOnce([{
       id: UUID.completion1,
       user_id: UUID.user2,
       habit_id: UUID.habit1,
-      status: "approved",
+      habit_name: "Tender la cama",
     }]);
-    // Second select: habit
-    mockSelectResult.mockReturnValueOnce([{ name: "Tender la cama" }]);
-    // Third select: wallet not found
+    // Second select: wallet not found
     mockSelectResult.mockReturnValueOnce([]);
 
     const req = createRequest("POST", "/api/payments/invoice", {
@@ -115,16 +127,14 @@ describe("POST /api/payments/invoice", () => {
 
   it("returns invoice when kid has wallet", async () => {
     await setSessionCookie(testSession);
-    // First select: completion found
+    // First select: combined completion+habit+familyMembers query
     mockSelectResult.mockReturnValueOnce([{
       id: UUID.completion1,
       user_id: UUID.user2,
       habit_id: UUID.habit1,
-      status: "approved",
+      habit_name: "Tender la cama",
     }]);
-    // Second select: habit
-    mockSelectResult.mockReturnValueOnce([{ name: "Tender la cama" }]);
-    // Third select: wallet found
+    // Second select: wallet found
     mockSelectResult.mockReturnValueOnce([{
       nwc_url_encrypted: "enc_nostr+walletconnect://test",
     }]);
@@ -154,13 +164,14 @@ describe("POST /api/payments/invoice", () => {
 
   it("closes NWC client even on error", async () => {
     await setSessionCookie(testSession);
+    // First select: combined completion+habit+familyMembers query
     mockSelectResult.mockReturnValueOnce([{
       id: UUID.completion1,
       user_id: UUID.user2,
       habit_id: UUID.habit1,
-      status: "approved",
+      habit_name: "Test",
     }]);
-    mockSelectResult.mockReturnValueOnce([{ name: "Test" }]);
+    // Second select: wallet found
     mockSelectResult.mockReturnValueOnce([{
       nwc_url_encrypted: "enc_nostr+walletconnect://test",
     }]);

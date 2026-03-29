@@ -13,6 +13,9 @@ CREATE TABLE IF NOT EXISTS users (
     display_name TEXT NOT NULL,
     avatar_url TEXT,
     nostr_pubkey TEXT UNIQUE,
+    auth_provider TEXT NOT NULL DEFAULT 'email',
+    nostr_metadata JSONB,
+    nostr_metadata_updated_at TIMESTAMP,
     locale TEXT NOT NULL DEFAULT 'es',
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW()

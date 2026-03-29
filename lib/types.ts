@@ -10,6 +10,9 @@ export interface User {
   display_name: string;
   avatar_url?: string;
   nostr_pubkey?: string | null;
+  auth_provider: "email" | "nostr";
+  nostr_metadata?: Record<string, unknown> | null;
+  nostr_metadata_updated_at?: string | null;
   locale: "es" | "en";
   created_at: string;
   updated_at: string;

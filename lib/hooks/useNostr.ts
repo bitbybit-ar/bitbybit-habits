@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useCallback } from "react";
 import type { UnsignedNostrEvent } from "@/lib/nostr/types";
+import type { NostrMetadata } from "@/lib/nostr/types";
+import { fetchNostrMetadata, publishNostrMetadata, mergeNostrMetadata } from "@/lib/nostr/metadata";
 
 interface NostrLoginResult {
   success: boolean;
@@ -32,12 +34,17 @@ interface UseNostrReturn {
   login: () => Promise<NostrLoginResult>;
   linkAccount: () => Promise<NostrLinkResult>;
   unlinkAccount: () => Promise<{ success: boolean; error?: string }>;
+  fetchAndSyncMetadata: (pubkey: string) => Promise<NostrMetadata | null>;
+  publishProfileToNostr: (
+    profile: { display_name?: string; username?: string; avatar_url?: string | null },
+    cachedMetadata?: NostrMetadata | null,
+  ) => Promise<boolean>;
   isLoading: boolean;
 }
 
 /**
  * Detects NIP-07 Nostr browser extensions (Alby, nos2x, etc.)
- * and provides NIP-42 challenge-response authentication.
+ * and provides NIP-42 challenge-response authentication + NIP-01 metadata sync.
  */
 export function useNostr(): UseNostrReturn {
   const [hasExtension, setHasExtension] = useState(false);
@@ -144,5 +151,71 @@ export function useNostr(): UseNostrReturn {
     }
   }, []);
 
-  return { hasExtension, login, linkAccount, unlinkAccount, isLoading };
+  /**
+   * Fetch kind 0 metadata from relays and sync to the local profile.
+   * Returns the fetched metadata (also sends it to the server for caching).
+   */
+  const fetchAndSyncMetadata = useCallback(async (pubkey: string): Promise<NostrMetadata | null> => {
+    const metadata = await fetchNostrMetadata(pubkey);
+    if (!metadata) return null;
+
+    // Build profile updates from Nostr metadata
+    const updates: Record<string, unknown> = { nostr_metadata: metadata };
+    if (metadata.display_name || metadata.name) {
+      updates.display_name = metadata.display_name || metadata.name;
+    }
+    if (metadata.picture) {
+      updates.avatar_url = metadata.picture;
+    }
+
+    // Sync to server
+    await fetch("/api/auth/profile", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(updates),
+    });
+
+    return metadata;
+  }, []);
+
+  /**
+   * Publish profile changes to Nostr relays, preserving existing metadata
+   * fields that BitByBit doesn't manage (about, banner, lud16, nip05, etc.).
+   *
+   * @param profile - The BitByBit-managed fields being updated
+   * @param cachedMetadata - Previously fetched kind 0 metadata (avoids re-fetch if available)
+   */
+  const publishProfileToNostr = useCallback(async (
+    profile: { display_name?: string; username?: string; avatar_url?: string | null },
+    cachedMetadata?: NostrMetadata | null,
+  ): Promise<boolean> => {
+    if (!window.nostr) return false;
+
+    try {
+      // Get current metadata from relays or use cache
+      let existing = cachedMetadata ?? null;
+      if (!existing) {
+        const pubkey = await window.nostr.getPublicKey();
+        existing = await fetchNostrMetadata(pubkey);
+      }
+
+      // Merge only BitByBit fields, preserve everything else
+      const merged = mergeNostrMetadata(existing, profile);
+
+      // Sign and publish via NIP-07
+      return await publishNostrMetadata(merged);
+    } catch {
+      return false;
+    }
+  }, []);
+
+  return {
+    hasExtension,
+    login,
+    linkAccount,
+    unlinkAccount,
+    fetchAndSyncMetadata,
+    publishProfileToNostr,
+    isLoading,
+  };
 }

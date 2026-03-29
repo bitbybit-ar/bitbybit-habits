@@ -15,6 +15,23 @@ export interface UnsignedNostrEvent {
   content: string;
 }
 
+/**
+ * NIP-01 kind 0 metadata content.
+ * Index signature preserves fields BitByBit doesn't know about.
+ */
+export interface NostrMetadata {
+  name?: string;
+  display_name?: string;
+  about?: string;
+  picture?: string;
+  banner?: string;
+  nip05?: string;
+  lud06?: string;
+  lud16?: string;
+  website?: string;
+  [key: string]: unknown;
+}
+
 declare global {
   interface Window {
     nostr?: {

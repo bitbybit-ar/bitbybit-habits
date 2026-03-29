@@ -31,7 +31,7 @@ export function InvoiceModal({
 
   const pollStatus = useCallback(async () => {
     try {
-      const res = await fetch(`/api/payments/${paymentId}/status`);
+      const res = await fetch(`/api/payments/${paymentId}/status`, { cache: 'no-store' });
       const json = await res.json();
       if (json.success && json.data?.settled) {
         setSettled(true);

@@ -1,0 +1,123 @@
+@use "@/styles/colors" as *;
+@use "@/styles/spacing" as *;
+@use "@/styles/typography" as *;
+@use "@/styles/common-mixins" as *;
+@use "@/styles/media-mixins" as *;
+@use "@/styles/glass" as *;
+
+$navbar-height: 60px;
+
+.layout {
+  min-height: 100vh;
+  @include glass-background-orbs;
+  position: relative;
+}
+
+.container {
+  @include container;
+  padding-top: calc($navbar-height + $spacing-24);
+  padding-bottom: $spacing-64;
+
+  @include mobile {
+    padding-top: calc($navbar-height + $spacing-16);
+  }
+}
+
+.header {
+  @include glass-prominent($color-accent, 0.06);
+  @include glass-highlight;
+  padding: $spacing-24;
+  margin-bottom: $spacing-24;
+  display: flex;
+  align-items: center;
+  gap: $spacing-16;
+
+  @include mobile {
+    padding: $spacing-16;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.headerIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: $border-radius-full;
+  background: rgba($color-accent, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $color-accent;
+  flex-shrink: 0;
+}
+
+.headerInfo {
+  flex: 1;
+}
+
+.headerTitle {
+  font-family: $font-family-display;
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: var(--color-text-primary);
+  margin: 0;
+
+  @include desktop {
+    font-size: $font-size-2xl;
+  }
+}
+
+.headerSubtitle {
+  font-size: $font-size-sm;
+  color: var(--color-text-secondary);
+  margin: $spacing-4 0 0 0;
+}
+
+.accessDenied {
+  @include glass(0.08, 16px, 0.06, $border-radius-lg);
+  padding: $spacing-48;
+  text-align: center;
+}
+
+.accessDeniedTitle {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-error;
+  margin: 0 0 $spacing-12 0;
+}
+
+.accessDeniedText {
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.loadingContainer {
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loadingText {
+  color: var(--color-text-secondary);
+}
+
+.dbIndicator {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-8;
+  padding: $spacing-4 $spacing-12;
+  border-radius: $border-radius-full;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+}
+
+.dbLocal {
+  background: rgba($color-secondary, 0.15);
+  color: $color-secondary;
+}
+
+.dbProd {
+  background: rgba($color-error, 0.15);
+  color: $color-error;
+}

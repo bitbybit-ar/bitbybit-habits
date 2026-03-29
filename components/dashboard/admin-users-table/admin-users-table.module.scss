@@ -1,0 +1,427 @@
+@use "@/styles/colors" as *;
+@use "@/styles/spacing" as *;
+@use "@/styles/typography" as *;
+@use "@/styles/common-mixins" as *;
+@use "@/styles/media-mixins" as *;
+@use "@/styles/glass" as *;
+
+// ── DB indicator ──
+.dbIndicator {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-8;
+  padding: $spacing-4 $spacing-12;
+  border-radius: $border-radius-full;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  margin-bottom: $spacing-16;
+}
+
+.dbLocal {
+  background: rgba($color-secondary, 0.15);
+  color: $color-secondary;
+}
+
+.dbProd {
+  background: rgba($color-error, 0.15);
+  color: $color-error;
+}
+
+// ── Stats grid ──
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: $spacing-12;
+  margin-bottom: $spacing-24;
+}
+
+.statCard {
+  @include glass(0.08, 16px, 0.06, $border-radius-md);
+  padding: $spacing-16;
+  text-align: center;
+}
+
+.statValue {
+  font-size: $font-size-2xl;
+  font-weight: $font-weight-bold;
+  color: var(--color-primary);
+  margin: 0;
+}
+
+.statLabel {
+  font-size: $font-size-xs;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: $spacing-4;
+}
+
+// ── Search bar ──
+.searchBar {
+  display: flex;
+  gap: $spacing-12;
+  margin-bottom: $spacing-16;
+  align-items: center;
+
+  @include mobile {
+    flex-direction: column;
+  }
+}
+
+.searchInput {
+  flex: 1;
+  padding: $spacing-12 $spacing-16;
+  border-radius: $border-radius-md;
+  border: 1px solid rgba(var(--glass-color), 0.15);
+  background: rgba(var(--glass-color), 0.06);
+  color: var(--color-text-primary);
+  font-size: $font-size-sm;
+  @include transition;
+
+  &::placeholder {
+    color: var(--color-text-secondary);
+  }
+
+  &:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px rgba($color-primary, 0.2);
+  }
+}
+
+.searchCount {
+  font-size: $font-size-sm;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+
+// ── Table ──
+.tableWrapper {
+  overflow-x: auto;
+  @include glass(0.06, 16px, 0.04, $border-radius-lg);
+
+  &::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(var(--glass-color), 0.15);
+    border-radius: 3px;
+  }
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 700px;
+}
+
+.table th {
+  text-align: left;
+  padding: $spacing-12 $spacing-16;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid rgba(var(--glass-color), 0.1);
+  white-space: nowrap;
+}
+
+.table td {
+  padding: $spacing-12 $spacing-16;
+  font-size: $font-size-sm;
+  color: var(--color-text-primary);
+  border-bottom: 1px solid rgba(var(--glass-color), 0.06);
+  vertical-align: middle;
+}
+
+.table tbody tr {
+  @include transition;
+
+  &:hover {
+    background: rgba(var(--glass-color), 0.04);
+  }
+}
+
+// ── User cell ──
+.userCell {
+  display: flex;
+  align-items: center;
+  gap: $spacing-12;
+}
+
+.userAvatar {
+  width: 32px;
+  height: 32px;
+  border-radius: $border-radius-full;
+  background: var(--gradient-primary-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-bold;
+  color: var(--color-on-gradient);
+  flex-shrink: 0;
+}
+
+.userInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.userName {
+  font-weight: $font-weight-semibold;
+  color: var(--color-text-primary);
+}
+
+.userEmail {
+  font-size: $font-size-xs;
+  color: var(--color-text-secondary);
+}
+
+// ── Badges ──
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-4;
+  padding: 2px $spacing-8;
+  border-radius: $border-radius-full;
+  font-size: 11px;
+  font-weight: $font-weight-semibold;
+  white-space: nowrap;
+}
+
+.badgeSponsor {
+  background: rgba($color-primary, 0.15);
+  color: $color-primary;
+}
+
+.badgeKid {
+  background: rgba($color-secondary, 0.15);
+  color: $color-secondary;
+}
+
+.badgeLocked {
+  background: rgba($color-error, 0.15);
+  color: $color-error;
+}
+
+.badgeWallet {
+  background: rgba($color-lightning, 0.15);
+  color: $color-lightning;
+}
+
+.badge2fa {
+  background: rgba($color-info, 0.15);
+  color: $color-info;
+}
+
+.familyBadges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-4;
+}
+
+// ── Actions ──
+.actions {
+  display: flex;
+  gap: $spacing-8;
+}
+
+.actionBtn {
+  padding: $spacing-4 $spacing-8;
+  border-radius: $border-radius-sm;
+  border: 1px solid rgba(var(--glass-color), 0.15);
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-size: $font-size-xs;
+  cursor: pointer;
+  @include transition;
+
+  &:hover {
+    color: var(--color-text-primary);
+    border-color: var(--color-primary);
+    background: rgba($color-primary, 0.08);
+  }
+}
+
+.actionBtnDanger {
+  &:hover {
+    color: $color-error;
+    border-color: $color-error;
+    background: rgba($color-error, 0.08);
+  }
+}
+
+.actionBtnSuccess {
+  &:hover {
+    color: $color-success;
+    border-color: $color-success;
+    background: rgba($color-success, 0.08);
+  }
+}
+
+// ── Pagination ──
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-12;
+  margin-top: $spacing-16;
+  padding: $spacing-12 0;
+}
+
+.pageBtn {
+  padding: $spacing-8 $spacing-16;
+  border-radius: $border-radius-sm;
+  border: 1px solid rgba(var(--glass-color), 0.15);
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-size: $font-size-sm;
+  cursor: pointer;
+  @include transition;
+
+  &:hover:not(:disabled) {
+    color: var(--color-text-primary);
+    border-color: var(--color-primary);
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+.pageInfo {
+  font-size: $font-size-sm;
+  color: var(--color-text-secondary);
+}
+
+// ── Edit modal ──
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: $spacing-16;
+}
+
+.modal {
+  @include glass(0.12, 24px, 0.08, $border-radius-lg);
+  background: var(--color-bg-dark-2);
+  padding: $spacing-24;
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modalTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: var(--color-text-primary);
+  margin: 0 0 $spacing-20 0;
+}
+
+.modalField {
+  margin-bottom: $spacing-16;
+}
+
+.modalLabel {
+  display: block;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: $spacing-4;
+}
+
+.modalInput {
+  width: 100%;
+  padding: $spacing-8 $spacing-12;
+  border-radius: $border-radius-sm;
+  border: 1px solid rgba(var(--glass-color), 0.15);
+  background: rgba(var(--glass-color), 0.06);
+  color: var(--color-text-primary);
+  font-size: $font-size-sm;
+
+  &:focus {
+    outline: none;
+    border-color: var(--color-primary);
+  }
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: $spacing-8;
+  margin-top: $spacing-20;
+}
+
+.modalBtn {
+  padding: $spacing-8 $spacing-16;
+  border-radius: $border-radius-sm;
+  border: none;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  cursor: pointer;
+  @include transition;
+}
+
+.modalBtnCancel {
+  background: transparent;
+  border: 1px solid rgba(var(--glass-color), 0.15);
+  color: var(--color-text-secondary);
+
+  &:hover {
+    color: var(--color-text-primary);
+  }
+}
+
+.modalBtnSave {
+  background: var(--color-primary);
+  color: #000;
+
+  &:hover {
+    opacity: 0.9;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+// ── Empty/loading states ──
+.emptyState {
+  text-align: center;
+  padding: $spacing-48 $spacing-24;
+  color: var(--color-text-secondary);
+}
+
+.loadingState {
+  text-align: center;
+  padding: $spacing-48 $spacing-24;
+  color: var(--color-text-secondary);
+}
+
+// ── Responsive ──
+.mobileCard {
+  display: none;
+
+  @include mobile {
+    display: block;
+  }
+}
+
+.desktopTable {
+  @include mobile {
+    display: none;
+  }
+}
