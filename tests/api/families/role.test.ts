@@ -62,27 +62,27 @@ describe("PATCH /api/families/role", () => {
     expect(status).toBe(403);
   });
 
-  it("prevents demoting last sponsor", async () => {
+  it("prevents demoting the only sponsor", async () => {
     await setSessionCookie(testSession);
     selectResults.push([{ role: "sponsor" }]); // requester is sponsor
     selectResults.push([{ role: "sponsor" }]); // target is sponsor
-    selectResults.push([]); // no other sponsors
     const req = createRequest("PATCH", "/api/families/role", {
       family_id: UUID.family1, user_id: UUID.user2, new_role: "kid",
     });
-    const { status } = await parseResponse(await PATCH(req));
+    const { status, body } = await parseResponse(await PATCH(req));
     expect(status).toBe(400);
+    expect(body.error).toBe("cannot_demote_last_sponsor");
   });
 
-  it("changes role successfully", async () => {
+  it("returns 400 when promoting to sponsor (single-sponsor mode)", async () => {
     await setSessionCookie(testSession);
-    selectResults.push([{ role: "sponsor" }]); // requester
-    selectResults.push([{ role: "kid" }]); // target
+    selectResults.push([{ role: "sponsor" }]); // requester is sponsor
+    selectResults.push([{ role: "kid" }]); // target is kid
     const req = createRequest("PATCH", "/api/families/role", {
       family_id: UUID.family1, user_id: UUID.user2, new_role: "sponsor",
     });
     const { status, body } = await parseResponse(await PATCH(req));
-    expect(status).toBe(200);
-    expect(body.success).toBe(true);
+    expect(status).toBe(400);
+    expect(body.error).toBe("single_sponsor_only");
   });
 });

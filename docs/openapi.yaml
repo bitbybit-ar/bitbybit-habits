@@ -881,6 +881,15 @@ paths:
               example:
                 success: false
                 error: "Solo los sponsors pueden crear familias"
+        "409":
+          description: El usuario ya pertenece a una familia (modo single-family MVP)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseError"
+              example:
+                success: false
+                error: "already_has_family"
         "500":
           description: Error al crear la familia
           content:
@@ -971,14 +980,22 @@ paths:
                 success: false
                 error: "Codigo de invitacion invalido"
         "409":
-          description: Ya es miembro de esta familia
+          description: Ya es miembro de esta familia o ya pertenece a otra familia (modo single-family MVP)
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ApiResponseError"
-              example:
-                success: false
-                error: "Ya sos miembro de esta familia"
+              examples:
+                alreadyMember:
+                  summary: Ya es miembro de esta familia
+                  value:
+                    success: false
+                    error: "already_member"
+                alreadyHasFamily:
+                  summary: Ya pertenece a otra familia
+                  value:
+                    success: false
+                    error: "already_has_family"
         "500":
           description: Error al unirse a la familia
           content:
@@ -1732,6 +1749,9 @@ paths:
     patch:
       tags: [Families]
       summary: Cambiar rol de un miembro de la familia
+      description: |
+        MVP: Modo single-sponsor — no se permite promover a sponsor (solo puede haber uno por familia).
+        Tampoco se puede degradar al unico sponsor.
       operationId: changeFamilyRole
       security: [{ cookieAuth: [] }]
       requestBody:
@@ -1754,6 +1774,23 @@ paths:
       responses:
         "200":
           description: Rol actualizado
+        "400":
+          description: No se puede promover a sponsor (single-sponsor mode) o degradar al unico sponsor
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseError"
+              examples:
+                singleSponsor:
+                  summary: Solo un sponsor por familia
+                  value:
+                    success: false
+                    error: "single_sponsor_only"
+                cannotDemote:
+                  summary: No se puede degradar al unico sponsor
+                  value:
+                    success: false
+                    error: "cannot_demote_last_sponsor"
 
   /families/{id}:
     delete:
