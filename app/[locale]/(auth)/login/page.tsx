@@ -15,7 +15,7 @@ export default function LoginPage() {
   const router = useRouter();
   const t = useTranslations();
   const { showToast } = useToast();
-  const { hasExtension: nostrAvailable, login: nostrLogin, fetchAndSyncMetadata: nostrFetchAndSync, isLoading: nostrLoading } = useNostr();
+  const { hasExtension: nostrAvailable, login: nostrLogin, isLoading: nostrLoading } = useNostr();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -66,14 +66,6 @@ export default function LoginPage() {
       setError(resolveApiError(result.error || "nostr_login_failed", t));
       return;
     }
-
-    // For new Nostr users, fetch kind 0 metadata to populate profile
-    if (result.data?.isNewUser && result.data.nostr_pubkey) {
-      nostrFetchAndSync(result.data.nostr_pubkey).catch(() => {
-        // Non-blocking: profile will use placeholder values if fetch fails
-      });
-    }
-
     const role = result.data?.role;
     if (role === "kid") router.push("/kid");
     else if (role === "sponsor") router.push("/sponsor");

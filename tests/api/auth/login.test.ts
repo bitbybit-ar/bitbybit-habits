@@ -2,6 +2,20 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { createRequest, parseResponse } from "../../helpers";
 
+// Mock rate limiter — real implementation is disabled in non-production
+let rateLimitCallCount = 0;
+vi.mock("@/lib/rate-limit", () => ({
+  createRateLimiter: (max: number) => ({
+    check: () => {
+      rateLimitCallCount++;
+      if (rateLimitCallCount > max) {
+        return { success: false, remaining: 0, retryAfterMs: 60000 };
+      }
+      return { success: true, remaining: max - rateLimitCallCount };
+    },
+  }),
+}));
+
 // Mock bcryptjs
 vi.mock("bcryptjs", () => ({
   hash: vi.fn(async (pw: string) => `hashed_${pw}`),
@@ -84,6 +98,7 @@ import { POST } from "@/app/api/auth/login/route";
 describe("POST /api/auth/login", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    rateLimitCallCount = 0;
     chainSelect();
     mockUpdate.mockReturnValue({ set: mockSet });
   });

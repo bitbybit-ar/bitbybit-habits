@@ -96,7 +96,7 @@ export function AuthCard({
                     <NostrichIcon size={18} />
                     {nostrLabel || t("auth.loginWithNostr")}
                     <span className={styles.comingSoon}>
-                      {nostrAvailable ? t("common.comingSoon") : t("auth.nostrExtensionRequired")}
+                      {t("auth.nostrExtensionRequired")}
                     </span>
                   </button>
                 )}

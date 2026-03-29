@@ -54,8 +54,8 @@
 .iconBolt {
   width: 34px;
   height: 34px;
-  background: rgba($color-primary, 0.15);
-  border: 1px solid rgba($color-primary, 0.25);
+  background: alpha($color-primary, 15%);
+  border: 1px solid alpha($color-primary, 25%);
   color: $color-primary;
   top: 12px;
   right: -18px;
@@ -66,8 +66,8 @@
 .iconCheck {
   width: 28px;
   height: 28px;
-  background: rgba($color-accent-alt, 0.15);
-  border: 1px solid rgba($color-accent-alt, 0.25);
+  background: alpha($color-accent-alt, 15%);
+  border: 1px solid alpha($color-accent-alt, 25%);
   color: $color-accent-alt;
   top: 45%;
   left: -20px;
@@ -83,8 +83,8 @@
 .iconNostrich {
   width: 30px;
   height: 30px;
-  background: rgba($color-nostr, 0.15);
-  border: 1px solid rgba($color-nostr, 0.25);
+  background: alpha($color-nostr, 15%);
+  border: 1px solid alpha($color-nostr, 25%);
   color: $color-nostr;
   bottom: 60px;
   right: -16px;
@@ -95,8 +95,8 @@
 .iconStreak {
   width: 28px;
   height: 28px;
-  background: rgba($color-accent, 0.15);
-  border: 1px solid rgba($color-accent, 0.25);
+  background: alpha($color-accent, 15%);
+  border: 1px solid alpha($color-accent, 25%);
   color: $color-accent;
   bottom: 20px;
   left: -18px;
@@ -200,8 +200,8 @@
   width: 100%;
   padding: $spacing-12;
   border-radius: $border-radius-md;
-  border: 1px solid rgba($color-nostr, 0.2);
-  background: rgba($color-nostr, 0.06);
+  border: 1px solid alpha($color-nostr, 20%);
+  background: alpha($color-nostr, 6%);
   color: $color-nostr;
   font-size: $font-size-sm;
   font-family: $font-family-base;
@@ -215,7 +215,7 @@
 
   &:hover {
     opacity: 0.85;
-    border-color: rgba($color-nostr, 0.35);
+    border-color: alpha($color-nostr, 35%);
   }
 }
 
@@ -225,8 +225,8 @@
 
   &:hover {
     opacity: 1;
-    background: rgba($color-nostr, 0.12);
-    border-color: rgba($color-nostr, 0.4);
+    background: alpha($color-nostr, 12%);
+    border-color: alpha($color-nostr, 40%);
     transform: translateY(-1px);
   }
 
@@ -242,7 +242,7 @@
 
 .comingSoon {
   font-size: $font-size-xs;
-  background: rgba($color-nostr, 0.15);
+  background: alpha($color-nostr, 15%);
   color: $color-nostr;
   padding: 2px $spacing-8;
   border-radius: $border-radius-full;

@@ -1,8 +1,5 @@
-// @ts-expect-error — subpath exports require .js extension
 import { schnorr } from "@noble/curves/secp256k1.js";
-// @ts-expect-error — subpath exports require .js extension
 import { sha256 } from "@noble/hashes/sha2.js";
-// @ts-expect-error — subpath exports require .js extension
 import { bytesToHex, hexToBytes } from "@noble/hashes/utils.js";
 import type { NostrEvent } from "./types";
 

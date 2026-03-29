@@ -1,16 +1,24 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
-import { useSession } from "@/lib/hooks/useSession";
 import { ShieldIcon } from "@/components/icons";
 import { AdminUsersTable } from "@/components/dashboard/admin-users-table";
 import styles from "./admin.module.scss";
 
-const ADMIN_PUBKEY_HEX = "d9590d95a7811e1cb312be66edd664d7e3e6ed57822ad9f213ed620fc6748be8";
-
 export default function AdminPage() {
   const t = useTranslations("admin");
-  const { data: session, isLoading } = useSession();
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/admin/stats")
+      .then((res) => {
+        setIsAdmin(res.ok);
+        setIsLoading(false);
+      })
+      .catch(() => setIsLoading(false));
+  }, []);
 
   if (isLoading) {
     return (
@@ -22,9 +30,7 @@ export default function AdminPage() {
     );
   }
 
-  const isAdmin = session?.nostr_pubkey === ADMIN_PUBKEY_HEX;
-
-  if (!session || !isAdmin) {
+  if (!isAdmin) {
     return (
       <div className={styles.layout}>
         <div className={styles.container}>

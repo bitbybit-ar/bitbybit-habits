@@ -18,11 +18,12 @@ describe("GET /api/auth/session", () => {
     await clearSessionCookie();
   });
 
-  it("returns 401 when no session cookie", async () => {
+  it("returns 200 with success false when no session cookie", async () => {
     const req = createRequest("GET", "/api/auth/session");
     const { status, body } = await parseResponse(await GET(req));
-    expect(status).toBe(401);
+    expect(status).toBe(200);
     expect(body.success).toBe(false);
+    expect(body.data).toBeNull();
   });
 
   it("returns session data when authenticated", async () => {

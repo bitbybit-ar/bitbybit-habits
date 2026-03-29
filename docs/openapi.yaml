@@ -907,8 +907,8 @@ paths:
       summary: Unirse a una familia con codigo de invitacion
       description: |
         Permite a un usuario unirse a una familia existente usando el codigo de invitacion.
-        El usuario se agrega como miembro con su rol actual (sponsor o kid).
-        No se puede unir a una familia de la que ya es miembro.
+        El nuevo miembro se asigna como kid.
+        MVP: modo single-family — el usuario solo puede pertenecer a una familia (409 si ya tiene una).
       operationId: joinFamily
       security:
         - cookieAuth: []
@@ -2156,6 +2156,208 @@ paths:
       responses:
         "200":
           description: Notificacion marcada como leida
+
+  /admin/sync-nostr-metadata:
+    post:
+      tags: [Admin]
+      summary: Sincronizar metadata Nostr de todos los usuarios
+      description: |
+        Bulk-refresh de metadata Nostr (kind 0) para todos los usuarios registrados via Nostr.
+        Obtiene la metadata mas reciente de los relays y actualiza la DB local (display_name, avatar, etc.).
+        Solo accesible por admin; puede ser disparado periodicamente via cron.
+      operationId: adminSyncNostrMetadata
+      security: [{ cookieAuth: [] }]
+      responses:
+        "200":
+          description: Resultado de la sincronizacion
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      total:
+                        type: integer
+                        description: Total de usuarios Nostr encontrados
+                      synced:
+                        type: integer
+                        description: Usuarios sincronizados exitosamente
+                      failed:
+                        type: integer
+                        description: Usuarios con error al sincronizar
+                      no_metadata:
+                        type: integer
+                        description: Usuarios sin metadata en relays
+                      results:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            user_id:
+                              type: string
+                              format: uuid
+                            status:
+                              type: string
+                              enum: [synced, no_metadata, error]
+        "401":
+          description: No autenticado
+        "403":
+          description: No autorizado — no es admin
+
+  /auth/dev:
+    post:
+      tags: [Auth]
+      summary: Login de desarrollo (crea usuario si no existe)
+      description: |
+        Endpoint exclusivo para desarrollo local. Solo disponible cuando
+        `NODE_ENV=development` y `DEV_AUTH=true`. Crea el usuario si no existe
+        y setea la cookie de sesion.
+      operationId: devLogin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email:
+                  type: string
+                  format: email
+                username:
+                  type: string
+                  description: Opcional, se deriva del email si no se provee
+      responses:
+        "200":
+          description: Login exitoso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                      email:
+                        type: string
+                      username:
+                        type: string
+                      display_name:
+                        type: string
+        "400":
+          description: Email es requerido
+        "403":
+          description: Dev auth no disponible (produccion o variable no seteada)
+    delete:
+      tags: [Auth]
+      summary: Logout de desarrollo
+      description: |
+        Elimina la cookie de sesion. Solo disponible cuando
+        `NODE_ENV=development` y `DEV_AUTH=true`.
+      operationId: devLogout
+      responses:
+        "200":
+          description: Logout exitoso
+        "403":
+          description: Dev auth no disponible
+
+  /wallets/send:
+    post:
+      tags: [Wallets]
+      summary: Pagar una invoice BOLT11 desde la wallet NWC del usuario
+      description: |
+        Envia un pago Lightning usando la wallet NWC conectada del usuario autenticado.
+        Acepta invoices con o sin prefijo `lightning:`. Timeout de 30 segundos.
+      operationId: walletSend
+      security: [{ cookieAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [invoice]
+              properties:
+                invoice:
+                  type: string
+                  description: Invoice BOLT11 (opcionalmente con prefijo lightning:)
+      responses:
+        "200":
+          description: Pago exitoso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      preimage:
+                        type: string
+                        description: Preimage del pago como prueba
+        "400":
+          description: Invoice invalida, wallet no conectada, fondos insuficientes o pago fallido
+        "401":
+          description: No autenticado
+
+  /wallets/receive:
+    post:
+      tags: [Wallets]
+      summary: Generar una invoice Lightning desde la wallet NWC del usuario
+      description: |
+        Crea una invoice Lightning usando la wallet NWC conectada del usuario autenticado.
+        El monto se especifica en sats (se convierte a millisats internamente). Timeout de 10 segundos.
+      operationId: walletReceive
+      security: [{ cookieAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [amount_sats]
+              properties:
+                amount_sats:
+                  type: integer
+                  minimum: 1
+                  description: Monto en satoshis
+                description:
+                  type: string
+                  description: Descripcion opcional para la invoice (default "BitByBit")
+      responses:
+        "200":
+          description: Invoice generada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      payment_request:
+                        type: string
+                        description: Invoice BOLT11
+                      payment_hash:
+                        type: string
+                        description: Hash del pago
+        "400":
+          description: Monto invalido, wallet no conectada o error al generar invoice
+        "401":
+          description: No autenticado
 
 components:
   securitySchemes:

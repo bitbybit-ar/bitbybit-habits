@@ -22,6 +22,6 @@
 }
 
 .variant-highlight {
-  border-color: rgba($color-primary, 0.3) !important;
-  box-shadow: 0 4px 20px rgba($color-primary, 0.08);
+  border-color: alpha($color-primary, 30%) !important;
+  box-shadow: 0 4px 20px alpha($color-primary, 8%);
 }

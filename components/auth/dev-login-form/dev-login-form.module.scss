@@ -8,7 +8,7 @@
   font-size: $font-size-xs;
   font-weight: $font-weight-bold;
   color: $color-primary;
-  background: rgba($color-primary, 0.15);
+  background: alpha($color-primary, 15%);
   padding: $spacing-4 $spacing-12;
   border-radius: $border-radius-full;
   display: inline-block;
@@ -37,7 +37,7 @@
     padding: $spacing-12 $spacing-16;
     border-radius: $border-radius-sm;
     border: 1px solid rgba(255, 255, 255, 0.1);
-    background: $color-bg-dark-3;
+    background: $color-bg-3;
     color: $color-text-primary;
     font-size: $font-size-base;
     font-family: $font-family-base;
@@ -46,7 +46,7 @@
     &:focus {
       outline: none;
       border-color: $color-primary;
-      box-shadow: 0 0 0 2px rgba($color-primary, 0.2);
+      box-shadow: 0 0 0 2px alpha($color-primary, 20%);
     }
   }
 }
@@ -72,7 +72,7 @@
 
   &:hover:not(:disabled) {
     transform: translateY(-2px);
-    box-shadow: 0 4px 20px rgba($color-primary, 0.3);
+    box-shadow: 0 4px 20px alpha($color-primary, 30%);
   }
 
   &:disabled {

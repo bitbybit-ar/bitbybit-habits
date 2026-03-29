@@ -47,7 +47,7 @@ export const Navbar: React.FC<NavbarProps> = ({ user: userProp }) => {
     let cancelled = false;
 
     fetch("/api/auth/session", { cache: 'no-store' })
-      .then((res) => res.json())
+      .then((res) => (res.ok ? res.json() : { success: false }))
       .then((data) => {
         if (!cancelled) {
           setUser(data.success ? data.data : null);

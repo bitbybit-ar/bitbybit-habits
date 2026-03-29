@@ -60,8 +60,8 @@
   padding: $spacing-12 $spacing-16;
   padding-right: $spacing-40;
   border-radius: 12px;
-  border: 1px solid rgba($color-accent-alt, 0.10);
-  background: rgba($color-accent-alt, 0.04);
+  border: 1px solid alpha($color-accent-alt, 10%);
+  background: alpha($color-accent-alt, 4%);
   color: var(--color-text-primary);
   font-size: $font-size-base;
   font-family: $font-family-base;
@@ -72,7 +72,7 @@
   &:focus {
     outline: none;
     border-color: $color-accent-alt;
-    box-shadow: 0 0 0 2px rgba($color-accent-alt, 0.12);
+    box-shadow: 0 0 0 2px alpha($color-accent-alt, 12%);
   }
 }
 
@@ -117,8 +117,8 @@
   gap: $spacing-12;
   padding: $spacing-12;
   border-radius: $border-radius-md;
-  background: rgba($color-nostr, 0.06);
-  border: 1px solid rgba($color-nostr, 0.15);
+  background: alpha($color-nostr, 6%);
+  border: 1px solid alpha($color-nostr, 15%);
 }
 
 .nostrPubkey {
@@ -143,8 +143,8 @@
 .nostrLinkButton {
   width: 100%;
   padding: $spacing-12;
-  border: 1px solid rgba($color-nostr, 0.2);
-  background: rgba($color-nostr, 0.06);
+  border: 1px solid alpha($color-nostr, 20%);
+  background: alpha($color-nostr, 6%);
   color: $color-nostr;
   display: flex;
   align-items: center;
@@ -152,8 +152,8 @@
   gap: $spacing-8;
 
   &:hover {
-    background: rgba($color-nostr, 0.12);
-    border-color: rgba($color-nostr, 0.4);
+    background: alpha($color-nostr, 12%);
+    border-color: alpha($color-nostr, 40%);
   }
 
   &:disabled {
@@ -163,13 +163,13 @@
 }
 
 .nostrUnlinkButton {
-  border: 1px solid rgba($color-error, 0.2);
-  background: rgba($color-error, 0.06);
+  border: 1px solid alpha($color-error, 20%);
+  background: alpha($color-error, 6%);
   color: $color-error;
 
   &:hover {
-    background: rgba($color-error, 0.12);
-    border-color: rgba($color-error, 0.3);
+    background: alpha($color-error, 12%);
+    border-color: alpha($color-error, 30%);
   }
 
   &:disabled {
@@ -188,8 +188,8 @@
   font-weight: $font-weight-medium;
   cursor: pointer;
   @include transition;
-  border: 1px solid rgba($color-nostr, 0.15);
-  background: rgba($color-nostr, 0.04);
+  border: 1px solid alpha($color-nostr, 15%);
+  background: alpha($color-nostr, 4%);
   color: $color-nostr;
   display: flex;
   align-items: center;
@@ -197,8 +197,8 @@
   gap: $spacing-4;
 
   &:hover {
-    background: rgba($color-nostr, 0.10);
-    border-color: rgba($color-nostr, 0.3);
+    background: alpha($color-nostr, 10%);
+    border-color: alpha($color-nostr, 30%);
   }
 
   &:disabled {

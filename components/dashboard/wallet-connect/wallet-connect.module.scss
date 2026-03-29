@@ -49,8 +49,8 @@
   padding: $spacing-16;
   margin-bottom: $spacing-12;
   border-radius: $border-radius-md;
-  border: 2px solid rgba($color-primary, 0.4);
-  background: rgba($color-primary, 0.08);
+  border: 2px solid alpha($color-primary, 40%);
+  background: alpha($color-primary, 8%);
   color: $color-primary;
   font-size: $font-size-base;
   font-weight: $font-weight-bold;
@@ -58,7 +58,7 @@
   transition: all 0.2s ease;
 
   &:hover {
-    background: rgba($color-primary, 0.15);
+    background: alpha($color-primary, 15%);
     border-color: $color-primary;
   }
 
@@ -133,7 +133,7 @@
 
   &[data-connected="true"] {
     background: $color-success;
-    box-shadow: 0 0 8px rgba($color-success, 0.4);
+    box-shadow: 0 0 8px alpha($color-success, 40%);
   }
 
   &[data-connected="false"] {
@@ -151,7 +151,7 @@
 .badge {
   padding: 2px $spacing-8;
   border-radius: $border-radius-sm;
-  background: rgba($color-primary, 0.15);
+  background: alpha($color-primary, 15%);
   color: $color-primary;
   font-size: $font-size-xs;
   font-weight: $font-weight-bold;
@@ -184,9 +184,9 @@
   gap: $spacing-12;
   padding: $spacing-20;
   margin-bottom: $spacing-20;
-  background: rgba($color-primary, 0.06);
+  background: alpha($color-primary, 6%);
   border-radius: $border-radius-lg;
-  border: 1px solid rgba($color-primary, 0.1);
+  border: 1px solid alpha($color-primary, 10%);
 }
 
 .balanceIcon {
@@ -226,6 +226,29 @@
   &:hover:not(:disabled) {
     color: $color-primary;
     transform: rotate(180deg);
+  }
+}
+
+.extensionButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-8;
+  width: 100%;
+  padding: $spacing-12 $spacing-16;
+  margin-bottom: $spacing-16;
+  border-radius: $border-radius-md;
+  border: 1px solid alpha($color-primary, 30%);
+  background: alpha($color-primary, 8%);
+  color: $color-primary;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  cursor: pointer;
+  transition: transform 0.3s ease, color 0.2s ease;
+
+  &:hover:not(:disabled) {
+    background: alpha($color-primary, 15%);
+    border-color: $color-primary;
   }
 
   &:disabled {
@@ -267,12 +290,12 @@
   }
 
   &[data-variant="send"]:hover {
-    border-color: rgba($color-accent, 0.4);
+    border-color: alpha($color-accent, 40%);
     color: $color-accent;
   }
 
   &[data-variant="receive"]:hover {
-    border-color: rgba($color-secondary, 0.4);
+    border-color: alpha($color-secondary, 40%);
     color: $color-secondary;
   }
 }
@@ -385,8 +408,8 @@
   width: 100%;
   padding: $spacing-12 $spacing-16;
   border-radius: $border-radius-md;
-  border: 1px solid rgba($color-error, 0.3);
-  background: rgba($color-error, 0.1);
+  border: 1px solid alpha($color-error, 30%);
+  background: alpha($color-error, 10%);
   color: var(--color-error);
   font-size: $font-size-sm;
   font-weight: $font-weight-semibold;
@@ -394,7 +417,7 @@
   transition: background 0.2s, border-color 0.2s;
 
   &:hover {
-    background: rgba($color-error, 0.2);
+    background: alpha($color-error, 20%);
     border-color: var(--color-error);
   }
 }
@@ -429,7 +452,7 @@
   width: 100%;
   padding: $spacing-12 $spacing-24;
   background: $color-secondary;
-  color: $color-bg-dark;
+  color: var(--color-on-primary);
   border: none;
   border-radius: $border-radius-md;
   font-size: $font-size-sm;
@@ -452,7 +475,7 @@
   width: 100%;
   padding: $spacing-12 $spacing-24;
   background: $color-primary;
-  color: $color-bg-dark;
+  color: var(--color-on-primary);
   border: none;
   border-radius: $border-radius-md;
   font-size: $font-size-sm;
@@ -492,4 +515,62 @@
   display: flex;
   flex-direction: column;
   gap: $spacing-16;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-4;
+}
+
+.fieldLabel {
+  font-size: $font-size-xs;
+  color: var(--color-text-secondary);
+  font-weight: $font-weight-semibold;
+}
+
+.input {
+  padding: $spacing-12;
+  border-radius: $border-radius-md;
+  border: 1px solid rgba(var(--glass-color), 0.1);
+  background: var(--color-bg);
+  color: var(--color-text-primary);
+  font-size: $font-size-sm;
+  outline: none;
+  transition: border-color 0.2s;
+
+  &::placeholder {
+    color: var(--color-text-secondary);
+    opacity: 0.5;
+  }
+
+  &:focus {
+    border-color: var(--color-primary);
+  }
+}
+
+.connectButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-8;
+  padding: $spacing-12 $spacing-16;
+  border-radius: $border-radius-md;
+  border: none;
+  background: var(--gradient-primary-bg);
+  color: white;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-bold;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px alpha($color-primary, 30%);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 }

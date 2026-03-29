@@ -47,18 +47,18 @@
 }
 
 .cardCompleted {
-  border-color: rgba($color-success, 0.15);
-  background: linear-gradient(135deg, rgba($color-success, 0.06) 0%, var(--glass-subtle-bg) 100%);
+  border-color: alpha($color-success, 15%);
+  background: linear-gradient(135deg, alpha($color-success, 6%) 0%, var(--glass-subtle-bg) 100%);
 }
 
 .cardPending {
-  border-color: rgba($color-warning, 0.15);
-  background: linear-gradient(135deg, rgba($color-warning, 0.06) 0%, var(--glass-subtle-bg) 100%);
+  border-color: alpha($color-warning, 15%);
+  background: linear-gradient(135deg, alpha($color-warning, 6%) 0%, var(--glass-subtle-bg) 100%);
 }
 
 .cardSats {
-  border-color: rgba($color-primary, 0.15);
-  background: linear-gradient(135deg, rgba($color-primary, 0.06) 0%, var(--glass-subtle-bg) 100%);
+  border-color: alpha($color-primary, 15%);
+  background: linear-gradient(135deg, alpha($color-primary, 6%) 0%, var(--glass-subtle-bg) 100%);
 }
 
 .iconWrapper {
@@ -72,17 +72,17 @@
 }
 
 .iconCompleted {
-  background: rgba($color-success, 0.15);
+  background: alpha($color-success, 15%);
   color: var(--color-success);
 }
 
 .iconPending {
-  background: rgba($color-warning, 0.15);
+  background: alpha($color-warning, 15%);
   color: var(--color-warning);
 }
 
 .iconSats {
-  background: rgba($color-primary, 0.15);
+  background: alpha($color-primary, 15%);
   color: var(--color-primary);
 }
 

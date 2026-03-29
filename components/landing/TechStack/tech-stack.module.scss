@@ -11,7 +11,7 @@
 }
 
 .card {
-  @include glass-card-tinted($color-accent-alt, 0.04);
+  @include glass-card-tinted($color-accent-alt, 4%);
   padding: 28px;
   display: flex;
   gap: $spacing-16;
@@ -22,10 +22,10 @@
 
   &:hover {
     transform: translateY(-4px) scale(1.01);
-    border-color: rgba($color-accent-alt, 0.3);
+    border-color: alpha($color-accent-alt, 30%);
     box-shadow:
       inset 0 1px 0 var(--glass-inner-glow),
-      0 12px 40px rgba($color-accent-alt, 0.08);
+      0 12px 40px alpha($color-accent-alt, 8%);
   }
 
   h4 {

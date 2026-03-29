@@ -1,9 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { isDevAuth } from "@/lib/auth/server";
-import { getDb } from "@/lib/db";
+import { getDb, users } from "@/lib/db";
+import { createSession } from "@/lib/auth";
+import { eq } from "drizzle-orm";
 import { cookies } from "next/headers";
 
-const DEV_SESSION_COOKIE = "dev-session";
+function isDevAuth(): boolean {
+  return process.env.NODE_ENV === "development" && process.env.DEV_AUTH === "true";
+}
 
 /** POST /api/auth/dev — Dev-only login (creates user if needed) */
 export async function POST(request: NextRequest) {
@@ -29,33 +32,39 @@ export async function POST(request: NextRequest) {
   const db = getDb();
   const name = username || email.split("@")[0];
 
-  // Find or create user
-  const existing = await db`SELECT id, email, username, display_name FROM users WHERE email = ${email}`;
+  const existing = await db
+    .select({ id: users.id, email: users.email, username: users.username, display_name: users.display_name })
+    .from(users)
+    .where(eq(users.email, email))
+    .limit(1);
 
   let user;
   if (existing.length > 0) {
     user = existing[0];
   } else {
-    const created = await db`
-      INSERT INTO users (email, username, display_name, locale)
-      VALUES (${email}, ${name}, ${name}, 'es')
-      RETURNING id, email, username, display_name
-    `;
+    const created = await db
+      .insert(users)
+      .values({ email, username: name, display_name: name, locale: "es" })
+      .returning({ id: users.id, email: users.email, username: users.username, display_name: users.display_name });
     user = created[0];
   }
 
-  const sessionData = JSON.stringify({
-    id: user.id,
+  const token = await createSession({
+    user_id: user.id,
     email: user.email,
-    name: user.display_name || user.username,
+    username: user.username,
+    display_name: user.display_name || user.username,
+    locale: "es",
+    role: null,
   });
 
   const cookieStore = await cookies();
-  cookieStore.set(DEV_SESSION_COOKIE, sessionData, {
+  cookieStore.set("session", token, {
     httpOnly: true,
-    path: "/",
+    secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
-    maxAge: 60 * 60 * 24 * 7, // 7 days
+    path: "/",
+    maxAge: 7 * 24 * 60 * 60,
   });
 
   return NextResponse.json({ success: true, data: user });
@@ -71,7 +80,7 @@ export async function DELETE() {
   }
 
   const cookieStore = await cookies();
-  cookieStore.delete(DEV_SESSION_COOKIE);
+  cookieStore.delete("session");
 
   return NextResponse.json({ success: true });
 }
