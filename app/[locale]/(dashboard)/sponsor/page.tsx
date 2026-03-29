@@ -21,10 +21,10 @@ import { useFamilies } from "@/lib/hooks/useFamilies";
 import { useFamilyData } from "@/lib/hooks/useFamilyData";
 import { usePayments } from "@/lib/hooks/usePayments";
 import { useWebLN } from "@/lib/hooks/useWebLN";
+import { DashboardSection } from "@/components/dashboard/dashboard-section";
 import { SponsorHabitsTab, SponsorByKidTab } from "@/components/dashboard/sponsor/SponsorHabitsTab";
 import { SponsorPaymentsTab } from "@/components/dashboard/sponsor/SponsorPaymentsTab";
 import { SponsorFamilyTab } from "@/components/dashboard/sponsor/SponsorFamilyTab";
-import styles from "./sponsor.module.scss";
 
 type TabType = "byHabit" | "byKid" | "create" | "family" | "payments" | "wallet";
 
@@ -307,10 +307,9 @@ export default function SponsorDashboard() {
         <SponsorByKidTab habits={habits.data} families={families.data} familyCompletions={familyData.completions} onApprove={handleApprove} />
       )}
       {activeTab === "create" && (
-        <div className={styles.section}>
-          <h2 className={styles.sectionTitle}>{t("habits.createHabit")}</h2>
+        <DashboardSection title={t("habits.createHabit")}>
           <CreateHabitForm families={familyOptions} kids={uniqueKids} onSubmit={handleCreateHabit} />
-        </div>
+        </DashboardSection>
       )}
       {activeTab === "family" && (
         <SponsorFamilyTab families={families.data} sessionUserId={session.data?.user_id ?? ""} onLeave={handleLeaveFamily} onDelete={handleDeleteFamily} onRoleChange={handleRoleChange} onRemoveMember={handleRemoveMember} />
@@ -319,10 +318,9 @@ export default function SponsorDashboard() {
         <SponsorPaymentsTab payments={payments.data} isLoading={payments.isLoading} onRetry={handleRetryPayment} />
       )}
       {activeTab === "wallet" && (
-        <div className={styles.section}>
-          <h2 className={styles.sectionTitle}>{t("wallet.connectWallet")}</h2>
+        <DashboardSection title={t("wallet.connectWallet")}>
           <WalletConnect />
-        </div>
+        </DashboardSection>
       )}
       {invoiceModal && (
         <InvoiceModal
