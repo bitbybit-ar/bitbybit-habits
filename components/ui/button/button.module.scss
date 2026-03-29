@@ -29,7 +29,7 @@
   color: white;
 
   &:hover {
-    box-shadow: 0 8px 30px rgba($color-primary, 0.3);
+    box-shadow: 0 8px 30px alpha($color-primary, 0.3);
   }
 }
 
@@ -39,7 +39,7 @@
   color: var(--color-primary);
 
   &:hover {
-    background: rgba($color-primary, 0.1);
+    background: alpha($color-primary, 0.1);
   }
 }
 

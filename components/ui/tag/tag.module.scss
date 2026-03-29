@@ -14,16 +14,16 @@
 }
 
 .variant-gold {
-  background: rgba($color-primary-light, 0.15);
+  background: alpha($color-primary-light, 0.15);
   color: var(--color-primary-light);
 }
 
 .variant-green {
-  background: rgba($color-secondary, 0.15);
+  background: alpha($color-secondary, 0.15);
   color: var(--color-secondary);
 }
 
 .variant-coral {
-  background: rgba($color-accent, 0.15);
+  background: alpha($color-accent, 0.15);
   color: var(--color-accent);
 }

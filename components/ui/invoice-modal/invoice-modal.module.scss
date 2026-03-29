@@ -94,7 +94,7 @@
   width: 100%;
   padding: $spacing-12 $spacing-24;
   background: $color-primary;
-  color: $color-bg-dark;
+  color: var(--color-on-primary);
   border: none;
   border-radius: $border-radius-md;
   font-size: 0.95rem;

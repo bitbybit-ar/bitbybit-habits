@@ -88,7 +88,7 @@
   border-left: 3px solid var(--color-primary);
 
   .toastIcon {
-    background: rgba($color-success, 0.15);
+    background: alpha($color-success, 0.15);
     color: var(--color-success);
   }
 }
@@ -97,7 +97,7 @@
   border-left: 3px solid var(--color-error);
 
   .toastIcon {
-    background: rgba($color-error, 0.15);
+    background: alpha($color-error, 0.15);
     color: var(--color-error);
   }
 }
@@ -106,7 +106,7 @@
   border-left: 3px solid var(--color-primary);
 
   .toastIcon {
-    background: rgba($color-primary, 0.15);
+    background: alpha($color-primary, 0.15);
     color: var(--color-primary);
   }
 }

@@ -82,7 +82,7 @@
   border: 1px solid rgba(var(--glass-color), 0.15);
 
   &:hover {
-    border-color: rgba($color-primary, 0.4);
+    border-color: alpha($color-primary, 0.4);
     color: var(--color-primary);
     transform: translateY(-2px);
   }

@@ -22,7 +22,7 @@
 // Prominent — hero-level elements (dashboard header, CTA)
 @mixin glass-prominent($tint-color: $color-primary, $tint-amount: 0.06) {
   background:
-    linear-gradient(135deg, rgba($tint-color, $tint-amount) 0%, rgba($tint-color, $tint-amount * 0.3) 100%),
+    linear-gradient(135deg, alpha($tint-color, $tint-amount) 0%, alpha($tint-color, $tint-amount * 0.3) 100%),
     var(--glass-prominent-bg);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -40,7 +40,7 @@
 // Card tinted — cards with a color accent (landing sections)
 @mixin glass-card-tinted($tint-color, $tint-amount: 0.05) {
   background:
-    linear-gradient(135deg, rgba($tint-color, $tint-amount) 0%, transparent 60%),
+    linear-gradient(135deg, alpha($tint-color, $tint-amount) 0%, transparent 60%),
     var(--glass-card-bg);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
@@ -188,11 +188,11 @@
 
 // Highlight (primary-tinted border + shadow)
 @mixin glass-highlight {
-  border: 1px solid rgba($color-primary, 0.20);
+  border: 1px solid alpha($color-primary, 0.20);
   box-shadow:
     inset 0 1px 0 var(--glass-inner-glow),
     0 8px 32px rgba(var(--shadow-color), 0.3),
-    0 0 0 1px rgba($color-primary, 0.05);
+    0 0 0 1px alpha($color-primary, 0.05);
 }
 
 // Modal overlay with blur

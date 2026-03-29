@@ -210,13 +210,13 @@
 // Role-specific hover glows (desktop)
 @media (hover: hover) and (min-width: 769px) {
   .sponsorCard .flipFront:hover {
-    border-color: rgba($color-primary, 0.2);
-    box-shadow: 0 8px 30px rgba($color-primary, 0.1);
+    border-color: alpha($color-primary, 0.2);
+    box-shadow: 0 8px 30px alpha($color-primary, 0.1);
   }
 
   .kidCard .flipFront:hover {
-    border-color: rgba($color-accent-alt, 0.2);
-    box-shadow: 0 8px 30px rgba($color-accent-alt, 0.1);
+    border-color: alpha($color-accent-alt, 0.2);
+    box-shadow: 0 8px 30px alpha($color-accent-alt, 0.1);
   }
 }
 
@@ -268,7 +268,7 @@
 
   &:hover {
     transform: scale(1.05);
-    box-shadow: 0 4px 20px rgba($color-primary, 0.3);
+    box-shadow: 0 4px 20px alpha($color-primary, 0.3);
   }
 
   @include mobile {

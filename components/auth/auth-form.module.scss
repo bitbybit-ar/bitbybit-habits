@@ -58,31 +58,31 @@
   &:focus {
     outline: none;
     border-color: $color-primary;
-    box-shadow: 0 0 0 2px rgba($color-primary, 0.15);
+    box-shadow: 0 0 0 2px alpha($color-primary, 0.15);
   }
 }
 
 // ── Teal-tinted inputs (identity: name, username, email) ──
 .inputIdentity {
   @extend .input;
-  background: rgba($color-accent-alt, 0.04);
-  border: 1px solid rgba($color-accent-alt, 0.10);
+  background: alpha($color-accent-alt, 0.04);
+  border: 1px solid alpha($color-accent-alt, 0.10);
 
   &:focus {
     border-color: $color-accent-alt;
-    box-shadow: 0 0 0 2px rgba($color-accent-alt, 0.12);
+    box-shadow: 0 0 0 2px alpha($color-accent-alt, 0.12);
   }
 }
 
 // ── Violet-tinted inputs (security: password, confirm) ──
 .inputSecurity {
   @extend .input;
-  background: rgba($color-secondary, 0.04);
-  border: 1px solid rgba($color-secondary, 0.10);
+  background: alpha($color-secondary, 0.04);
+  border: 1px solid alpha($color-secondary, 0.10);
 
   &:focus {
     border-color: $color-secondary;
-    box-shadow: 0 0 0 2px rgba($color-secondary, 0.12);
+    box-shadow: 0 0 0 2px alpha($color-secondary, 0.12);
   }
 }
 
@@ -95,7 +95,7 @@
 
 .inputError {
   border-color: $color-error !important;
-  box-shadow: 0 0 0 1px rgba($color-error, 0.2);
+  box-shadow: 0 0 0 1px alpha($color-error, 0.2);
 }
 
 .errorText {
@@ -139,7 +139,7 @@
 
   &:hover:not(:disabled) {
     transform: translateY(-2px);
-    box-shadow: 0 4px 20px rgba($color-primary, 0.3);
+    box-shadow: 0 4px 20px alpha($color-primary, 0.3);
   }
 
   &:active:not(:disabled) {

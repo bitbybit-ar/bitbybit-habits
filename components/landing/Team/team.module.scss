@@ -23,10 +23,10 @@
 
   &:hover {
     transform: translateY(-4px) scale(1.01);
-    border-color: rgba($color-primary, 0.3);
+    border-color: alpha($color-primary, 0.3);
     box-shadow:
       inset 0 1px 0 var(--glass-inner-glow),
-      0 12px 40px rgba($color-primary, 0.08);
+      0 12px 40px alpha($color-primary, 0.08);
   }
 }
 
@@ -34,10 +34,10 @@
   @include glass-card-tinted($color-accent-alt, 0.04);
 
   &:hover {
-    border-color: rgba($color-accent-alt, 0.3);
+    border-color: alpha($color-accent-alt, 0.3);
     box-shadow:
       inset 0 1px 0 var(--glass-inner-glow),
-      0 8px 25px rgba($color-accent-alt, 0.08);
+      0 8px 25px alpha($color-accent-alt, 0.08);
   }
 }
 
@@ -46,12 +46,12 @@
   height: 72px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid rgba($color-primary, 0.3);
+  border: 2px solid alpha($color-primary, 0.3);
   flex-shrink: 0;
 }
 
 .avatarBot {
-  border-color: rgba($color-accent-alt, 0.4);
+  border-color: alpha($color-accent-alt, 0.4);
 }
 
 .info {

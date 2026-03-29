@@ -102,7 +102,7 @@
 }
 
 .stepDetail {
-  background: rgba($color-primary, 0.08);
+  background: alpha($color-primary, 0.08);
   border-left: 3px solid var(--color-primary);
   border-radius: 0 $border-radius-sm $border-radius-sm 0;
   padding: $spacing-12 $spacing-16;

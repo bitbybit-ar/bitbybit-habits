@@ -153,7 +153,7 @@ const KidDemo: React.FC = () => {
       )}
     </div>,
 
-    // Step 2: View Habits (preview)
+    // Step 2: View & Complete Habits
     <div key="k2" className={styles.stepInner}>
       <h3 className={styles.stepTitle}>{t("step2Title")}</h3>
       <p className={styles.stepDesc}>{t("step2Desc")}</p>
@@ -167,36 +167,19 @@ const KidDemo: React.FC = () => {
           <HabitCard
             key={habit.id}
             habit={habit}
-            completions={[]}
-            onComplete={() => {}}
-            hideAction
-          />
-        ))}
-      </div>
-      )}
-    </div>,
-
-    // Step 3: Complete Habits
-    <div key="k3" className={styles.stepInner}>
-      <h3 className={styles.stepTitle}>{t("step3Title")}</h3>
-      <p className={styles.stepDesc}>{t("step3Desc")}</p>
-      <div className={styles.habitList}>
-        {habits.map((habit) => (
-          <HabitCard
-            key={habit.id}
-            habit={habit}
             completions={completions}
             onComplete={handleComplete}
             currentUserId={MOCK_USER_ID}
           />
         ))}
       </div>
+      )}
     </div>,
 
-    // Step 4: Pending Approval
-    <div key="k4" className={styles.stepInner}>
-      <h3 className={styles.stepTitle}>{t("step4Title")}</h3>
-      <p className={styles.stepDesc}>{t("step4Desc")}</p>
+    // Step 3: Pending Approval
+    <div key="k3" className={styles.stepInner}>
+      <h3 className={styles.stepTitle}>{t("step3Title")}</h3>
+      <p className={styles.stepDesc}>{t("step3Desc")}</p>
       {completedHabitIds.size > 0 ? (
         <div className={styles.habitList}>
           {habits
@@ -214,15 +197,15 @@ const KidDemo: React.FC = () => {
         </div>
       ) : (
         <div className={styles.fallbackMsg}>
-          <ArrowLeftIcon size={16} /> Volvé al paso anterior y completá al menos un hábito.
+          <ArrowLeftIcon size={16} /> {t("noneCompleted")}
         </div>
       )}
     </div>,
 
-    // Step 5: Sats Earned
-    <div key="k5" className={styles.stepInner}>
-      <h3 className={styles.stepTitle}>{t("step5Title")}</h3>
-      <p className={styles.stepDesc}>{t("step5Desc")}</p>
+    // Step 4: Sats Earned
+    <div key="k4" className={styles.stepInner}>
+      <h3 className={styles.stepTitle}>{t("step4Title")}</h3>
+      <p className={styles.stepDesc}>{t("step4Desc")}</p>
       <StatsBar
         totalSats={totalSatsEarned || 1000}
         bestStreak={3}
@@ -257,10 +240,9 @@ const KidDemo: React.FC = () => {
 
   const canAdvance = [
     joined,                        // step 1: must join family
-    true,                          // step 2: view habits (always ok)
-    completedHabitIds.size > 0,    // step 3: must complete at least 1 habit
-    true,                          // step 4: pending (view only)
-    true,                          // step 5: celebration
+    completedHabitIds.size > 0,    // step 2: view & complete habits
+    true,                          // step 3: pending (view only)
+    true,                          // step 4: celebration
   ];
 
   return <DemoStepper steps={steps} finishNode={finishNode} canAdvance={canAdvance} backUrl="/demo" />;

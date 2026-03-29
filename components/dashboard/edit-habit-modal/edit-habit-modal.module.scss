@@ -151,8 +151,8 @@
   transition: background 0.2s, border-color 0.2s;
 
   &:has(.checkbox:checked) {
-    background: rgba($color-primary, 0.15);
-    border-color: rgba($color-primary, 0.3);
+    background: alpha($color-primary, 0.15);
+    border-color: alpha($color-primary, 0.3);
   }
 }
 
@@ -203,7 +203,7 @@
 
   &:hover:not(:disabled) {
     transform: translateY(-1px);
-    box-shadow: 0 4px 16px rgba($color-primary, 0.3);
+    box-shadow: 0 4px 16px alpha($color-primary, 0.3);
   }
 
   &:disabled {

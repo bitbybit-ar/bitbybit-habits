@@ -66,13 +66,13 @@
   justify-content: center;
   flex-shrink: 0;
   margin-bottom: $spacing-20;
-  box-shadow: 0 4px 16px rgba($color-primary, 0.25);
+  box-shadow: 0 4px 16px alpha($color-primary, 0.25);
   transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
               box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1);
 
   .timelineStep:hover & {
     transform: scale(1.15);
-    box-shadow: 0 6px 24px rgba($color-primary, 0.35);
+    box-shadow: 0 6px 24px alpha($color-primary, 0.35);
   }
 
   @include mobile {
@@ -121,7 +121,7 @@
   width: 48px;
   height: 48px;
   border-radius: $border-radius-md;
-  background: rgba($color-primary, 0.1);
+  background: alpha($color-primary, 0.1);
   color: var(--color-primary);
   margin: 0 auto $spacing-16;
 

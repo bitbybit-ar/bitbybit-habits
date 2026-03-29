@@ -24,8 +24,8 @@
 
 // --- Demo button glow pulse ---
 @keyframes glowPulse {
-  0%, 100% { box-shadow: 0 0 12px rgba($color-primary, 0.3); }
-  50% { box-shadow: 0 0 24px rgba($color-primary, 0.5), 0 0 48px rgba($color-primary, 0.15); }
+  0%, 100% { box-shadow: 0 0 12px alpha($color-primary, 0.3); }
+  50% { box-shadow: 0 0 24px alpha($color-primary, 0.5), 0 0 48px alpha($color-primary, 0.15); }
 }
 
 // --- Lightning bolts ---
@@ -90,7 +90,7 @@
 .orbGold {
   width: 500px;
   height: 500px;
-  background: radial-gradient(circle, rgba($color-primary, 0.08) 0%, transparent 70%);
+  background: radial-gradient(circle, alpha($color-primary, 0.08) 0%, transparent 70%);
   top: -100px;
   left: -50px;
   z-index: 0;
@@ -105,7 +105,7 @@
 .orbGreen {
   width: 400px;
   height: 400px;
-  background: radial-gradient(circle, rgba($color-secondary, 0.06) 0%, transparent 70%);
+  background: radial-gradient(circle, alpha($color-secondary, 0.06) 0%, transparent 70%);
   bottom: -80px;
   right: -60px;
   z-index: 0;
@@ -146,7 +146,7 @@
   position: absolute;
   width: 2px;
   height: 60px;
-  background: linear-gradient(to bottom, transparent, rgba($color-primary-light, 0.6), transparent);
+  background: linear-gradient(to bottom, transparent, alpha($color-primary-light, 0.6), transparent);
   opacity: 0;
   animation: lightningFall linear infinite;
 }
@@ -219,8 +219,8 @@
 
 .badge {
   display: inline-block;
-  background: rgba($color-primary, 0.1);
-  border: 1px solid rgba($color-primary, 0.3);
+  background: alpha($color-primary, 0.1);
+  border: 1px solid alpha($color-primary, 0.3);
   color: var(--color-primary);
   padding: $spacing-8 $spacing-20;
   border-radius: $border-radius-full;
@@ -261,7 +261,7 @@
 
   // Glow behind the text
   text-shadow: none;
-  filter: drop-shadow(0 0 30px rgba($color-primary, 0.25));
+  filter: drop-shadow(0 0 30px alpha($color-primary, 0.25));
 
   // Light mode: darker gradient for readability
   [data-theme="light"] & {

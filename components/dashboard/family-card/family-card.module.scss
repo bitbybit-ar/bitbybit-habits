@@ -53,16 +53,16 @@
 .leaveButton {
   &:hover {
     color: var(--color-accent);
-    border-color: rgba($color-accent, 0.3);
+    border-color: alpha($color-accent, 0.3);
   }
 }
 
 .deleteButton {
   color: var(--color-accent);
-  border-color: rgba($color-accent, 0.3);
+  border-color: alpha($color-accent, 0.3);
 
   &:hover {
-    background: rgba($color-accent, 0.1);
+    background: alpha($color-accent, 0.1);
   }
 }
 
@@ -71,7 +71,7 @@
   color: var(--color-accent);
   margin: 0 0 $spacing-16;
   padding: $spacing-12;
-  background: rgba($color-accent, 0.08);
+  background: alpha($color-accent, 0.08);
   border-radius: $border-radius-md;
 }
 
@@ -86,7 +86,7 @@
   margin-left: auto;
   padding: $spacing-4 $spacing-8;
   border-radius: $border-radius-md;
-  border: 1px solid rgba($color-primary, 0.3);
+  border: 1px solid alpha($color-primary, 0.3);
   background: transparent;
   color: var(--color-primary);
   font-size: $font-size-xs;
@@ -96,7 +96,7 @@
   white-space: nowrap;
 
   &:hover {
-    background: rgba($color-primary, 0.1);
+    background: alpha($color-primary, 0.1);
     border-color: var(--color-primary);
   }
 }
@@ -146,7 +146,7 @@
   gap: $spacing-4;
   padding: $spacing-12 $spacing-16;
   border-radius: $border-radius-md;
-  border: 1px solid rgba($color-primary, 0.3);
+  border: 1px solid alpha($color-primary, 0.3);
   background: transparent;
   color: var(--color-primary);
   font-size: $font-size-sm;
@@ -156,7 +156,7 @@
   white-space: nowrap;
 
   &:hover {
-    background: rgba($color-primary, 0.1);
+    background: alpha($color-primary, 0.1);
     border-color: var(--color-primary);
   }
 }
@@ -238,7 +238,7 @@
   transition: background 0.2s, color 0.2s;
 
   &:hover {
-    background: rgba($color-accent, 0.15);
+    background: alpha($color-accent, 0.15);
     color: var(--color-accent);
   }
 }

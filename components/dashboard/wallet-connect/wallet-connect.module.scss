@@ -27,7 +27,7 @@
 
   &[data-connected="true"] {
     background: $color-success;
-    box-shadow: 0 0 8px rgba($color-success, 0.4);
+    box-shadow: 0 0 8px alpha($color-success, 0.4);
   }
 
   &[data-connected="false"] {
@@ -46,7 +46,7 @@
   margin-left: auto;
   padding: 2px $spacing-8;
   border-radius: $border-radius-sm;
-  background: rgba($color-primary, 0.15);
+  background: alpha($color-primary, 0.15);
   color: $color-primary;
   font-size: $font-size-xs;
   font-weight: $font-weight-bold;
@@ -87,8 +87,8 @@
   padding: $spacing-12 $spacing-16;
   margin-bottom: $spacing-16;
   border-radius: $border-radius-md;
-  border: 1px solid rgba($color-primary, 0.3);
-  background: rgba($color-primary, 0.08);
+  border: 1px solid alpha($color-primary, 0.3);
+  background: alpha($color-primary, 0.08);
   color: $color-primary;
   font-size: $font-size-sm;
   font-weight: $font-weight-semibold;
@@ -96,7 +96,7 @@
   transition: background 0.2s, border-color 0.2s;
 
   &:hover:not(:disabled) {
-    background: rgba($color-primary, 0.15);
+    background: alpha($color-primary, 0.15);
     border-color: $color-primary;
   }
 
@@ -117,8 +117,8 @@
 .disconnectButton {
   padding: $spacing-8 $spacing-16;
   border-radius: $border-radius-md;
-  border: 1px solid rgba($color-error, 0.3);
-  background: rgba($color-error, 0.1);
+  border: 1px solid alpha($color-error, 0.3);
+  background: alpha($color-error, 0.1);
   color: var(--color-error);
   font-size: $font-size-sm;
   font-weight: $font-weight-semibold;
@@ -126,7 +126,7 @@
   transition: background 0.2s, border-color 0.2s;
 
   &:hover {
-    background: rgba($color-error, 0.2);
+    background: alpha($color-error, 0.2);
     border-color: var(--color-error);
   }
 }
@@ -186,7 +186,7 @@
 
   &:hover:not(:disabled) {
     transform: translateY(-1px);
-    box-shadow: 0 4px 16px rgba($color-primary, 0.3);
+    box-shadow: 0 4px 16px alpha($color-primary, 0.3);
   }
 
   &:disabled {
