@@ -309,7 +309,8 @@ $virtual-w: 340px;
 .screenContent {
   width: $virtual-w;
   height: 750px;
-  zoom: calc(272 / 340);
+  transform: scale(calc(272 / 340));
+  transform-origin: top left;
   padding: 44px 12px 28px;
   display: flex;
   flex-direction: column;
@@ -319,12 +320,12 @@ $virtual-w: 340px;
 
   @include tablet {
     height: 800px;
-    zoom: calc(232 / 340);
+    transform: scale(calc(232 / 340));
   }
 
   @include mobile {
     height: 850px;
-    zoom: calc(212 / 340);
+    transform: scale(calc(212 / 340));
   }
 }
 
@@ -343,7 +344,7 @@ $virtual-w: 340px;
   cursor: pointer;
   width: 100%;
   transition: transform 0.15s ease, opacity 0.15s ease;
-  border-radius: 8px;
+  border-radius: $border-radius-sm;
 
   &:hover {
     transform: scale(1.02);
@@ -354,7 +355,6 @@ $virtual-w: 340px;
     opacity: 0.85;
   }
 }
-
 
 // ============================================================
 // Celebration
@@ -436,18 +436,18 @@ $virtual-w: 340px;
 }
 
 .celebrationHabitName {
-  font-size: 13px;
+  font-size: $font-size-xs;
   font-weight: $font-weight-semibold;
   color: var(--color-text-primary);
   text-align: center;
 }
 
 .celebrationSats {
-  font-size: 20px;
+  font-size: $font-size-lg;
   font-weight: $font-weight-extrabold;
   color: var(--color-primary);
   animation: celebrationSatFloat 1.8s ease-out 0.3s forwards;
-  text-shadow: 0 0 12px rgba($color-primary, 0.5);
+  text-shadow: 0 0 12px alpha($color-primary, 50%);
 }
 
 // ============================================================

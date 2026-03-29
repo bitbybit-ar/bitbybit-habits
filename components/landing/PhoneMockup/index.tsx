@@ -2,7 +2,7 @@
 
 import React, { useMemo, useState, useEffect, useCallback, useRef } from "react";
 import { useTranslations } from "next-intl";
-import { BoltIcon, StarIcon, SatCoinIcon } from "@/components/icons";
+import { BoltIcon, SatCoinIcon } from "@/components/icons";
 import HabitCard from "@/components/dashboard/habit-card";
 import type { Habit, Completion } from "@/lib/types";
 import styles from "./phone-mockup.module.scss";
@@ -16,14 +16,12 @@ const MOCK_HABIT_BASES = [
   { id: "h1", nameKey: "habit1" as const, sat_reward: 50, color: "#4CAF7D" },
   { id: "h2", nameKey: "habit2" as const, sat_reward: 100, color: "#F7A825" },
   { id: "h3", nameKey: "habit3" as const, sat_reward: 75, color: "#4DB6AC" },
+  { id: "h4", nameKey: "habit4" as const, sat_reward: 30, color: "#FF6B6B" },
+  { id: "h5", nameKey: "habit5" as const, sat_reward: 60, color: "#9B59B6" },
 ];
 
-const STREAK_MAP: Record<string, number> = { h1: 5, h2: 3, h3: 4 };
-const COMPLETION_COUNTS: Record<string, number> = { h1: 5, h2: 3, h3: 4 };
-const TOTAL_SATS = MOCK_HABIT_BASES.reduce(
-  (sum, h) => sum + (COMPLETION_COUNTS[h.id] ?? 0) * h.sat_reward,
-  0,
-);
+const STREAK_MAP: Record<string, number> = { h1: 5, h2: 3, h3: 4, h4: 2, h5: 7 };
+const COMPLETION_COUNTS: Record<string, number> = { h1: 5, h2: 3, h3: 4, h4: 2, h5: 7 };
 
 function buildMockCompletions(): Completion[] {
   const today = new Date();
@@ -124,17 +122,6 @@ export const PhoneMockup: React.FC = () => {
                 </div>
               )}
 
-              {/* Celebration */}
-              <div className={styles.celebration}>
-                <div className={styles.celebrationIcons}>
-                  <StarIcon size={16} color="#F7A825" />
-                  <BoltIcon size={24} color="#F7A825" />
-                  <StarIcon size={16} color="#F7A825" />
-                </div>
-                <div className={styles.satsAmount}>
-                  +{TOTAL_SATS.toLocaleString()} {tSats("sats")}
-                </div>
-              </div>
             </div>
 
             {/* Celebration overlay */}

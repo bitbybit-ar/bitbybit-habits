@@ -391,7 +391,9 @@
     "phoneMockup": {
       "habit1": "Tender la cama",
       "habit2": "Leer 20 minutos",
-      "habit3": "Pasear al perro"
+      "habit3": "Pasear al perro",
+      "habit4": "Ordenar el cuarto",
+      "habit5": "Practicar inglés"
     },
     "builtWith": {
       "title": "Construido Con"
