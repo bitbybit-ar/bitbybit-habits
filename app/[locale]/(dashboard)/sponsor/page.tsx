@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
+import { useRouter } from "@/i18n/routing";
 import { BoltIcon, ListIcon, PlusIcon, UsersIcon, WalletIcon, UserIcon } from "@/components/icons";
 import { SummaryBar } from "@/components/dashboard/summary-bar";
 import { CreateHabitForm } from "@/components/dashboard/create-habit-form";
@@ -30,6 +31,7 @@ type TabType = "byHabit" | "byKid" | "create" | "family" | "payments" | "wallet"
 
 export default function SponsorDashboard() {
   const t = useTranslations();
+  const router = useRouter();
   const { showToast } = useToast();
   const { hasExtension: hasWebLN, sendPayment: weblnSendPayment, extensionName } = useWebLN();
   const [activeTab, setActiveTab] = useState<TabType>("byHabit");
@@ -48,6 +50,13 @@ export default function SponsorDashboard() {
   const payments = usePayments({ role: "sponsor", skip: activeTab !== "payments" });
 
   const isLoading = session.isLoading || habits.isLoading || families.isLoading;
+
+  // Role guard: redirect non-sponsors away
+  useEffect(() => {
+    if (!session.isLoading && session.data && session.data.role !== "sponsor") {
+      router.replace(session.data.role === "kid" ? "/kid" : "/dashboard");
+    }
+  }, [session.isLoading, session.data, router]);
 
   useEffect(() => {
     if (!isLoading && habits.data.length === 0 && families.data.length === 0) {
@@ -282,7 +291,7 @@ export default function SponsorDashboard() {
     if (ok) showToast(t("family.memberRemoved"), "info");
   }, [families, showToast, t]);
 
-  if (isLoading) return <Container center><BlockLoader /></Container>;
+  if (isLoading || (session.data && session.data.role !== "sponsor")) return <Container center><BlockLoader /></Container>;
 
   const displayName = session.data?.display_name ?? session.data?.username ?? "Sponsor";
 

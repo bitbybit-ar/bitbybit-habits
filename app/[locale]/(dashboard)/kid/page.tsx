@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { useLocale } from "next-intl";
+import { useRouter } from "@/i18n/routing";
 import { BoltIcon, FlameIcon, ListIcon, UsersIcon, WalletIcon } from "@/components/icons";
 import { StatsBar } from "@/components/dashboard/stats-bar";
 import { HabitList } from "@/components/dashboard/habit-list";
@@ -31,6 +32,7 @@ type TabType = "habits" | "family" | "earnings" | "wallet";
 export default function KidDashboard() {
   const t = useTranslations();
   const locale = useLocale();
+  const router = useRouter();
   const { showToast } = useToast();
   const [activeTab, setActiveTab] = useState<TabType>("habits");
   const [joinCode, setJoinCode] = useState("");
@@ -48,6 +50,13 @@ export default function KidDashboard() {
   const kidPayments = usePayments({ role: "kid", skip: activeTab !== "earnings" });
 
   const isLoading = session.isLoading || habits.isLoading || completions.isLoading || families.isLoading || stats.isLoading;
+
+  // Role guard: redirect non-kids away
+  useEffect(() => {
+    if (!session.isLoading && session.data && session.data.role !== "kid") {
+      router.replace(session.data.role === "sponsor" ? "/sponsor" : "/dashboard");
+    }
+  }, [session.isLoading, session.data, router]);
 
   // Track approved completions for sats animation
   useEffect(() => {
@@ -133,7 +142,7 @@ export default function KidDashboard() {
     }
   }, [showToast, t, completions, stats]);
 
-  if (isLoading) return <Container center><BlockLoader /></Container>;
+  if (isLoading || (session.data && session.data.role !== "kid")) return <Container center><BlockLoader /></Container>;
 
   const displayName = session.data?.display_name ?? session.data?.username ?? "Kid";
   const level = Math.floor(stats.data.totalSats / 100) + 1;
