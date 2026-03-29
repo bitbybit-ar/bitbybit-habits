@@ -30,8 +30,8 @@
 }
 
 .statCardHighlight {
-  border-color: alpha($color-primary, 0.2);
-  background: linear-gradient(135deg, alpha($color-primary, 0.08) 0%, rgba(var(--glass-color), 0.03) 100%);
+  border-color: alpha($color-primary, 20%);
+  background: linear-gradient(135deg, alpha($color-primary, 8%) 0%, rgba(var(--glass-color), 0.03) 100%);
 }
 
 .iconWrapper {
@@ -45,22 +45,22 @@
 }
 
 .iconSats {
-  background: alpha($color-primary, 0.15);
+  background: alpha($color-primary, 15%);
   color: var(--color-primary);
 }
 
 .iconStreak {
-  background: alpha($color-warning, 0.15);
+  background: alpha($color-warning, 15%);
   color: var(--color-warning);
 }
 
 .iconPending {
-  background: alpha($color-accent-alt, 0.15);
+  background: alpha($color-accent-alt, 15%);
   color: var(--color-accent-alt);
 }
 
 .iconHabits {
-  background: alpha($color-secondary, 0.15);
+  background: alpha($color-secondary, 15%);
   color: var(--color-secondary);
 }
 

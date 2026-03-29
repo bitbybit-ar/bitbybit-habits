@@ -49,7 +49,7 @@
   padding: $spacing-24;
   background: var(--color-bg-3);
   border-radius: $border-radius-lg;
-  border: 2px dashed alpha($color-primary, 0.3);
+  border: 2px dashed alpha($color-primary, 30%);
 
   code {
     font-size: $font-size-xl;
@@ -146,7 +146,7 @@
 }
 
 .completedBadge {
-  background: alpha($color-success, 0.15);
+  background: alpha($color-success, 15%);
   color: var(--color-success);
   padding: $spacing-4 $spacing-12;
   border-radius: $border-radius-full;
@@ -155,7 +155,7 @@
 }
 
 .pendingBadge {
-  background: alpha($color-warning, 0.15);
+  background: alpha($color-warning, 15%);
   color: var(--color-warning);
   padding: $spacing-4 $spacing-12;
   border-radius: $border-radius-full;

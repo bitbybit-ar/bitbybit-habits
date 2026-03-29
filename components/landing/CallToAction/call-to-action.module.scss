@@ -6,7 +6,7 @@
 @use "@/styles/glass" as *;
 
 .wrapper {
-  @include glass-prominent($color-primary, 0.05);
+  @include glass-prominent($color-primary, 5%);
   text-align: center;
   max-width: 560px;
   margin: 0 auto;
@@ -82,7 +82,7 @@
   border: 1px solid rgba(var(--glass-color), 0.15);
 
   &:hover {
-    border-color: alpha($color-primary, 0.4);
+    border-color: alpha($color-primary, 40%);
     color: var(--color-primary);
     transform: translateY(-2px);
   }

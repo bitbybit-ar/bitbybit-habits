@@ -74,7 +74,7 @@
 }
 
 .cellPendingApproval {
-  background: alpha($color-warning, 0.15);
+  background: alpha($color-warning, 15%);
   border-color: var(--color-warning);
   color: var(--color-warning);
 }

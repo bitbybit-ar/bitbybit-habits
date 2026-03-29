@@ -115,7 +115,7 @@
   line-height: 1;
 
   &.streakActive {
-    background: alpha($color-warning, 0.12);
+    background: alpha($color-warning, 12%);
     color: var(--color-warning);
   }
 }
@@ -124,7 +124,7 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  background: alpha($color-primary, 0.15);
+  background: alpha($color-primary, 15%);
   color: var(--color-primary);
   padding: 4px $spacing-8;
   border-radius: $border-radius-full;
@@ -161,7 +161,7 @@
 }
 
 .deleteBtn:hover {
-  background: alpha($color-error, 0.15);
+  background: alpha($color-error, 15%);
   color: var(--color-error);
 }
 
@@ -227,7 +227,7 @@
 
 .circleToday {
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 2px alpha($color-primary, 0.2);
+  box-shadow: 0 0 0 2px alpha($color-primary, 20%);
 }
 
 .circleClickable {
@@ -236,8 +236,8 @@
 
   &:hover {
     transform: scale(1.15);
-    background: alpha($color-primary, 0.15);
-    box-shadow: 0 0 0 3px alpha($color-primary, 0.3);
+    background: alpha($color-primary, 15%);
+    box-shadow: 0 0 0 3px alpha($color-primary, 30%);
     animation: none;
   }
 
@@ -251,8 +251,8 @@
 }
 
 @keyframes circleGlow {
-  0%, 100% { box-shadow: 0 0 0 2px alpha($color-primary, 0.2); }
-  50% { box-shadow: 0 0 8px 3px alpha($color-primary, 0.4); }
+  0%, 100% { box-shadow: 0 0 0 2px alpha($color-primary, 20%); }
+  50% { box-shadow: 0 0 8px 3px alpha($color-primary, 40%); }
 }
 
 .circleMissed {
@@ -282,7 +282,7 @@
   font-size: $font-size-sm;
   font-weight: $font-weight-bold;
   color: var(--color-success);
-  background: alpha($color-success, 0.12);
+  background: alpha($color-success, 12%);
   animation: fadeUpOut 1.5s ease-out forwards;
 }
 
@@ -304,7 +304,7 @@
 
   &:hover {
     transform: translateY(-1px);
-    box-shadow: 0 4px 16px alpha($color-primary, 0.3);
+    box-shadow: 0 4px 16px alpha($color-primary, 30%);
   }
 
   &:active {
@@ -333,12 +333,12 @@
 }
 
 .statusPending {
-  background: alpha($color-warning, 0.12);
+  background: alpha($color-warning, 12%);
   color: var(--color-warning);
 }
 
 .statusCompleted {
-  background: alpha($color-success, 0.12);
+  background: alpha($color-success, 12%);
   color: var(--color-success);
 }
 

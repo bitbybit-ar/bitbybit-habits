@@ -4,123 +4,94 @@
 
 @use "./colors" as *;
 
-// Base glass mixin — kept for backward-compatibility with custom parameters
-@mixin glass($opacity: 0.06, $blur: 12px, $border-opacity: 0.08, $radius: 16px) {
-  background: rgba(var(--glass-color), $opacity);
+// --- Internal helper (blur + fallback) ---
+
+@mixin _glass-blur($blur) {
   backdrop-filter: blur($blur);
   -webkit-backdrop-filter: blur($blur);
-  border: 1px solid rgba(var(--glass-color), $border-opacity);
-  border-radius: $radius;
 
   @supports not (backdrop-filter: blur(1px)) {
     background: var(--glass-fallback-bg);
   }
 }
 
-// --- Named variants (theme-aware via CSS custom properties) ---
+// --- Named variants ---
+
+// Base glass — backward-compatibility with custom parameters
+@mixin glass($opacity: 0.06, $blur: 12px, $border-opacity: 0.08, $radius: 16px) {
+  background: rgba(var(--glass-color), $opacity);
+  border: 1px solid rgba(var(--glass-color), $border-opacity);
+  border-radius: $radius;
+  @include _glass-blur($blur);
+}
 
 // Prominent — hero-level elements (dashboard header, CTA)
-@mixin glass-prominent($tint-color: $color-primary, $tint-amount: 0.06) {
+@mixin glass-prominent($tint-color: $color-primary, $tint-amount: 6%) {
   background:
     linear-gradient(135deg, alpha($tint-color, $tint-amount) 0%, alpha($tint-color, $tint-amount * 0.3) 100%),
     var(--glass-prominent-bg);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--glass-prominent-border);
   border-radius: 20px;
   box-shadow:
     inset 0 1px 0 var(--glass-inner-glow),
     0 8px 32px rgba(var(--shadow-color), 0.25);
-
-  @supports not (backdrop-filter: blur(1px)) {
-    background: var(--glass-fallback-bg);
-  }
+  @include _glass-blur(20px);
 }
 
 // Card tinted — cards with a color accent (landing sections)
-@mixin glass-card-tinted($tint-color, $tint-amount: 0.05) {
+@mixin glass-card-tinted($tint-color, $tint-amount: 5%) {
   background:
     linear-gradient(135deg, alpha($tint-color, $tint-amount) 0%, transparent 60%),
     var(--glass-card-bg);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
   border: 1px solid var(--glass-card-border);
   border-radius: 16px;
   box-shadow: inset 0 1px 0 var(--glass-inner-glow-subtle);
-
-  @supports not (backdrop-filter: blur(1px)) {
-    background: var(--glass-fallback-bg);
-  }
+  @include _glass-blur(14px);
 }
 
 // Card — standard glass card
 @mixin glass-card {
   background: var(--glass-card-bg);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
   border: 1px solid var(--glass-card-border);
   border-radius: 16px;
   box-shadow: inset 0 1px 0 var(--glass-inner-glow-subtle);
-
-  @supports not (backdrop-filter: blur(1px)) {
-    background: var(--glass-fallback-bg);
-  }
+  @include _glass-blur(14px);
 }
 
 // Subtle — stat cards, inner elements
 @mixin glass-subtle {
   background: var(--glass-subtle-bg);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
   border: 1px solid var(--glass-subtle-border);
   border-radius: 12px;
-
-  @supports not (backdrop-filter: blur(1px)) {
-    background: var(--glass-fallback-bg);
-  }
+  @include _glass-blur(8px);
 }
 
 // Nav — navbar, tab bar
 @mixin glass-nav {
   background: var(--glass-nav-bg);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--glass-nav-border);
   border-radius: 0;
-
-  @supports not (backdrop-filter: blur(1px)) {
-    background: var(--glass-fallback-bg);
-  }
+  @include _glass-blur(20px);
 }
 
 // Modal — dialogs, overlays
 @mixin glass-modal {
   background: var(--glass-modal-bg);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
   border: 1px solid var(--glass-modal-border);
   border-radius: 20px;
   box-shadow:
     inset 0 1px 0 var(--glass-inner-glow),
     0 16px 48px rgba(var(--shadow-color), 0.4);
-
-  @supports not (backdrop-filter: blur(1px)) {
-    background: var(--glass-fallback-bg);
-  }
+  @include _glass-blur(24px);
 }
 
 // Toast — notifications
 @mixin glass-toast {
   background: var(--glass-toast-bg);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
   border: 1px solid var(--glass-toast-border);
   border-radius: 12px;
   box-shadow: inset 0 1px 0 var(--glass-inner-glow);
-
-  @supports not (backdrop-filter: blur(1px)) {
-    background: var(--glass-fallback-bg);
-  }
+  @include _glass-blur(14px);
 }
 
 // --- Gradient border (bright top, fades to transparent bottom) ---
@@ -141,9 +112,10 @@
       rgba(var(--glass-color), 0.08) 40%,
       rgba(var(--glass-color), 0.02) 100%
     );
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    $mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask: $mask;
     -webkit-mask-composite: xor;
-    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: $mask;
     mask-composite: exclude;
     pointer-events: none;
     z-index: 0;
@@ -188,11 +160,11 @@
 
 // Highlight (primary-tinted border + shadow)
 @mixin glass-highlight {
-  border: 1px solid alpha($color-primary, 0.20);
+  border: 1px solid alpha($color-primary, 20%);
   box-shadow:
     inset 0 1px 0 var(--glass-inner-glow),
     0 8px 32px rgba(var(--shadow-color), 0.3),
-    0 0 0 1px alpha($color-primary, 0.05);
+    0 0 0 1px alpha($color-primary, 5%);
 }
 
 // Modal overlay with blur

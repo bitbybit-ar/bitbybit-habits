@@ -3,14 +3,14 @@
 // Components use these $color-* variables — they resolve at runtime per theme.
 //
 // For transparency: use alpha($color, opacity) instead of rgba().
-// Example: background: alpha($color-primary, 0.15);
+// Example: background: alpha($color-primary, 15%);
 // Outputs: background: color-mix(in srgb, var(--color-primary) 15%, transparent);
 
 /// Returns a color with transparency using CSS color-mix().
 /// @param {String} $color - A CSS var reference (e.g. $color-primary)
-/// @param {Number} $opacity - Opacity from 0 to 1
-@function alpha($color, $opacity) {
-  @return color-mix(in srgb, $color #{$opacity * 100}%, transparent);
+/// @param {Number} $amount - Percentage (e.g. 15%)
+@function alpha($color, $amount) {
+  @return unquote('color-mix(in srgb, #{$color} #{$amount}, transparent)');
 }
 
 // Primary — Sats Gold

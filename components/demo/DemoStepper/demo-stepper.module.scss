@@ -36,16 +36,16 @@
   flex-shrink: 0;
 
   &.active {
-    border-color: alpha($color-primary, 0.4);
-    background: alpha($color-primary, 0.15);
+    border-color: alpha($color-primary, 40%);
+    background: alpha($color-primary, 15%);
     color: var(--color-primary);
     transform: scale(1.1);
-    box-shadow: 0 0 16px alpha($color-primary, 0.2);
+    box-shadow: 0 0 16px alpha($color-primary, 20%);
   }
 
   &.completed {
-    border-color: alpha($color-success, 0.4);
-    background: alpha($color-success, 0.15);
+    border-color: alpha($color-success, 40%);
+    background: alpha($color-success, 15%);
     color: var(--color-success);
   }
 }
@@ -91,8 +91,8 @@
 }
 
 @keyframes pulseGlow {
-  0%, 100% { box-shadow: 0 0 4px alpha($color-primary, 0.3), 0 0 0 2px alpha($color-primary, 0.1); }
-  50% { box-shadow: 0 0 18px alpha($color-primary, 0.6), 0 0 0 3px alpha($color-primary, 0.25); }
+  0%, 100% { box-shadow: 0 0 4px alpha($color-primary, 30%), 0 0 0 2px alpha($color-primary, 10%); }
+  50% { box-shadow: 0 0 18px alpha($color-primary, 60%), 0 0 0 3px alpha($color-primary, 25%); }
 }
 
 .glowHint {

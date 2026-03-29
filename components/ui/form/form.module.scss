@@ -48,31 +48,31 @@
 
   &:focus {
     border-color: $color-primary;
-    box-shadow: 0 0 0 2px alpha($color-primary, 0.15);
+    box-shadow: 0 0 0 2px alpha($color-primary, 15%);
   }
 }
 
 // ── Teal-tinted inputs (identity: name, username, email) ──
 .inputIdentity {
   composes: input;
-  background: alpha($color-accent-alt, 0.04);
-  border: 1px solid alpha($color-accent-alt, 0.10);
+  background: alpha($color-accent-alt, 4%);
+  border: 1px solid alpha($color-accent-alt, 10%);
 
   &:focus {
     border-color: $color-accent-alt;
-    box-shadow: 0 0 0 2px alpha($color-accent-alt, 0.12);
+    box-shadow: 0 0 0 2px alpha($color-accent-alt, 12%);
   }
 }
 
 // ── Violet-tinted inputs (security: password, confirm) ──
 .inputSecurity {
   composes: input;
-  background: alpha($color-secondary, 0.04);
-  border: 1px solid alpha($color-secondary, 0.10);
+  background: alpha($color-secondary, 4%);
+  border: 1px solid alpha($color-secondary, 10%);
 
   &:focus {
     border-color: $color-secondary;
-    box-shadow: 0 0 0 2px alpha($color-secondary, 0.12);
+    box-shadow: 0 0 0 2px alpha($color-secondary, 12%);
   }
 }
 
@@ -108,7 +108,7 @@
 
 .inputError {
   border-color: $color-error !important;
-  box-shadow: 0 0 0 1px alpha($color-error, 0.2);
+  box-shadow: 0 0 0 1px alpha($color-error, 20%);
 }
 
 .errorText {
@@ -194,7 +194,7 @@
 
   &:hover:not(:disabled) {
     transform: translateY(-2px);
-    box-shadow: 0 4px 20px alpha($color-primary, 0.3);
+    box-shadow: 0 4px 20px alpha($color-primary, 30%);
   }
 
   &:active:not(:disabled) {
@@ -215,7 +215,7 @@
   color: var(--color-primary);
 
   &:hover:not(:disabled) {
-    background: alpha($color-primary, 0.08);
+    background: alpha($color-primary, 8%);
     box-shadow: none;
     transform: none;
   }

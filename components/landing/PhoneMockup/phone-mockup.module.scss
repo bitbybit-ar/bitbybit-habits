@@ -59,8 +59,8 @@
     height: 80%;
     background: radial-gradient(
       ellipse at center,
-      alpha($color-primary, 0.1) 0%,
-      alpha($color-secondary, 0.05) 40%,
+      alpha($color-primary, 10%) 0%,
+      alpha($color-secondary, 5%) 40%,
       transparent 70%
     );
     filter: blur(40px);
@@ -81,15 +81,15 @@
     20px 25px 50px rgba(var(--shadow-color), 0.4),
     40px 50px 80px rgba(var(--shadow-color), 0.3),
     60px 60px 120px rgba(var(--shadow-color), 0.15),
-    0 0 80px alpha($color-primary, 0.08),
-    0 0 160px alpha($color-primary, 0.04);
+    0 0 80px alpha($color-primary, 8%),
+    0 0 160px alpha($color-primary, 4%);
 
   [data-theme="light"] & {
     box-shadow:
       6px 6px 16px rgba(var(--shadow-color), 0.12),
       16px 20px 40px rgba(var(--shadow-color), 0.1),
       30px 40px 60px rgba(var(--shadow-color), 0.08),
-      0 0 60px alpha($color-primary, 0.06);
+      0 0 60px alpha($color-primary, 6%);
   }
 
   &::before {
@@ -129,13 +129,13 @@
         6px 6px 16px rgba(var(--shadow-color), 0.45),
         16px 20px 40px rgba(var(--shadow-color), 0.35),
         30px 40px 60px rgba(var(--shadow-color), 0.25),
-        0 0 100px alpha($color-primary, 0.1);
+        0 0 100px alpha($color-primary, 10%);
 
       [data-theme="light"] & {
         box-shadow:
           4px 4px 12px rgba(var(--shadow-color), 0.1),
           12px 16px 30px rgba(var(--shadow-color), 0.08),
-          0 0 80px alpha($color-primary, 0.08);
+          0 0 80px alpha($color-primary, 8%);
       }
     }
   }
