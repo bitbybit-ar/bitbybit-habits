@@ -45,25 +45,19 @@ export function SponsorHabitsTab({ habits, families, familyCompletions, onApprov
       groups[c.habit_id].kids[c.kid_user_id] = { userId: c.kid_user_id, displayName: c.kid_display_name };
     }
 
-    // MVP: Single-family mode
+    // MVP: Single-family mode — show all assigned kids (from assigned_to + habitAssignments)
     const members = families[0]?.members ?? [];
     for (const habit of habits) {
       if (groups[habit.id]) {
-        const kid = members.find((m) => m.user_id === habit.assigned_to);
-        if (kid && kid.role === "kid") {
-          groups[habit.id].kids[kid.user_id] = { userId: kid.user_id, displayName: kid.display_name || kid.username };
+        const assignedIds = habit.assigned_members ?? [habit.assigned_to];
+        for (const userId of assignedIds) {
+          const kid = members.find((m) => m.user_id === userId);
+          if (kid && kid.role === "kid") {
+            groups[habit.id].kids[kid.user_id] = { userId: kid.user_id, displayName: kid.display_name || kid.username };
+          }
         }
       }
     }
-    // ROADMAP: Multi-family support (commented for MVP single-family mode)
-    // for (const habit of habits) {
-    //   if (groups[habit.id]) {
-    //     const kid = families.flatMap((f) => f.members).find((m) => m.user_id === habit.assigned_to);
-    //     if (kid && kid.role === "kid") {
-    //       groups[habit.id].kids[kid.user_id] = { userId: kid.user_id, displayName: kid.display_name || kid.username };
-    //     }
-    //   }
-    // }
 
     return Object.values(groups);
   }, [habits, familyCompletions, families]);
@@ -202,8 +196,11 @@ export function SponsorByKidTab({ habits, families, familyCompletions, onApprove
     }
 
     for (const habit of habits) {
-      if (groups[habit.assigned_to]) {
-        groups[habit.assigned_to].habits[habit.id] = { habitId: habit.id, habitName: habit.name, satReward: habit.sat_reward };
+      const assignedIds = habit.assigned_members ?? [habit.assigned_to];
+      for (const userId of assignedIds) {
+        if (groups[userId]) {
+          groups[userId].habits[habit.id] = { habitId: habit.id, habitName: habit.name, satReward: habit.sat_reward };
+        }
       }
     }
 

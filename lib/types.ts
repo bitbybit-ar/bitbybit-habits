@@ -51,6 +51,7 @@ export interface Habit {
   active: boolean;
   created_at: string;
   updated_at: string;
+  assigned_members?: string[];
 }
 
 export interface Completion {

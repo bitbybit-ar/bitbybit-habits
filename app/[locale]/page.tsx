@@ -13,14 +13,12 @@ export default function Home() {
     <>
       <Navbar />
       <Hero />
-      <main id="main-content">
-        <HowItWorks />
-        <UseCases />
-        <TechStack />
-        <Roadmap />
-        <Team />
-        <CallToAction />
-      </main>
+      <HowItWorks />
+      <UseCases />
+      <TechStack />
+      <Roadmap />
+      <Team />
+      <CallToAction />
       <Footer />
     </>
   );

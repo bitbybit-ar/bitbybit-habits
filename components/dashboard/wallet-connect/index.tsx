@@ -162,6 +162,7 @@ export function WalletConnect() {
         body: JSON.stringify({ invoice: finalInvoice.trim() }),
       });
       const data = await res.json();
+      console.error("[wallets/send] Response:", res.status, data);
       if (data.success) {
         showToast(t("wallet.sendSuccess"), "success");
         setSendInvoice("");

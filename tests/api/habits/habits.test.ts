@@ -30,7 +30,7 @@ vi.mock("@/lib/db", () => ({
 
 vi.mock("drizzle-orm", () => ({
   eq: vi.fn(), or: vi.fn(), and: vi.fn(), isNull: vi.fn(), isNotNull: vi.fn(),
-  desc: vi.fn(), asc: vi.fn(), sql: Object.assign(vi.fn(), { raw: vi.fn() }),
+  desc: vi.fn(), asc: vi.fn(), inArray: vi.fn(), sql: Object.assign(vi.fn(), { raw: vi.fn() }),
 }));
 
 import { GET, POST } from "@/app/api/habits/route";
@@ -54,8 +54,10 @@ describe("/api/habits", () => {
       mockSelectResult.mockReturnValueOnce([{ count: 1 }]);
       // Second call: actual habits query
       mockSelectResult.mockReturnValueOnce([
-        { id: UUID.habit1, name: "Read", color: "#F7A825", active: true, completed_today: false },
+        { id: UUID.habit1, name: "Read", color: "#F7A825", active: true, completed_today: false, assigned_to: testSession.user_id },
       ]);
+      // Third call: habitAssignments query
+      mockSelectResult.mockReturnValueOnce([]);
 
       const req = createRequest("GET", "/api/habits");
       const { status, body } = await parseResponse(await GET(req));
@@ -69,8 +71,10 @@ describe("/api/habits", () => {
       await setSessionCookie(testSession);
       mockSelectResult.mockReturnValueOnce([{ count: 25 }]);
       mockSelectResult.mockReturnValueOnce([
-        { id: UUID.habit1, name: "Read", color: "#F7A825", active: true, completed_today: false },
+        { id: UUID.habit1, name: "Read", color: "#F7A825", active: true, completed_today: false, assigned_to: testSession.user_id },
       ]);
+      // Third call: habitAssignments query
+      mockSelectResult.mockReturnValueOnce([]);
 
       const req = createRequest("GET", "/api/habits", undefined, { page: "2", limit: "10" });
       const { status, body } = await parseResponse(await GET(req));

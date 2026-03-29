@@ -23,6 +23,7 @@ export const POST = apiHandler(async (request, { session, db }) => {
   }
 
   const nwcUrl = await getDecryptedNwcUrl(session.user_id, db);
+  console.log("[wallets/send] user:", session.user_id, "| invoice prefix:", bolt11.substring(0, 20), "| has wallet:", !!nwcUrl);
   if (!nwcUrl) {
     throw new BadRequestError("no_wallet");
   }
@@ -39,6 +40,7 @@ export const POST = apiHandler(async (request, { session, db }) => {
     return { preimage: result.preimage };
   } catch (err) {
     const msg = err instanceof Error ? err.message : "payment_failed";
+    console.error("[wallets/send] Payment error:", msg, err);
     if (msg.includes("insufficient") || msg.includes("INSUFFICIENT")) {
       throw new BadRequestError("insufficient_funds");
     }

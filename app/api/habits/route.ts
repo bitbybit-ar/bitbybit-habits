@@ -1,6 +1,6 @@
 import { apiHandler, created, BadRequestError, ForbiddenError } from "@/lib/api";
 import { validateHabitFields } from "@/lib/api/validate-habit";
-import { habits, familyMembers, completions } from "@/lib/db";
+import { habits, familyMembers, completions, habitAssignments } from "@/lib/db";
 import { eq, and, or, isNull, isNotNull, sql, desc, inArray } from "drizzle-orm";
 import { todayDateStr } from "@/lib/date";
 
@@ -20,7 +20,11 @@ export const GET = apiHandler(async (request, { session, db }) => {
   const whereCondition = and(
     or(
       and(isNull(habits.family_id), or(eq(habits.assigned_to, session.user_id), eq(habits.created_by, session.user_id))),
-      and(isNotNull(habits.family_id), isNotNull(familyMembers.id), or(eq(habits.assigned_to, session.user_id), eq(habits.created_by, session.user_id)))
+      and(isNotNull(habits.family_id), isNotNull(familyMembers.id), or(
+        eq(habits.assigned_to, session.user_id),
+        eq(habits.created_by, session.user_id),
+        isNotNull(habitAssignments.id),
+      ))
     ),
     eq(habits.active, true)
   );
@@ -32,6 +36,10 @@ export const GET = apiHandler(async (request, { session, db }) => {
     .leftJoin(
       familyMembers,
       and(eq(familyMembers.family_id, habits.family_id), eq(familyMembers.user_id, session.user_id))
+    )
+    .leftJoin(
+      habitAssignments,
+      and(eq(habitAssignments.habit_id, habits.id), eq(habitAssignments.user_id, session.user_id))
     )
     .where(whereCondition);
 
@@ -61,10 +69,14 @@ export const GET = apiHandler(async (request, { session, db }) => {
       and(eq(familyMembers.family_id, habits.family_id), eq(familyMembers.user_id, session.user_id))
     )
     .leftJoin(
+      habitAssignments,
+      and(eq(habitAssignments.habit_id, habits.id), eq(habitAssignments.user_id, session.user_id))
+    )
+    .leftJoin(
       completions,
       and(
         eq(completions.habit_id, habits.id),
-        eq(completions.user_id, habits.assigned_to),
+        eq(completions.user_id, session.user_id),
         eq(completions.date, today)
       )
     )
@@ -73,8 +85,27 @@ export const GET = apiHandler(async (request, { session, db }) => {
     .limit(limit)
     .offset(offset);
 
+  // Fetch assigned members for all returned habits in a single query
+  const habitIds = result.map((h) => h.id);
+  let assignmentMap: Record<string, string[]> = {};
+  if (habitIds.length > 0) {
+    const allAssignments = await db
+      .select({ habit_id: habitAssignments.habit_id, user_id: habitAssignments.user_id })
+      .from(habitAssignments)
+      .where(inArray(habitAssignments.habit_id, habitIds));
+    for (const a of allAssignments) {
+      if (!assignmentMap[a.habit_id]) assignmentMap[a.habit_id] = [];
+      assignmentMap[a.habit_id].push(a.user_id);
+    }
+  }
+
+  const habitsWithMembers = result.map((h) => ({
+    ...h,
+    assigned_members: assignmentMap[h.id] ?? [h.assigned_to],
+  }));
+
   return {
-    habits: result,
+    habits: habitsWithMembers,
     pagination: {
       page,
       limit,
