@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import QRCode from "react-qr-code";
 import { WalletIcon, BoltIcon, SendIcon, ReceiveIcon, ScanIcon } from "@/components/icons";
+import { Spinner } from "@/components/ui/spinner";
 import { FormInput, FormButton } from "@/components/ui/form";
 import { QRScanner } from "@/components/ui/qr-scanner";
 import { useWebLN } from "@/lib/hooks/useWebLN";
@@ -262,7 +263,7 @@ export function WalletConnect() {
   // ── Render ──
 
   if (loading) {
-    return <p className={styles.loadingText}>{t("common.loading")}</p>;
+    return <Spinner size="sm" />;
   }
 
   const lightningUri = generatedInvoice

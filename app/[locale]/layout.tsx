@@ -4,6 +4,8 @@ import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
+import { Navbar } from "@/components/layout/navbar";
+import Footer from "@/components/layout/footer";
 import { SwRegister } from "@/components/sw-register";
 import { ToastProvider } from "@/components/ui/toast";
 import { ThemeProvider } from "@/lib/theme-context";
@@ -113,8 +115,10 @@ export default async function LocaleLayout({
                   ? (messages.accessibility as Record<string, string>).skipToContent
                   : "Skip to content"}
               </a>
+              <Navbar />
               <SwRegister />
               <main id="main-content">{children}</main>
+              <Footer />
             </ToastProvider>
           </ThemeProvider>
         </NextIntlClientProvider>
