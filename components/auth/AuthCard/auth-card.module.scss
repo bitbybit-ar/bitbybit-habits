@@ -5,19 +5,6 @@
 @use "@/styles/media-mixins" as *;
 @use "@/styles/glass" as *;
 
-// ── Page container ──
-.container {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: $spacing-24;
-  padding-top: calc(60px + #{$spacing-24});
-  background: var(--color-bg);
-  @include glass-background-orbs;
-  position: relative;
-}
-
 // ── Wrapper (holds card + floating icons) ──
 .wrapper {
   position: relative;

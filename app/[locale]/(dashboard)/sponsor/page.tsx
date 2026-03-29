@@ -12,7 +12,8 @@ import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 import type { DashboardTab } from "@/components/dashboard/dashboard-layout";
 import { InvoiceModal } from "@/components/ui/invoice-modal";
 import { useToast } from "@/components/ui/toast";
-import { DashboardSkeleton } from "@/components/ui/skeleton";
+import { Container } from "@/components/ui/container";
+import { BlockLoader } from "@/components/ui/block-loader";
 import { useSession } from "@/lib/hooks/useSession";
 import { useHabits } from "@/lib/hooks/useHabits";
 import { useFamilies } from "@/lib/hooks/useFamilies";
@@ -247,7 +248,7 @@ export default function SponsorDashboard() {
     if (ok) showToast(t("family.memberRemoved"), "info");
   }, [families, showToast, t]);
 
-  if (isLoading) return <DashboardSkeleton />;
+  if (isLoading) return <Container center><BlockLoader /></Container>;
 
   const displayName = session.data?.display_name ?? session.data?.username ?? "Sponsor";
   const allKids = families.data.flatMap((f) =>

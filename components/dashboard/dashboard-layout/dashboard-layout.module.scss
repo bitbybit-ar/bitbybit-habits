@@ -5,24 +5,7 @@
 @use "@/styles/media-mixins" as *;
 @use "@/styles/glass" as *;
 
-$navbar-height: 60px;
 $tabbar-height: 52px;
-
-.layout {
-  min-height: 100vh;
-  @include glass-background-orbs;
-  position: relative;
-}
-
-// ── Container ──
-.container {
-  @include container;
-  padding-top: calc($navbar-height + $spacing-24);
-
-  @include mobile {
-    padding-top: calc($navbar-height + $spacing-16);
-  }
-}
 
 // ── Header card ──
 .headerCard {

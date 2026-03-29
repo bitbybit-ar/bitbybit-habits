@@ -2,7 +2,8 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { PageSpinner } from "@/components/ui/spinner";
+import { Container } from "@/components/ui/container";
+import { BlockLoader } from "@/components/ui/block-loader";
 
 /**
  * /dashboard — central routing hub
@@ -72,5 +73,5 @@ export default function DashboardPage() {
     redirect();
   }, [router]);
 
-  return <PageSpinner />;
+  return <Container center><BlockLoader /></Container>;
 }

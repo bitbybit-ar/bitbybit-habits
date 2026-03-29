@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import Navbar from "@/components/layout/navbar";
+import { Container } from "@/components/ui/container";
+import { BlockLoader } from "@/components/ui/block-loader";
 import { FormInput, FormButton } from "@/components/ui/form";
 import { resolveApiError } from "@/lib/error-messages";
 import styles from "./onboard.module.scss";
@@ -152,13 +153,11 @@ export default function OnboardPage() {
   };
 
   if (checkingFamilies) {
-    return <div className={styles.loading}><p>{t("common.loading")}</p></div>;
+    return <Container center><BlockLoader /></Container>;
   }
 
   return (
-    <>
-      <Navbar />
-      <div className={styles.page}>
+    <Container column>
         {step === "role" && (
           <>
             <div className={styles.header}>
@@ -297,7 +296,6 @@ export default function OnboardPage() {
             </div>
           </div>
         )}
-      </div>
-    </>
+      </Container>
   );
 }

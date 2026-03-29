@@ -5,25 +5,6 @@
 @use "@/styles/media-mixins" as *;
 @use "@/styles/glass" as *;
 
-.page {
-  min-height: 100vh;
-  background: var(--color-bg);
-  color: var(--color-text-primary);
-  padding: $spacing-32 $spacing-24;
-  padding-top: calc(60px + #{$spacing-32});
-  max-width: $container-max-width;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-
-  @include mobile {
-    padding-top: calc(60px + #{$spacing-16});
-    padding-left: $spacing-16;
-    padding-right: $spacing-16;
-    padding-bottom: $spacing-16;
-  }
-}
 
 .header {
   text-align: center;
@@ -370,10 +351,3 @@
   }
 }
 
-.loading {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--color-text-secondary);
-}
