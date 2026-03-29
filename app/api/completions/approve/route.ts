@@ -100,4 +100,4 @@ export const POST = apiHandler(async (request, { session, db }) => {
   }
 
   return { ...updated[0], payment_status: paymentStatus, payment_id: paymentId };
-});
+}, { rateLimit: "auth" });

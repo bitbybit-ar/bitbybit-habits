@@ -103,4 +103,4 @@ export const POST = apiHandler(async (_request, { session, db, params }) => {
   } finally {
     client.close();
   }
-});
+}, { rateLimit: "auth" });

@@ -1,25 +1,13 @@
-import { apiHandler, BadRequestError, RateLimitError } from "@/lib/api";
+import { apiHandler, BadRequestError } from "@/lib/api";
 import { users } from "@/lib/db";
 import { hashPassword } from "@/lib/auth";
-import { createRateLimiter } from "@/lib/rate-limit";
-import { getClientIp } from "@/lib/request";
-
-// Rate limiter: 3 attempts per 15 minutes per IP
-const registerRateLimiter = createRateLimiter(3, 15 * 60 * 1000);
 
 /**
  * POST /api/auth/register
  *
- * Register a new user account. Rate limited (3/15min).
+ * Register a new user account. Rate limited (strict: 5/15min).
  */
 export const POST = apiHandler(async (request, { db }) => {
-  const clientIp = getClientIp(request);
-  const rateLimitResult = registerRateLimiter.check(clientIp);
-
-  if (!rateLimitResult.success) {
-    throw new RateLimitError(rateLimitResult.retryAfterMs ?? 0);
-  }
-
   const { email, username, password, display_name, locale } = await request.json();
 
   if (!email || !username || !password || !display_name) {
@@ -47,4 +35,4 @@ export const POST = apiHandler(async (request, { db }) => {
     });
 
   return result[0];
-}, { auth: false });
+}, { auth: false, rateLimit: "strict" });

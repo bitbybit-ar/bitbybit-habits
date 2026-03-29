@@ -68,4 +68,4 @@ export const POST = apiHandler(async (request, { session, db, params }) => {
 
   console.log(`[Confirm] Payment ${paymentId.slice(0, 8)} confirmed via WebLN`);
   return { confirmed: true };
-});
+}, { rateLimit: "auth" });

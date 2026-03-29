@@ -77,4 +77,4 @@ export const POST = apiHandler(async (request, { session, db }) => {
   }
 
   return created({ family, member: members[0] });
-});
+}, { rateLimit: "auth" });
