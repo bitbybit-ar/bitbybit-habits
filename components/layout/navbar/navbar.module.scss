@@ -54,7 +54,7 @@
   list-style: none;
 
   a {
-    color: var(--color-text-secondary);
+    color: $color-text-secondary;
     text-decoration: none;
     font-size: $font-size-sm;
     font-weight: $font-weight-medium;
@@ -62,7 +62,7 @@
 
     &:hover,
     &:focus {
-      color: var(--color-text-primary);
+      color: $color-text-primary;
     }
   }
 
@@ -90,13 +90,13 @@
   border-radius: $border-radius-md;
   border: 1px solid rgba(var(--glass-color), 0.08);
   background: transparent;
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
   cursor: pointer;
   text-decoration: none;
   transition: all 0.2s;
 
   &:hover {
-    color: var(--color-text-primary);
+    color: $color-text-primary;
     border-color: rgba(var(--glass-color), 0.15);
     background: rgba(var(--glass-color), 0.04);
   }
@@ -122,11 +122,11 @@
 }
 
 .loginButton {
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
 
   &:hover,
   &:focus {
-    color: var(--color-text-primary);
+    color: $color-text-primary;
   }
 
   @include mobile {
@@ -138,12 +138,12 @@
 }
 
 .signupButton {
-  background: var(--color-primary);
+  background: $color-primary;
   color: var(--color-on-primary);
 
   &:hover,
   &:focus {
-    background: var(--color-primary-hover);
+    background: $color-primary-hover;
   }
 
   @include mobile {
@@ -161,7 +161,7 @@
   border: none;
   cursor: pointer;
   padding: $spacing-8;
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
 
   @include mobile {
     display: flex;
@@ -229,14 +229,14 @@
 
     a {
       padding: $spacing-12 0;
-      color: var(--color-text-secondary);
+      color: $color-text-secondary;
       font-size: $font-size-base;
       font-weight: $font-weight-medium;
       border-bottom: 1px solid rgba(var(--glass-color), 0.05);
       transition: color 0.2s;
 
       &:hover {
-        color: var(--color-text-primary);
+        color: $color-text-primary;
       }
 
       &:last-child {
@@ -252,7 +252,7 @@
   bottom: 0;
   left: 0;
   height: 2px;
-  background: var(--gradient-primary-bg);
+  background: $gradient-primary;
   transition: width 0.1s linear;
   z-index: 1;
 }

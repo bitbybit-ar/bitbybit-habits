@@ -16,7 +16,7 @@
   padding: $spacing-8 $spacing-16 $spacing-8 $spacing-8;
   border-radius: $border-radius-full;
   border: 2px solid rgba(var(--glass-color), 0.08);
-  background: var(--color-bg-3);
+  background: $color-bg-3;
   cursor: pointer;
   transition: border-color 0.2s, background 0.2s, transform 0.15s;
 
@@ -27,11 +27,11 @@
 }
 
 .memberChipSelected {
-  border-color: var(--color-primary);
+  border-color: $color-primary;
   background: alpha($color-primary, 10%);
 
   .avatar {
-    background: var(--color-primary);
+    background: $color-primary;
     color: var(--color-on-primary);
   }
 }
@@ -40,13 +40,13 @@
   width: 32px;
   height: 32px;
   border-radius: $border-radius-full;
-  background: var(--color-bg-2);
+  background: $color-bg-2;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: $font-size-sm;
   font-weight: $font-weight-bold;
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
   flex-shrink: 0;
   position: relative;
   transition: background 0.2s, color 0.2s;
@@ -58,7 +58,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--color-primary);
+  background: $color-primary;
   border-radius: $border-radius-full;
   color: var(--color-on-primary);
 }
@@ -66,7 +66,7 @@
 .memberName {
   font-size: $font-size-sm;
   font-weight: $font-weight-medium;
-  color: var(--color-text-primary);
+  color: $color-text-primary;
   white-space: nowrap;
 }
 
@@ -78,15 +78,15 @@
   padding: 2px 6px;
   border-radius: $border-radius-full;
   background: alpha($color-secondary, 15%);
-  color: var(--color-secondary);
+  color: $color-secondary;
 }
 
 .emptyMessage {
   font-size: $font-size-sm;
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
   padding: $spacing-16;
   text-align: center;
-  background: var(--color-bg-3);
+  background: $color-bg-3;
   border-radius: $border-radius-md;
   border: 1px dashed rgba(var(--glass-color), 0.1);
 }

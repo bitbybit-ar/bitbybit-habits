@@ -15,15 +15,15 @@
 
 .variant-gold {
   background: alpha($color-primary-light, 15%);
-  color: var(--color-primary-light);
+  color: $color-primary-light;
 }
 
 .variant-green {
   background: alpha($color-secondary, 15%);
-  color: var(--color-secondary);
+  color: $color-secondary;
 }
 
 .variant-coral {
   background: alpha($color-accent, 15%);
-  color: var(--color-accent);
+  color: $color-accent;
 }

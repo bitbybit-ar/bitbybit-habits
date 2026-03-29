@@ -261,7 +261,7 @@
   border-radius: 36px;
   overflow: hidden;
   z-index: 1;
-  background: var(--color-bg);
+  background: $color-bg;
 }
 
 .homeIndicator {
@@ -375,7 +375,7 @@ $virtual-w: 340px;
   .satsAmount {
     font-size: 16px;
     font-weight: $font-weight-extrabold;
-    color: var(--color-primary);
+    color: $color-primary;
     margin-top: 4px;
   }
 }
@@ -438,14 +438,14 @@ $virtual-w: 340px;
 .celebrationHabitName {
   font-size: $font-size-xs;
   font-weight: $font-weight-semibold;
-  color: var(--color-text-primary);
+  color: $color-text-primary;
   text-align: center;
 }
 
 .celebrationSats {
   font-size: $font-size-lg;
   font-weight: $font-weight-extrabold;
-  color: var(--color-primary);
+  color: $color-primary;
   animation: celebrationSatFloat 1.8s ease-out 0.3s forwards;
   text-shadow: 0 0 12px alpha($color-primary, 50%);
 }

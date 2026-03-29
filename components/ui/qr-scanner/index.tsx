@@ -12,9 +12,9 @@ interface QRScannerProps {
 
 export function QRScanner({ onScan, onClose }: QRScannerProps) {
   const t = useTranslations("wallet");
-  const containerRef = useRef<HTMLDivElement>(null);
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [retryKey, setRetryKey] = useState(0);
 
   const stop = useCallback(async () => {
     try {
@@ -28,36 +28,39 @@ export function QRScanner({ onScan, onClose }: QRScannerProps) {
     scannerRef.current = null;
   }, []);
 
-  useEffect(() => {
+  const start = useCallback(async () => {
+    setError(null);
     const scannerId = "qr-scanner-region";
 
-    async function start() {
-      try {
-        const scanner = new Html5Qrcode(scannerId);
-        scannerRef.current = scanner;
+    try {
+      const scanner = new Html5Qrcode(scannerId);
+      scannerRef.current = scanner;
 
-        await scanner.start(
-          { facingMode: "environment" },
-          { fps: 10, qrbox: { width: 250, height: 250 } },
-          (decodedText) => {
-            onScan(decodedText);
-            stop();
-          },
-          () => {
-            // Ignore scan failures (no QR in frame)
-          }
-        );
-      } catch {
-        setError(t("cameraError"));
-      }
+      await scanner.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: { width: 250, height: 250 } },
+        (decodedText) => {
+          onScan(decodedText);
+          stop();
+        },
+        () => {
+          // Ignore scan failures (no QR in frame)
+        }
+      );
+    } catch {
+      setError(t("cameraError"));
     }
+  }, [onScan, stop, t]);
 
+  useEffect(() => {
     start();
+    return () => { stop(); };
+  }, [retryKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
-    return () => {
-      stop();
-    };
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  const handleRetry = useCallback(async () => {
+    await stop();
+    setRetryKey((k) => k + 1);
+  }, [stop]);
 
   return (
     <div className={styles.overlay} onClick={onClose}>
@@ -67,8 +70,15 @@ export function QRScanner({ onScan, onClose }: QRScannerProps) {
           <button className={styles.closeButton} onClick={onClose}>&times;</button>
         </div>
         <div className={styles.scannerContainer}>
-          <div id="qr-scanner-region" ref={containerRef} />
-          {error && <p className={styles.error}>{error}</p>}
+          <div id="qr-scanner-region" />
+          {error && (
+            <div className={styles.errorState}>
+              <p className={styles.error}>{error}</p>
+              <button className={styles.retryBtn} onClick={handleRetry}>
+                {t("retryCamera")}
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

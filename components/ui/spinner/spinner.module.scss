@@ -1,3 +1,5 @@
+@use "@/styles/colors" as *;
+
 // --- Stacking blocks animation (BitByBit brand) ---
 
 @keyframes stackUp {
@@ -16,7 +18,7 @@
 
 .block {
   border-radius: 3px;
-  background: var(--color-primary);
+  background: $color-primary;
   opacity: 0;
   animation: stackUp 1.2s ease-in-out infinite;
 

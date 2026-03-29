@@ -12,6 +12,7 @@ import type { ApiResponse } from "@/lib/types";
 import type { NostrEvent } from "@/lib/nostr";
 
 const nostrRateLimiter = createRateLimiter(5, 15 * 60 * 1000);
+const challengeRateLimiter = createRateLimiter(30, 60 * 1000); // 30 per minute
 
 /**
  * GET /api/auth/nostr
@@ -19,7 +20,16 @@ const nostrRateLimiter = createRateLimiter(5, 15 * 60 * 1000);
  * Issue a random challenge for NIP-42 authentication.
  * The challenge is stored in an httpOnly cookie (5 min expiry).
  */
-export async function GET() {
+export async function GET(request: Request) {
+  const ip = getClientIp(request);
+  const rateLimitResult = challengeRateLimiter.check(`nostr-challenge:${ip}`);
+  if (!rateLimitResult.success) {
+    return NextResponse.json<ApiResponse>(
+      { success: false, error: "rate_limited" },
+      { status: 429 }
+    );
+  }
+
   const challenge = randomBytes(32).toString("hex");
 
   const cookieStore = await cookies();
@@ -55,6 +65,15 @@ export const POST = apiHandler(async (request, { db }) => {
   if (!challenge) {
     throw new BadRequestError("no_challenge");
   }
+
+  // Consume challenge immediately — one attempt only
+  cookieStore.set("nostr_challenge", "", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    maxAge: 0,
+    path: "/",
+  });
 
   const { signedEvent } = (await request.json()) as { signedEvent: NostrEvent };
   if (!signedEvent) {
@@ -152,15 +171,6 @@ export const POST = apiHandler(async (request, { db }) => {
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
     maxAge: 60 * 60 * 24 * 7,
-    path: "/",
-  });
-
-  // Clear the challenge cookie
-  response.cookies.set("nostr_challenge", "", {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    maxAge: 0,
     path: "/",
   });
 

@@ -22,6 +22,15 @@ export const POST = apiHandler(async (request, { session, db }) => {
     throw new BadRequestError("no_challenge");
   }
 
+  // Consume challenge immediately — one attempt only
+  cookieStore.set("nostr_challenge", "", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    maxAge: 0,
+    path: "/",
+  });
+
   const { signedEvent } = (await request.json()) as { signedEvent: NostrEvent };
   if (!signedEvent) {
     throw new BadRequestError("missing_fields");
@@ -101,15 +110,6 @@ export const POST = apiHandler(async (request, { session, db }) => {
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
     maxAge: 60 * 60 * 24 * 7,
-    path: "/",
-  });
-
-  // Clear the challenge cookie
-  response.cookies.set("nostr_challenge", "", {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    maxAge: 0,
     path: "/",
   });
 

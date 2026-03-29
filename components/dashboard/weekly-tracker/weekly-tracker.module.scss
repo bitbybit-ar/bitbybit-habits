@@ -20,14 +20,14 @@
 
 .dayLabel {
   font-size: 10px;
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
   text-transform: uppercase;
   font-weight: $font-weight-semibold;
   letter-spacing: 0.02em;
 }
 
 .dayLabelToday {
-  color: var(--color-primary);
+  color: $color-primary;
   font-weight: $font-weight-bold;
 }
 
@@ -50,8 +50,8 @@
 }
 
 .cellCompleted {
-  background: var(--color-success);
-  border-color: var(--color-success);
+  background: $color-success;
+  border-color: $color-success;
   color: white;
 }
 
@@ -61,22 +61,22 @@
 }
 
 .missedIcon {
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
   font-size: 12px;
   font-weight: $font-weight-bold;
   opacity: 0.5;
 }
 
 .cellPendingToday {
-  border-color: var(--color-text-secondary);
-  color: var(--color-text-secondary);
+  border-color: $color-text-secondary;
+  color: $color-text-secondary;
   border-style: dashed;
 }
 
 .cellPendingApproval {
   background: alpha($color-warning, 15%);
-  border-color: var(--color-warning);
-  color: var(--color-warning);
+  border-color: $color-warning;
+  color: $color-warning;
 }
 
 .cellNotAssigned {
@@ -87,7 +87,7 @@
 .dot {
   font-size: 18px;
   line-height: 1;
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
 }
 
 .approveBtn {
@@ -95,7 +95,7 @@
   padding: 2px 6px;
   border: none;
   border-radius: $border-radius-sm;
-  background: var(--color-success);
+  background: $color-success;
   color: #fff;
   font-size: 9px;
   font-weight: $font-weight-bold;

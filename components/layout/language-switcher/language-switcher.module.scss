@@ -1,3 +1,4 @@
+@use "@/styles/colors" as *;
 @use "@/styles/spacing" as *;
 
 .switcher {
@@ -16,7 +17,7 @@
   padding: $spacing-8 $spacing-12;
   border: none;
   background: transparent;
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
   font-size: 13px;
   font-weight: 600;
   border-radius: 6px;
@@ -25,13 +26,13 @@
   min-height: 36px;
 
   &:hover {
-    color: var(--color-text-primary);
+    color: $color-text-primary;
   }
 }
 
 .active {
   background: rgba(var(--glass-color), 0.2);
-  color: var(--color-text-primary);
+  color: $color-text-primary;
 
   [data-theme="light"] & {
     background: rgba(0, 0, 0, 0.1);

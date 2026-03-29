@@ -31,13 +31,13 @@
 .connectTitle {
   font-size: 1.2rem;
   font-weight: $font-weight-bold;
-  color: var(--color-text-primary);
+  color: $color-text-primary;
   margin: 0;
 }
 
 .connectDesc {
   font-size: $font-size-sm;
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
   margin: 0;
   max-width: 280px;
 }
@@ -80,7 +80,7 @@
   border-radius: $border-radius-md;
   border: 1px solid rgba(var(--glass-color, 255, 255, 255), 0.15);
   background: rgba(var(--glass-color, 255, 255, 255), 0.04);
-  color: var(--color-text-primary);
+  color: $color-text-primary;
   font-size: $font-size-sm;
   font-weight: $font-weight-semibold;
   cursor: pointer;
@@ -103,7 +103,7 @@
 
 .manualToggle {
   font-size: $font-size-xs;
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
   cursor: pointer;
   padding: $spacing-8 0;
   user-select: none;
@@ -115,7 +115,7 @@
   }
 
   &:hover {
-    color: var(--color-text-primary);
+    color: $color-text-primary;
   }
 }
 
@@ -139,7 +139,7 @@
   }
 
   &[data-connected="false"] {
-    background: var(--color-text-secondary);
+    background: $color-text-secondary;
     opacity: 0.5;
   }
 }
@@ -147,7 +147,7 @@
 .statusText {
   font-size: $font-size-base;
   font-weight: $font-weight-semibold;
-  color: var(--color-text-primary);
+  color: $color-text-primary;
 }
 
 .badge {
@@ -166,14 +166,14 @@
   border-radius: $border-radius-sm;
   border: 1px solid rgba(var(--glass-color, 255, 255, 255), 0.1);
   background: transparent;
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
   font-size: $font-size-xs;
   font-weight: $font-weight-semibold;
   cursor: pointer;
   transition: all 0.2s ease;
 
   &:hover {
-    color: var(--color-text-primary);
+    color: $color-text-primary;
     border-color: rgba(var(--glass-color, 255, 255, 255), 0.2);
   }
 }
@@ -207,20 +207,20 @@
 .balanceValue {
   font-size: 2rem;
   font-weight: $font-weight-bold;
-  color: var(--color-text-primary);
+  color: $color-text-primary;
   line-height: 1;
 }
 
 .balanceLabel {
   font-size: $font-size-sm;
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
 }
 
 .refreshButton {
   padding: $spacing-4 $spacing-8;
   border: none;
   background: transparent;
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
   font-size: 1.2rem;
   cursor: pointer;
   transition: transform 0.3s ease, color 0.2s ease;
@@ -276,7 +276,7 @@
   border-radius: $border-radius-md;
   border: 1px solid rgba(var(--glass-color, 255, 255, 255), 0.1);
   background: rgba(var(--glass-color, 255, 255, 255), 0.03);
-  color: var(--color-text-primary);
+  color: $color-text-primary;
   font-size: $font-size-sm;
   font-weight: $font-weight-semibold;
   cursor: pointer;
@@ -315,20 +315,20 @@
   padding: $spacing-4 $spacing-8;
   border: none;
   background: transparent;
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
   font-size: 1.2rem;
   cursor: pointer;
   transition: color 0.2s;
 
   &:hover {
-    color: var(--color-text-primary);
+    color: $color-text-primary;
   }
 }
 
 .viewTitle {
   font-size: $font-size-lg;
   font-weight: $font-weight-semibold;
-  color: var(--color-text-primary);
+  color: $color-text-primary;
   margin: 0;
 }
 
@@ -348,7 +348,7 @@
 
   span {
     font-size: $font-size-xs;
-    color: var(--color-text-secondary);
+    color: $color-text-secondary;
     text-transform: lowercase;
   }
 }
@@ -373,13 +373,13 @@
 
 .settingsLabel {
   font-size: $font-size-sm;
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
 }
 
 .settingsValue {
   font-size: $font-size-sm;
   font-weight: $font-weight-semibold;
-  color: var(--color-text-primary);
+  color: $color-text-primary;
 }
 
 .settingsActions {
@@ -394,7 +394,7 @@
   border-radius: $border-radius-md;
   border: 1px solid rgba(var(--glass-color, 255, 255, 255), 0.15);
   background: transparent;
-  color: var(--color-text-primary);
+  color: $color-text-primary;
   font-size: $font-size-sm;
   font-weight: $font-weight-semibold;
   cursor: pointer;
@@ -412,7 +412,7 @@
   border-radius: $border-radius-md;
   border: 1px solid alpha($color-error, 30%);
   background: alpha($color-error, 10%);
-  color: var(--color-error);
+  color: $color-error;
   font-size: $font-size-sm;
   font-weight: $font-weight-semibold;
   cursor: pointer;
@@ -420,7 +420,7 @@
 
   &:hover {
     background: alpha($color-error, 20%);
-    border-color: var(--color-error);
+    border-color: $color-error;
   }
 }
 
@@ -498,7 +498,7 @@
   width: 100%;
   padding: $spacing-12 $spacing-24;
   background: transparent;
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
   border: 1px solid rgba(var(--glass-color, 255, 255, 255), 0.1);
   border-radius: $border-radius-md;
   font-size: $font-size-sm;
@@ -507,7 +507,7 @@
 
   &:hover {
     background: rgba(var(--glass-color, 255, 255, 255), 0.05);
-    color: var(--color-text-primary);
+    color: $color-text-primary;
   }
 }
 
@@ -527,7 +527,7 @@
 
 .fieldLabel {
   font-size: $font-size-xs;
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
   font-weight: $font-weight-semibold;
 }
 
@@ -535,19 +535,19 @@
   padding: $spacing-12;
   border-radius: $border-radius-md;
   border: 1px solid rgba(var(--glass-color), 0.1);
-  background: var(--color-bg);
-  color: var(--color-text-primary);
+  background: $color-bg;
+  color: $color-text-primary;
   font-size: $font-size-sm;
   outline: none;
   transition: border-color 0.2s;
 
   &::placeholder {
-    color: var(--color-text-secondary);
+    color: $color-text-secondary;
     opacity: 0.5;
   }
 
   &:focus {
-    border-color: var(--color-primary);
+    border-color: $color-primary;
   }
 }
 
@@ -559,7 +559,7 @@
   padding: $spacing-12 $spacing-16;
   border-radius: $border-radius-md;
   border: none;
-  background: var(--gradient-primary-bg);
+  background: $gradient-primary;
   color: white;
   font-size: $font-size-sm;
   font-weight: $font-weight-bold;

@@ -13,7 +13,7 @@
 }
 
 .loadingText {
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
   font-size: $font-size-sm;
 }
 
@@ -29,7 +29,7 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: var(--gradient-primary-bg);
+  background: $gradient-primary;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -62,7 +62,7 @@
   border-radius: 12px;
   border: 1px solid alpha($color-accent-alt, 10%);
   background: alpha($color-accent-alt, 4%);
-  color: var(--color-text-primary);
+  color: $color-text-primary;
   font-size: $font-size-base;
   font-family: $font-family-base;
   appearance: none;
@@ -81,7 +81,7 @@
   right: $spacing-16;
   top: 50%;
   transform: translateY(-50%);
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
   font-size: 0.9rem;
   pointer-events: none;
 }
@@ -89,7 +89,7 @@
 // ── Saved feedback ──
 .savedText {
   font-size: $font-size-sm;
-  color: var(--color-success);
+  color: $color-success;
   text-align: center;
 }
 
@@ -123,7 +123,7 @@
 
 .nostrPubkey {
   font-size: $font-size-xs;
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
   font-family: monospace;
   word-break: break-all;
 }
@@ -209,7 +209,7 @@
 
 .nostrAutoSyncHint {
   font-size: $font-size-xs;
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
   margin-top: $spacing-4;
   text-align: center;
   opacity: 0.7;

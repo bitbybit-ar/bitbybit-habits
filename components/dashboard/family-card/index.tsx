@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { useConfirm } from "@/lib/hooks/useConfirm";
+import { ConfirmModal } from "@/components/ui/confirm-modal";
 import { UserIcon, CheckIcon } from "@/components/icons";
 import styles from "./family-card.module.scss";
 
@@ -43,6 +45,7 @@ export function FamilyCard({
   const t = useTranslations();
   const [copied, setCopied] = useState(false);
   const [confirmAction, setConfirmAction] = useState<"leave" | "delete" | null>(null);
+  const { confirm, confirmState, handleConfirm, handleCancel } = useConfirm();
 
   const isCreator = currentUserId === createdBy;
   const isSponsor = currentUserRole === "sponsor";
@@ -169,10 +172,10 @@ export function FamilyCard({
               {isSponsor && onRemoveMember && member.user_id !== currentUserId && (
                 <button
                   className={styles.removeBtn}
-                  onClick={() => {
-                    if (confirm(t("family.confirmRemoveMember"))) {
-                      onRemoveMember(familyId, member.user_id);
-                    }
+                  onClick={async () => {
+                    const confirmed = await confirm(t("family.confirmRemoveMember"), "danger");
+                    if (!confirmed) return;
+                    onRemoveMember(familyId, member.user_id);
                   }}
                   title={t("family.removeMember")}
                 >
@@ -183,6 +186,14 @@ export function FamilyCard({
           ))}
         </div>
       </div>
+      {confirmState && (
+        <ConfirmModal
+          message={confirmState.message}
+          variant={confirmState.variant}
+          onConfirm={handleConfirm}
+          onCancel={handleCancel}
+        />
+      )}
     </div>
   );
 }

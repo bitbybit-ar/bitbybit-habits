@@ -1,6 +1,12 @@
-import { apiHandler, BadRequestError } from "@/lib/api";
+import { apiHandler, BadRequestError, RateLimitError } from "@/lib/api";
 import { getDecryptedNwcUrl } from "@/app/api/wallets/route";
 import { NWCClient } from "@getalby/sdk";
+import { createRateLimiter } from "@/lib/rate-limit";
+import { getClientIp } from "@/lib/request";
+
+const sendRateLimiter = createRateLimiter(20, 60 * 1000); // 20 per minute
+
+const BOLT11_RE = /^lnbc[0-9a-zA-Z]+1[qpzry9x8gf2tvdw0s3jn54khce6mua7l]+$/i;
 
 /**
  * POST /api/wallets/send
@@ -8,6 +14,12 @@ import { NWCClient } from "@getalby/sdk";
  * Pay a BOLT11 invoice from the authenticated user's NWC wallet.
  */
 export const POST = apiHandler(async (request, { session, db }) => {
+  const ip = getClientIp(request);
+  const rateLimitResult = sendRateLimiter.check(`wallet-send:${session.user_id}:${ip}`);
+  if (!rateLimitResult.success) {
+    throw new RateLimitError(rateLimitResult.retryAfterMs ?? 0);
+  }
+
   const body = await request.json();
   const { invoice } = body as { invoice: string };
 
@@ -16,14 +28,14 @@ export const POST = apiHandler(async (request, { session, db }) => {
   }
 
   // Strip lightning: URI prefix if present
-  const bolt11 = invoice.replace(/^lightning:/i, "");
+  const bolt11 = invoice.replace(/^lightning:/i, "").trim();
 
-  if (!bolt11.startsWith("lnbc") && !bolt11.startsWith("LNBC")) {
+  // Validate BOLT11 format (lnbc prefix + bech32 checksum structure)
+  if (!BOLT11_RE.test(bolt11)) {
     throw new BadRequestError("invalid_invoice");
   }
 
   const nwcUrl = await getDecryptedNwcUrl(session.user_id, db);
-  console.log("[wallets/send] user:", session.user_id, "| invoice prefix:", bolt11.substring(0, 20), "| has wallet:", !!nwcUrl);
   if (!nwcUrl) {
     throw new BadRequestError("no_wallet");
   }
@@ -40,7 +52,6 @@ export const POST = apiHandler(async (request, { session, db }) => {
     return { preimage: result.preimage };
   } catch (err) {
     const msg = err instanceof Error ? err.message : "payment_failed";
-    console.error("[wallets/send] Payment error:", msg, err);
     if (msg.includes("insufficient") || msg.includes("INSUFFICIENT")) {
       throw new BadRequestError("insufficient_funds");
     }

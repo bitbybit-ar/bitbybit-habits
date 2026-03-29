@@ -59,7 +59,7 @@ $navbar-height: 60px;
   font-family: $font-family-display;
   font-size: $font-size-xl;
   font-weight: $font-weight-bold;
-  color: var(--color-text-primary);
+  color: $color-text-primary;
   margin: 0;
 
   @include desktop {
@@ -69,7 +69,7 @@ $navbar-height: 60px;
 
 .headerSubtitle {
   font-size: $font-size-sm;
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
   margin: $spacing-4 0 0 0;
 }
 
@@ -87,7 +87,7 @@ $navbar-height: 60px;
 }
 
 .accessDeniedText {
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
   margin: 0;
 }
 
@@ -99,7 +99,7 @@ $navbar-height: 60px;
 }
 
 .loadingText {
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
 }
 
 .dbIndicator {

@@ -31,14 +31,14 @@
   font-size: $font-size-sm;
   font-weight: $font-weight-bold;
   @include glass-subtle;
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
   transition: all 0.3s ease;
   flex-shrink: 0;
 
   &.active {
     border-color: alpha($color-primary, 40%);
     background: alpha($color-primary, 15%);
-    color: var(--color-primary);
+    color: $color-primary;
     transform: scale(1.1);
     box-shadow: 0 0 16px alpha($color-primary, 20%);
   }
@@ -46,7 +46,7 @@
   &.completed {
     border-color: alpha($color-success, 40%);
     background: alpha($color-success, 15%);
-    color: var(--color-success);
+    color: $color-success;
   }
 }
 
@@ -58,7 +58,7 @@
   flex-shrink: 0;
 
   &.active {
-    background: var(--color-primary);
+    background: $color-primary;
   }
 
   @include mobile {
@@ -107,7 +107,7 @@
 }
 
 .stepError {
-  color: var(--color-error);
+  color: $color-error;
   font-size: $font-size-sm;
   font-weight: $font-weight-medium;
   margin: 0;

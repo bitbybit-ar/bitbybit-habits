@@ -97,7 +97,7 @@
 .satAmount {
   font-size: $font-size-sm;
   font-weight: $font-weight-extrabold;
-  color: var(--color-primary);
+  color: $color-primary;
   white-space: nowrap;
   text-shadow: 0 0 12px alpha($color-primary, 40%);
 }

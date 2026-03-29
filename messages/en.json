@@ -202,6 +202,7 @@
     "scanInvoiceQR": "Scan invoice QR",
     "scanQR": "Scan QR",
     "cameraError": "Could not access camera",
+    "retryCamera": "Retry",
     "scanNwcHint": "Paste the NWC URL if the QR is not valid",
     "scanInvoiceHint": "Paste the invoice if the QR is not valid",
     "pasteManually": "Paste URL manually",
@@ -754,6 +755,15 @@
     "fieldLocale": "Language",
     "cancel": "Cancel",
     "save": "Save",
-    "saving": "Saving..."
+    "saving": "Saving...",
+    "badgeSponsor": "Sponsor",
+    "badgeNostr": "Nostr",
+    "badge2fa": "2FA",
+    "noFamily": "--",
+    "saveError": "Error saving changes",
+    "unlockError": "Error unlocking user",
+    "deleteError": "Error deleting user",
+    "localeEs": "Español",
+    "localeEn": "English"
   }
 }

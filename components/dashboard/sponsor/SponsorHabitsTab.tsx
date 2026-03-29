@@ -2,6 +2,8 @@
 
 import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
+import { useConfirm } from "@/lib/hooks/useConfirm";
+import { ConfirmModal } from "@/components/ui/confirm-modal";
 import { BoltIcon, UserIcon, PencilIcon } from "@/components/icons";
 import { DashboardSection } from "@/components/dashboard/dashboard-section";
 import { EmptyState } from "@/components/dashboard/empty-state";
@@ -32,6 +34,7 @@ interface SponsorHabitsTabProps {
 export function SponsorHabitsTab({ habits, families, familyCompletions, onApprove, onCreateHabit, onEdit, onDelete, currentUserId, kids }: SponsorHabitsTabProps) {
   const t = useTranslations();
   const [editingHabit, setEditingHabit] = useState<Habit | null>(null);
+  const { confirm, confirmState, handleConfirm, handleCancel } = useConfirm();
 
   const byHabitGroups = useMemo(() => {
     const groups: Record<string, { habitId: string; habitName: string; satReward: number; kids: Record<string, { userId: string; displayName: string }> }> = {};
@@ -105,8 +108,10 @@ export function SponsorHabitsTab({ habits, families, familyCompletions, onApprov
                       </button>
                       <button
                         className={styles.deleteBtn}
-                        onClick={() => {
-                          if (confirm(t("habits.confirmDelete"))) onDelete(group.habitId);
+                        onClick={async () => {
+                          const confirmed = await confirm(t("habits.confirmDelete"), "danger");
+                          if (!confirmed) return;
+                          onDelete(group.habitId);
                         }}
                         title={t("common.delete")}
                       >
@@ -152,6 +157,14 @@ export function SponsorHabitsTab({ habits, families, familyCompletions, onApprov
             if (onEdit) onEdit(updated);
           }}
           onClose={() => setEditingHabit(null)}
+        />
+      )}
+      {confirmState && (
+        <ConfirmModal
+          message={confirmState.message}
+          variant={confirmState.variant}
+          onConfirm={handleConfirm}
+          onCancel={handleCancel}
         />
       )}
     </DashboardSection>

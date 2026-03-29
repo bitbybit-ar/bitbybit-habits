@@ -3,8 +3,16 @@
 import { useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { useApi } from "@/lib/hooks/useApi";
-import { ShieldIcon, BoltIcon, UsersIcon } from "@/components/icons";
-import { Spinner } from "@/components/ui/spinner";
+import { useConfirm } from "@/lib/hooks/useConfirm";
+import { useToast } from "@/components/ui/toast";
+import { ConfirmModal } from "@/components/ui/confirm-modal";
+import { DashboardSection } from "@/components/dashboard/dashboard-section";
+import { EmptyState } from "@/components/dashboard/empty-state";
+import { BlockLoader } from "@/components/ui/block-loader";
+import { UsersIcon } from "@/components/icons";
+import { AdminStatsPanel } from "./AdminStatsPanel";
+import { AdminUserRow } from "./AdminUserRow";
+import { EditUserModal } from "./EditUserModal";
 import styles from "./admin-users-table.module.scss";
 
 interface AdminUser {
@@ -56,12 +64,14 @@ interface EditingUser {
 
 export function AdminUsersTable() {
   const t = useTranslations("admin");
+  const { showToast } = useToast();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [familyFilter, setFamilyFilter] = useState("");
   const [editing, setEditing] = useState<EditingUser | null>(null);
   const [saving, setSaving] = useState(false);
+  const { confirm, confirmState, handleConfirm, handleCancel } = useConfirm();
 
   const statsUrl = "/api/admin/stats";
   const usersUrl = `/api/admin/users?page=${page}&limit=50${searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : ""}${familyFilter ? `&family=${encodeURIComponent(familyFilter)}` : ""}`;
@@ -102,11 +112,15 @@ export function AdminUsersTable() {
       if (res.ok) {
         setEditing(null);
         refetch();
+      } else {
+        showToast(t("saveError"), "error");
       }
+    } catch {
+      showToast(t("saveError"), "error");
     } finally {
       setSaving(false);
     }
-  }, [editing, refetch]);
+  }, [editing, refetch, showToast, t]);
 
   const handleUnlock = useCallback(async (userId: string) => {
     const res = await fetch(`/api/admin/users/${userId}`, {
@@ -114,65 +128,28 @@ export function AdminUsersTable() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ locked_until: null, failed_login_attempts: 0 }),
     });
-    if (res.ok) refetch();
-  }, [refetch]);
+    if (res.ok) {
+      refetch();
+    } else {
+      showToast(t("unlockError"), "error");
+    }
+  }, [refetch, showToast, t]);
 
   const handleDelete = useCallback(async (userId: string, displayName: string) => {
-    if (!confirm(t("confirmDelete", { name: displayName }))) return;
+    const confirmed = await confirm(t("confirmDelete", { name: displayName }), "danger");
+    if (!confirmed) return;
     const res = await fetch(`/api/admin/users/${userId}`, { method: "DELETE" });
-    if (res.ok) refetch();
-  }, [t, refetch]);
-
-  const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString(undefined, {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-  };
-
-  const isLocked = (user: AdminUser) => {
-    return user.locked_until && new Date(user.locked_until) > new Date();
-  };
+    if (res.ok) {
+      refetch();
+    } else {
+      showToast(t("deleteError"), "error");
+    }
+  }, [t, refetch, showToast, confirm]);
 
   return (
     <div>
-      {/* DB indicator */}
-      {!statsLoading && stats && (
-        <div className={`${styles.dbIndicator} ${stats.db === "local" ? styles.dbLocal : styles.dbProd}`}>
-          {stats.db === "local" ? "LOCAL DB" : "PROD DB"}
-        </div>
-      )}
-
-      {/* Platform Stats */}
-      {!statsLoading && stats && (
-        <div className={styles.statsGrid}>
-          <div className={styles.statCard}>
-            <div className={styles.statValue}>{stats.users}</div>
-            <div className={styles.statLabel}>{t("statUsers")}</div>
-          </div>
-          <div className={styles.statCard}>
-            <div className={styles.statValue}>{stats.families}</div>
-            <div className={styles.statLabel}>{t("statFamilies")}</div>
-          </div>
-          <div className={styles.statCard}>
-            <div className={styles.statValue}>{stats.habits}</div>
-            <div className={styles.statLabel}>{t("statHabits")}</div>
-          </div>
-          <div className={styles.statCard}>
-            <div className={styles.statValue}>{stats.completions.approved}</div>
-            <div className={styles.statLabel}>{t("statApproved")}</div>
-          </div>
-          <div className={styles.statCard}>
-            <div className={styles.statValue}>{stats.payments.paid}</div>
-            <div className={styles.statLabel}>{t("statPayments")}</div>
-          </div>
-          <div className={styles.statCard}>
-            <div className={styles.statValue}>{stats.payments.total_sats.toLocaleString()}</div>
-            <div className={styles.statLabel}>{t("statSats")}</div>
-          </div>
-        </div>
-      )}
+      {/* Stats */}
+      {!statsLoading && stats && <AdminStatsPanel stats={stats} />}
 
       {/* Search and filters */}
       <form className={styles.searchBar} onSubmit={handleSearch}>
@@ -207,9 +184,13 @@ export function AdminUsersTable() {
 
       {/* Users table */}
       {usersLoading ? (
-        <Spinner size="sm" />
+        <DashboardSection center><BlockLoader /></DashboardSection>
       ) : !usersData?.users.length ? (
-        <div className={styles.emptyState}>{t("noUsers")}</div>
+        <EmptyState
+          icon={<UsersIcon size={48} />}
+          title={t("noUsers")}
+          description=""
+        />
       ) : (
         <>
           <div className={styles.tableWrapper}>
@@ -225,91 +206,13 @@ export function AdminUsersTable() {
               </thead>
               <tbody>
                 {usersData.users.map((user) => (
-                  <tr key={user.id}>
-                    <td>
-                      <div className={styles.userCell}>
-                        <div className={styles.userAvatar}>
-                          {user.display_name.charAt(0).toUpperCase()}
-                        </div>
-                        <div className={styles.userInfo}>
-                          <span className={styles.userName}>{user.display_name}</span>
-                          <span className={styles.userEmail}>@{user.username} &middot; {user.email}</span>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div className={styles.familyBadges}>
-                        {user.families.length === 0 && (
-                          <span style={{ color: "var(--color-text-secondary)", fontSize: "0.75rem" }}>--</span>
-                        )}
-                        {user.families.map((f) => (
-                          <span
-                            key={f.family_id}
-                            className={`${styles.badge} ${styles.badgeFamily}`}
-                          >
-                            {f.family_name}
-                          </span>
-                        ))}
-                        {user.families.some((f) => f.role === "sponsor") && (
-                          <span className={`${styles.badge} ${styles.badgeSponsor}`}>
-                            <UsersIcon size={10} />
-                            Sponsor
-                          </span>
-                        )}
-                      </div>
-                    </td>
-                    <td>
-                      <div className={styles.familyBadges}>
-                        {isLocked(user) && (
-                          <span className={`${styles.badge} ${styles.badgeLocked}`}>
-                            {t("locked")}
-                          </span>
-                        )}
-                        {user.has_wallet && (
-                          <span className={`${styles.badge} ${styles.badgeWallet}`}>
-                            <BoltIcon size={10} />
-                            {t("wallet")}
-                          </span>
-                        )}
-                        {user.totp_enabled && (
-                          <span className={`${styles.badge} ${styles.badge2fa}`}>
-                            <ShieldIcon size={10} />
-                            2FA
-                          </span>
-                        )}
-                        {user.nostr_pubkey && (
-                          <span className={`${styles.badge} ${styles.badge2fa}`}>
-                            Nostr
-                          </span>
-                        )}
-                      </div>
-                    </td>
-                    <td>{formatDate(user.created_at)}</td>
-                    <td>
-                      <div className={styles.actions}>
-                        <button
-                          className={styles.actionBtn}
-                          onClick={() => handleEdit(user)}
-                        >
-                          {t("edit")}
-                        </button>
-                        {isLocked(user) && (
-                          <button
-                            className={`${styles.actionBtn} ${styles.actionBtnSuccess}`}
-                            onClick={() => handleUnlock(user.id)}
-                          >
-                            {t("unlock")}
-                          </button>
-                        )}
-                        <button
-                          className={`${styles.actionBtn} ${styles.actionBtnDanger}`}
-                          onClick={() => handleDelete(user.id, user.display_name)}
-                        >
-                          {t("delete")}
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
+                  <AdminUserRow
+                    key={user.id}
+                    user={user}
+                    onEdit={handleEdit}
+                    onUnlock={handleUnlock}
+                    onDelete={handleDelete}
+                  />
                 ))}
               </tbody>
             </table>
@@ -342,67 +245,22 @@ export function AdminUsersTable() {
 
       {/* Edit modal */}
       {editing && (
-        <div className={styles.modalOverlay} onClick={() => setEditing(null)}>
-          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-            <h3 className={styles.modalTitle}>{t("editUser")}</h3>
+        <EditUserModal
+          editing={editing}
+          saving={saving}
+          onUpdate={(fields) => setEditing({ ...editing, ...fields })}
+          onSave={handleSave}
+          onClose={() => setEditing(null)}
+        />
+      )}
 
-            <div className={styles.modalField}>
-              <label className={styles.modalLabel}>{t("fieldDisplayName")}</label>
-              <input
-                className={styles.modalInput}
-                value={editing.display_name}
-                onChange={(e) => setEditing({ ...editing, display_name: e.target.value })}
-              />
-            </div>
-
-            <div className={styles.modalField}>
-              <label className={styles.modalLabel}>{t("fieldUsername")}</label>
-              <input
-                className={styles.modalInput}
-                value={editing.username}
-                onChange={(e) => setEditing({ ...editing, username: e.target.value })}
-              />
-            </div>
-
-            <div className={styles.modalField}>
-              <label className={styles.modalLabel}>{t("fieldEmail")}</label>
-              <input
-                className={styles.modalInput}
-                type="email"
-                value={editing.email}
-                onChange={(e) => setEditing({ ...editing, email: e.target.value })}
-              />
-            </div>
-
-            <div className={styles.modalField}>
-              <label className={styles.modalLabel}>{t("fieldLocale")}</label>
-              <select
-                className={styles.modalInput}
-                value={editing.locale}
-                onChange={(e) => setEditing({ ...editing, locale: e.target.value })}
-              >
-                <option value="es">Español</option>
-                <option value="en">English</option>
-              </select>
-            </div>
-
-            <div className={styles.modalActions}>
-              <button
-                className={`${styles.modalBtn} ${styles.modalBtnCancel}`}
-                onClick={() => setEditing(null)}
-              >
-                {t("cancel")}
-              </button>
-              <button
-                className={`${styles.modalBtn} ${styles.modalBtnSave}`}
-                onClick={handleSave}
-                disabled={saving}
-              >
-                {saving ? t("saving") : t("save")}
-              </button>
-            </div>
-          </div>
-        </div>
+      {confirmState && (
+        <ConfirmModal
+          message={confirmState.message}
+          variant={confirmState.variant}
+          onConfirm={handleConfirm}
+          onCancel={handleCancel}
+        />
       )}
     </div>
   );

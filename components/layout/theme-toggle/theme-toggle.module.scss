@@ -1,3 +1,5 @@
+@use "@/styles/colors" as *;
+
 .toggle {
   position: relative;
   display: flex;
@@ -11,11 +13,11 @@
   cursor: pointer;
   overflow: hidden;
   transition: background 0.2s;
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
 
   &:hover {
     background: rgba(var(--glass-color), 0.18);
-    color: var(--color-text-primary);
+    color: $color-text-primary;
   }
 }
 

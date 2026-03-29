@@ -12,12 +12,12 @@
 .stepTitle {
   font-size: $font-size-xl;
   font-weight: $font-weight-bold;
-  color: var(--color-text-primary);
+  color: $color-text-primary;
   margin: 0;
 }
 
 .stepDesc {
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
   line-height: $line-height-base;
   margin: 0;
 }
@@ -38,7 +38,7 @@
 
 .label {
   font-size: $font-size-sm;
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
   font-weight: $font-weight-medium;
 }
 
@@ -47,13 +47,13 @@
   border: 1px solid rgba(var(--glass-color), 0.1);
   border-radius: $border-radius-md;
   padding: $spacing-12 $spacing-16;
-  color: var(--color-text-primary);
+  color: $color-text-primary;
   font-size: $font-size-base;
   outline: none;
   transition: border-color 0.2s;
 
   &:focus {
-    border-color: var(--color-primary);
+    border-color: $color-primary;
   }
 }
 
@@ -62,7 +62,7 @@
   align-items: center;
   gap: $spacing-8;
   background: alpha($color-success, 12%);
-  color: var(--color-success);
+  color: $color-success;
   padding: $spacing-8 $spacing-16;
   border-radius: $border-radius-full;
   font-size: $font-size-sm;
@@ -90,12 +90,12 @@
   .satsAmount {
     font-size: $font-size-2xl;
     font-weight: $font-weight-extrabold;
-    color: var(--color-primary);
+    color: $color-primary;
     margin: $spacing-16 0;
   }
 
   p {
-    color: var(--color-text-secondary);
+    color: $color-text-secondary;
   }
 }
 
@@ -116,8 +116,8 @@
   align-items: center;
   gap: $spacing-12;
   padding: $spacing-16 $spacing-20;
-  border-left: 3px solid var(--color-warning);
-  color: var(--color-warning);
+  border-left: 3px solid $color-warning;
+  color: $color-warning;
   font-size: $font-size-sm;
   font-weight: $font-weight-medium;
 }

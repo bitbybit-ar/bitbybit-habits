@@ -50,7 +50,7 @@
 .title {
   font-size: $font-size-lg;
   font-weight: $font-weight-bold;
-  color: var(--color-text-primary);
+  color: $color-text-primary;
   margin: 0 0 $spacing-20;
 }
 
@@ -61,7 +61,7 @@
 .label {
   display: block;
   font-size: $font-size-xs;
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
   font-weight: $font-weight-semibold;
   margin-bottom: $spacing-4;
 }
@@ -71,14 +71,14 @@
   padding: $spacing-12;
   border-radius: $border-radius-md;
   border: 1px solid rgba(var(--glass-color), 0.1);
-  background: var(--color-bg);
-  color: var(--color-text-primary);
+  background: $color-bg;
+  color: $color-text-primary;
   font-size: $font-size-sm;
   outline: none;
   box-sizing: border-box;
 
   &:focus {
-    border-color: var(--color-primary);
+    border-color: $color-primary;
   }
 }
 
@@ -111,8 +111,8 @@
   padding: $spacing-12;
   border-radius: $border-radius-md;
   border: 1px solid rgba(var(--glass-color), 0.1);
-  background: var(--color-bg);
-  color: var(--color-text-primary);
+  background: $color-bg;
+  color: $color-text-primary;
   font-size: $font-size-sm;
   outline: none;
   box-sizing: border-box;
@@ -124,12 +124,12 @@
   padding-right: $spacing-40;
 
   &:focus {
-    border-color: var(--color-primary);
+    border-color: $color-primary;
   }
 
   option {
-    background: var(--color-bg);
-    color: var(--color-text-primary);
+    background: $color-bg;
+    color: $color-text-primary;
   }
 }
 
@@ -145,7 +145,7 @@
   gap: $spacing-4;
   cursor: pointer;
   padding: $spacing-4 $spacing-8;
-  background: var(--color-bg);
+  background: $color-bg;
   border-radius: $border-radius-md;
   border: 1px solid rgba(var(--glass-color), 0.1);
   transition: background 0.2s, border-color 0.2s;
@@ -157,13 +157,13 @@
 }
 
 .checkbox {
-  accent-color: var(--color-primary);
+  accent-color: $color-primary;
   cursor: pointer;
 }
 
 .dayLabel {
   font-size: $font-size-xs;
-  color: var(--color-text-primary);
+  color: $color-text-primary;
   font-weight: $font-weight-medium;
 }
 
@@ -179,13 +179,13 @@
   border-radius: $border-radius-md;
   border: 1px solid rgba(var(--glass-color), 0.1);
   background: transparent;
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
   font-size: $font-size-sm;
   cursor: pointer;
   transition: color 0.2s, border-color 0.2s;
 
   &:hover {
-    color: var(--color-text-primary);
+    color: $color-text-primary;
     border-color: rgba(var(--glass-color), 0.2);
   }
 }
@@ -194,7 +194,7 @@
   padding: $spacing-8 $spacing-16;
   border-radius: $border-radius-md;
   border: none;
-  background: var(--gradient-primary-bg);
+  background: $gradient-primary;
   color: white;
   font-size: $font-size-sm;
   font-weight: $font-weight-bold;

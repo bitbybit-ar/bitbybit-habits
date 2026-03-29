@@ -16,22 +16,22 @@
 
 .label {
   font-size: $font-size-sm;
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
   font-weight: $font-weight-medium;
 }
 
 .input {
-  background: var(--color-bg-3);
+  background: $color-bg-3;
   border: 1px solid rgba(var(--glass-color), 0.1);
   border-radius: $border-radius-md;
   padding: $spacing-12 $spacing-16;
-  color: var(--color-text-primary);
+  color: $color-text-primary;
   font-size: $font-size-base;
   outline: none;
   transition: border-color 0.2s;
 
   &:focus {
-    border-color: var(--color-primary);
+    border-color: $color-primary;
   }
 }
 
@@ -47,23 +47,23 @@
   justify-content: center;
   gap: $spacing-12;
   padding: $spacing-24;
-  background: var(--color-bg-3);
+  background: $color-bg-3;
   border-radius: $border-radius-lg;
   border: 2px dashed alpha($color-primary, 30%);
 
   code {
     font-size: $font-size-xl;
     font-weight: $font-weight-bold;
-    color: var(--color-primary);
+    color: $color-primary;
     letter-spacing: 4px;
   }
 }
 
 .notification {
-  background: var(--color-bg-3);
+  background: $color-bg-3;
   border-radius: $border-radius-lg;
   padding: $spacing-16;
-  border-left: 4px solid var(--color-primary);
+  border-left: 4px solid $color-primary;
   display: flex;
   align-items: center;
   gap: $spacing-12;
@@ -76,12 +76,12 @@
     flex: 1;
 
     strong {
-      color: var(--color-text-primary);
+      color: $color-text-primary;
       display: block;
     }
 
     span {
-      color: var(--color-text-secondary);
+      color: $color-text-secondary;
       font-size: $font-size-sm;
     }
   }
@@ -94,7 +94,7 @@
   .satsAmount {
     font-size: $font-size-2xl;
     font-weight: $font-weight-extrabold;
-    color: var(--color-primary);
+    color: $color-primary;
     margin: $spacing-16 0;
   }
 
@@ -110,7 +110,7 @@
 }
 
 .habitCard {
-  background: var(--color-bg-3);
+  background: $color-bg-3;
   border-radius: $border-radius-lg;
   padding: $spacing-16;
   border: 1px solid rgba(var(--glass-color), 0.05);
@@ -121,19 +121,19 @@
 
   .habitInfo {
     h4 {
-      color: var(--color-text-primary);
+      color: $color-text-primary;
       margin: 0 0 $spacing-4;
     }
 
     p {
-      color: var(--color-text-secondary);
+      color: $color-text-secondary;
       font-size: $font-size-sm;
       margin: 0;
     }
   }
 
   .habitReward {
-    color: var(--color-primary);
+    color: $color-primary;
     font-weight: $font-weight-bold;
     white-space: nowrap;
   }
@@ -147,7 +147,7 @@
 
 .completedBadge {
   background: alpha($color-success, 15%);
-  color: var(--color-success);
+  color: $color-success;
   padding: $spacing-4 $spacing-12;
   border-radius: $border-radius-full;
   font-size: $font-size-sm;
@@ -156,7 +156,7 @@
 
 .pendingBadge {
   background: alpha($color-warning, 15%);
-  color: var(--color-warning);
+  color: $color-warning;
   padding: $spacing-4 $spacing-12;
   border-radius: $border-radius-full;
   font-size: $font-size-sm;
@@ -176,12 +176,12 @@
   .counter {
     font-size: $font-size-2xl;
     font-weight: $font-weight-extrabold;
-    color: var(--color-primary);
+    color: $color-primary;
     margin: $spacing-16 0;
   }
 
   p {
-    color: var(--color-text-secondary);
+    color: $color-text-secondary;
   }
 }
 
@@ -193,12 +193,12 @@
 .stepTitle {
   font-size: $font-size-xl;
   font-weight: $font-weight-bold;
-  color: var(--color-text-primary);
+  color: $color-text-primary;
   margin-bottom: $spacing-8;
 }
 
 .stepDesc {
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
   margin-bottom: $spacing-24;
   line-height: $line-height-base;
 }

@@ -21,7 +21,7 @@
   }
 
   p {
-    color: var(--color-text-secondary);
+    color: $color-text-secondary;
     font-size: $font-size-lg;
     letter-spacing: $letter-spacing-normal;
     max-width: 600px;

@@ -147,7 +147,7 @@
 }
 
 .subtitle {
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
   font-size: $font-size-base;
   margin-bottom: $spacing-24;
 }
@@ -177,7 +177,7 @@
 
   span {
     font-size: $font-size-xs;
-    color: var(--color-text-secondary);
+    color: $color-text-secondary;
     white-space: nowrap;
   }
 }
@@ -240,7 +240,7 @@
   text-align: center;
   margin-top: $spacing-20;
   font-size: $font-size-sm;
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
 
   a {
     color: $color-primary;

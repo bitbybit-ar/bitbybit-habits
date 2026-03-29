@@ -137,7 +137,7 @@
 
 .pollError {
   text-align: center;
-  color: var(--color-warning, #{$color-warning});
+  color: $color-warning;
   font-size: 0.85rem;
   margin-bottom: $spacing-8;
 }

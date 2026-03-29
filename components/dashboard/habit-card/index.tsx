@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { useConfirm } from "@/lib/hooks/useConfirm";
+import { ConfirmModal } from "@/components/ui/confirm-modal";
 import { CheckIcon, FlameIcon, BoltIcon, ClockIcon, PencilIcon } from "@/components/icons";
 import { EditHabitModal } from "@/components/dashboard/edit-habit-modal";
 import CelebrationBurst from "@/components/ui/celebration-burst";
@@ -124,6 +126,7 @@ function getTodayStatus(habitId: string, completions: Completion[]): TodayStatus
 export function HabitCard({ habit, completions, onComplete, hideAction, currentUserId, onEdit, onDelete, streak, kids, compact }: HabitCardProps) {
   const t = useTranslations();
   const [editing, setEditing] = useState(false);
+  const { confirm, confirmState, handleConfirm, handleCancel } = useConfirm();
   const [justCompleted, setJustCompleted] = useState(false);
   const [showBurst, setShowBurst] = useState(false);
   const isCreator = currentUserId === habit.created_by;
@@ -186,8 +189,10 @@ export function HabitCard({ habit, completions, onComplete, hideAction, currentU
               </button>
               <button
                 className={styles.deleteBtn}
-                onClick={() => {
-                  if (confirm(t("habits.confirmDelete"))) onDelete(habit.id);
+                onClick={async () => {
+                  const confirmed = await confirm(t("habits.confirmDelete"), "danger");
+                  if (!confirmed) return;
+                  onDelete(habit.id);
                 }}
                 title={t("common.delete")}
               >
@@ -280,6 +285,14 @@ export function HabitCard({ habit, completions, onComplete, hideAction, currentU
             if (onEdit) onEdit(updated);
           }}
           onClose={() => setEditing(false)}
+        />
+      )}
+      {confirmState && (
+        <ConfirmModal
+          message={confirmState.message}
+          variant={confirmState.variant}
+          onConfirm={handleConfirm}
+          onCancel={handleCancel}
         />
       )}
     </div>

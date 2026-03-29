@@ -43,7 +43,7 @@ $tabbar-height: 52px;
   font-family: $font-family-display;
   font-size: $font-size-xl;
   font-weight: $font-weight-bold;
-  color: var(--color-text-primary);
+  color: $color-text-primary;
   margin: 0;
 
   @include desktop {
@@ -55,7 +55,7 @@ $tabbar-height: 52px;
   width: 48px;
   height: 48px;
   border-radius: $border-radius-full;
-  background: var(--gradient-primary-bg);
+  background: $gradient-primary;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -97,7 +97,7 @@ $tabbar-height: 52px;
   border-radius: $border-radius-md;
   border: none;
   background: transparent;
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
   cursor: pointer;
   @include transition;
   flex-shrink: 0;
@@ -109,7 +109,7 @@ $tabbar-height: 52px;
   }
 
   &:hover {
-    color: var(--color-text-primary);
+    color: $color-text-primary;
     background: rgba(var(--glass-color), 0.05);
   }
 
@@ -120,9 +120,9 @@ $tabbar-height: 52px;
 }
 
 .tabItemActive {
-  color: var(--color-primary);
+  color: $color-primary;
   background: alpha($color-primary, 18%);
-  border-bottom: 2px solid var(--color-primary);
+  border-bottom: 2px solid $color-primary;
   box-shadow: 0 0 12px alpha($color-primary, 12%);
 
   .tabIcon {
@@ -154,7 +154,7 @@ $tabbar-height: 52px;
   min-width: 16px;
   height: 16px;
   border-radius: $border-radius-full;
-  background: var(--color-warning);
+  background: $color-warning;
   color: #fff;
   font-size: 10px;
   font-weight: $font-weight-bold;

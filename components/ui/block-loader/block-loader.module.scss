@@ -154,7 +154,7 @@ $block-colors: (
 
 .label {
   margin-top: $spacing-20;
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
   font-size: $font-size-sm;
   font-weight: $font-weight-medium;
   display: flex;
@@ -173,7 +173,7 @@ $block-colors: (
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: var(--color-text-secondary);
+  background: $color-text-secondary;
   animation: dotBounce 1.4s ease-in-out infinite;
 
   &:nth-child(2) { animation-delay: 0.16s; }

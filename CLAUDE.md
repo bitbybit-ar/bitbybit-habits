@@ -84,6 +84,11 @@ bitbybit-habits/
 - **API routes**: siempre en `app/api/`, nunca dentro de `[locale]`
 - **Tipos**: centralizar en `lib/types.ts`
 - **Reutilizar componentes** entre dashboards kid y sponsor siempre que sea posible
+- **Componentes compartidos de dashboard** en `components/dashboard/`:
+  - `DashboardSection` — wrapper con titulo opcional y prop `center` para loading states
+  - `EmptyState` — estado vacio con icon, title, description y action opcional
+  - `BlockLoader` — loader animado (usar en lugar de `Spinner` en dashboards)
+  - Tab components en `components/dashboard/kid/` y `components/dashboard/sponsor/`
 
 ## Convenciones de codigo
 
@@ -101,18 +106,45 @@ bitbybit-habits/
 
 ### SCSS
 - Usar SCSS modules (`.module.scss`) para cada componente
-- Importar variables con `@use "@/styles/colors" as *`
-- Respetar la paleta de colores definida en `styles/_colors.scss`:
-  - Primary (Sats Gold): `$color-primary` (#F7A825)
-  - Secondary (Sage Green): `$color-secondary` (#4CAF7D)
-  - Accent: `$color-accent` (#FF6B6B), `$color-accent-alt` (#4DB6AC)
-  - Backgrounds dark: `$color-bg-dark`, `$color-bg-dark-2`, `$color-bg-dark-3`
-  - Texto: `$color-text-primary`, `$color-text-secondary`
-- Usar los mixins existentes: `container`, `gradient-text`, `card-base`, `transition`
-- Usar las variables de spacing: `$spacing-4` a `$spacing-100`
-- Usar las variables de border-radius: `$border-radius-sm` a `$border-radius-full`
-- Mobile-first con mixins `@include mobile`, `@include tablet`, `@include desktop`
+- Importar modulos de estilos con `@use`:
+  ```scss
+  @use "@/styles/colors" as *;
+  @use "@/styles/spacing" as *;
+  @use "@/styles/typography" as *;
+  @use "@/styles/common-mixins" as *;
+  @use "@/styles/media-mixins" as *;
+  @use "@/styles/glass" as *;
+  ```
+
+#### Variables obligatorias (NO hardcodear valores)
+- **Colores**: Siempre usar variables `$color-*` de `_colors.scss`, NUNCA `var(--color-*)` directo ni hex/rgb
+  - `$color-primary`, `$color-secondary`, `$color-accent`, `$color-accent-alt`
+  - `$color-success`, `$color-warning`, `$color-error`, `$color-info`, `$color-nostr`
+  - `$color-bg`, `$color-bg-2`, `$color-bg-3`, `$color-surface`
+  - `$color-text-primary`, `$color-text-secondary`
+- **Transparencia**: Usar `alpha($color, amount)` en lugar de `rgba()` o `color-mix()` directo
+  ```scss
+  // Correcto
+  background: alpha($color-primary, 15%);
+  // Incorrecto
+  background: rgba(var(--color-primary), 0.15);
+  background: color-mix(in srgb, var(--color-primary) 15%, transparent);
+  ```
+- **Spacing**: `$spacing-4` a `$spacing-100` (NO usar px sueltos como `10px`, `20px`)
+- **Border radius**: `$border-radius-sm` (8px) a `$border-radius-full` (100px)
+- **Font sizes**: `$font-size-xs` a `$font-size-hero` (NO usar `0.75rem`, `13px`, `11px`)
+- **Font weights**: `$font-weight-normal` (400) a `$font-weight-extrabold` (800) (NO usar `600` directo)
+
+#### Mixins disponibles
+- **Layout**: `@include container`, `@include section-padding`
+- **Efectos**: `@include gradient-text`, `@include transition`
+- **Glass system**: `@include glass-card`, `@include glass-subtle`, `@include glass-nav`, `@include glass-modal`, `@include glass(opacity, blur, border-opacity, radius)`
+- **Responsive** (mobile-first): `@include mobile`, `@include tablet`, `@include desktop`
+
+#### Reglas
 - Dark mode es el default (pensado para seguridad visual de ninos)
+- NO usar inline styles en JSX — crear clases SCSS
+- NO usar `var(--color-*)` en SCSS files — usar `$color-*` (son alias, se resuelven en runtime)
 
 ### Iconos
 - Crear SVG icons como React components en `components/icons/index.tsx`

@@ -24,7 +24,7 @@
 .month {
   font-weight: $font-weight-bold;
   font-size: $font-size-sm;
-  color: var(--color-primary);
+  color: $color-primary;
   text-align: right;
   padding-top: 20px;
   padding-right: $spacing-16;
@@ -44,7 +44,7 @@
 .dot {
   width: 16px;
   height: 16px;
-  background: var(--gradient-primary-bg);
+  background: $gradient-primary;
   border-radius: 50%;
   margin-top: 22px;
   z-index: 1;
@@ -76,7 +76,7 @@
   }
 
   p {
-    color: var(--color-text-secondary);
+    color: $color-text-secondary;
     font-size: $font-size-sm;
   }
 }
@@ -84,7 +84,7 @@
 .difficulty {
   display: inline-block;
   font-size: $font-size-xs;
-  color: var(--color-primary-light);
+  color: $color-primary-light;
   margin-top: $spacing-4;
 }
 
@@ -100,7 +100,7 @@
 
   .month {
     font-size: 0.95rem;
-    color: var(--color-primary-light);
+    color: $color-primary-light;
   }
 
   .content {

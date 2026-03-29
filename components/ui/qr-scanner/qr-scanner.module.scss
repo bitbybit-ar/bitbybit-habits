@@ -1,5 +1,7 @@
 @use "@/styles/colors" as *;
 @use "@/styles/spacing" as *;
+@use "@/styles/typography" as *;
+@use "@/styles/common-mixins" as *;
 @use "@/styles/glass" as *;
 
 .overlay {
@@ -40,9 +42,9 @@
 }
 
 .title {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--color-text-primary);
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
   margin: 0;
 }
 
@@ -50,13 +52,13 @@
   padding: $spacing-4 $spacing-8;
   border: none;
   background: transparent;
-  color: var(--color-text-secondary);
-  font-size: 1.5rem;
+  color: $color-text-secondary;
+  font-size: $font-size-xl;
   cursor: pointer;
   line-height: 1;
 
   &:hover {
-    color: var(--color-text-primary);
+    color: $color-text-primary;
   }
 }
 
@@ -89,10 +91,33 @@
   }
 }
 
+.errorState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $spacing-12;
+  padding: $spacing-24;
+}
+
 .error {
   text-align: center;
   color: $color-error;
-  font-size: 0.85rem;
-  padding: $spacing-16;
+  font-size: $font-size-sm;
   margin: 0;
+}
+
+.retryBtn {
+  padding: $spacing-8 $spacing-16;
+  border-radius: $border-radius-sm;
+  border: 1px solid alpha($color-primary, 30%);
+  background: alpha($color-primary, 10%);
+  color: $color-primary;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  cursor: pointer;
+
+  &:hover {
+    background: alpha($color-primary, 20%);
+    border-color: $color-primary;
+  }
 }

@@ -3,6 +3,8 @@
 import { useState, useEffect, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
+import { useConfirm } from "@/lib/hooks/useConfirm";
+import { ConfirmModal } from "@/components/ui/confirm-modal";
 import AuthCard from "@/components/auth/AuthCard";
 import { Container } from "@/components/ui/container";
 import { BlockLoader } from "@/components/ui/block-loader";
@@ -48,6 +50,7 @@ export default function SettingsPage() {
   const [nostrSyncing, setNostrSyncing] = useState(false);
   const [locale, setLocale] = useState<"es" | "en">("es");
 
+  const { confirm, confirmState, handleConfirm, handleCancel } = useConfirm();
   const isNostrOrigin = profile?.auth_provider === "nostr";
 
   const form = useFormValidation({
@@ -178,7 +181,7 @@ export default function SettingsPage() {
       setProfile(data.data);
       // Email user just linked Nostr: prompt to import metadata
       if (data.data.auth_provider === "email" && data.data.nostr_pubkey) {
-        const wantImport = confirm(t("settings.nostrImportPrompt"));
+        const wantImport = await confirm(t("settings.nostrImportPrompt"), "danger");
         if (wantImport) {
           setNostrSyncing(true);
           try {
@@ -209,7 +212,8 @@ export default function SettingsPage() {
 
   const handleUnlinkNostr = async () => {
     setNostrError("");
-    if (!confirm(t("settings.unlinkNostrConfirm"))) return;
+    const confirmed = await confirm(t("settings.unlinkNostrConfirm"), "danger");
+    if (!confirmed) return;
     const result = await unlinkAccount();
     if (!result.success) {
       setNostrError(resolveApiError(result.error || "nostr_unlink_failed", t));
@@ -423,6 +427,14 @@ export default function SettingsPage() {
           {t("common.save")}
         </FormButton>
       </form>
+      {confirmState && (
+        <ConfirmModal
+          message={confirmState.message}
+          variant={confirmState.variant}
+          onConfirm={handleConfirm}
+          onCancel={handleCancel}
+        />
+      )}
     </AuthCard>
   );
 }
