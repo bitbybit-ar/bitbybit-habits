@@ -4,7 +4,7 @@ import { useTranslations, useLocale } from "next-intl";
 import { BoltIcon } from "@/components/icons";
 import { DashboardSection } from "@/components/dashboard/dashboard-section";
 import { EmptyState } from "@/components/dashboard/empty-state";
-import { Spinner } from "@/components/ui/spinner";
+import { BlockLoader } from "@/components/ui/block-loader";
 import { formatDisplayDate } from "@/lib/date";
 import type { PaymentWithDetails } from "@/lib/types";
 import styles from "../../../app/[locale]/(dashboard)/sponsor/sponsor.module.scss";
@@ -25,11 +25,13 @@ export function SponsorPaymentsTab({ payments, isLoading, onRetry }: SponsorPaym
   const t = useTranslations();
   const locale = useLocale();
 
+  if (isLoading) {
+    return <DashboardSection center><BlockLoader /></DashboardSection>;
+  }
+
   return (
     <DashboardSection title={t("payments.title")}>
-      {isLoading ? (
-        <Spinner size="sm" />
-      ) : payments.length === 0 ? (
+      {payments.length === 0 ? (
         <EmptyState
           icon={<BoltIcon size={48} />}
           title={t("emptyState.noPayments")}

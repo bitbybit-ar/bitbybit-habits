@@ -6,6 +6,14 @@
   margin-bottom: $spacing-32;
 }
 
+.center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+}
+
 .title {
   font-size: $font-size-lg;
   font-weight: $font-weight-semibold;

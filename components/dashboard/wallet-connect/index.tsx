@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { WalletIcon, BoltIcon } from "@/components/icons";
-import { Spinner } from "@/components/ui/spinner";
+import { BlockLoader } from "@/components/ui/block-loader";
 import { FormInput, FormButton } from "@/components/ui/form";
 import { useWebLN } from "@/lib/hooks/useWebLN";
 import styles from "./wallet-connect.module.scss";
@@ -133,7 +133,7 @@ export function WalletConnect() {
   }, []);
 
   if (loading) {
-    return <Spinner size="sm" />;
+    return <div className={styles.loaderWrapper}><BlockLoader /></div>;
   }
 
   if (wallet) {
