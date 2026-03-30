@@ -2,8 +2,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { createRequest, parseResponse, clearSessionCookie, UUID } from "../../helpers";
 
-let selectCallCount = 0;
-const selectResults: unknown[][] = [];
+const mockSelectResult = vi.fn();
 const mockInsertReturning = vi.fn();
 
 const chainable = () => {
@@ -11,7 +10,7 @@ const chainable = () => {
   const self = () => chain;
   chain.from = self; chain.where = self; chain.innerJoin = self; chain.leftJoin = self;
   chain.orderBy = self; chain.limit = self;
-  chain.then = (r: (v: unknown) => void) => r(selectResults[selectCallCount++] ?? []);
+  chain.then = (r: (v: unknown) => void) => r(mockSelectResult());
   return chain;
 };
 
@@ -62,8 +61,6 @@ async function clearChallengeCookie() {
 describe("/api/auth/nostr", () => {
   beforeEach(async () => {
     vi.clearAllMocks();
-    selectCallCount = 0;
-    selectResults.length = 0;
     await clearSessionCookie();
     await clearChallengeCookie();
   });
@@ -83,15 +80,17 @@ describe("/api/auth/nostr", () => {
   });
 
   it("POST logs in existing user by nostr_pubkey", async () => {
-    await clearChallengeCookie();
     await setChallengeCookie();
     vi.mocked(validateAuthEvent).mockReturnValue(true);
 
-    selectResults.push([{
-      id: UUID.user1, email: "nostr@example.com", username: "nostruser",
-      display_name: "Nostr User", avatar_url: null, locale: "es", nostr_pubkey: MOCK_PUBKEY,
-    }]);
-    selectResults.push([{ role: "sponsor" }]);
+    // 1st select: find user by pubkey — found
+    // 2nd select: family membership
+    mockSelectResult
+      .mockReturnValueOnce([{
+        id: UUID.user1, email: "nostr@example.com", username: "nostruser",
+        display_name: "Nostr User", avatar_url: null, locale: "es", nostr_pubkey: MOCK_PUBKEY,
+      }])
+      .mockReturnValueOnce([{ role: "sponsor" }]);
 
     const req = createRequest("POST", "/api/auth/nostr", { signedEvent: mockSignedEvent });
     const { status, body } = await parseResponse(await POST(req));
@@ -101,19 +100,20 @@ describe("/api/auth/nostr", () => {
   });
 
   it("POST auto-creates user on first-time Nostr login", async () => {
-    await clearChallengeCookie();
     await setChallengeCookie();
     vi.mocked(validateAuthEvent).mockReturnValue(true);
 
-    selectResults.push([]); // no existing user
-    selectResults.push([]); // no family membership
+    // 1st select: find user by pubkey — not found
+    // 2nd select: family membership — none
+    mockSelectResult
+      .mockReturnValueOnce([])
+      .mockReturnValueOnce([]);
 
-    const newUser = {
+    mockInsertReturning.mockResolvedValueOnce([{
       id: UUID.user3, email: `nostr_${MOCK_PUBKEY.slice(0, 12)}@bitbybit.nostr`,
       username: `nostr_${MOCK_PUBKEY.slice(0, 8)}`, display_name: `Nostr ${MOCK_PUBKEY.slice(0, 8)}`,
       avatar_url: null, locale: "es", nostr_pubkey: MOCK_PUBKEY,
-    };
-    mockInsertReturning.mockImplementation(async () => [newUser]);
+    }]);
 
     const req = createRequest("POST", "/api/auth/nostr", { signedEvent: mockSignedEvent });
     const { status, body } = await parseResponse(await POST(req));
