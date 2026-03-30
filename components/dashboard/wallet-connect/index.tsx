@@ -34,16 +34,16 @@ type ScanTarget = "nwc" | "invoice" | null;
 
 interface WalletConnectProps {
   role?: "sponsor" | "kid" | null;
+  preferWebln?: boolean;
+  onPreferWeblnChange?: (value: boolean) => void;
 }
 
-export function WalletConnect({ role }: WalletConnectProps) {
+export function WalletConnect({ role, preferWebln = false, onPreferWeblnChange }: WalletConnectProps) {
   const t = useTranslations();
   const { showToast } = useToast();
   const { hasExtension, extensionName } = useWebLN();
-  const showExtension = hasExtension && role !== "kid";
+  const showExtensionToggle = hasExtension && role !== "kid";
   const [wallet, setWallet] = useState<WalletPublic | null>(null);
-  const [weblnConnected, setWeblnConnected] = useState(false);
-  const [weblnLabel, setWeblnLabel] = useState("");
   const [nwcUrl, setNwcUrl] = useState("");
   const [label, setLabel] = useState("");
   const [loading, setLoading] = useState(true);
@@ -60,7 +60,6 @@ export function WalletConnect({ role }: WalletConnectProps) {
     block_height: number | null;
   } | null>(null);
   const [view, setView] = useState<WalletView>("main");
-  const [connectMethod, setConnectMethod] = useState<"nwc" | "extension">("nwc");
   const [scanning, setScanning] = useState<ScanTarget>(null);
 
   // Send state
@@ -183,28 +182,22 @@ export function WalletConnect({ role }: WalletConnectProps) {
     }
   }, [nwcUrl, label, showToast, t]);
 
-  const handleExtensionConnect = useCallback(async () => {
-    setSaving(true);
+  const handleTogglePreferWebln = useCallback(async () => {
+    const newValue = !preferWebln;
     try {
-      const webln = (window as unknown as { webln?: { enable: () => Promise<void>; getInfo?: () => Promise<{ node?: { alias?: string } }> } }).webln;
-      if (!webln) {
-        showToast(t("wallet.connectError"), "error");
-        setConnectMethod("nwc");
-        return;
+      const res = await fetch("/api/auth/profile", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prefer_webln: newValue }),
+      });
+      if (res.ok) {
+        onPreferWeblnChange?.(newValue);
+        showToast(t("wallet.preferWeblnSaved"), "success");
       }
-      await webln.enable();
-      const info = webln.getInfo ? await webln.getInfo() : null;
-      const extensionLabel = info?.node?.alias ?? extensionName ?? "WebLN Extension";
-      setWeblnConnected(true);
-      setWeblnLabel(extensionLabel);
-      showToast(t("wallet.walletConnected"), "success");
     } catch {
-      showToast(t("wallet.connectError"), "error");
-      setConnectMethod("nwc");
-    } finally {
-      setSaving(false);
+      // Silently handle
     }
-  }, [extensionName, showToast, t]);
+  }, [preferWebln, onPreferWeblnChange, showToast, t]);
 
   const handleDisconnect = useCallback(async () => {
     try {
@@ -352,24 +345,8 @@ export function WalletConnect({ role }: WalletConnectProps) {
         />
       )}
 
-      {/* ── WebLN connected (client-side only) ── */}
-      {!wallet && weblnConnected && (
-        <div className={styles.card}>
-          <div className={styles.statusRow}>
-            <div className={styles.statusIndicator} data-connected="true" />
-            <span className={styles.statusText}>
-              {weblnLabel || t("wallet.walletConnected")}
-            </span>
-            <button className={styles.disconnectBtn} onClick={() => { setWeblnConnected(false); setWeblnLabel(""); }}>
-              {t("wallet.disconnect")}
-            </button>
-          </div>
-          <p className={styles.weblnNote}>{t("wallet.weblnNote")}</p>
-        </div>
-      )}
-
       {/* ── Not connected ── */}
-      {!wallet && !weblnConnected && (
+      {!wallet && (
         <div className={styles.card}>
           <div className={styles.connectHeader}>
             <WalletIcon size={32} />
@@ -377,60 +354,66 @@ export function WalletConnect({ role }: WalletConnectProps) {
             <p className={styles.connectDesc}>{t("wallet.connectDesc")}</p>
           </div>
 
-          {showExtension && (
-            <div className={styles.methodPicker}>
+          <div className={styles.nwcSection}>
+            <div className={styles.nwcHeader}>
+              <span className={styles.nwcTitle}>{t("wallet.connectNwc")}</span>
               <button
-                className={`${styles.methodButton} ${styles.methodNwc} ${connectMethod === "nwc" ? styles.methodActive : ""}`}
-                onClick={() => setConnectMethod("nwc")}
+                className={styles.scanIconButton}
+                onClick={() => setScanning("nwc")}
+                title={t("wallet.scanNwcQR")}
+                aria-label={t("wallet.scanNwcQR")}
               >
-                {t("wallet.connectNwc")}
-              </button>
-              <button
-                className={`${styles.methodButton} ${styles.methodWebln} ${connectMethod === "extension" ? styles.methodActive : ""}`}
-                onClick={() => { setConnectMethod("extension"); handleExtensionConnect(); }}
-                disabled={saving}
-              >
-                {t("wallet.connectExtension", { name: extensionName ?? "WebLN" })}
+                <ScanIcon size={18} />
               </button>
             </div>
-          )}
+            <div className={styles.form}>
+              <FormInput
+                id="nwc-url"
+                label={t("wallet.nwcUrl")}
+                placeholder="nostr+walletconnect://..."
+                value={nwcUrl}
+                onChange={setNwcUrl}
+              />
+              <FormInput
+                id="nwc-label"
+                label={t("wallet.label")}
+                placeholder={t("wallet.labelPlaceholder")}
+                value={label}
+                onChange={setLabel}
+              />
+              <FormButton
+                onClick={() => handleConnect()}
+                loading={saving}
+                loadingText={t("common.loading")}
+                disabled={!nwcUrl}
+              >
+                {t("wallet.connect")}
+              </FormButton>
+            </div>
+          </div>
 
-          {(connectMethod === "nwc" || !showExtension) && (
-            <div className={styles.nwcSection}>
-              <div className={styles.nwcHeader}>
-                {!showExtension && <span className={styles.nwcTitle}>{t("wallet.connectNwc")}</span>}
+          {showExtensionToggle && (
+            <div className={styles.weblnToggleSection}>
+              <div className={styles.weblnToggleRow}>
+                <div className={styles.weblnToggleInfo}>
+                  <span className={styles.weblnToggleLabel}>
+                    {t("wallet.extensionDetected", { name: extensionName ?? "WebLN" })}
+                  </span>
+                  <span className={styles.weblnToggleDesc}>{t("wallet.preferWeblnDesc")}</span>
+                </div>
                 <button
-                  className={styles.scanIconButton}
-                  onClick={() => setScanning("nwc")}
-                  title={t("wallet.scanNwcQR")}
-                  aria-label={t("wallet.scanNwcQR")}
+                  className={styles.toggle}
+                  role="switch"
+                  aria-checked={preferWebln}
+                  onClick={handleTogglePreferWebln}
                 >
-                  <ScanIcon size={18} />
+                  <span className={styles.toggleTrack} data-on={preferWebln || undefined}>
+                    <span className={styles.toggleThumb} />
+                  </span>
+                  <span className={styles.toggleText}>
+                    {t("wallet.preferWeblnLabel")}
+                  </span>
                 </button>
-              </div>
-              <div className={styles.form}>
-                <FormInput
-                  id="nwc-url"
-                  label={t("wallet.nwcUrl")}
-                  placeholder="nostr+walletconnect://..."
-                  value={nwcUrl}
-                  onChange={setNwcUrl}
-                />
-                <FormInput
-                  id="nwc-label"
-                  label={t("wallet.label")}
-                  placeholder={t("wallet.labelPlaceholder")}
-                  value={label}
-                  onChange={setLabel}
-                />
-                <FormButton
-                  onClick={() => handleConnect()}
-                  loading={saving}
-                  loadingText={t("common.loading")}
-                  disabled={!nwcUrl}
-                >
-                  {t("wallet.connect")}
-                </FormButton>
               </div>
             </div>
           )}
@@ -507,6 +490,32 @@ export function WalletConnect({ role }: WalletConnectProps) {
             <ListIcon size={16} />
             <span>{t("wallet.transactions")}</span>
           </button>
+
+          {showExtensionToggle && (
+            <div className={styles.weblnToggleSection}>
+              <div className={styles.weblnToggleRow}>
+                <div className={styles.weblnToggleInfo}>
+                  <span className={styles.weblnToggleLabel}>
+                    {t("wallet.extensionDetected", { name: extensionName ?? "WebLN" })}
+                  </span>
+                  <span className={styles.weblnToggleDesc}>{t("wallet.preferWeblnDesc")}</span>
+                </div>
+                <button
+                  className={styles.toggle}
+                  role="switch"
+                  aria-checked={preferWebln}
+                  onClick={handleTogglePreferWebln}
+                >
+                  <span className={styles.toggleTrack} data-on={preferWebln || undefined}>
+                    <span className={styles.toggleThumb} />
+                  </span>
+                  <span className={styles.toggleText}>
+                    {t("wallet.preferWeblnLabel")}
+                  </span>
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       )}
 

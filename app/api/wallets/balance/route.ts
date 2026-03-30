@@ -2,6 +2,8 @@ import { apiHandler } from "@/lib/api";
 import { getDecryptedNwcUrl } from "@/app/api/wallets/route";
 import { NWCClient } from "@getalby/sdk";
 
+const RELAY_TIMEOUT_MS = 20000;
+
 /**
  * GET /api/wallets/balance
  *
@@ -12,22 +14,40 @@ import { NWCClient } from "@getalby/sdk";
 export const GET = apiHandler(async (_request, { session, db }) => {
   const nwcUrl = await getDecryptedNwcUrl(session.user_id, db);
   if (!nwcUrl) {
+    console.log("[Balance] No NWC URL found for user");
     return { balance_sats: null, node_info: null };
   }
 
-  const client = new NWCClient({ nostrWalletConnectUrl: nwcUrl });
+  let client: NWCClient;
+  try {
+    client = new NWCClient({ nostrWalletConnectUrl: nwcUrl });
+  } catch (err) {
+    console.error("[Balance] Failed to create NWCClient:", err instanceof Error ? err.message : err);
+    return { balance_sats: null, node_info: null };
+  }
 
   try {
-    const timeout = <T>(promise: Promise<T>, ms: number): Promise<T | null> =>
+    const timeout = <T>(promise: Promise<T>, ms: number, label: string): Promise<T | null> =>
       Promise.race([
         promise,
-        new Promise<null>((resolve) => setTimeout(() => resolve(null), ms)),
+        new Promise<null>((resolve) => {
+          setTimeout(() => {
+            console.warn(`[Balance] ${label} timed out after ${ms}ms`);
+            resolve(null);
+          }, ms);
+        }),
       ]);
 
-    // Fetch balance and node info in parallel (15s timeout for slow relays)
+    // Fetch balance and node info in parallel
     const [balanceResult, infoResult] = await Promise.all([
-      timeout(client.getBalance(), 15000),
-      timeout(client.getInfo(), 15000),
+      timeout(client.getBalance(), RELAY_TIMEOUT_MS, "getBalance").catch((err) => {
+        console.warn("[Balance] getBalance error:", err instanceof Error ? err.message : err);
+        return null;
+      }),
+      timeout(client.getInfo(), RELAY_TIMEOUT_MS, "getInfo").catch((err) => {
+        console.warn("[Balance] getInfo error:", err instanceof Error ? err.message : err);
+        return null;
+      }),
     ]);
 
     const balanceSats = balanceResult
@@ -45,8 +65,13 @@ export const GET = apiHandler(async (_request, { session, db }) => {
         }
       : null;
 
+    if (!balanceSats && !nodeInfo) {
+      console.warn("[Balance] Both balance and info returned null — relay may be unreachable");
+    }
+
     return { balance_sats: balanceSats, node_info: nodeInfo };
-  } catch {
+  } catch (err) {
+    console.error("[Balance] Unexpected error:", err instanceof Error ? err.message : err);
     return { balance_sats: null, node_info: null };
   } finally {
     client.close();
