@@ -83,6 +83,14 @@ const ERROR_CODE_TO_I18N: Record<string, string> = {
   payment_failed: "errors.paymentFailed",
   invoice_failed: "errors.invoiceFailed",
 
+  // Profile
+  no_changes: "errors.noChanges",
+  no_extension: "auth.nostrExtensionRequired",
+  nostr_no_signing_key: "errors.nostrNoSigningKey",
+  nostr_link_failed: "errors.nostrLinkFailed",
+  nostr_login_failed: "errors.nostrLoginFailed",
+  nostr_unlink_failed: "errors.nostrUnlinkFailed",
+
   // Generic
   Unauthorized: "errors.unauthorized",
   Forbidden: "errors.forbidden",

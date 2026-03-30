@@ -15,10 +15,9 @@
     right: 0;
     z-index: 100;
     @include glass-nav;
-    border-top: 1px solid rgba(var(--glass-color), 0.06);
+    border-top: 1px solid alpha($color-text-primary, 6%);
     border-bottom: none;
-    padding: $spacing-4 0;
-    padding-bottom: env(safe-area-inset-bottom, $spacing-4);
+    padding: $spacing-4 0 env(safe-area-inset-bottom, $spacing-4);
     justify-content: space-around;
     align-items: center;
   }

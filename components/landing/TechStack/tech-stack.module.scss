@@ -80,7 +80,7 @@
   position: fixed;
   inset: 0;
   z-index: 2000;
-  background: rgba(var(--shadow-color), 0.7);
+  background: alpha($color-bg, 70%);
   backdrop-filter: blur(8px);
   display: flex;
   align-items: center;

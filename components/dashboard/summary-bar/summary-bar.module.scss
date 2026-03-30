@@ -34,8 +34,8 @@
     cursor: pointer;
 
     &:hover {
-      border-color: rgba(var(--glass-color), 0.15);
-      box-shadow: 0 4px 16px rgba(var(--shadow-color), 0.15);
+      border-color: alpha($color-text-primary, 15%);
+      box-shadow: 0 4px 16px alpha($color-bg, 15%);
       transform: translateY(-1px);
     }
 

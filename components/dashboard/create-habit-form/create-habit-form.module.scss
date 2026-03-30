@@ -29,8 +29,8 @@
 .input,
 .textarea,
 .select {
-  background: rgba(var(--glass-color), 0.04);
-  border: 1px solid rgba(var(--glass-color), 0.1);
+  background: alpha($color-text-primary, 4%);
+  border: 1px solid alpha($color-text-primary, 10%);
   border-radius: $border-radius-md;
   padding: $spacing-12 $spacing-16;
   font-size: $font-size-base;
@@ -90,7 +90,7 @@
 
 .colorSelected {
   border-color: $color-text-primary;
-  box-shadow: 0 0 0 2px rgba(var(--glass-color), 0.2);
+  box-shadow: 0 0 0 2px alpha($color-text-primary, 20%);
   transform: scale(1.15);
 }
 
@@ -108,7 +108,7 @@
   padding: $spacing-8 $spacing-12;
   background: $color-bg-3;
   border-radius: $border-radius-md;
-  border: 1px solid rgba(var(--glass-color), 0.1);
+  border: 1px solid alpha($color-text-primary, 10%);
   transition: background 0.2s, border-color 0.2s;
 
   &:has(.checkbox:checked) {

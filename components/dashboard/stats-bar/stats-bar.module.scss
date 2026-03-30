@@ -25,13 +25,13 @@
   transition: all 0.3s ease;
 
   &:hover {
-    border-color: rgba(var(--glass-color), 0.1);
+    border-color: alpha($color-text-primary, 10%);
   }
 }
 
 .statCardHighlight {
   border-color: alpha($color-primary, 20%);
-  background: linear-gradient(135deg, alpha($color-primary, 8%) 0%, rgba(var(--glass-color), 0.03) 100%);
+  background: linear-gradient(135deg, alpha($color-primary, 8%) 0%, alpha($color-text-primary, 3%) 100%);
 }
 
 .iconWrapper {

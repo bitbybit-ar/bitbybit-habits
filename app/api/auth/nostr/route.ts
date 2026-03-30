@@ -75,6 +75,7 @@ export const POST = apiHandler(async (request, { db }) => {
       email: users.email,
       username: users.username,
       display_name: users.display_name,
+      avatar_url: users.avatar_url,
       locale: users.locale,
       nostr_pubkey: users.nostr_pubkey,
     })
@@ -105,6 +106,7 @@ export const POST = apiHandler(async (request, { db }) => {
         email: users.email,
         username: users.username,
         display_name: users.display_name,
+        avatar_url: users.avatar_url,
         locale: users.locale,
         nostr_pubkey: users.nostr_pubkey,
       });
@@ -128,6 +130,7 @@ export const POST = apiHandler(async (request, { db }) => {
     email: user.email,
     username: user.username,
     display_name: user.display_name,
+    avatar_url: user.avatar_url,
     locale: user.locale as "es" | "en",
     role,
     nostr_pubkey: user.nostr_pubkey,

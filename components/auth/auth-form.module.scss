@@ -167,7 +167,7 @@
   flex: 1;
   height: 3px;
   border-radius: 2px;
-  background: rgba(var(--glass-color), 0.06);
+  background: alpha($color-text-primary, 6%);
   @include transition(background, 0.3s);
 }
 

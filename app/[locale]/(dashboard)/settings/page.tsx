@@ -8,6 +8,7 @@ import { ConfirmModal } from "@/components/ui/confirm-modal";
 import AuthCard from "@/components/auth/AuthCard";
 import { Container } from "@/components/ui/container";
 import { BlockLoader } from "@/components/ui/block-loader";
+import { BackLink } from "@/components/ui/back-link";
 import { FormInput, FormSelect, FormButton } from "@/components/ui/form";
 import { useFormValidation } from "@/lib/hooks/useFormValidation";
 import { useNostr } from "@/lib/hooks/useNostr";
@@ -89,6 +90,17 @@ export default function SettingsPage() {
     if (un.trim()) return un.trim().charAt(0).toUpperCase();
     return "A";
   }, [form.values.display_name, form.values.username]);
+
+  const hasChanges = useMemo(() => {
+    if (!profile) return false;
+    return (
+      form.values.display_name !== profile.display_name ||
+      form.values.username !== profile.username ||
+      form.values.email !== profile.email ||
+      (form.values.avatar_url || "") !== (profile.avatar_url ?? "") ||
+      locale !== profile.locale
+    );
+  }, [form.values, locale, profile]);
 
   useEffect(() => {
     async function fetchProfile() {
@@ -263,9 +275,11 @@ export default function SettingsPage() {
   const av = form.fieldProps("avatar_url");
 
   return (
-    <AuthCard
-      title={t("settings.title")}
-      subtitle=""
+    <Container>
+      <BackLink />
+      <AuthCard
+          title={t("settings.title")}
+          subtitle=""
       switchText=""
       switchLabel=""
       switchHref="/"
@@ -364,7 +378,7 @@ export default function SettingsPage() {
             <>
               <div className={styles.nostrLinkedInfo}>
                 <div>
-                  <div style={{ fontSize: "0.75rem", color: "var(--color-text-secondary)", marginBottom: 4 }}>
+                  <div className={styles.nostrPubkeyLabel}>
                     {t("settings.nostrPubkey")}
                   </div>
                   <div className={styles.nostrPubkey}>
@@ -411,7 +425,7 @@ export default function SettingsPage() {
               {t("settings.linkNostr")}
             </button>
           ) : (
-            <p style={{ fontSize: "0.8rem", color: "var(--color-text-secondary)" }}>
+            <p className={styles.nostrExtensionHint}>
               {t("auth.nostrExtensionRequired")}
             </p>
           )}
@@ -423,7 +437,7 @@ export default function SettingsPage() {
           <p className={styles.savedText}>{t("settings.saved")}</p>
         )}
 
-        <FormButton type="submit" loading={saving} loadingText={t("common.loading")}>
+        <FormButton type="submit" loading={saving} loadingText={t("common.loading")} disabled={!hasChanges}>
           {t("common.save")}
         </FormButton>
       </form>
@@ -436,5 +450,6 @@ export default function SettingsPage() {
         />
       )}
     </AuthCard>
+    </Container>
   );
 }

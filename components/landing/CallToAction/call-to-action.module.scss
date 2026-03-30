@@ -79,7 +79,7 @@
 .secondaryButton {
   background: transparent;
   color: $color-text-primary;
-  border: 1px solid rgba(var(--glass-color), 0.15);
+  border: 1px solid alpha($color-text-primary, 15%);
 
   &:hover {
     border-color: alpha($color-primary, 40%);

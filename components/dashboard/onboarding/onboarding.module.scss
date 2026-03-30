@@ -70,7 +70,7 @@
   transition: all 0.3s ease;
 
   &:hover {
-    border-color: rgba(var(--glass-color), 0.12);
+    border-color: alpha($color-text-primary, 12%);
   }
 }
 
@@ -142,11 +142,11 @@
 .backButton {
   background: transparent;
   color: $color-text-secondary;
-  border: 1px solid rgba(var(--glass-color), 0.1);
+  border: 1px solid alpha($color-text-primary, 10%);
 
   &:hover {
     color: $color-text-primary;
-    border-color: rgba(var(--glass-color), 0.2);
+    border-color: alpha($color-text-primary, 20%);
   }
 }
 

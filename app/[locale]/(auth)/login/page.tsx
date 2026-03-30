@@ -5,6 +5,9 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import AuthCard from "@/components/auth/AuthCard";
 import { FormInput, FormButton } from "@/components/ui/form";
+import { Container } from "@/components/ui/container";
+import { BlockLoader } from "@/components/ui/block-loader";
+import { BackLink } from "@/components/ui/back-link";
 import { useToast } from "@/components/ui/toast";
 import { useFormValidation } from "@/lib/hooks/useFormValidation";
 import { useNostr } from "@/lib/hooks/useNostr";
@@ -18,6 +21,7 @@ export default function LoginPage() {
   const { hasExtension: nostrAvailable, login: nostrLogin, isLoading: nostrLoading } = useNostr();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [navigating, setNavigating] = useState(false);
 
   const form = useFormValidation({
     initialValues: { login: "", password: "" },
@@ -48,6 +52,7 @@ export default function LoginPage() {
         return;
       }
 
+      setNavigating(true);
       const role = data.data?.role;
       if (role === "kid") router.push("/kid");
       else if (role === "sponsor") router.push("/sponsor");
@@ -66,6 +71,7 @@ export default function LoginPage() {
       setError(resolveApiError(result.error || "nostr_login_failed", t));
       return;
     }
+    setNavigating(true);
     const role = result.data?.role;
     if (role === "kid") router.push("/kid");
     else if (role === "sponsor") router.push("/sponsor");
@@ -75,9 +81,15 @@ export default function LoginPage() {
   const loginField = form.fieldProps("login");
   const passwordField = form.fieldProps("password");
 
+  if (navigating) {
+    return <Container center><BlockLoader /></Container>;
+  }
+
   return (
-    <AuthCard
-      subtitle={t("auth.login")}
+    <Container>
+      <BackLink />
+      <AuthCard
+          subtitle={t("auth.login")}
       switchText={t("auth.noAccount")}
       switchLabel={t("auth.register")}
       switchHref="/register"
@@ -130,5 +142,6 @@ export default function LoginPage() {
         </FormButton>
       </form>
     </AuthCard>
+    </Container>
   );
 }

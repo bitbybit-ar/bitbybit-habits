@@ -70,7 +70,7 @@
   width: 100%;
   padding: $spacing-12;
   border-radius: $border-radius-md;
-  border: 1px solid rgba(var(--glass-color), 0.1);
+  border: 1px solid alpha($color-text-primary, 10%);
   background: $color-bg;
   color: $color-text-primary;
   font-size: $font-size-sm;
@@ -110,7 +110,7 @@
   width: 100%;
   padding: $spacing-12;
   border-radius: $border-radius-md;
-  border: 1px solid rgba(var(--glass-color), 0.1);
+  border: 1px solid alpha($color-text-primary, 10%);
   background: $color-bg;
   color: $color-text-primary;
   font-size: $font-size-sm;
@@ -147,7 +147,7 @@
   padding: $spacing-4 $spacing-8;
   background: $color-bg;
   border-radius: $border-radius-md;
-  border: 1px solid rgba(var(--glass-color), 0.1);
+  border: 1px solid alpha($color-text-primary, 10%);
   transition: background 0.2s, border-color 0.2s;
 
   &:has(.checkbox:checked) {
@@ -177,7 +177,7 @@
 .cancelButton {
   padding: $spacing-8 $spacing-16;
   border-radius: $border-radius-md;
-  border: 1px solid rgba(var(--glass-color), 0.1);
+  border: 1px solid alpha($color-text-primary, 10%);
   background: transparent;
   color: $color-text-secondary;
   font-size: $font-size-sm;
@@ -186,7 +186,7 @@
 
   &:hover {
     color: $color-text-primary;
-    border-color: rgba(var(--glass-color), 0.2);
+    border-color: alpha($color-text-primary, 20%);
   }
 }
 

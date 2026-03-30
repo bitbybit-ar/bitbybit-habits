@@ -5,6 +5,13 @@
 @use "@/styles/media-mixins" as *;
 @use "@/styles/glass" as *;
 
+// ── Centering wrapper ──
+.outerWrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
 // ── Wrapper (holds card + floating icons) ──
 .wrapper {
   position: relative;
@@ -172,7 +179,7 @@
     content: "";
     flex: 1;
     height: 1px;
-    background: rgba(var(--glass-color), 0.06);
+    background: alpha($color-text-primary, 6%);
   }
 
   span {

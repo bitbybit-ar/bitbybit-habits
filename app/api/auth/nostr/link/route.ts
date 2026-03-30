@@ -75,6 +75,7 @@ export const POST = apiHandler(async (request, { session, db }) => {
       email: users.email,
       username: users.username,
       display_name: users.display_name,
+      avatar_url: users.avatar_url,
       locale: users.locale,
       nostr_pubkey: users.nostr_pubkey,
     });
@@ -95,6 +96,7 @@ export const POST = apiHandler(async (request, { session, db }) => {
     email: user.email,
     username: user.username,
     display_name: user.display_name,
+    avatar_url: user.avatar_url,
     locale: user.locale as "es" | "en",
     role,
     nostr_pubkey: user.nostr_pubkey,
@@ -159,6 +161,7 @@ export const DELETE = apiHandler(async (_request, { session, db }) => {
     email: session.email,
     username: session.username,
     display_name: session.display_name,
+    avatar_url: session.avatar_url,
     locale: session.locale,
     role,
     nostr_pubkey: null,

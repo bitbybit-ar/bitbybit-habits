@@ -1,0 +1,23 @@
+@use "@/styles/colors" as *;
+@use "@/styles/spacing" as *;
+@use "@/styles/typography" as *;
+@use "@/styles/common-mixins" as *;
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-8;
+  color: $color-text-secondary;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  font-family: $font-family-base;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  @include transition;
+
+  &:hover {
+    color: $color-text-primary;
+  }
+}

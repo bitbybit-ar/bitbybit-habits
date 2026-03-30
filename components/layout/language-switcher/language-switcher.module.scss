@@ -4,13 +4,9 @@
 .switcher {
   display: flex;
   gap: 2px;
-  background: rgba(var(--glass-color), 0.1);
+  background: alpha($color-text-primary, 10%);
   border-radius: 8px;
   padding: 2px;
-
-  [data-theme="light"] & {
-    background: rgba(0, 0, 0, 0.08);
-  }
 }
 
 .btn {
@@ -31,10 +27,6 @@
 }
 
 .active {
-  background: rgba(var(--glass-color), 0.2);
+  background: alpha($color-text-primary, 20%);
   color: $color-text-primary;
-
-  [data-theme="light"] & {
-    background: rgba(0, 0, 0, 0.1);
-  }
 }
