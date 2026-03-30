@@ -293,12 +293,13 @@ export default function SponsorDashboard() {
       const res = await fetch(`/api/habits/${habitId}`, { method: "DELETE" });
       if (res.ok) {
         habits.setData((prev) => prev.filter((h) => h.id !== habitId));
+        familyData.setCompletions((prev) => prev.filter((c) => c.habit_id !== habitId));
         showToast(t("habits.deleteSuccess"), "success");
       }
     } catch {
       showToast(t("auth.connectionError"), "error");
     }
-  }, [habits, showToast, t]);
+  }, [habits, familyData, showToast, t]);
 
   const handleRetryPayment = useCallback(async (paymentId: string) => {
     const result = await payments.retryPayment(paymentId);
