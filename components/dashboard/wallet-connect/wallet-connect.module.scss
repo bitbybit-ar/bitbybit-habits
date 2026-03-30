@@ -42,52 +42,40 @@
   max-width: 280px;
 }
 
-.scanButton {
+.nwcSection {
+  margin-top: $spacing-8;
+}
+
+.nwcHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-12;
+}
+
+.nwcTitle {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.scanIconButton {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: $spacing-8;
-  width: 100%;
-  padding: $spacing-16;
-  margin-bottom: $spacing-12;
-  border-radius: $border-radius-md;
-  border: 2px solid alpha($color-primary, 40%);
-  background: alpha($color-primary, 8%);
-  color: $color-primary;
-  font-size: $font-size-base;
-  font-weight: $font-weight-bold;
+  margin-left: auto;
+  padding: $spacing-8;
+  border-radius: $border-radius-sm;
+  border: 1px solid alpha($color-text-primary, 10%);
+  background: transparent;
+  color: $color-text-secondary;
   cursor: pointer;
   transition: all 0.2s ease;
 
   &:hover {
-    background: alpha($color-primary, 15%);
-    border-color: $color-primary;
-  }
-
-  &:active {
-    transform: scale(0.98);
-  }
-}
-
-.manualSection {
-  margin-top: $spacing-8;
-}
-
-.manualToggle {
-  font-size: $font-size-xs;
-  color: $color-text-secondary;
-  cursor: pointer;
-  padding: $spacing-8 0;
-  user-select: none;
-  list-style: none;
-  text-align: center;
-
-  &::-webkit-details-marker {
-    display: none;
-  }
-
-  &:hover {
-    color: $color-text-primary;
+    color: $color-primary;
+    border-color: alpha($color-primary, 30%);
+    background: alpha($color-primary, 8%);
   }
 }
 
@@ -132,22 +120,29 @@
   letter-spacing: $letter-spacing-wide;
 }
 
-.settingsButton {
+.disconnectBtn {
   margin-left: auto;
   padding: $spacing-4 $spacing-12;
   border-radius: $border-radius-sm;
-  border: 1px solid alpha($color-text-primary, 10%);
+  border: 1px solid alpha($color-error, 30%);
   background: transparent;
-  color: $color-text-secondary;
+  color: $color-error;
   font-size: $font-size-xs;
   font-weight: $font-weight-semibold;
   cursor: pointer;
   transition: all 0.2s ease;
 
   &:hover {
-    color: $color-text-primary;
-    border-color: alpha($color-text-primary, 20%);
+    background: alpha($color-error, 10%);
+    border-color: $color-error;
   }
+}
+
+.weblnNote {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  text-align: center;
+  margin-top: $spacing-12;
 }
 
 // ── Connection warning ──
@@ -255,33 +250,59 @@
   }
 }
 
-.extensionButton {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.methodPicker {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: $spacing-8;
-  width: 100%;
-  padding: $spacing-12 $spacing-16;
   margin-bottom: $spacing-16;
+}
+
+.methodButton {
+  padding: $spacing-12 $spacing-8;
   border-radius: $border-radius-md;
-  border: 1px solid alpha($color-primary, 30%);
-  background: alpha($color-primary, 8%);
-  color: $color-primary;
   font-size: $font-size-sm;
   font-weight: $font-weight-semibold;
   cursor: pointer;
-  transition: transform 0.3s ease, color 0.2s ease;
+  transition: all 0.2s ease;
+  text-align: center;
+}
 
-  &:hover:not(:disabled) {
-    background: alpha($color-primary, 15%);
+.methodWebln {
+  border: 2px solid alpha($color-primary, 15%);
+  background: transparent;
+  color: alpha($color-primary, 60%);
+
+  &:hover {
+    color: $color-primary;
+    background: alpha($color-primary, 8%);
+    border-color: alpha($color-primary, 40%);
+  }
+
+  &.methodActive {
+    color: $color-primary;
+    background: alpha($color-primary, 12%);
     border-color: $color-primary;
   }
+}
 
-  &:disabled {
-    opacity: 0.3;
-    cursor: not-allowed;
+.methodNwc {
+  border: 2px solid alpha($color-nostr, 15%);
+  background: transparent;
+  color: alpha($color-nostr, 60%);
+
+  &:hover {
+    color: $color-nostr;
+    background: alpha($color-nostr, 8%);
+    border-color: alpha($color-nostr, 40%);
+  }
+
+  &.methodActive {
+    color: $color-nostr;
+    background: alpha($color-nostr, 12%);
+    border-color: $color-nostr;
   }
 }
+
 
 // ── Action buttons ──
 
@@ -538,77 +559,6 @@
     font-size: $font-size-xs;
     color: $color-text-secondary;
     text-transform: lowercase;
-  }
-}
-
-// ── Settings ──
-
-.settingsSection {
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-12;
-  margin-bottom: $spacing-20;
-}
-
-.settingsRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: $spacing-12;
-  border-radius: $border-radius-md;
-  background: alpha($color-text-primary, 3%);
-}
-
-.settingsLabel {
-  font-size: $font-size-sm;
-  color: $color-text-secondary;
-}
-
-.settingsValue {
-  font-size: $font-size-sm;
-  font-weight: $font-weight-semibold;
-  color: $color-text-primary;
-}
-
-.settingsActions {
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-8;
-}
-
-.changeWalletButton {
-  width: 100%;
-  padding: $spacing-12 $spacing-16;
-  border-radius: $border-radius-md;
-  border: 1px solid alpha($color-text-primary, 15%);
-  background: transparent;
-  color: $color-text-primary;
-  font-size: $font-size-sm;
-  font-weight: $font-weight-semibold;
-  cursor: pointer;
-  transition: all 0.2s ease;
-
-  &:hover {
-    background: alpha($color-text-primary, 6%);
-    border-color: alpha($color-text-primary, 25%);
-  }
-}
-
-.disconnectButton {
-  width: 100%;
-  padding: $spacing-12 $spacing-16;
-  border-radius: $border-radius-md;
-  border: 1px solid alpha($color-error, 30%);
-  background: alpha($color-error, 10%);
-  color: $color-error;
-  font-size: $font-size-sm;
-  font-weight: $font-weight-semibold;
-  cursor: pointer;
-  transition: background 0.2s, border-color 0.2s;
-
-  &:hover {
-    background: alpha($color-error, 20%);
-    border-color: $color-error;
   }
 }
 

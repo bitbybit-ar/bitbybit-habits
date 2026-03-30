@@ -369,7 +369,7 @@ export default function SponsorDashboard() {
       )}
       {activeTab === "wallet" && (
         <DashboardSection title={t("wallet.title")}>
-          <WalletConnect />
+          <WalletConnect role="sponsor" />
         </DashboardSection>
       )}
       {invoiceModal && (

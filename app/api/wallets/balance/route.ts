@@ -24,10 +24,10 @@ export const GET = apiHandler(async (_request, { session, db }) => {
         new Promise<null>((resolve) => setTimeout(() => resolve(null), ms)),
       ]);
 
-    // Fetch balance and node info in parallel
+    // Fetch balance and node info in parallel (15s timeout for slow relays)
     const [balanceResult, infoResult] = await Promise.all([
-      timeout(client.getBalance(), 5000),
-      timeout(client.getInfo(), 5000),
+      timeout(client.getBalance(), 15000),
+      timeout(client.getInfo(), 15000),
     ]);
 
     const balanceSats = balanceResult
