@@ -28,7 +28,7 @@ The reward is real, instant, and theirs. That's what makes the habit stick.
 | **Lightning** | NWC (Nostr Wallet Connect) via `@getalby/sdk`. WebLN browser extension support |
 | **Encryption** | AES-256-GCM for wallet NWC URLs at rest |
 | **API Docs** | OpenAPI 3.0 (Swagger) at `/api-docs` — 42 endpoints fully documented |
-| **Testing** | Vitest (209 tests across 37 API test files) |
+| **Testing** | Vitest (207 tests across 37 API test files) |
 | **Icons** | Custom SVGs in `components/icons/` (no external icon libraries) |
 
 ## Getting Started
@@ -137,7 +137,7 @@ bitbybit-habits/
     types.ts                   # Shared TypeScript interfaces
   messages/                    # Translation files (es.json, en.json)
   styles/                      # SCSS variables, mixins, glassmorphism system
-  tests/                       # 37 test files, 209 tests
+  tests/                       # 37 test files, 207 tests
     api/                       # API endpoint tests (auth, admin, families, habits, completions, payments, wallets, notifications, stats)
     helpers/                   # Test utilities
   docs/

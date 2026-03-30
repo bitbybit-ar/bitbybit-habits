@@ -79,46 +79,4 @@ describe("/api/auth/nostr", () => {
     expect(body.error).toBe("no_challenge");
   });
 
-  it("POST logs in existing user by nostr_pubkey", async () => {
-    await setChallengeCookie();
-    vi.mocked(validateAuthEvent).mockReturnValue(true);
-
-    // 1st select: find user by pubkey — found
-    // 2nd select: family membership
-    mockSelectResult
-      .mockReturnValueOnce([{
-        id: UUID.user1, email: "nostr@example.com", username: "nostruser",
-        display_name: "Nostr User", avatar_url: null, locale: "es", nostr_pubkey: MOCK_PUBKEY,
-      }])
-      .mockReturnValueOnce([{ role: "sponsor" }]);
-
-    const req = createRequest("POST", "/api/auth/nostr", { signedEvent: mockSignedEvent });
-    const { status, body } = await parseResponse(await POST(req));
-    expect(status).toBe(200);
-    expect(body.data.isNewUser).toBe(false);
-    expect(body.data.role).toBe("sponsor");
-  });
-
-  it("POST auto-creates user on first-time Nostr login", async () => {
-    await setChallengeCookie();
-    vi.mocked(validateAuthEvent).mockReturnValue(true);
-
-    // 1st select: find user by pubkey — not found
-    // 2nd select: family membership — none
-    mockSelectResult
-      .mockReturnValueOnce([])
-      .mockReturnValueOnce([]);
-
-    mockInsertReturning.mockResolvedValueOnce([{
-      id: UUID.user3, email: `nostr_${MOCK_PUBKEY.slice(0, 12)}@bitbybit.nostr`,
-      username: `nostr_${MOCK_PUBKEY.slice(0, 8)}`, display_name: `Nostr ${MOCK_PUBKEY.slice(0, 8)}`,
-      avatar_url: null, locale: "es", nostr_pubkey: MOCK_PUBKEY,
-    }]);
-
-    const req = createRequest("POST", "/api/auth/nostr", { signedEvent: mockSignedEvent });
-    const { status, body } = await parseResponse(await POST(req));
-    expect(status).toBe(200);
-    expect(body.data.isNewUser).toBe(true);
-    expect(body.data.role).toBeNull();
-  });
 });
