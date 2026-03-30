@@ -1,7 +1,7 @@
 import { createHash } from "crypto";
 import { apiHandler, NotFoundError, ForbiddenError, BadRequestError } from "@/lib/api";
 import { payments } from "@/lib/db";
-import { eq, and } from "drizzle-orm";
+import { eq, and, or } from "drizzle-orm";
 
 /**
  * POST /api/payments/[id]/confirm
@@ -55,7 +55,8 @@ export const POST = apiHandler(async (request, { session, db, params }) => {
     }
   }
 
-  // Atomic update: only set to "paid" if still pending (prevents double-pay race condition)
+  // Atomic update: set to "paid" if pending or failed (NWC auto-pay may have
+  // marked it failed before WebLN confirmation arrives)
   const updated = await db
     .update(payments)
     .set({
@@ -64,7 +65,10 @@ export const POST = apiHandler(async (request, { session, db, params }) => {
       preimage,
       payment_method: "webln",
     })
-    .where(and(eq(payments.id, paymentId), eq(payments.status, "pending")))
+    .where(and(
+      eq(payments.id, paymentId),
+      or(eq(payments.status, "pending"), eq(payments.status, "failed"))
+    ))
     .returning({ id: payments.id });
 
   if (updated.length === 0) {

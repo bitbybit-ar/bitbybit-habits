@@ -33,6 +33,7 @@ vi.mock("@/lib/db", () => ({
 vi.mock("drizzle-orm", () => ({
   eq: vi.fn(),
   and: vi.fn(),
+  or: vi.fn(),
 }));
 
 import { POST } from "@/app/api/payments/[id]/confirm/route";
