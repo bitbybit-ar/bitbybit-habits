@@ -11,23 +11,6 @@
   gap: $spacing-12;
 }
 
-.emptyCtaButton {
-  padding: $spacing-12 $spacing-24;
-  border-radius: $border-radius-md;
-  border: none;
-  background: $gradient-primary;
-  color: white;
-  font-size: $font-size-sm;
-  font-weight: $font-weight-bold;
-  cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
-
-  &:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 16px alpha($color-primary, 30%);
-  }
-}
-
 .paymentTable {
   @include glass-card;
   padding: $spacing-16;

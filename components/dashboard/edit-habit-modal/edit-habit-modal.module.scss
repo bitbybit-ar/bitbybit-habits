@@ -67,19 +67,3 @@
   justify-content: flex-end;
   margin-top: $spacing-20;
 }
-
-.cancelButton {
-  padding: $spacing-8 $spacing-16;
-  border-radius: $border-radius-md;
-  border: 1px solid alpha($color-text-primary, 10%);
-  background: transparent;
-  color: $color-text-secondary;
-  font-size: $font-size-sm;
-  cursor: pointer;
-  transition: color 0.2s, border-color 0.2s;
-
-  &:hover {
-    color: $color-text-primary;
-    border-color: alpha($color-text-primary, 20%);
-  }
-}

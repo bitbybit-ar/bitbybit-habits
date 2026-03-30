@@ -362,7 +362,7 @@ export default function SponsorDashboard() {
         </DashboardSection>
       )}
       {activeTab === "family" && (
-        <SponsorFamilyTab families={families.data} sessionUserId={session.data?.user_id ?? ""} onLeave={handleLeaveFamily} onDelete={handleDeleteFamily} onRemoveMember={handleRemoveMember} />
+        <SponsorFamilyTab families={families.data} sessionUserId={session.data?.user_id ?? ""} onLeave={handleLeaveFamily} onDelete={handleDeleteFamily} onFamilyCreated={families.refetch} onRemoveMember={handleRemoveMember} />
       )}
       {activeTab === "payments" && (
         <SponsorPaymentsTab payments={payments.data} isLoading={payments.isLoading} onRetry={handleRetryPayment} />

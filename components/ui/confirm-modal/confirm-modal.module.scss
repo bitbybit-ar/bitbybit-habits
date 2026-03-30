@@ -1,7 +1,6 @@
 @use "@/styles/colors" as *;
 @use "@/styles/spacing" as *;
 @use "@/styles/typography" as *;
-@use "@/styles/common-mixins" as *;
 
 .message {
   font-size: $font-size-sm;
@@ -16,41 +15,10 @@
   gap: $spacing-8;
 }
 
-.cancelBtn,
-.confirmBtn {
-  padding: $spacing-8 $spacing-16;
-  border-radius: $border-radius-sm;
-  font-size: $font-size-sm;
-  font-weight: $font-weight-semibold;
-  cursor: pointer;
-  @include transition;
-}
-
-.cancelBtn {
-  background: transparent;
-  border: 1px solid alpha($color-text-primary, 15%);
-  color: $color-text-secondary;
-
-  &:hover {
-    color: $color-text-primary;
-  }
-}
-
-.confirmBtn {
-  background: $color-primary;
-  border: none;
-  color: #000;
-
-  &:hover {
-    opacity: 0.9;
-  }
-}
-
-.confirmBtnDanger {
+.dangerBtn {
   background: $color-error;
-  color: white;
 
   &:hover {
-    opacity: 0.9;
+    box-shadow: 0 8px 30px alpha($color-error, 30%);
   }
 }

@@ -74,11 +74,8 @@ export function SponsorHabitsTab({ habits, families, familyCompletions, onApprov
           icon={<BoltIcon size={48} />}
           title={t("emptyState.noHabitsTitle")}
           description={t("emptyState.sponsorNoHabitsDesc")}
-          action={
-            <button className={styles.emptyCtaButton} onClick={onCreateHabit}>
-              {t("emptyState.createFirstHabit")}
-            </button>
-          }
+          actionLabel={t("emptyState.createFirstHabit")}
+          onAction={onCreateHabit}
         />
       ) : (
         <div className={styles.habitGrid}>

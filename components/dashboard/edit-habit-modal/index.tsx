@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { MemberPicker } from "@/components/dashboard/member-picker";
 import { ModalLoader } from "@/components/ui/modal-loader";
 import { Modal } from "@/components/ui/modal";
+import { Button } from "@/components/ui/button";
 import { FormInput, FormSelect, FormField, FormButton } from "@/components/ui/form";
 import type { Habit } from "@/lib/types";
 import styles from "./edit-habit-modal.module.scss";
@@ -254,9 +255,9 @@ export function EditHabitModal({ habit, kids, onSave, onClose }: EditHabitModalP
       )}
 
       <div className={styles.actions}>
-        <button className={styles.cancelButton} onClick={onClose}>
+        <Button variant="ghost" size="sm" onClick={onClose}>
           {t("common.cancel")}
-        </button>
+        </Button>
         <FormButton
           onClick={handleSave}
           loading={saving}
