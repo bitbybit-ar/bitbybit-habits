@@ -15,8 +15,6 @@ export const GET = apiHandler(async (_request, { session, db }) => {
     return { balance_sats: null, node_info: null };
   }
 
-  console.log(`[Wallet:Balance] Fetching balance + info (user: ${session.user_id.slice(0, 8)})`);
-
   const client = new NWCClient({ nostrWalletConnectUrl: nwcUrl });
 
   try {
@@ -47,13 +45,8 @@ export const GET = apiHandler(async (_request, { session, db }) => {
         }
       : null;
 
-    console.log(
-      `[Wallet:Balance] Balance: ${balanceSats} sats, node: ${nodeInfo?.alias ?? "unknown"}`
-    );
-
     return { balance_sats: balanceSats, node_info: nodeInfo };
-  } catch (err) {
-    console.error("[Wallet:Balance] NWC error:", err);
+  } catch {
     return { balance_sats: null, node_info: null };
   } finally {
     client.close();

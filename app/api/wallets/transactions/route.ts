@@ -26,12 +26,11 @@ export const GET = apiHandler(async (request, { session, db }) => {
     throw new BadRequestError("no_wallet");
   }
 
-  console.log(`[Wallet:Transactions] Fetching (user: ${session.user_id.slice(0, 8)}, limit: ${limit}, offset: ${offset})`);
   const client = new NWCClient({ nostrWalletConnectUrl: nwcUrl });
 
   try {
     const result = await Promise.race([
-      client.listTransactions({ limit: limit + offset }),
+      client.listTransactions({ limit: limit + offset + 1 }),
       new Promise<never>((_, reject) =>
         setTimeout(() => reject(new Error("timeout")), 15000)
       ),
@@ -57,13 +56,11 @@ export const GET = apiHandler(async (request, { session, db }) => {
         : null,
     }));
 
-    console.log(`[Wallet:Transactions] Returned ${transactions.length} transactions`);
     return { transactions, has_more: allTxs.length > offset + limit };
-  } catch (err) {
+  } catch {
     // Best-effort like balance — return empty on NWC failures
-    console.error("[Wallet:Transactions] NWC error:", err);
     return { transactions: [], has_more: false };
   } finally {
     client.close();
   }
-});
+}, { rateLimit: "auth" });

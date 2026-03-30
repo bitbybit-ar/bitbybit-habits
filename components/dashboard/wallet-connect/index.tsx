@@ -324,7 +324,7 @@ export function WalletConnect() {
   }
 
   const lightningUri = generatedInvoice
-    ? `lightning:${generatedInvoice.toUpperCase()}`
+    ? `lightning:${generatedInvoice}`
     : null;
 
   return (
@@ -564,6 +564,7 @@ export function WalletConnect() {
                 placeholder={t("wallet.descriptionPlaceholder")}
                 value={receiveDesc}
                 onChange={setReceiveDesc}
+                maxLength={500}
               />
               <FormButton
                 onClick={handleReceive}

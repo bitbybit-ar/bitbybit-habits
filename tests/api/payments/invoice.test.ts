@@ -113,7 +113,7 @@ describe("POST /api/payments/invoice", () => {
     expect(body.error).toContain("completion_not_found");
   });
 
-  it("returns 422 when kid has no wallet", async () => {
+  it("returns 400 when kid has no wallet", async () => {
     await setSessionCookie(testSession);
     // First select: combined completion+habit+familyMembers query
     mockSelectResult.mockReturnValueOnce([{
@@ -130,7 +130,7 @@ describe("POST /api/payments/invoice", () => {
       amount_sats: 50,
     });
     const { status, body } = await parseResponse(await POST(req));
-    expect(status).toBe(422);
+    expect(status).toBe(400);
     expect(body.error).toBe("kid_no_wallet");
   });
 

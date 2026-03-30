@@ -24,7 +24,6 @@ export const POST = apiHandler(async (request, { session, db }) => {
 
   // Validate BOLT11 format
   if (!BOLT11_RE.test(bolt11)) {
-    console.error(`[Wallet:Send] Invalid BOLT11 format (user: ${session.user_id.slice(0, 8)}): ${bolt11.slice(0, 20)}...`);
     throw new BadRequestError("invalid_invoice");
   }
 
@@ -33,7 +32,6 @@ export const POST = apiHandler(async (request, { session, db }) => {
     throw new BadRequestError("no_wallet");
   }
 
-  console.log(`[Wallet:Send] Paying invoice (user: ${session.user_id.slice(0, 8)}, invoice: ${bolt11.slice(0, 20)}...)`);
   const client = new NWCClient({ nostrWalletConnectUrl: nwcUrl });
 
   try {
@@ -43,14 +41,11 @@ export const POST = apiHandler(async (request, { session, db }) => {
     );
 
     const result = await Promise.race([payPromise, timeoutPromise]);
-    console.log(`[Wallet:Send] Payment successful, preimage: ${result.preimage?.slice(0, 8)}...`);
     return { preimage: result.preimage };
   } catch (err) {
-    console.error("[Wallet:Send] payInvoice error:", err);
-
     if (err instanceof Nip47WalletError) {
       const code = err.code?.toUpperCase() ?? "";
-      if (code.includes("INSUFFICIENT") || code === "INSUFFICIENT_BALANCE") {
+      if (code === "INSUFFICIENT_BALANCE" || code === "INSUFFICIENT_FUNDS") {
         throw new BadRequestError("insufficient_funds");
       }
       if (code === "QUOTA_EXCEEDED") {

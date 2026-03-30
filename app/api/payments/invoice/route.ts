@@ -1,11 +1,9 @@
-import { NextResponse } from "next/server";
 import { apiHandler, BadRequestError, ForbiddenError } from "@/lib/api";
 import { completions, habits, payments, wallets, familyMembers } from "@/lib/db";
 import { decrypt } from "@/lib/crypto";
 import { eq, and } from "drizzle-orm";
 import { NWCClient, Nip47WalletError, Nip47TimeoutError, Nip47NetworkError } from "@getalby/sdk";
 import { extractPaymentHash } from "@/lib/lightning";
-import type { ApiResponse } from "@/lib/types";
 
 /**
  * POST /api/payments/invoice
@@ -68,10 +66,7 @@ export const POST = apiHandler(async (request, { session, db }) => {
     .limit(1);
 
   if (!walletRows[0]) {
-    return NextResponse.json<ApiResponse>(
-      { success: false, error: "kid_no_wallet" },
-      { status: 422 }
-    );
+    throw new BadRequestError("kid_no_wallet");
   }
 
   const nwcUrl = decrypt(walletRows[0].nwc_url_encrypted);
@@ -121,8 +116,6 @@ export const POST = apiHandler(async (request, { session, db }) => {
       completion_id,
     };
   } catch (error) {
-    console.error("[Payments:Invoice] makeInvoice error:", error);
-
     if (error instanceof Nip47WalletError) {
       if (error.code === "NOT_IMPLEMENTED") {
         throw new BadRequestError("make_invoice_not_supported");

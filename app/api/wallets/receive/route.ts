@@ -36,7 +36,6 @@ export const POST = apiHandler(async (request, { session, db }) => {
     throw new BadRequestError("no_wallet");
   }
 
-  console.log(`[Wallet:Receive] Creating invoice for ${amount_sats} sats (user: ${session.user_id.slice(0, 8)})`);
   const client = new NWCClient({ nostrWalletConnectUrl: nwcUrl });
 
   try {
@@ -51,14 +50,11 @@ export const POST = apiHandler(async (request, { session, db }) => {
     const result = await Promise.race([invoicePromise, timeoutPromise]);
     // Some wallets (e.g. Primal) return empty payment_hash — extract from BOLT11
     const payment_hash = result.payment_hash || extractPaymentHash(result.invoice) || "";
-    console.log(`[Wallet:Receive] Invoice created, hash: ${payment_hash.slice(0, 8)}...`);
     return {
       payment_request: result.invoice,
       payment_hash,
     };
   } catch (err) {
-    console.error("[Wallet:Receive] makeInvoice error:", err);
-
     if (err instanceof Nip47WalletError) {
       if (err.code === "NOT_IMPLEMENTED") {
         throw new BadRequestError("make_invoice_not_supported");
