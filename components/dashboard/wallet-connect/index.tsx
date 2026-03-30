@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import QRCode from "react-qr-code";
-import { WalletIcon, BoltIcon, SendIcon, ReceiveIcon, ScanIcon } from "@/components/icons";
+import { WalletIcon, BoltIcon, SendIcon, ReceiveIcon, ScanIcon, ListIcon } from "@/components/icons";
 import { FormInput, FormButton } from "@/components/ui/form";
 import { QRScanner } from "@/components/ui/qr-scanner";
 import { useWebLN } from "@/lib/hooks/useWebLN";
@@ -19,7 +19,17 @@ interface WalletPublic {
   created_at: string;
 }
 
-type WalletView = "main" | "send" | "receive" | "settings";
+interface Transaction {
+  type: "incoming" | "outgoing";
+  amount_sats: number;
+  description: string | null;
+  payment_hash: string | null;
+  state: string;
+  created_at: string | null;
+  settled_at: string | null;
+}
+
+type WalletView = "main" | "send" | "receive" | "settings" | "transactions";
 type ScanTarget = "nwc" | "invoice" | null;
 
 export function WalletConnect() {
@@ -54,6 +64,11 @@ export function WalletConnect() {
   const [receiving, setReceiving] = useState(false);
   const [generatedInvoice, setGeneratedInvoice] = useState<string | null>(null);
   const [invoiceCopied, setInvoiceCopied] = useState(false);
+
+  // Transactions state
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [txLoading, setTxLoading] = useState(false);
+  const [txHasMore, setTxHasMore] = useState(false);
 
   const fetchWallet = useCallback(async () => {
     try {
@@ -90,6 +105,25 @@ export function WalletConnect() {
       setBalanceLoading(false);
     }
   }, []);
+
+  const fetchTransactions = useCallback(async (loadMore = false) => {
+    setTxLoading(true);
+    try {
+      const offset = loadMore ? transactions.length : 0;
+      const res = await fetch(`/api/wallets/transactions?limit=20&offset=${offset}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success) {
+          setTransactions(prev => loadMore ? [...prev, ...data.data.transactions] : data.data.transactions);
+          setTxHasMore(data.data.has_more);
+        }
+      }
+    } catch {
+      // Best-effort
+    } finally {
+      setTxLoading(false);
+    }
+  }, [transactions.length]);
 
   useEffect(() => {
     fetchWallet();
@@ -393,6 +427,14 @@ export function WalletConnect() {
               <span>{t("wallet.receive")}</span>
             </button>
           </div>
+
+          <button
+            className={styles.txButton}
+            onClick={() => { setView("transactions"); fetchTransactions(); }}
+          >
+            <ListIcon size={16} />
+            <span>{t("wallet.transactions")}</span>
+          </button>
         </div>
       )}
 
@@ -500,6 +542,68 @@ export function WalletConnect() {
                 {t("wallet.generateInvoice")}
               </FormButton>
             </div>
+          )}
+        </div>
+      )}
+
+      {/* ── Transactions view ── */}
+      {wallet && view === "transactions" && (
+        <div className={styles.card}>
+          <div className={styles.viewHeader}>
+            <button className={styles.backButton} onClick={() => setView("main")}>
+              &larr;
+            </button>
+            <h3 className={styles.viewTitle}>{t("wallet.transactions")}</h3>
+          </div>
+
+          {txLoading && transactions.length === 0 ? (
+            <p className={styles.loadingText}>{t("common.loading")}</p>
+          ) : transactions.length === 0 ? (
+            <div className={styles.txEmpty}>
+              <ListIcon size={32} />
+              <p className={styles.txEmptyTitle}>{t("wallet.noTransactions")}</p>
+              <p className={styles.txEmptyDesc}>{t("wallet.noTransactionsDesc")}</p>
+            </div>
+          ) : (
+            <>
+              <ul className={styles.txList}>
+                {transactions.map((tx, i) => (
+                  <li key={tx.payment_hash ?? i} className={styles.txItem} data-type={tx.type}>
+                    <div className={styles.txIcon} data-type={tx.type}>
+                      {tx.type === "incoming" ? <ReceiveIcon size={16} /> : <SendIcon size={16} />}
+                    </div>
+                    <div className={styles.txInfo}>
+                      <span className={styles.txLabel}>
+                        {tx.type === "incoming" ? t("wallet.incoming") : t("wallet.outgoing")}
+                      </span>
+                      {tx.description && (
+                        <span className={styles.txDesc}>{tx.description}</span>
+                      )}
+                      {tx.created_at && (
+                        <span className={styles.txDate}>
+                          {new Date(tx.created_at).toLocaleDateString(undefined, {
+                            month: "short", day: "numeric", hour: "2-digit", minute: "2-digit"
+                          })}
+                        </span>
+                      )}
+                    </div>
+                    <div className={styles.txAmount} data-type={tx.type}>
+                      {tx.type === "incoming" ? "+" : "-"}{tx.amount_sats.toLocaleString()}
+                      <span className={styles.txSats}>sats</span>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+              {txHasMore && (
+                <button
+                  className={styles.secondaryButton}
+                  onClick={() => fetchTransactions(true)}
+                  disabled={txLoading}
+                >
+                  {txLoading ? t("common.loading") : t("wallet.loadMore")}
+                </button>
+              )}
+            </>
           )}
         </div>
       )}

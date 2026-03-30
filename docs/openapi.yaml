@@ -2361,6 +2361,75 @@ paths:
         "401":
           description: No autenticado
 
+  /wallets/transactions:
+    get:
+      tags: [Wallets]
+      summary: Listar transacciones recientes de la wallet NWC del usuario
+      description: |
+        Obtiene el historial de transacciones de la wallet NWC conectada del usuario autenticado.
+        Usa NWC listTransactions() internamente. Soporta paginacion via limit/offset.
+      operationId: walletTransactions
+      security: [{ cookieAuth: [] }]
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+            maximum: 50
+          description: Cantidad maxima de transacciones a retornar
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+          description: Cantidad de transacciones a saltar (paginacion)
+      responses:
+        "200":
+          description: Lista de transacciones
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      transactions:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            type:
+                              type: string
+                              enum: [incoming, outgoing]
+                            amount_sats:
+                              type: integer
+                            description:
+                              type: string
+                              nullable: true
+                            payment_hash:
+                              type: string
+                              nullable: true
+                            state:
+                              type: string
+                            created_at:
+                              type: string
+                              format: date-time
+                              nullable: true
+                            settled_at:
+                              type: string
+                              format: date-time
+                              nullable: true
+                      has_more:
+                        type: boolean
+        "400":
+          description: Wallet no conectada, timeout o error al obtener transacciones
+        "401":
+          description: No autenticado
+
 components:
   securitySchemes:
     cookieAuth:

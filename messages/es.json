@@ -222,7 +222,17 @@
     "descriptionPlaceholder": "ej. Pago a un amigo",
     "generateInvoice": "Generar invoice",
     "newInvoice": "Nuevo invoice",
-    "receiveError": "Error al generar el invoice"
+    "receiveError": "Error al generar el invoice",
+    "transactions": "Transacciones",
+    "noTransactions": "Sin transacciones todavia",
+    "noTransactionsDesc": "Tus pagos enviados y recibidos apareceran aca.",
+    "incoming": "Recibido",
+    "outgoing": "Enviado",
+    "settled": "Confirmado",
+    "pendingTx": "Pendiente",
+    "failedTx": "Fallido",
+    "loadMore": "Cargar mas",
+    "transactionsError": "No se pudieron cargar las transacciones"
   },
   "sats": {
     "sats": "sats",

@@ -222,7 +222,17 @@
     "descriptionPlaceholder": "e.g. Payment to a friend",
     "generateInvoice": "Generate invoice",
     "newInvoice": "New invoice",
-    "receiveError": "Failed to generate invoice"
+    "receiveError": "Failed to generate invoice",
+    "transactions": "Transactions",
+    "noTransactions": "No transactions yet",
+    "noTransactionsDesc": "Your sent and received payments will appear here.",
+    "incoming": "Received",
+    "outgoing": "Sent",
+    "settled": "Confirmed",
+    "pendingTx": "Pending",
+    "failedTx": "Failed",
+    "loadMore": "Load more",
+    "transactionsError": "Could not load transactions"
   },
   "sats": {
     "sats": "sats",
