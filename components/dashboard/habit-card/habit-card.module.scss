@@ -43,9 +43,9 @@
   }
 
   &:hover {
-    border-color: rgba(var(--glass-color), 0.12);
+    border-color: alpha($color-text-primary, 12%);
     border-left-color: var(--habit-color, transparent);
-    box-shadow: 0 8px 32px rgba(var(--shadow-color), 0.2);
+    box-shadow: 0 8px 32px alpha($color-bg, 20%);
 
     &::before {
       width: 140px;
@@ -148,14 +148,14 @@
   justify-content: center;
   border: none;
   border-radius: $border-radius-full;
-  background: rgba(var(--glass-color), 0.05);
+  background: alpha($color-text-primary, 5%);
   color: $color-text-secondary;
   cursor: pointer;
   font-size: 12px;
   transition: background 0.2s, color 0.2s;
 
   &:hover {
-    background: rgba(var(--glass-color), 0.1);
+    background: alpha($color-text-primary, 10%);
     color: $color-text-primary;
   }
 }
@@ -209,7 +209,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid rgba(var(--glass-text-color), 0.12);
+  border: 2px solid alpha($color-text-primary, 12%);
   background: transparent;
   transition: all 0.2s ease;
 
@@ -262,13 +262,13 @@
 }
 
 .circleMissed {
-  border-color: rgba(var(--glass-text-color), 0.15);
-  background: rgba(var(--glass-text-color), 0.05);
+  border-color: alpha($color-text-primary, 15%);
+  background: alpha($color-text-primary, 5%);
 }
 
 .circleFuture {
-  border-color: rgba(var(--glass-text-color), 0.10);
-  background: rgba(var(--glass-text-color), 0.03);
+  border-color: alpha($color-text-primary, 10%);
+  background: alpha($color-text-primary, 3%);
   opacity: 0.5;
 }
 

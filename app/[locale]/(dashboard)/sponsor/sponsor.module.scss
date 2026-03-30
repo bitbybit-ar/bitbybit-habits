@@ -41,7 +41,7 @@
       padding: $spacing-8 $spacing-12;
       text-align: left;
       font-size: $font-size-sm;
-      border-bottom: 1px solid rgba(var(--glass-color), 0.06);
+      border-bottom: 1px solid alpha($color-text-primary, 6%);
     }
 
     th {
@@ -151,14 +151,14 @@
   justify-content: center;
   border: none;
   border-radius: $border-radius-full;
-  background: rgba(var(--glass-color), 0.05);
+  background: alpha($color-text-primary, 5%);
   color: $color-text-secondary;
   cursor: pointer;
   font-size: 12px;
   transition: background 0.2s, color 0.2s;
 
   &:hover {
-    background: rgba(var(--glass-color), 0.1);
+    background: alpha($color-text-primary, 10%);
     color: $color-text-primary;
   }
 }
@@ -179,7 +179,7 @@
   align-items: center;
   gap: $spacing-12;
   padding: $spacing-8 0;
-  border-top: 1px solid rgba(var(--glass-color), 0.06);
+  border-top: 1px solid alpha($color-text-primary, 6%);
 
   @include mobile {
     flex-wrap: wrap;

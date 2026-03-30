@@ -95,9 +95,8 @@
 
 // ── Nostr identity section ──
 .nostrSection {
-  margin-top: $spacing-24;
   padding-top: $spacing-20;
-  border-top: 1px solid rgba(var(--glass-color), 0.06);
+  border-top: 1px solid alpha($color-text-secondary, 20%);
 }
 
 .nostrSectionTitle {
@@ -219,4 +218,15 @@
   font-size: $font-size-xs;
   color: $color-error;
   margin-top: $spacing-8;
+}
+
+.nostrPubkeyLabel {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  margin-bottom: $spacing-4;
+}
+
+.nostrExtensionHint {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
 }

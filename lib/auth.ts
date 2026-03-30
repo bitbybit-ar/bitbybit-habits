@@ -79,12 +79,14 @@ export async function getSession(): Promise<AuthSession | null> {
     const validLocale = locale === "es" || locale === "en" ? locale : "es";
     const validRole = role === "sponsor" || role === "kid" ? role : null;
     const validNostrPubkey = typeof payload.nostr_pubkey === "string" ? payload.nostr_pubkey : null;
+    const validAvatarUrl = typeof payload.avatar_url === "string" ? payload.avatar_url : null;
 
     return {
       user_id,
       email,
       username,
       display_name,
+      avatar_url: validAvatarUrl,
       locale: validLocale,
       role: validRole,
       nostr_pubkey: validNostrPubkey,

@@ -10,8 +10,8 @@
   transition: all 0.3s ease;
 
   &:hover {
-    border-color: rgba(var(--glass-color), 0.12);
-    box-shadow: 0 8px 32px rgba(var(--shadow-color), 0.2);
+    border-color: alpha($color-text-primary, 12%);
+    box-shadow: 0 8px 32px alpha($color-bg, 20%);
   }
 }
 
@@ -36,7 +36,7 @@
 .actionButton {
   padding: $spacing-4 $spacing-12;
   border-radius: $border-radius-md;
-  border: 1px solid rgba(var(--glass-color), 0.1);
+  border: 1px solid alpha($color-text-primary, 10%);
   background: transparent;
   color: $color-text-secondary;
   font-size: $font-size-xs;
@@ -46,7 +46,7 @@
   white-space: nowrap;
 
   &:hover {
-    background: rgba(var(--glass-color), 0.05);
+    background: alpha($color-text-primary, 5%);
   }
 }
 
@@ -128,7 +128,7 @@
 
 .code {
   background: $color-bg-3;
-  border: 1px solid rgba(var(--glass-color), 0.1);
+  border: 1px solid alpha($color-text-primary, 10%);
   border-radius: $border-radius-md;
   padding: $spacing-12 $spacing-20;
   font-size: $font-size-xl;
@@ -162,7 +162,7 @@
 }
 
 .membersSection {
-  border-top: 1px solid rgba(var(--glass-color), 0.05);
+  border-top: 1px solid alpha($color-text-primary, 5%);
   padding-top: $spacing-20;
 }
 
@@ -188,7 +188,7 @@
   gap: $spacing-12;
   padding: $spacing-8 $spacing-12;
   border-radius: $border-radius-md;
-  background: rgba(var(--glass-color), 0.02);
+  background: alpha($color-text-primary, 2%);
 }
 
 .avatar {
@@ -229,7 +229,7 @@
   justify-content: center;
   border: none;
   border-radius: $border-radius-full;
-  background: rgba(var(--glass-color), 0.05);
+  background: alpha($color-text-primary, 5%);
   color: $color-text-secondary;
   cursor: pointer;
   font-size: 12px;

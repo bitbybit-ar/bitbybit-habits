@@ -15,7 +15,7 @@
   gap: $spacing-8;
   padding: $spacing-8 $spacing-16 $spacing-8 $spacing-8;
   border-radius: $border-radius-full;
-  border: 2px solid rgba(var(--glass-color), 0.08);
+  border: 2px solid alpha($color-text-primary, 8%);
   background: $color-bg-3;
   cursor: pointer;
   transition: border-color 0.2s, background 0.2s, transform 0.15s;
@@ -88,5 +88,5 @@
   text-align: center;
   background: $color-bg-3;
   border-radius: $border-radius-md;
-  border: 1px dashed rgba(var(--glass-color), 0.1);
+  border: 1px dashed alpha($color-text-primary, 10%);
 }

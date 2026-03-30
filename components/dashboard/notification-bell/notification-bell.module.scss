@@ -47,9 +47,9 @@
   max-height: 400px;
   overflow-y: auto;
   background: $color-bg-2;
-  border: 1px solid rgba(var(--glass-color), 0.1);
+  border: 1px solid alpha($color-text-primary, 10%);
   border-radius: 8px;
-  box-shadow: 0 8px 24px rgba(var(--shadow-color), 0.4);
+  box-shadow: 0 8px 24px alpha($color-bg, 40%);
   z-index: 1001;
 
   @include mobile {
@@ -77,7 +77,7 @@
 
 .item {
   padding: $spacing-12 $spacing-16;
-  border-bottom: 1px solid rgba(var(--glass-color), 0.05);
+  border-bottom: 1px solid alpha($color-text-primary, 5%);
   cursor: pointer;
   transition: background 0.15s;
 
@@ -86,7 +86,7 @@
   }
 
   &:hover {
-    background: rgba(var(--glass-color), 0.03);
+    background: alpha($color-text-primary, 3%);
   }
 
   strong {

@@ -36,8 +36,8 @@
   font-size: $font-size-base;
   font-family: $font-family-base;
   width: 100%;
-  background: rgba(var(--glass-color), 0.04);
-  border: 1px solid rgba(var(--glass-color), 0.1);
+  background: alpha($color-text-primary, 4%);
+  border: 1px solid alpha($color-text-primary, 10%);
   outline: none;
   @include transition;
 
@@ -73,6 +73,34 @@
   &:focus {
     border-color: $color-secondary;
     box-shadow: 0 0 0 2px alpha($color-secondary, 12%);
+  }
+}
+
+// ── Password toggle ──
+.inputWrapper {
+  position: relative;
+}
+
+.inputWithToggle {
+  padding-right: $spacing-40;
+}
+
+.passwordToggle {
+  position: absolute;
+  right: $spacing-12;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: $color-text-secondary;
+  display: flex;
+  align-items: center;
+  @include transition;
+
+  &:hover {
+    color: $color-text-primary;
   }
 }
 
@@ -131,7 +159,7 @@
   flex: 1;
   height: 3px;
   border-radius: 2px;
-  background: rgba(var(--glass-color), 0.06);
+  background: alpha($color-text-primary, 6%);
   @include transition(background, 0.3s);
 }
 

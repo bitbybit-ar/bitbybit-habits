@@ -11,7 +11,7 @@
 }
 
 .alternate {
-  background: rgba(var(--glass-color), 0.02);
+  background: alpha($color-text-primary, 2%);
 }
 
 .container {

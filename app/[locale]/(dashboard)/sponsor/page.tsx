@@ -342,14 +342,14 @@ export default function SponsorDashboard() {
 
   if (showOnboarding) {
     return (
-      <DashboardLayout displayName={`${t("dashboard.welcome")}, ${displayName}`} statsBar={statsBar} tabs={tabs} activeTab={activeTab} onTabChange={(key) => setActiveTab(key as TabType)} breadcrumbs={breadcrumbs}>
+      <DashboardLayout displayName={`${t("dashboard.welcome")}, ${displayName}`} avatarUrl={session.data?.avatar_url} statsBar={statsBar} tabs={tabs} activeTab={activeTab} onTabChange={(key) => setActiveTab(key as TabType)} breadcrumbs={breadcrumbs}>
         <Onboarding displayName={displayName} onDismiss={handleDismissOnboarding} />
       </DashboardLayout>
     );
   }
 
   return (
-    <DashboardLayout displayName={`${t("dashboard.welcome")}, ${displayName}`} statsBar={statsBar} tabs={tabs} activeTab={activeTab} onTabChange={(key) => setActiveTab(key as TabType)} breadcrumbs={breadcrumbs}>
+    <DashboardLayout displayName={`${t("dashboard.welcome")}, ${displayName}`} avatarUrl={session.data?.avatar_url} statsBar={statsBar} tabs={tabs} activeTab={activeTab} onTabChange={(key) => setActiveTab(key as TabType)} breadcrumbs={breadcrumbs}>
       {activeTab === "byHabit" && (
         <SponsorHabitsTab habits={habits.data} families={families.data} familyCompletions={familyData.completions} onApprove={handleApprove} onCreateHabit={() => setActiveTab("create")} onEdit={handleEditHabit} onDelete={handleDeleteHabit} currentUserId={session.data?.user_id} kids={allKids} />
       )}

@@ -116,6 +116,7 @@ export interface AuthSession {
   email: string;
   username: string;
   display_name: string;
+  avatar_url: string | null;
   locale: "es" | "en";
   role: "sponsor" | "kid" | null;
   nostr_pubkey?: string | null;

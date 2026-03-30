@@ -92,7 +92,19 @@ export function useNostr(): UseNostrReturn {
       content: challenge,
     };
 
-    const signedEvent = await window.nostr.signEvent(unsignedEvent);
+    let signedEvent;
+    try {
+      signedEvent = await window.nostr.signEvent(unsignedEvent);
+    } catch (signErr) {
+      const msg = signErr instanceof Error ? signErr.message : "";
+      if (msg.toLowerCase().includes("signing key") || msg.toLowerCase().includes("no key")) {
+        throw new Error("nostr_no_signing_key");
+      }
+      if (msg.toLowerCase().includes("reject") || msg.toLowerCase().includes("denied") || msg.toLowerCase().includes("cancel")) {
+        throw new Error("nostr_signing_rejected");
+      }
+      throw new Error("nostr_site_not_connected");
+    }
 
     // Step 3: Send signed event to server
     const authRes = await fetch(endpoint, {

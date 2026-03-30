@@ -77,11 +77,15 @@ export const PATCH = apiHandler(async (request, { session, db }) => {
   if (display_name !== undefined) updates.display_name = display_name.trim();
   if (username !== undefined) updates.username = username.trim();
   if (email !== undefined) updates.email = email.trim();
-  if (avatar_url !== undefined) updates.avatar_url = avatar_url.trim();
+  if (avatar_url !== undefined) updates.avatar_url = avatar_url?.trim() || null;
   if (locale !== undefined) updates.locale = locale;
   if (nostr_metadata !== undefined) {
     updates.nostr_metadata = nostr_metadata;
     updates.nostr_metadata_updated_at = new Date();
+  }
+
+  if (Object.keys(updates).length === 0) {
+    throw new BadRequestError("no_changes");
   }
 
   const updated = await db
