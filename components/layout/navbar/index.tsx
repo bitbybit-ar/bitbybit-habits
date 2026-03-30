@@ -122,7 +122,11 @@ export const Navbar: React.FC = () => {
       aria-label="Main navigation"
     >
       <div className={styles.container}>
-        <Link href="/" className={styles.brand} aria-label={t("accessibility.homeLink")}>
+        <Link
+          href={isLoggedIn ? (user.role === "sponsor" ? "/sponsor" : "/kid") : "/"}
+          className={styles.brand}
+          aria-label={t("accessibility.homeLink")}
+        >
           BitByBit
         </Link>
 

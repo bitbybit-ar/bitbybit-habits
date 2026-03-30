@@ -2,65 +2,6 @@
 @use "@/styles/spacing" as *;
 @use "@/styles/typography" as *;
 @use "@/styles/common-mixins" as *;
-@use "@/styles/glass" as *;
-
-.overlay {
-  @include glass-overlay;
-  position: fixed;
-  inset: 0;
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: $spacing-16;
-}
-
-.modal {
-  @include glass-modal;
-  max-width: 400px;
-  width: 100%;
-  padding: $spacing-24;
-  animation: slideIn 0.3s ease;
-}
-
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px) scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: $spacing-16;
-}
-
-.title {
-  font-size: $font-size-md;
-  font-weight: $font-weight-semibold;
-  color: $color-text-primary;
-  margin: 0;
-}
-
-.closeButton {
-  padding: $spacing-4 $spacing-8;
-  border: none;
-  background: transparent;
-  color: $color-text-secondary;
-  font-size: $font-size-xl;
-  cursor: pointer;
-  line-height: 1;
-
-  &:hover {
-    color: $color-text-primary;
-  }
-}
 
 .scannerContainer {
   border-radius: $border-radius-lg;

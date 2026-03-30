@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import QRCode from "react-qr-code";
+import { Modal } from "@/components/ui/modal";
 import styles from "./invoice-modal.module.scss";
 
 interface InvoiceModalProps {
@@ -78,51 +79,45 @@ export function InvoiceModal({
   };
 
   return (
-    <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-        {settled ? (
-          <div className={styles.success}>
-            <div className={styles.successIcon}>⚡</div>
-            <p className={styles.successText}>{t("paid")}</p>
+    <Modal onClose={onClose} size="sm">
+      {settled ? (
+        <div className={styles.success}>
+          <div className={styles.successIcon}>&#x26A1;</div>
+          <p className={styles.successText}>{t("paid")}</p>
+        </div>
+      ) : (
+        <>
+          <div className={styles.header}>
+            <h3 className={styles.habitName}>{habitName}</h3>
+            <p className={styles.amount}>
+              {amountSats} <span className={styles.satsLabel}>sats</span>
+            </p>
           </div>
-        ) : (
-          <>
-            <div className={styles.header}>
-              <h3 className={styles.habitName}>{habitName}</h3>
-              <p className={styles.amount}>
-                {amountSats} <span className={styles.satsLabel}>sats</span>
-              </p>
-            </div>
 
-            <div className={styles.qrContainer}>
-              <QRCode
-                value={lightningUri}
-                size={256}
-                bgColor="transparent"
-                fgColor="var(--qr-color, #F0E6D8)"
-                level="M"
-              />
-            </div>
+          <div className={styles.qrContainer}>
+            <QRCode
+              value={lightningUri}
+              size={256}
+              bgColor="transparent"
+              fgColor="var(--qr-color, #F0E6D8)"
+              level="M"
+            />
+          </div>
 
-            {pollError && (
-              <p className={styles.pollError}>{t("pollError")}</p>
-            )}
+          {pollError && (
+            <p className={styles.pollError}>{t("pollError")}</p>
+          )}
 
-            <a href={lightningUri} className={styles.walletLink}>
-              {t("openInWallet")}
-            </a>
+          <a href={lightningUri} className={styles.walletLink}>
+            {t("openInWallet")}
+          </a>
 
-            <button className={styles.copyButton} onClick={handleCopy}>
-              {copied ? t("copied") : t("copyInvoice")}
-            </button>
-
-            <button className={styles.closeButton} onClick={onClose}>
-              {t("close")}
-            </button>
-          </>
-        )}
-      </div>
-    </div>
+          <button className={styles.copyButton} onClick={handleCopy}>
+            {copied ? t("copied") : t("copyInvoice")}
+          </button>
+        </>
+      )}
+    </Modal>
   );
 }
 

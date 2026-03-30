@@ -1,47 +1,7 @@
 @use "@/styles/colors" as *;
 @use "@/styles/spacing" as *;
 @use "@/styles/typography" as *;
-@use "@/styles/glass" as *;
 @use "@/styles/media-mixins" as *;
-
-.overlay {
-  @include glass-overlay;
-  position: fixed;
-  inset: 0;
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: $spacing-16;
-}
-
-.modal {
-  @include glass-modal;
-  max-width: 420px;
-  width: 100%;
-  padding: $spacing-32;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: $spacing-24;
-  animation: modalSlideIn 0.3s ease;
-
-  @include mobile {
-    padding: $spacing-24;
-    max-width: 100%;
-  }
-}
-
-@keyframes modalSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px) scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
 
 .header {
   text-align: center;
@@ -50,7 +10,7 @@
 .habitName {
   font-size: $font-size-md;
   font-weight: $font-weight-semibold;
-  color: var(--text-primary, #{$color-text-primary});
+  color: $color-text-primary;
   margin: 0 0 $spacing-8;
 }
 
@@ -64,7 +24,7 @@
 .satsLabel {
   font-size: $font-size-base;
   font-weight: $font-weight-normal;
-  color: var(--text-secondary, #{$color-text-secondary});
+  color: $color-text-secondary;
 }
 
 .qrContainer {
@@ -74,6 +34,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-top: $spacing-24;
 
   // Make QR scannable on all devices
   svg {
@@ -95,6 +56,7 @@
   display: block;
   width: 100%;
   padding: $spacing-12 $spacing-24;
+  margin-top: $spacing-24;
   background: $color-secondary;
   color: $color-on-primary;
   border: none;
@@ -118,6 +80,7 @@
 .copyButton {
   width: 100%;
   padding: $spacing-12 $spacing-24;
+  margin-top: $spacing-8;
   background: $color-primary;
   color: $color-on-primary;
   border: none;
@@ -140,24 +103,7 @@
   text-align: center;
   color: $color-warning;
   font-size: $font-size-sm;
-  margin-bottom: $spacing-8;
-}
-
-.closeButton {
-  width: 100%;
-  padding: $spacing-12 $spacing-24;
-  background: transparent;
-  color: var(--text-secondary, #{$color-text-secondary});
-  border: 1px solid alpha($color-text-primary, 10%);
-  border-radius: $border-radius-md;
-  font-size: $font-size-body;
-  cursor: pointer;
-  transition: all 0.2s ease;
-
-  &:hover {
-    background: alpha($color-text-primary, 5%);
-    color: var(--text-primary, #{$color-text-primary});
-  }
+  margin: $spacing-8 0;
 }
 
 .success {

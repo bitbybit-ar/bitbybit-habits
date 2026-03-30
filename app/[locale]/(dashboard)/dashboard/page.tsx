@@ -1,77 +1,42 @@
-"use client";
-
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { Container } from "@/components/ui/container";
-import { BlockLoader } from "@/components/ui/block-loader";
+import { redirect } from "next/navigation";
+import { getSession } from "@/lib/auth";
+import { getDb, familyMembers } from "@/lib/db";
+import { eq } from "drizzle-orm";
 
 /**
- * /dashboard — central routing hub
- * Checks session role and redirects to the right page.
- * When role is null (fresh registration), falls back to checking
- * family membership via API to avoid a redirect loop with /onboard.
+ * /dashboard — central routing hub (server component)
+ * Checks session role and redirects to the right page instantly,
+ * avoiding client-side fetch + redirect flash.
  */
-export default function DashboardPage() {
-  const router = useRouter();
+export default async function DashboardPage() {
+  const session = await getSession();
 
-  useEffect(() => {
-    async function redirect() {
-      try {
-        const res = await fetch("/api/auth/session");
-        if (!res.ok) {
-          router.replace("/login");
-          return;
-        }
+  if (!session) {
+    redirect("/login");
+  }
 
-        const { success, data } = await res.json();
-        if (!success) {
-          router.replace("/login");
-          return;
-        }
+  if (session.role === "kid") {
+    redirect("/kid");
+  }
 
-        if (data.role === "kid") {
-          router.replace("/kid");
-          return;
-        }
-        if (data.role === "sponsor") {
-          router.replace("/sponsor");
-          return;
-        }
+  if (session.role === "sponsor") {
+    redirect("/sponsor");
+  }
 
-        // Role is null — session JWT may be stale after onboarding.
-        // Check actual family membership to determine the real role.
-        const famRes = await fetch("/api/families");
-        if (famRes.ok) {
-          const famData = await famRes.json();
-          if (famData.success && famData.data && famData.data.length > 0) {
-            // User has a family — find their role from membership
-            const members: { user_id: string; role: string }[] =
-              famData.data.flatMap(
-                (f: { members: { user_id: string; role: string }[] }) => f.members,
-              );
-            const myMembership = members.find(
-              (m) => m.user_id === data.user_id,
-            );
+  // Role is null — session JWT may be stale after onboarding.
+  // Check actual family membership to determine the real role.
+  const db = getDb();
+  const membership = await db
+    .select({ role: familyMembers.role })
+    .from(familyMembers)
+    .where(eq(familyMembers.user_id, session.user_id))
+    .limit(1);
 
-            if (myMembership?.role === "kid") {
-              router.replace("/kid");
-              return;
-            }
-            // Default to sponsor if they have any family membership
-            router.replace("/sponsor");
-            return;
-          }
-        }
+  if (membership[0]) {
+    const role = membership[0].role as "sponsor" | "kid";
+    redirect(role === "kid" ? "/kid" : "/sponsor");
+  }
 
-        // Truly no families — go to onboard
-        router.replace("/onboard");
-      } catch {
-        router.replace("/login");
-      }
-    }
-
-    redirect();
-  }, [router]);
-
-  return <Container center><BlockLoader /></Container>;
+  // Truly no families — go to onboard
+  redirect("/onboard");
 }
