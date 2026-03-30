@@ -16,25 +16,32 @@ flowchart TD
     H --> I{Invoice generated?}
     I -- No --> J["Error: invoice generation failed<br/>Payment record exists, can retry later"]
 
-    I -- Yes --> K{Sponsor has<br/>WebLN extension?}
+    I -- Yes --> K{prefer_webln<br/>enabled?}
 
     K -- Yes --> L["TIER 1: WebLN<br/>webln.sendPayment(invoice)"]
     L --> M{Success?}
     M -- Yes --> N["PAID ✓<br/>Preimage confirmed on backend"]
-    M -- No --> O["Fall through ↓"]
+    M -- No --> O["TIER 2: NWC Auto-Pay<br/>sponsor.nwc.payInvoice(invoice)"]
 
-    K -- No --> O
-    O --> P{Sponsor has<br/>NWC wallet?}
+    K -- No --> P{Sponsor has<br/>NWC wallet?}
+    P -- Yes --> O
+    P -- No --> WF{WebLN<br/>extension?}
+    WF -- Yes --> WL["WebLN fallback<br/>webln.sendPayment(invoice)"]
+    WL --> WR{Success?}
+    WR -- Yes --> N
+    WR -- No --> V
 
-    P -- Yes --> Q["TIER 2: NWC Auto-Pay<br/>sponsor.nwc.payInvoice(invoice)"]
-    Q --> R{Success?}
-    R -- Yes --> S["PAID ✓"]
-    R -- "Insufficient funds" --> T["Error toast<br/>Fall through ↓"]
-    R -- "Other error" --> U["Fall through ↓"]
+    O --> Q{Success?}
+    Q -- Yes --> S["PAID ✓"]
+    Q -- "Insufficient funds" --> T["Error toast<br/>Fall through ↓"]
+    Q -- "Other error" --> U["Fall through ↓"]
 
-    P -- No --> V
-    T --> V
-    U --> V
+    T --> FWL{WebLN<br/>extension?}
+    U --> FWL
+    FWL -- "Yes (prefer_webln=false)" --> WL
+    FWL -- No --> V
+
+    WF -- No --> V
     V["TIER 3: Show QR Invoice Modal<br/>Same invoice shown as QR code"]
     V --> W["Sponsor scans & pays<br/>from any Lightning wallet"]
     W --> X["Modal polls every 4s"]
@@ -52,17 +59,29 @@ flowchart TD
     style EX fill:#EE5A5A,color:#fff
 ```
 
+## Cascade order depends on `prefer_webln`
+
+The sponsor can toggle `prefer_webln` in the Wallet tab (only visible when a WebLN extension like Alby is detected). This changes the tier order:
+
+| `prefer_webln` | Extension detected | Cascade order |
+|---|---|---|
+| `true` | Yes | WebLN → NWC → QR |
+| `false` (default) | Yes | NWC → WebLN → QR |
+| any | No | NWC → QR |
+
+The preference is stored in the user's profile (`PATCH /api/auth/profile { prefer_webln }`) and loaded on dashboard mount.
+
 ## The three tiers
 
 | Tier | Method | What happens | User sees |
 |------|--------|-------------|-----------|
-| 1 | **WebLN** | Browser extension pays the invoice automatically | Nothing — just a "Paid!" toast |
-| 2 | **NWC Auto-Pay** | Server uses sponsor's stored NWC wallet to pay | Nothing — just a "Paid!" toast |
+| 1/2 | **WebLN** | Browser extension pays the invoice automatically | Nothing — just a "Paid!" toast |
+| 1/2 | **NWC Auto-Pay** | Server uses sponsor's stored NWC wallet to pay | Nothing — just a "Paid!" toast |
 | 3 | **QR Invoice** | Invoice shown as QR code, sponsor pays from any wallet app | QR code modal |
 
 - The invoice is generated **once** from the kid's wallet and reused across all 3 tiers
-- In Tiers 1 and 2, the user never sees the invoice — it's an internal protocol step
-- In Tier 3, the same invoice is displayed as a scannable QR code
+- In WebLN and NWC tiers, the user never sees the invoice — it's an internal protocol step
+- In the QR tier, the same invoice is displayed as a scannable QR code
 - Lightning invoices have a built-in expiry. If not paid in time, the payment is marked as failed and can be [retried](./payment-retry.md)
 
 ## Sponsor wallet is optional
@@ -70,9 +89,9 @@ flowchart TD
 | Sponsor setup | What happens |
 |--------------|-------------|
 | No wallet, no extension | Tier 3 only: QR code shown |
-| NWC wallet connected | Tier 2 first (auto-pay), Tier 3 if it fails |
-| WebLN extension installed | Tier 1 first (instant), then Tier 2, then Tier 3 |
-| Both NWC + WebLN | Tries all three in order |
+| NWC wallet connected | NWC auto-pay first, then QR fallback |
+| WebLN extension + prefer_webln | WebLN first, then NWC, then QR |
+| WebLN extension (default) | NWC first, then WebLN, then QR |
 
 The only **required** wallet is the kid's — it generates the invoice. If the kid has no wallet, the approval fails.
 
@@ -83,8 +102,8 @@ The only **required** wallet is the kid's — it generates the invoice. If the k
 | Kid has no wallet | During approval | Approval fails: "Kid must connect a wallet" |
 | Invoice generation failed | NWC error | "Error generating invoice" — payment record exists, retry from Payments tab |
 | WebLN rejected | User declines in extension | "Declined" toast, falls to next tier |
-| Insufficient funds | NWC auto-pay | "Insufficient funds" toast, falls to QR |
-| NWC error | Auto-pay fails | Silent fallthrough to QR |
+| Insufficient funds | NWC auto-pay | "Insufficient funds" toast, falls to next tier |
+| NWC error | Auto-pay fails | Silent fallthrough to next tier |
 | Polling issues | QR modal | "Connection issues" warning, keeps retrying |
 | Invoice expired | Not paid in time | Payment marked failed, retry from Payments tab |
 

@@ -272,6 +272,12 @@
   opacity: 0.5;
 }
 
+.circleNotAssigned {
+  border-color: alpha($color-text-primary, 6%);
+  background: transparent;
+  opacity: 0.3;
+}
+
 // Action area
 .action {
   margin-top: $spacing-4;

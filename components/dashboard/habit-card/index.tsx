@@ -78,6 +78,20 @@ function isFuture(date: Date): boolean {
   return date.getTime() > today.getTime();
 }
 
+function isDayAssigned(
+  date: Date,
+  scheduleType?: string,
+  scheduleDays?: number[],
+): boolean {
+  if (!scheduleType || scheduleType === "daily" || scheduleType === "times_per_week") {
+    return true;
+  }
+  if (scheduleType === "specific_days" && scheduleDays) {
+    return scheduleDays.includes(date.getDay());
+  }
+  return true;
+}
+
 function formatDateStr(date: Date): string {
   return date.toISOString().split("T")[0];
 }
@@ -212,6 +226,7 @@ export function HabitCard({ habit, completions, onComplete, hideAction, currentU
       <div className={styles.dateCircles}>
         {last7Days.map((date) => {
           const dateStr = formatDateStr(date);
+          const assigned = isDayAssigned(date, habit.schedule_type, habit.schedule_days);
           const completionStatus = habitCompletionMap.get(dateStr);
           const completed = !!completionStatus;
           const isPending = completionStatus === "pending";
@@ -221,12 +236,13 @@ export function HabitCard({ habit, completions, onComplete, hideAction, currentU
           const dayLabel = date.toLocaleDateString(undefined, { weekday: "narrow" });
 
           let circleClass = styles.circleMissed;
-          if (completed && isPending) circleClass = styles.circlePending;
+          if (!assigned) circleClass = styles.circleNotAssigned;
+          else if (completed && isPending) circleClass = styles.circlePending;
           else if (completed) circleClass = styles.circleCompleted;
           else if (future) circleClass = styles.circleFuture;
           else if (today) circleClass = styles.circleToday;
 
-          const canClickCircle = today && !completed && !hideAction && todayStatus === "incomplete";
+          const canClickCircle = today && assigned && !completed && !hideAction && todayStatus === "incomplete";
 
           return (
             <div key={dateStr} className={styles.dateCircle}>
