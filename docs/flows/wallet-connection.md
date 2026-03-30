@@ -34,6 +34,17 @@ sequenceDiagram
     API->>API: Use NWC URL to talk to wallet<br/>Then discard from memory
 ```
 
+## WebLN extension detection
+
+The `WalletConnect` component also detects WebLN-compatible browser extensions (e.g., Alby). When detected:
+
+- A toggle appears for sponsors: **"Prefer extension for payments"** (`prefer_webln`)
+- This preference is stored in the user's profile via `PATCH /api/auth/profile { prefer_webln }`
+- When enabled, the [payment cascade](./payment-cascade.md) tries WebLN before NWC auto-pay
+- Kids don't see the toggle (they only receive payments, never send)
+
+The WebLN detection happens client-side by checking for `window.webln` (with a 500ms delay for async extension injection).
+
 ## Why AES-256-GCM?
 
 - **AES-256**: Military-grade encryption standard (NIST approved)

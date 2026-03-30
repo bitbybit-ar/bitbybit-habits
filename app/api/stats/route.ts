@@ -33,16 +33,16 @@ export const GET = apiHandler(async (_req, { session, db }) => {
 
   const totalSatsEarned = Number(satsResult[0].total);
 
-  // Today's sats: sum of sat_reward for today's approved completions
+  // Today's sats: sum of paid payments for today's completions
   const todaySatsResult = await db
-    .select({ total: sql<number>`COALESCE(${sum(habits.sat_reward)}, 0)` })
-    .from(completions)
-    .innerJoin(habits, eq(habits.id, completions.habit_id))
+    .select({ total: sql<number>`COALESCE(${sum(payments.amount_sats)}, 0)` })
+    .from(payments)
+    .innerJoin(completions, eq(completions.id, payments.completion_id))
     .where(
       and(
-        eq(completions.user_id, session.user_id),
-        eq(completions.date, today),
-        eq(completions.status, "approved")
+        eq(payments.to_user_id, session.user_id),
+        eq(payments.status, "paid"),
+        eq(completions.date, today)
       )
     );
 

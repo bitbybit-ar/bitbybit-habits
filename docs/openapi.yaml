@@ -3005,7 +3005,7 @@ components:
           description: Total de sats ganados (pagos con estado paid)
         todaySats:
           type: integer
-          description: Sats ganados hoy (completaciones aprobadas del dia)
+          description: Sats ganados hoy (pagos con estado paid para completaciones del dia)
         bestStreak:
           type: integer
           description: Mejor racha actual entre todos los habitos
