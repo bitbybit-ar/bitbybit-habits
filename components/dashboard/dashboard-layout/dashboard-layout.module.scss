@@ -174,7 +174,6 @@ $tabbar-height: 52px;
 // ── Content area ──
 .contentArea {
   overflow-y: auto;
-  padding-bottom: 100px;
 
   // Custom scrollbar
   &::-webkit-scrollbar {

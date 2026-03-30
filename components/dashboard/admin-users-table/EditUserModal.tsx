@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { Modal } from "@/components/ui/modal";
+import { Button } from "@/components/ui/button";
 import styles from "./admin-users-table.module.scss";
 
 interface EditingUser {
@@ -66,19 +67,12 @@ export function EditUserModal({ editing, saving, onUpdate, onSave, onClose }: Ed
       </div>
 
       <div className={styles.modalActions}>
-        <button
-          className={`${styles.modalBtn} ${styles.modalBtnCancel}`}
-          onClick={onClose}
-        >
+        <Button variant="ghost" size="sm" onClick={onClose}>
           {t("cancel")}
-        </button>
-        <button
-          className={`${styles.modalBtn} ${styles.modalBtnSave}`}
-          onClick={onSave}
-          disabled={saving}
-        >
+        </Button>
+        <Button variant="primary" size="sm" onClick={onSave} disabled={saving}>
           {saving ? t("saving") : t("save")}
-        </button>
+        </Button>
       </div>
     </Modal>
   );

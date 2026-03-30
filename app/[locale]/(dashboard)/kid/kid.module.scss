@@ -105,28 +105,6 @@
   flex-shrink: 0;
 }
 
-.joinSection {
-  @include glass-card;
-  margin-top: $spacing-24;
-  padding: $spacing-24;
-}
-
-.joinTitle {
-  font-size: $font-size-base;
-  font-weight: $font-weight-semibold;
-  color: $color-text-primary;
-  margin: 0 0 $spacing-16;
-}
-
-.joinForm {
-  display: flex;
-  gap: $spacing-12;
-
-  @include mobile {
-    flex-direction: column;
-  }
-}
-
 // ── Earnings list ──
 .earningsList {
   display: flex;

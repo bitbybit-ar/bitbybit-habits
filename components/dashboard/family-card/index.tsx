@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { useConfirm } from "@/lib/hooks/useConfirm";
 import { ConfirmModal } from "@/components/ui/confirm-modal";
+import { Button } from "@/components/ui/button";
 import { UserIcon, CheckIcon } from "@/components/icons";
 import styles from "./family-card.module.scss";
 
@@ -90,32 +91,37 @@ export function FamilyCard({
         <h3 className={styles.familyName}>{name}</h3>
         <div className={styles.headerActions}>
           {onLeave && (
-            <button
-              className={`${styles.actionButton} ${styles.leaveButton}`}
+            <Button
+              variant="outline"
+              size="sm"
+              className={styles.leaveButton}
               onClick={handleLeave}
             >
               {confirmAction === "leave"
                 ? t("common.confirm")
                 : t("family.leaveFamily")}
-            </button>
+            </Button>
           )}
           {isCreator && onDelete && (
-            <button
-              className={`${styles.actionButton} ${styles.deleteButton}`}
+            <Button
+              variant="outline"
+              size="sm"
+              className={styles.deleteButton}
               onClick={handleDelete}
             >
               {confirmAction === "delete"
                 ? t("common.confirm")
                 : t("family.deleteFamily")}
-            </button>
+            </Button>
           )}
           {confirmAction && (
-            <button
-              className={styles.actionButton}
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={() => setConfirmAction(null)}
             >
               {t("common.cancel")}
-            </button>
+            </Button>
           )}
         </div>
       </div>

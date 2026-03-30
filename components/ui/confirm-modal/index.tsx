@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { Modal } from "@/components/ui/modal";
+import { Button } from "@/components/ui/button";
 import styles from "./confirm-modal.module.scss";
 
 interface ConfirmModalProps {
@@ -27,15 +28,17 @@ export function ConfirmModal({
     <Modal onClose={onCancel} size="sm">
       <p className={styles.message}>{message}</p>
       <div className={styles.actions}>
-        <button className={styles.cancelBtn} onClick={onCancel}>
+        <Button variant="ghost" size="sm" onClick={onCancel}>
           {cancelLabel ?? t("cancel")}
-        </button>
-        <button
-          className={`${styles.confirmBtn} ${variant === "danger" ? styles.confirmBtnDanger : ""}`}
+        </Button>
+        <Button
+          variant="primary"
+          size="sm"
+          className={variant === "danger" ? styles.dangerBtn : undefined}
           onClick={onConfirm}
         >
           {confirmLabel ?? t("confirm")}
-        </button>
+        </Button>
       </div>
     </Modal>
   );

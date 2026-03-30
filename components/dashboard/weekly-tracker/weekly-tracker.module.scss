@@ -90,12 +90,17 @@
   color: $color-text-secondary;
 }
 
-.approveBtn {
+.actionBtns {
+  display: flex;
+  gap: 2px;
   margin-top: 2px;
-  padding: 2px 6px;
+}
+
+.approveBtn,
+.rejectBtn {
+  padding: 2px 5px;
   border: none;
   border-radius: $border-radius-sm;
-  background: $color-success;
   color: #fff;
   font-size: 9px;
   font-weight: $font-weight-bold;
@@ -112,4 +117,12 @@
   &:active {
     opacity: 0.7;
   }
+}
+
+.approveBtn {
+  background: $color-success;
+}
+
+.rejectBtn {
+  background: $color-error;
 }

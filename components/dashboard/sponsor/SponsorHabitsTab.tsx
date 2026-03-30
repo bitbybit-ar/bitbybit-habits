@@ -24,6 +24,7 @@ interface SponsorHabitsTabProps {
   families: FamilyWithMembers[];
   familyCompletions: FamilyCompletion[];
   onApprove: (completionId: string) => Promise<void>;
+  onReject: (completionId: string) => Promise<void>;
   onCreateHabit: () => void;
   onEdit?: (habit: Habit) => void;
   onDelete?: (habitId: string) => void;
@@ -31,7 +32,7 @@ interface SponsorHabitsTabProps {
   kids?: KidMember[];
 }
 
-export function SponsorHabitsTab({ habits, families, familyCompletions, onApprove, onCreateHabit, onEdit, onDelete, currentUserId, kids }: SponsorHabitsTabProps) {
+export function SponsorHabitsTab({ habits, families, familyCompletions, onApprove, onReject, onCreateHabit, onEdit, onDelete, currentUserId, kids }: SponsorHabitsTabProps) {
   const t = useTranslations();
   const [editingHabit, setEditingHabit] = useState<Habit | null>(null);
   const { confirm, confirmState, handleConfirm, handleCancel } = useConfirm();
@@ -74,11 +75,8 @@ export function SponsorHabitsTab({ habits, families, familyCompletions, onApprov
           icon={<BoltIcon size={48} />}
           title={t("emptyState.noHabitsTitle")}
           description={t("emptyState.sponsorNoHabitsDesc")}
-          action={
-            <button className={styles.emptyCtaButton} onClick={onCreateHabit}>
-              {t("emptyState.createFirstHabit")}
-            </button>
-          }
+          actionLabel={t("emptyState.createFirstHabit")}
+          onAction={onCreateHabit}
         />
       ) : (
         <div className={styles.habitGrid}>
@@ -137,6 +135,7 @@ export function SponsorHabitsTab({ habits, families, familyCompletions, onApprov
                             scheduleType={habit?.schedule_type}
                             scheduleDays={habit?.schedule_days}
                             onApprove={onApprove}
+                            onReject={onReject}
                           />
                         </div>
                       </div>
@@ -178,9 +177,10 @@ interface SponsorByKidTabProps {
   families: FamilyWithMembers[];
   familyCompletions: FamilyCompletion[];
   onApprove: (completionId: string) => Promise<void>;
+  onReject: (completionId: string) => Promise<void>;
 }
 
-export function SponsorByKidTab({ habits, families, familyCompletions, onApprove }: SponsorByKidTabProps) {
+export function SponsorByKidTab({ habits, families, familyCompletions, onApprove, onReject }: SponsorByKidTabProps) {
   const t = useTranslations();
 
   const byKidGroups = useMemo(() => {
@@ -268,6 +268,7 @@ export function SponsorByKidTab({ habits, families, familyCompletions, onApprove
                               scheduleType={habit?.schedule_type}
                               scheduleDays={habit?.schedule_days}
                               onApprove={onApprove}
+                              onReject={onReject}
                             />
                           </div>
                         </div>

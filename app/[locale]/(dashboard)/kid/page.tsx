@@ -196,7 +196,7 @@ export default function KidDashboard() {
             )}
             {activeTab === "wallet" && (
               <DashboardSection title={t("wallet.connectWallet")}>
-                <WalletConnect />
+                <WalletConnect role="kid" />
               </DashboardSection>
             )}
           </>

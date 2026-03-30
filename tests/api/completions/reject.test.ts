@@ -4,7 +4,7 @@ import { createRequest, parseResponse, setSessionCookie, clearSessionCookie, tes
 
 let selectCallCount = 0;
 const selectResults: unknown[][] = [];
-const mockUpdateReturning = vi.fn();
+const mockDeleteWhere = vi.fn().mockResolvedValue(undefined);
 
 const chainable = () => {
   const chain: Record<string, unknown> = {};
@@ -18,7 +18,7 @@ const chainable = () => {
 vi.mock("@/lib/db", () => ({
   getDb: () => ({
     select: () => chainable(),
-    update: () => ({ set: () => ({ where: () => ({ returning: mockUpdateReturning }) }) }),
+    delete: () => ({ where: mockDeleteWhere }),
   }),
   completions: { id: "id", habit_id: "h", status: "s", user_id: "u" },
   habits: { id: "id", family_id: "f", name: "n" },
@@ -26,7 +26,7 @@ vi.mock("@/lib/db", () => ({
 }));
 
 vi.mock("drizzle-orm", () => ({
-  eq: vi.fn(), and: vi.fn(), sql: Object.assign(vi.fn(() => "NOW()"), { raw: vi.fn() }),
+  eq: vi.fn(), and: vi.fn(),
 }));
 
 vi.mock("@/lib/notifications", () => ({
@@ -72,32 +72,18 @@ describe("POST /api/completions/reject", () => {
     expect(status).toBe(404);
   });
 
-  it("rejects completion successfully", async () => {
+  it("rejects completion successfully by deleting it", async () => {
     await setSessionCookie(testSession);
     selectResults.push([{
       id: UUID.completion1, user_id: UUID.user2, habit_name: "Clean room",
     }]);
-    mockUpdateReturning.mockResolvedValue([{ id: UUID.completion1, status: "rejected" }]);
 
     const req = createRequest("POST", "/api/completions/reject", {
       completion_id: UUID.completion1,
-      reason: "Not enough evidence",
     });
     const { status, body } = await parseResponse(await POST(req));
     expect(status).toBe(200);
-    expect(body.data.status).toBe("rejected");
-  });
-
-  it("rejects completion without reason", async () => {
-    await setSessionCookie(testSession);
-    selectResults.push([{
-      id: UUID.completion1, user_id: UUID.user2, habit_name: "Read",
-    }]);
-    mockUpdateReturning.mockResolvedValue([{ id: UUID.completion1, status: "rejected" }]);
-
-    const req = createRequest("POST", "/api/completions/reject", { completion_id: UUID.completion1 });
-    const { status, body } = await parseResponse(await POST(req));
-    expect(status).toBe(200);
-    expect(body.data.status).toBe("rejected");
+    expect(body.data.deleted).toBe(true);
+    expect(mockDeleteWhere).toHaveBeenCalled();
   });
 });

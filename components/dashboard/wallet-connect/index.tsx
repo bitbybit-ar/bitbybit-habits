@@ -29,14 +29,21 @@ interface Transaction {
   settled_at: string | null;
 }
 
-type WalletView = "main" | "send" | "receive" | "settings" | "transactions";
+type WalletView = "main" | "send" | "receive" | "transactions";
 type ScanTarget = "nwc" | "invoice" | null;
 
-export function WalletConnect() {
+interface WalletConnectProps {
+  role?: "sponsor" | "kid" | null;
+}
+
+export function WalletConnect({ role }: WalletConnectProps) {
   const t = useTranslations();
   const { showToast } = useToast();
   const { hasExtension, extensionName } = useWebLN();
+  const showExtension = hasExtension && role !== "kid";
   const [wallet, setWallet] = useState<WalletPublic | null>(null);
+  const [weblnConnected, setWeblnConnected] = useState(false);
+  const [weblnLabel, setWeblnLabel] = useState("");
   const [nwcUrl, setNwcUrl] = useState("");
   const [label, setLabel] = useState("");
   const [loading, setLoading] = useState(true);
@@ -53,6 +60,7 @@ export function WalletConnect() {
     block_height: number | null;
   } | null>(null);
   const [view, setView] = useState<WalletView>("main");
+  const [connectMethod, setConnectMethod] = useState<"nwc" | "extension">("nwc");
   const [scanning, setScanning] = useState<ScanTarget>(null);
 
   // Send state
@@ -179,17 +187,24 @@ export function WalletConnect() {
     setSaving(true);
     try {
       const webln = (window as unknown as { webln?: { enable: () => Promise<void>; getInfo?: () => Promise<{ node?: { alias?: string } }> } }).webln;
-      if (!webln) return;
+      if (!webln) {
+        showToast(t("wallet.connectError"), "error");
+        setConnectMethod("nwc");
+        return;
+      }
       await webln.enable();
       const info = webln.getInfo ? await webln.getInfo() : null;
       const extensionLabel = info?.node?.alias ?? extensionName ?? "WebLN Extension";
-      setLabel(extensionLabel);
+      setWeblnConnected(true);
+      setWeblnLabel(extensionLabel);
+      showToast(t("wallet.walletConnected"), "success");
     } catch {
-      // Extension connection failed
+      showToast(t("wallet.connectError"), "error");
+      setConnectMethod("nwc");
     } finally {
       setSaving(false);
     }
-  }, [extensionName]);
+  }, [extensionName, showToast, t]);
 
   const handleDisconnect = useCallback(async () => {
     try {
@@ -337,8 +352,24 @@ export function WalletConnect() {
         />
       )}
 
+      {/* ── WebLN connected (client-side only) ── */}
+      {!wallet && weblnConnected && (
+        <div className={styles.card}>
+          <div className={styles.statusRow}>
+            <div className={styles.statusIndicator} data-connected="true" />
+            <span className={styles.statusText}>
+              {weblnLabel || t("wallet.walletConnected")}
+            </span>
+            <button className={styles.disconnectBtn} onClick={() => { setWeblnConnected(false); setWeblnLabel(""); }}>
+              {t("wallet.disconnect")}
+            </button>
+          </div>
+          <p className={styles.weblnNote}>{t("wallet.weblnNote")}</p>
+        </div>
+      )}
+
       {/* ── Not connected ── */}
-      {!wallet && (
+      {!wallet && !weblnConnected && (
         <div className={styles.card}>
           <div className={styles.connectHeader}>
             <WalletIcon size={32} />
@@ -346,55 +377,63 @@ export function WalletConnect() {
             <p className={styles.connectDesc}>{t("wallet.connectDesc")}</p>
           </div>
 
-          {/* Primary action: scan NWC QR */}
-          <button
-            className={styles.scanButton}
-            onClick={() => setScanning("nwc")}
-          >
-            <ScanIcon size={20} />
-            {t("wallet.scanNwcQR")}
-          </button>
-
-          {hasExtension && (
-            <button
-              className={styles.extensionButton}
-              onClick={handleExtensionConnect}
-              disabled={saving}
-            >
-              {t("wallet.connectExtension", { name: extensionName ?? "WebLN" })}
-            </button>
+          {showExtension && (
+            <div className={styles.methodPicker}>
+              <button
+                className={`${styles.methodButton} ${styles.methodNwc} ${connectMethod === "nwc" ? styles.methodActive : ""}`}
+                onClick={() => setConnectMethod("nwc")}
+              >
+                {t("wallet.connectNwc")}
+              </button>
+              <button
+                className={`${styles.methodButton} ${styles.methodWebln} ${connectMethod === "extension" ? styles.methodActive : ""}`}
+                onClick={() => { setConnectMethod("extension"); handleExtensionConnect(); }}
+                disabled={saving}
+              >
+                {t("wallet.connectExtension", { name: extensionName ?? "WebLN" })}
+              </button>
+            </div>
           )}
 
-          {/* Manual paste (collapsed by default) */}
-          <details className={styles.manualSection}>
-            <summary className={styles.manualToggle}>
-              {t("wallet.pasteManually")}
-            </summary>
-            <div className={styles.form}>
-              <FormInput
-                id="nwc-url"
-                label={t("wallet.nwcUrl")}
-                placeholder="nostr+walletconnect://..."
-                value={nwcUrl}
-                onChange={setNwcUrl}
-              />
-              <FormInput
-                id="nwc-label"
-                label={t("wallet.label")}
-                placeholder={t("wallet.labelPlaceholder")}
-                value={label}
-                onChange={setLabel}
-              />
-              <FormButton
-                onClick={() => handleConnect()}
-                loading={saving}
-                loadingText={t("common.loading")}
-                disabled={!nwcUrl}
-              >
-                {t("wallet.connect")}
-              </FormButton>
+          {(connectMethod === "nwc" || !showExtension) && (
+            <div className={styles.nwcSection}>
+              <div className={styles.nwcHeader}>
+                {!showExtension && <span className={styles.nwcTitle}>{t("wallet.connectNwc")}</span>}
+                <button
+                  className={styles.scanIconButton}
+                  onClick={() => setScanning("nwc")}
+                  title={t("wallet.scanNwcQR")}
+                  aria-label={t("wallet.scanNwcQR")}
+                >
+                  <ScanIcon size={18} />
+                </button>
+              </div>
+              <div className={styles.form}>
+                <FormInput
+                  id="nwc-url"
+                  label={t("wallet.nwcUrl")}
+                  placeholder="nostr+walletconnect://..."
+                  value={nwcUrl}
+                  onChange={setNwcUrl}
+                />
+                <FormInput
+                  id="nwc-label"
+                  label={t("wallet.label")}
+                  placeholder={t("wallet.labelPlaceholder")}
+                  value={label}
+                  onChange={setLabel}
+                />
+                <FormButton
+                  onClick={() => handleConnect()}
+                  loading={saving}
+                  loadingText={t("common.loading")}
+                  disabled={!nwcUrl}
+                >
+                  {t("wallet.connect")}
+                </FormButton>
+              </div>
             </div>
-          </details>
+          )}
         </div>
       )}
 
@@ -406,8 +445,8 @@ export function WalletConnect() {
             <span className={styles.statusText}>
               {wallet.label || t("wallet.walletConnected")}
             </span>
-            <button className={styles.settingsButton} onClick={() => setView("settings")}>
-              {t("wallet.settings")}
+            <button className={styles.disconnectBtn} onClick={handleDisconnect}>
+              {t("wallet.disconnect")}
             </button>
           </div>
 
@@ -416,8 +455,8 @@ export function WalletConnect() {
             <div className={styles.connectionWarning}>
               <p className={styles.warningText}>{t("wallet.connectionLost")}</p>
               <p className={styles.warningHint}>{t("wallet.connectionLostHint")}</p>
-              <button className={styles.reconnectButton} onClick={() => { handleDisconnect(); }}>
-                {t("wallet.reconnect")}
+              <button className={styles.reconnectButton} onClick={() => { setConnectionDead(false); fetchBalance(); }}>
+                {t("wallet.retryConnection")}
               </button>
             </div>
           )}
@@ -643,40 +682,6 @@ export function WalletConnect() {
       )}
 
       {/* ── Settings view ── */}
-      {wallet && view === "settings" && (
-        <div className={styles.card}>
-          <div className={styles.viewHeader}>
-            <button className={styles.backButton} onClick={() => setView("main")}>
-              &larr;
-            </button>
-            <h3 className={styles.viewTitle}>{t("wallet.settings")}</h3>
-          </div>
-
-          <div className={styles.settingsSection}>
-            <div className={styles.settingsRow}>
-              <span className={styles.settingsLabel}>{t("wallet.connection")}</span>
-              <span className={styles.badge}>NWC</span>
-            </div>
-            {wallet.label && (
-              <div className={styles.settingsRow}>
-                <span className={styles.settingsLabel}>{t("wallet.walletLabel")}</span>
-                <span className={styles.settingsValue}>{wallet.label}</span>
-              </div>
-            )}
-          </div>
-
-          <div className={styles.settingsActions}>
-            <button className={styles.changeWalletButton} onClick={() => {
-              handleDisconnect();
-            }}>
-              {t("wallet.changeWallet")}
-            </button>
-            <button className={styles.disconnectButton} onClick={handleDisconnect}>
-              {t("wallet.disconnect")}
-            </button>
-          </div>
-        </div>
-      )}
     </>
   );
 }

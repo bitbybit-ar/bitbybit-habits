@@ -369,41 +369,6 @@
   margin-top: $spacing-20;
 }
 
-.modalBtn {
-  padding: $spacing-8 $spacing-16;
-  border-radius: $border-radius-sm;
-  border: none;
-  font-size: $font-size-sm;
-  font-weight: $font-weight-semibold;
-  cursor: pointer;
-  @include transition;
-}
-
-.modalBtnCancel {
-  background: transparent;
-  border: 1px solid alpha($color-text-primary, 15%);
-  color: $color-text-secondary;
-
-  &:hover {
-    color: $color-text-primary;
-  }
-}
-
-.modalBtnSave {
-  background: $color-primary;
-  color: #000;
-
-  &:hover {
-    opacity: 0.9;
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-}
-
-
 // ── Responsive ──
 .mobileCard {
   display: none;

@@ -1,15 +1,13 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { UsersIcon } from "@/components/icons";
 import { DashboardSection } from "@/components/dashboard/dashboard-section";
 import { EmptyState } from "@/components/dashboard/empty-state";
 import { FamilyCard } from "@/components/dashboard/family-card";
-import { FormInput, FormButton } from "@/components/ui/form";
-import { resolveApiError } from "@/lib/error-messages";
+import { JoinFamilyModal } from "@/components/dashboard/join-family-modal";
 import type { FamilyWithMembers } from "@/lib/hooks/useFamilies";
-import styles from "../../../app/[locale]/(dashboard)/kid/kid.module.scss";
 
 interface KidFamilyTabProps {
   families: FamilyWithMembers[];
@@ -21,44 +19,13 @@ interface KidFamilyTabProps {
 
 export function KidFamilyTab({ families, sessionUserId, onJoinSuccess, onLeave, showToast }: KidFamilyTabProps) {
   const t = useTranslations();
-  const [joinCode, setJoinCode] = useState("");
-  const [joinLoading, setJoinLoading] = useState(false);
-  const [joinError, setJoinError] = useState("");
+  const [showJoinModal, setShowJoinModal] = useState(false);
 
-  const handleJoinFamily = useCallback(async (e: React.FormEvent) => {
-    e.preventDefault();
-    setJoinError("");
-    setJoinLoading(true);
-    try {
-      const res = await fetch("/api/families/join", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ invite_code: joinCode }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        setJoinCode("");
-        showToast(t("family.joinSuccess"), "success");
-        onJoinSuccess();
-      } else {
-        setJoinError(resolveApiError(data.error, t));
-      }
-    } catch {
-      setJoinError(t("auth.connectionError"));
-    } finally {
-      setJoinLoading(false);
-    }
-  }, [joinCode, showToast, t, onJoinSuccess]);
+  const hasFamily = families.length > 0;
 
   return (
     <DashboardSection title={t("family.myFamily")}>
-      {families.length === 0 ? (
-        <EmptyState
-          icon={<UsersIcon size={48} />}
-          title={t("emptyState.noFamily")}
-          description={t("emptyState.noFamilyKidDesc")}
-        />
-      ) : (
+      {hasFamily ? (
         families.map((family) => (
           <FamilyCard
             key={family.id}
@@ -72,23 +39,26 @@ export function KidFamilyTab({ families, sessionUserId, onJoinSuccess, onLeave, 
             onLeave={onLeave}
           />
         ))
+      ) : (
+        <EmptyState
+          icon={<UsersIcon size={48} />}
+          title={t("emptyState.noFamily")}
+          description={t("emptyState.noFamilyKidDesc")}
+          actionLabel={t("family.joinFamily")}
+          onAction={() => setShowJoinModal(true)}
+        />
       )}
-      <div className={styles.joinSection}>
-        <h3 className={styles.joinTitle}>{t("family.joinFamily")}</h3>
-        <form onSubmit={handleJoinFamily} className={styles.joinForm}>
-          <FormInput
-            id="join-code"
-            placeholder={t("family.enterInviteCode")}
-            maxLength={6}
-            value={joinCode}
-            onChange={(v) => setJoinCode(v.toUpperCase())}
-            error={joinError || undefined}
-          />
-          <FormButton type="submit" loading={joinLoading} loadingText={t("common.loading")} disabled={!joinCode.trim()}>
-            {t("family.join")}
-          </FormButton>
-        </form>
-      </div>
+
+      {showJoinModal && (
+        <JoinFamilyModal
+          onClose={() => setShowJoinModal(false)}
+          onJoined={() => {
+            setShowJoinModal(false);
+            showToast(t("family.joinSuccess"), "success");
+            onJoinSuccess();
+          }}
+        />
+      )}
     </DashboardSection>
   );
 }

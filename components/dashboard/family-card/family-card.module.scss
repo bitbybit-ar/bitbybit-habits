@@ -33,23 +33,6 @@
   flex-shrink: 0;
 }
 
-.actionButton {
-  padding: $spacing-4 $spacing-12;
-  border-radius: $border-radius-md;
-  border: 1px solid alpha($color-text-primary, 10%);
-  background: transparent;
-  color: $color-text-secondary;
-  font-size: $font-size-xs;
-  font-weight: $font-weight-semibold;
-  cursor: pointer;
-  transition: all 0.2s;
-  white-space: nowrap;
-
-  &:hover {
-    background: alpha($color-text-primary, 5%);
-  }
-}
-
 .leaveButton {
   &:hover {
     color: $color-accent;

@@ -210,7 +210,11 @@
     "disconnect": "Disconnect",
     "changeWallet": "Change wallet",
     "connectExtension": "Connect with {name}",
+    "connectNwc": "Connect with NWC",
+    "weblnNote": "Connected via browser extension. Payments are handled directly by the extension.",
+    "retryConnection": "Retry connection",
     "scanNwcQR": "Scan wallet QR",
+    "cameraPermissionDenied": "Camera permission denied. Enable camera access in your browser settings.",
     "scanInvoiceQR": "Scan invoice QR",
     "scanQR": "Scan QR",
     "cameraError": "Could not access camera",
@@ -548,6 +552,7 @@
     "autoPaidSuccess": "Approved! {amount} sats sent ⚡",
     "scanInvoice": "Scan or copy the invoice to pay {amount} sats",
     "kidNoWallet": "Kid needs to connect a wallet to receive sats",
+    "nwcNoInfoEvent": "Kid's wallet doesn't support generating invoices. Ask them to use an NWC-compatible wallet (e.g. Alby Hub, Mutiny).",
     "approvedNoPay": "Approved without payment. Set up a wallet to send sats.",
     "paymentError": "Error processing payment. Try again.",
     "weblnPaidSuccess": "Paid {amount} sats via {extension}! ⚡",
@@ -592,7 +597,8 @@
     "thu": "T",
     "fri": "F",
     "sat": "S",
-    "approve": "Approve"
+    "approve": "Approve",
+    "reject": "Reject"
   },
   "sponsorDashboard": {
     "pendingApprovals": "Pending approvals",
@@ -606,6 +612,7 @@
     "selectSchedule": "Select schedule",
     "selectVerification": "Select verification",
     "approveSuccess": "Completion approved successfully",
+    "rejectSuccess": "Completion rejected",
     "approveNoWallet": "Completion approved, but you need to connect a Lightning wallet to send rewards. Go to the Wallet tab to set it up.",
     "rejectSuccess": "Completion rejected",
     "createSuccess": "Habit created successfully",

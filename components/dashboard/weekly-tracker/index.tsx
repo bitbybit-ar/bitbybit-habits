@@ -18,6 +18,7 @@ interface WeeklyTrackerProps {
   scheduleDays?: number[] | null;
   scheduleType?: string;
   onApprove?: (completionId: string) => void;
+  onReject?: (completionId: string) => void;
 }
 
 type CellStatus = "completed" | "missed" | "pending_today" | "pending_approval" | "not_assigned";
@@ -67,6 +68,7 @@ export function WeeklyTracker({
   scheduleDays,
   scheduleType,
   onApprove,
+  onReject,
 }: WeeklyTrackerProps) {
   const t = useTranslations();
   const days = getLast7Days();
@@ -139,15 +141,29 @@ export function WeeklyTracker({
               {status === "pending_approval" && <CheckIcon size={14} />}
               {status === "not_assigned" && <span className={styles.dot}>·</span>}
             </div>
-            {status === "pending_approval" && onApprove && completionId && (
-              <button
-                type="button"
-                className={styles.approveBtn}
-                onClick={() => onApprove(completionId)}
-                title={t("habits.approve")}
-              >
-                {t("weeklyTracker.approve")}
-              </button>
+            {status === "pending_approval" && completionId && (
+              <div className={styles.actionBtns}>
+                {onApprove && (
+                  <button
+                    type="button"
+                    className={styles.approveBtn}
+                    onClick={() => onApprove(completionId)}
+                    title={t("habits.approve")}
+                  >
+                    {t("weeklyTracker.approve")}
+                  </button>
+                )}
+                {onReject && (
+                  <button
+                    type="button"
+                    className={styles.rejectBtn}
+                    onClick={() => onReject(completionId)}
+                    title={t("habits.reject")}
+                  >
+                    {t("weeklyTracker.reject")}
+                  </button>
+                )}
+              </div>
             )}
           </div>
         );

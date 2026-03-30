@@ -1,19 +1,17 @@
 import { apiHandler, requireFields, NotFoundError } from "@/lib/api";
 import { createNotification } from "@/lib/notifications";
 import { completions, habits, familyMembers } from "@/lib/db";
-import { eq, and, sql } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 
 /**
  * POST /api/completions/reject
  *
- * Reject a pending completion (sponsor only). Notifies the kid.
+ * Reject a pending completion (sponsor only). Deletes the completion
+ * so the kid can redo the habit. Notifies the kid.
  */
 export const POST = apiHandler(async (request, { session, db }) => {
   const body = await request.json();
-  const { completion_id, reason } = body as {
-    completion_id: string;
-    reason?: string;
-  };
+  const { completion_id } = body as { completion_id: string };
 
   requireFields({ completion_id }, ["completion_id"]);
 
@@ -38,32 +36,25 @@ export const POST = apiHandler(async (request, { session, db }) => {
     throw new NotFoundError("completion_not_found");
   }
 
-  const updates: Record<string, unknown> = {
-    status: "rejected",
-    reviewed_by: session.user_id,
-    reviewed_at: sql`NOW()`,
-  };
-  if (reason) updates.note = reason;
+  const completion = result[0];
 
-  const updated = await db
-    .update(completions)
-    .set(updates)
-    .where(eq(completions.id, completion_id))
-    .returning();
+  // Delete the completion so the kid can redo the habit
+  await db
+    .delete(completions)
+    .where(eq(completions.id, completion_id));
 
   // Notify the kid
-  const completion = result[0];
   try {
     await createNotification(
       completion.user_id,
       "completion_rejected",
       "Habit not approved",
-      `Your habit "${completion.habit_name}" was not approved.`,
+      `Your habit "${completion.habit_name}" was not approved. Try again!`,
       { completion_id, habit_name: completion.habit_name }
     );
   } catch {
     // Notification is best-effort
   }
 
-  return updated[0];
+  return { deleted: true };
 }, { rateLimit: "auth" });
