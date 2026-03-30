@@ -5,6 +5,7 @@ import { apiHandler, BadRequestError, UnauthorizedError } from "@/lib/api";
 import { users, familyMembers } from "@/lib/db";
 import { createSession } from "@/lib/auth";
 import { validateAuthEvent } from "@/lib/nostr";
+import { fetchNostrMetadataServer } from "@/lib/nostr/server-metadata";
 import { eq } from "drizzle-orm";
 import type { ApiResponse } from "@/lib/types";
 import type { NostrEvent } from "@/lib/nostr";
@@ -113,6 +114,37 @@ export const POST = apiHandler(async (request, { db }) => {
 
     user = inserted[0];
     isNewUser = true;
+  }
+
+  // Sync Nostr profile metadata (best-effort, non-blocking for returning users)
+  try {
+    const metadata = await fetchNostrMetadataServer(pubkey);
+    if (metadata) {
+      const displayName = metadata.display_name || metadata.name;
+      const avatarUrl = metadata.picture;
+
+      if (displayName || avatarUrl) {
+        const updated = await db
+          .update(users)
+          .set({
+            ...(displayName ? { display_name: displayName } : {}),
+            ...(avatarUrl ? { avatar_url: avatarUrl } : {}),
+            nostr_metadata: metadata,
+            nostr_metadata_updated_at: new Date(),
+          })
+          .where(eq(users.id, user.id))
+          .returning({
+            display_name: users.display_name,
+            avatar_url: users.avatar_url,
+          });
+
+        if (updated[0]) {
+          user = { ...user, ...updated[0] };
+        }
+      }
+    }
+  } catch {
+    // Non-fatal: continue with existing user data if relay fetch fails
   }
 
   // Get role from family membership

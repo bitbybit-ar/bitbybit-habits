@@ -3,6 +3,7 @@
 import { useEffect, useRef, useCallback, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Html5Qrcode } from "html5-qrcode";
+import { Modal } from "@/components/ui/modal";
 import styles from "./qr-scanner.module.scss";
 
 interface QRScannerProps {
@@ -63,25 +64,19 @@ export function QRScanner({ onScan, onClose }: QRScannerProps) {
   }, [stop]);
 
   return (
-    <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-        <div className={styles.header}>
-          <h3 className={styles.title}>{t("scanQR")}</h3>
-          <button className={styles.closeButton} onClick={onClose}>&times;</button>
-        </div>
-        <div className={styles.scannerContainer}>
-          <div id="qr-scanner-region" />
-          {error && (
-            <div className={styles.errorState}>
-              <p className={styles.error}>{error}</p>
-              <button className={styles.retryBtn} onClick={handleRetry}>
-                {t("retryCamera")}
-              </button>
-            </div>
-          )}
-        </div>
+    <Modal onClose={onClose} size="sm" title={t("scanQR")}>
+      <div className={styles.scannerContainer}>
+        <div id="qr-scanner-region" />
+        {error && (
+          <div className={styles.errorState}>
+            <p className={styles.error}>{error}</p>
+            <button className={styles.retryBtn} onClick={handleRetry}>
+              {t("retryCamera")}
+            </button>
+          </div>
+        )}
       </div>
-    </div>
+    </Modal>
   );
 }
 

@@ -163,6 +163,7 @@ export default function KidDashboard() {
       )}
       <DashboardLayout
         displayName={`${t("dashboard.welcome")}, ${displayName}`}
+        avatarName={displayName}
         avatarUrl={session.data?.avatar_url}
         headerExtra={headerExtra}
         statsBar={statsBar}

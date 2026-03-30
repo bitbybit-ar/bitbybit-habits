@@ -1,16 +1,18 @@
 "use client";
 
-import React, { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import Section from "@/components/ui/section";
 import SectionTitle from "@/components/ui/section-title";
 import ScrollReveal from "@/components/ui/scroll-reveal";
+import { Modal } from "@/components/ui/modal";
 import styles from "./tech-stack.module.scss";
 
 interface TechItem {
   icon: React.ReactNode;
   title: string;
+  url: string;
   description: string;
   linkLabel: string;
   detailTitle: string;
@@ -19,13 +21,13 @@ interface TechItem {
 
 export const TechStack: React.FC = () => {
   const t = useTranslations("landing.techStack");
-  const tA11y = useTranslations("accessibility");
   const [activeModal, setActiveModal] = useState<number | null>(null);
 
   const TECH: TechItem[] = [
     {
       icon: <Image src="https://upload.wikimedia.org/wikipedia/commons/5/5a/Lightning_Network.svg" alt="Lightning Network" width={40} height={40} className={styles.logoImg} />,
       title: "Lightning Network",
+      url: "https://lightning.network",
       description: t("lightningDesc"),
       linkLabel: t("lightningLink"),
       detailTitle: t("lightningDetailTitle"),
@@ -39,6 +41,7 @@ export const TechStack: React.FC = () => {
     {
       icon: <Image src="https://avatars.githubusercontent.com/u/259148082?v=4" alt="Nostr WoT" width={40} height={40} className={styles.logoImg} />,
       title: "Nostr WoT",
+      url: "https://nostr-wot.com/",
       description: t("nostrDesc"),
       linkLabel: t("nostrLink"),
       detailTitle: t("nostrDetailTitle"),
@@ -51,15 +54,6 @@ export const TechStack: React.FC = () => {
   ];
 
   const closeModal = useCallback(() => setActiveModal(null), []);
-
-  useEffect(() => {
-    if (activeModal === null) return;
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") closeModal();
-    };
-    document.addEventListener("keydown", handleKey);
-    return () => document.removeEventListener("keydown", handleKey);
-  }, [activeModal, closeModal]);
 
   return (
     <Section id="tech-stack" alternate aria-labelledby="tech-title">
@@ -74,9 +68,9 @@ export const TechStack: React.FC = () => {
       <div className={styles.grid}>
         {TECH.map((tech, i) => (
           <article key={tech.title} className={styles.card}>
-            <div className={styles.iconCircle} aria-hidden="true">{tech.icon}</div>
+            <a href={tech.url} target="_blank" rel="noopener noreferrer" className={styles.iconCircle}>{tech.icon}</a>
             <div>
-              <h4>{tech.title}</h4>
+              <h4><a href={tech.url} target="_blank" rel="noopener noreferrer" className={styles.titleLink}>{tech.title}</a></h4>
               <p>{tech.description}</p>
               <button
                 className={styles.detailLink}
@@ -91,26 +85,21 @@ export const TechStack: React.FC = () => {
       </ScrollReveal>
 
       {activeModal !== null && (
-        <div className={styles.overlay} onClick={closeModal}>
-          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-            <button className={styles.closeButton} onClick={closeModal} aria-label={tA11y("closeModal")}>
-              ✕
-            </button>
-            <div className={styles.modalHeader}>
-              <div className={styles.modalIcon}>{TECH[activeModal].icon}</div>
-              <h3>{TECH[activeModal].detailTitle}</h3>
-            </div>
-            <div className={styles.modalGrid}>
-              {TECH[activeModal].detailItems.map((item) => (
-                <div key={item.title} className={styles.modalCard}>
-                  <div className={styles.modalStat}>{item.stat}</div>
-                  <h4>{item.title}</h4>
-                  <p>{item.desc}</p>
-                </div>
-              ))}
-            </div>
+        <Modal onClose={closeModal} size="lg">
+          <div className={styles.modalHeader}>
+            <div className={styles.modalIcon}>{TECH[activeModal].icon}</div>
+            <h3>{TECH[activeModal].detailTitle}</h3>
           </div>
-        </div>
+          <div className={styles.modalGrid}>
+            {TECH[activeModal].detailItems.map((item) => (
+              <div key={item.title} className={styles.modalCard}>
+                <div className={styles.modalStat}>{item.stat}</div>
+                <h4>{item.title}</h4>
+                <p>{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </Modal>
       )}
     </Section>
   );

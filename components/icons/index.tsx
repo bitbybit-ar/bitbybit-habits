@@ -7,6 +7,7 @@ export { BoltIcon } from "./BoltIcon";
 export { CheckIcon } from "./CheckIcon";
 export { ChevronRightIcon } from "./ChevronRightIcon";
 export { ClockIcon } from "./ClockIcon";
+export { CloseIcon } from "./CloseIcon";
 export { EyeIcon } from "./EyeIcon";
 export { EyeOffIcon } from "./EyeOffIcon";
 export { FamilyIcon } from "./FamilyIcon";

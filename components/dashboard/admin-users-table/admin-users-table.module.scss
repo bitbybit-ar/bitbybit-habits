@@ -332,35 +332,7 @@
   color: $color-text-secondary;
 }
 
-// ── Edit modal ──
-.modalOverlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  padding: $spacing-16;
-}
-
-.modal {
-  @include glass(0.12, 24px, 0.08, $border-radius-lg);
-  background: $color-bg-2;
-  padding: $spacing-24;
-  width: 100%;
-  max-width: 480px;
-  max-height: 90vh;
-  overflow-y: auto;
-}
-
-.modalTitle {
-  font-size: $font-size-lg;
-  font-weight: $font-weight-bold;
-  color: $color-text-primary;
-  margin: 0 0 $spacing-20 0;
-}
-
+// ── Edit modal fields ──
 .modalField {
   margin-bottom: $spacing-16;
 }

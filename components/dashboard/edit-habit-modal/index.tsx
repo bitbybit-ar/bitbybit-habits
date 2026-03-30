@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { MemberPicker } from "@/components/dashboard/member-picker";
 import { ModalLoader } from "@/components/ui/modal-loader";
+import { Modal } from "@/components/ui/modal";
 import { FormInput, FormSelect, FormField, FormButton } from "@/components/ui/form";
 import type { Habit } from "@/lib/types";
 import styles from "./edit-habit-modal.module.scss";
@@ -147,129 +148,125 @@ export function EditHabitModal({ habit, kids, onSave, onClose }: EditHabitModalP
   };
 
   return (
-    <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-        <h3 className={styles.title}>{t("habits.editHabit")}</h3>
+    <Modal onClose={onClose} size="md" title={t("habits.editHabit")}>
+      <FormInput
+        id="edit-habit-name"
+        label={t("habits.habitName")}
+        value={name}
+        onChange={setName}
+      />
 
-        <FormInput
-          id="edit-habit-name"
-          label={t("habits.habitName")}
-          value={name}
-          onChange={setName}
-        />
+      <FormInput
+        id="edit-habit-desc"
+        label={t("habits.description")}
+        value={description}
+        onChange={setDescription}
+      />
 
-        <FormInput
-          id="edit-habit-desc"
-          label={t("habits.description")}
-          value={description}
-          onChange={setDescription}
-        />
+      <FormInput
+        id="edit-habit-reward"
+        type="number"
+        label={t("habits.satReward")}
+        min={0}
+        value={String(satReward)}
+        onChange={(v) => setSatReward(Number(v))}
+      />
 
-        <FormInput
-          id="edit-habit-reward"
-          type="number"
-          label={t("habits.satReward")}
-          min={0}
-          value={String(satReward)}
-          onChange={(v) => setSatReward(Number(v))}
-        />
+      <FormField label={t("habits.color")}>
+        <div className={styles.colorPicker}>
+          {COLORS.map((c) => (
+            <button
+              key={c}
+              type="button"
+              className={styles.colorSwatch}
+              data-selected={c === color}
+              style={{ backgroundColor: c }}
+              onClick={() => setColor(c)}
+            />
+          ))}
+        </div>
+      </FormField>
 
-        <FormField label={t("habits.color")}>
-          <div className={styles.colorPicker}>
-            {COLORS.map((c) => (
-              <button
-                key={c}
-                type="button"
-                className={styles.colorSwatch}
-                data-selected={c === color}
-                style={{ backgroundColor: c }}
-                onClick={() => setColor(c)}
-              />
+      <FormSelect
+        id="edit-habit-schedule"
+        label={t("habits.schedule")}
+        value={scheduleType}
+        onChange={(v) => setScheduleType(v as "daily" | "specific_days" | "times_per_week")}
+      >
+        <option value="daily">{t("habits.daily")}</option>
+        <option value="specific_days">{t("habits.specificDays")}</option>
+        <option value="times_per_week">{t("habits.timesPerWeek")}</option>
+      </FormSelect>
+
+      {scheduleType === "specific_days" && (
+        <FormField>
+          <div className={styles.daysGrid}>
+            {DAY_KEYS.map((key, index) => (
+              <label key={key} className={styles.dayCheck}>
+                <input
+                  type="checkbox"
+                  checked={scheduleDays.includes(index)}
+                  onChange={() => handleDayToggle(index)}
+                  className={styles.checkbox}
+                />
+                <span className={styles.dayLabel}>{t(key)}</span>
+              </label>
             ))}
           </div>
         </FormField>
+      )}
 
-        <FormSelect
-          id="edit-habit-schedule"
-          label={t("habits.schedule")}
-          value={scheduleType}
-          onChange={(v) => setScheduleType(v as "daily" | "specific_days" | "times_per_week")}
+      {scheduleType === "times_per_week" && (
+        <FormInput
+          id="edit-habit-times"
+          type="number"
+          label={t("habits.timesPerWeek")}
+          min={1}
+          max={7}
+          value={String(timesPerWeek)}
+          onChange={(v) => setTimesPerWeek(Math.max(1, Math.min(7, parseInt(v) || 1)))}
+        />
+      )}
+
+      <FormSelect
+        id="edit-habit-verify"
+        label={t("habits.verification")}
+        value={verificationType}
+        onChange={(v) => setVerificationType(v as "sponsor_approval" | "self_verify")}
+      >
+        <option value="sponsor_approval">{t("habits.sponsorApproval")}</option>
+        <option value="self_verify">{t("habits.selfVerify")}</option>
+      </FormSelect>
+
+      {kids && kids.length > 0 && (
+        <FormField label={t("habits.assignTo")}>
+          {loadingAssignments ? (
+            <ModalLoader />
+          ) : (
+            <MemberPicker
+              kids={kids}
+              selectedIds={assignedMembers}
+              onToggle={handleMemberToggle}
+              multiple
+            />
+          )}
+        </FormField>
+      )}
+
+      <div className={styles.actions}>
+        <button className={styles.cancelButton} onClick={onClose}>
+          {t("common.cancel")}
+        </button>
+        <FormButton
+          onClick={handleSave}
+          loading={saving}
+          loadingText={t("common.loading")}
+          disabled={!name.trim() || !hasChanges}
         >
-          <option value="daily">{t("habits.daily")}</option>
-          <option value="specific_days">{t("habits.specificDays")}</option>
-          <option value="times_per_week">{t("habits.timesPerWeek")}</option>
-        </FormSelect>
-
-        {scheduleType === "specific_days" && (
-          <FormField>
-            <div className={styles.daysGrid}>
-              {DAY_KEYS.map((key, index) => (
-                <label key={key} className={styles.dayCheck}>
-                  <input
-                    type="checkbox"
-                    checked={scheduleDays.includes(index)}
-                    onChange={() => handleDayToggle(index)}
-                    className={styles.checkbox}
-                  />
-                  <span className={styles.dayLabel}>{t(key)}</span>
-                </label>
-              ))}
-            </div>
-          </FormField>
-        )}
-
-        {scheduleType === "times_per_week" && (
-          <FormInput
-            id="edit-habit-times"
-            type="number"
-            label={t("habits.timesPerWeek")}
-            min={1}
-            max={7}
-            value={String(timesPerWeek)}
-            onChange={(v) => setTimesPerWeek(Math.max(1, Math.min(7, parseInt(v) || 1)))}
-          />
-        )}
-
-        <FormSelect
-          id="edit-habit-verify"
-          label={t("habits.verification")}
-          value={verificationType}
-          onChange={(v) => setVerificationType(v as "sponsor_approval" | "self_verify")}
-        >
-          <option value="sponsor_approval">{t("habits.sponsorApproval")}</option>
-          <option value="self_verify">{t("habits.selfVerify")}</option>
-        </FormSelect>
-
-        {kids && kids.length > 0 && (
-          <FormField label={t("habits.assignTo")}>
-            {loadingAssignments ? (
-              <ModalLoader />
-            ) : (
-              <MemberPicker
-                kids={kids}
-                selectedIds={assignedMembers}
-                onToggle={handleMemberToggle}
-                multiple
-              />
-            )}
-          </FormField>
-        )}
-
-        <div className={styles.actions}>
-          <button className={styles.cancelButton} onClick={onClose}>
-            {t("common.cancel")}
-          </button>
-          <FormButton
-            onClick={handleSave}
-            loading={saving}
-            loadingText={t("common.loading")}
-            disabled={!name.trim() || !hasChanges}
-          >
-            {t("common.save")}
-          </FormButton>
-        </div>
+          {t("common.save")}
+        </FormButton>
       </div>
-    </div>
+    </Modal>
   );
 }
 
