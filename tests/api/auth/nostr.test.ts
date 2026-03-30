@@ -83,6 +83,7 @@ describe("/api/auth/nostr", () => {
   });
 
   it("POST logs in existing user by nostr_pubkey", async () => {
+    await clearChallengeCookie();
     await setChallengeCookie();
     vi.mocked(validateAuthEvent).mockReturnValue(true);
 
@@ -100,17 +101,19 @@ describe("/api/auth/nostr", () => {
   });
 
   it("POST auto-creates user on first-time Nostr login", async () => {
+    await clearChallengeCookie();
     await setChallengeCookie();
     vi.mocked(validateAuthEvent).mockReturnValue(true);
 
     selectResults.push([]); // no existing user
     selectResults.push([]); // no family membership
 
-    mockInsertReturning.mockResolvedValue([{
+    const newUser = {
       id: UUID.user3, email: `nostr_${MOCK_PUBKEY.slice(0, 12)}@bitbybit.nostr`,
       username: `nostr_${MOCK_PUBKEY.slice(0, 8)}`, display_name: `Nostr ${MOCK_PUBKEY.slice(0, 8)}`,
       avatar_url: null, locale: "es", nostr_pubkey: MOCK_PUBKEY,
-    }]);
+    };
+    mockInsertReturning.mockImplementation(async () => [newUser]);
 
     const req = createRequest("POST", "/api/auth/nostr", { signedEvent: mockSignedEvent });
     const { status, body } = await parseResponse(await POST(req));
