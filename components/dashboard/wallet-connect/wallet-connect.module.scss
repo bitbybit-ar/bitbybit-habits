@@ -138,11 +138,88 @@
   }
 }
 
-.weblnNote {
+// ── WebLN toggle ──
+
+.weblnToggleSection {
+  margin-top: $spacing-16;
+  padding-top: $spacing-16;
+  border-top: 1px solid alpha($color-text-primary, 8%);
+}
+
+.weblnToggleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $spacing-12;
+}
+
+.weblnToggleInfo {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-4;
+  flex: 1;
+  min-width: 0;
+}
+
+.weblnToggleLabel {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.weblnToggleDesc {
   font-size: $font-size-xs;
   color: $color-text-secondary;
-  text-align: center;
-  margin-top: $spacing-12;
+  line-height: 1.4;
+}
+
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: $spacing-8;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.toggleTrack {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  border-radius: $border-radius-full;
+  background: alpha($color-text-primary, 15%);
+  transition: background 0.2s ease;
+
+  &[data-on] {
+    background: $color-primary;
+  }
+}
+
+.toggleThumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  border-radius: $border-radius-full;
+  background: $color-text-primary;
+  transition: transform 0.2s ease;
+
+  [data-on] > & {
+    transform: translateX(20px);
+  }
+}
+
+.toggleText {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  color: $color-text-secondary;
+
+  @include mobile {
+    display: none;
+  }
 }
 
 // ── Connection warning ──
@@ -249,60 +326,6 @@
     transform: rotate(180deg);
   }
 }
-
-.methodPicker {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: $spacing-8;
-  margin-bottom: $spacing-16;
-}
-
-.methodButton {
-  padding: $spacing-12 $spacing-8;
-  border-radius: $border-radius-md;
-  font-size: $font-size-sm;
-  font-weight: $font-weight-semibold;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  text-align: center;
-}
-
-.methodWebln {
-  border: 2px solid alpha($color-primary, 15%);
-  background: transparent;
-  color: alpha($color-primary, 60%);
-
-  &:hover {
-    color: $color-primary;
-    background: alpha($color-primary, 8%);
-    border-color: alpha($color-primary, 40%);
-  }
-
-  &.methodActive {
-    color: $color-primary;
-    background: alpha($color-primary, 12%);
-    border-color: $color-primary;
-  }
-}
-
-.methodNwc {
-  border: 2px solid alpha($color-nostr, 15%);
-  background: transparent;
-  color: alpha($color-nostr, 60%);
-
-  &:hover {
-    color: $color-nostr;
-    background: alpha($color-nostr, 8%);
-    border-color: alpha($color-nostr, 40%);
-  }
-
-  &.methodActive {
-    color: $color-nostr;
-    background: alpha($color-nostr, 12%);
-    border-color: $color-nostr;
-  }
-}
-
 
 // ── Action buttons ──
 

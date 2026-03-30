@@ -109,5 +109,19 @@ describe("/api/auth/profile", () => {
       const { status } = await parseResponse(await PATCH(req, undefined as never));
       expect(status).toBe(400);
     });
+
+    it("updates prefer_webln preference", async () => {
+      await setSessionCookie(testSession);
+      mockReturning.mockResolvedValue([{
+        id: testSession.user_id, email: "test@example.com",
+        username: "testuser", display_name: "Test User",
+        avatar_url: null, locale: "en", prefer_webln: true,
+      }]);
+
+      const req = createRequest("PATCH", "/api/auth/profile", { prefer_webln: true });
+      const { status, body } = await parseResponse(await PATCH(req, undefined as never));
+      expect(status).toBe(200);
+      expect(body.data.prefer_webln).toBe(true);
+    });
   });
 });

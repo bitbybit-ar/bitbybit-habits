@@ -36,6 +36,7 @@ export default function SponsorDashboard() {
   const { hasExtension: hasWebLN, sendPayment: weblnSendPayment, extensionName } = useWebLN();
   const [activeTab, setActiveTab] = useState<TabType>("byHabit");
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [preferWebln, setPreferWebln] = useState(false);
   const [invoiceModal, setInvoiceModal] = useState<{
     paymentRequest: string;
     paymentId: string;
@@ -64,6 +65,15 @@ export default function SponsorDashboard() {
       if (!dismissed) setShowOnboarding(true);
     }
   }, [isLoading, habits.data.length, families.data.length]);
+
+  useEffect(() => {
+    fetch("/api/auth/profile")
+      .then((r) => r.ok ? r.json() : null)
+      .then((data) => {
+        if (data?.data?.prefer_webln != null) setPreferWebln(data.data.prefer_webln);
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     if (activeTab === "payments") payments.refetch();
@@ -115,8 +125,9 @@ export default function SponsorDashboard() {
 
     console.log(`[Cascade] Invoice created, payment: ${paymentId}`);
 
-    // Tier 1: WebLN (browser extension — invisible to user)
-    if (hasWebLN) {
+    // Helper: try WebLN extension payment
+    const tryWebLN = async (): Promise<boolean> => {
+      if (!hasWebLN) return false;
       try {
         const { preimage } = await weblnSendPayment(paymentRequest);
         try {
@@ -129,46 +140,61 @@ export default function SponsorDashboard() {
         } catch {
           showToast(t("payments.weblnConfirmError"), "info");
         }
-        return; // CRITICAL: never fall through after sendPayment succeeds
+        return true;
       } catch (err) {
         const msg = err instanceof Error ? err.message : "";
         if (msg.includes("rejected") || msg.includes("denied") || msg.includes("cancelled")) {
           showToast(t("payments.weblnRejected"), "info");
         }
-        console.warn(`[Cascade] Tier 1 (WebLN): rejected/failed — ${msg}`);
-        // Fall through to NWC
+        console.warn(`[Cascade] WebLN: rejected/failed — ${msg}`);
+        return false;
       }
+    };
+
+    // Helper: try NWC auto-pay
+    const tryNWC = async (): Promise<boolean> => {
+      try {
+        const payRes = await fetch(`/api/payments/${paymentId}/pay`, { method: "POST", headers: { "Content-Type": "application/json" } });
+        if (payRes.ok) {
+          const payData = await payRes.json();
+          if (payData.success && payData.data?.paid) {
+            console.log(`[Cascade] NWC: payment successful`);
+            showToast(t("payments.autoPaidSuccess", { amount: amountSats }), "success");
+            return true;
+          }
+        } else {
+          const payData = await payRes.json().catch(() => null);
+          console.warn(`[Cascade] NWC: ${payRes.status} → ${payData?.error ?? "unknown"}`);
+          if (payData?.error === "insufficient_funds") {
+            showToast(t("payments.insufficientFunds"), "error");
+          }
+        }
+      } catch (err) {
+        console.error("[Cascade] NWC: network error", err);
+      }
+      return false;
+    };
+
+    // Run cascade based on user preference
+    if (preferWebln && hasWebLN) {
+      console.log("[Cascade] Trying WebLN first (user preference)");
+      if (await tryWebLN()) return;
+      console.log("[Cascade] Falling back to NWC");
+      if (await tryNWC()) return;
     } else {
-      console.log("[Cascade] Tier 1 (WebLN): skipped — no extension");
-    }
-
-    // Tier 2: NWC auto-pay (invisible to user)
-    try {
-      const payRes = await fetch(`/api/payments/${paymentId}/pay`, { method: "POST", headers: { "Content-Type": "application/json" } });
-      if (payRes.ok) {
-        const payData = await payRes.json();
-        if (payData.success && payData.data?.paid) {
-          console.log(`[Cascade] Tier 2 (NWC): payment successful`);
-          showToast(t("payments.autoPaidSuccess", { amount: amountSats }), "success");
-          return;
-        }
-      } else {
-        const payData = await payRes.json().catch(() => null);
-        console.warn(`[Cascade] Tier 2 (NWC): ${payRes.status} → ${payData?.error ?? "unknown"}`);
-        if (payData?.error === "insufficient_funds") {
-          showToast(t("payments.insufficientFunds"), "error");
-        }
-        // sponsor_no_wallet or other — fall through to QR
+      console.log("[Cascade] Trying NWC first");
+      if (await tryNWC()) return;
+      if (hasWebLN) {
+        console.log("[Cascade] Falling back to WebLN");
+        if (await tryWebLN()) return;
       }
-    } catch (err) {
-      console.error("[Cascade] Tier 2 (NWC): network error", err);
     }
 
-    // Tier 3: Show QR invoice modal
+    // Final fallback: Show QR invoice modal
     console.log("[Cascade] Tier 3: showing QR invoice modal");
     setInvoiceModal({ paymentRequest, paymentId, amountSats, habitName });
     showToast(t("payments.scanInvoice", { amount: amountSats }), "info");
-  }, [hasWebLN, weblnSendPayment, extensionName, showToast, t]);
+  }, [hasWebLN, weblnSendPayment, extensionName, preferWebln, showToast, t]);
 
   const handleApprove = useCallback(async (completionId: string) => {
     // Optimistic update
@@ -413,7 +439,7 @@ export default function SponsorDashboard() {
       )}
       {activeTab === "wallet" && (
         <DashboardSection title={t("wallet.title")}>
-          <WalletConnect role="sponsor" />
+          <WalletConnect role="sponsor" preferWebln={preferWebln} onPreferWeblnChange={setPreferWebln} />
         </DashboardSection>
       )}
       {invoiceModal && (
