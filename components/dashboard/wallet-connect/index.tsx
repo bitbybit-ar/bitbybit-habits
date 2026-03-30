@@ -270,7 +270,7 @@ export function WalletConnect() {
   const handleCopyInvoice = useCallback(async () => {
     if (!generatedInvoice) return;
     try {
-      await navigator.clipboard.writeText(`lightning:${generatedInvoice.toUpperCase()}`);
+      await navigator.clipboard.writeText(generatedInvoice);
       setInvoiceCopied(true);
       setTimeout(() => setInvoiceCopied(false), 2000);
     } catch {
