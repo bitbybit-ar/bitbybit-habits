@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS users (
     totp_secret TEXT,
     totp_enabled BOOLEAN NOT NULL DEFAULT false,
     recovery_codes TEXT,
-    prefer_webln BOOLEAN NOT NULL DEFAULT false,
+    prefer_webln BOOLEAN NOT NULL DEFAULT true,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW()
 );

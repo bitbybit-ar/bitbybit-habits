@@ -31,7 +31,7 @@ export const users = pgTable("users", {
   totp_secret: text("totp_secret"),
   totp_enabled: boolean("totp_enabled").notNull().default(false),
   recovery_codes: text("recovery_codes"),
-  prefer_webln: boolean("prefer_webln").notNull().default(false),
+  prefer_webln: boolean("prefer_webln").notNull().default(true),
   created_at: timestamp("created_at").defaultNow(),
   updated_at: timestamp("updated_at").defaultNow(),
 }, (t) => [

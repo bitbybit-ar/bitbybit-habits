@@ -2,7 +2,7 @@ import { apiHandler } from "@/lib/api";
 import { getDecryptedNwcUrl } from "@/app/api/wallets/route";
 import { NWCClient } from "@getalby/sdk";
 
-const RELAY_TIMEOUT_MS = 20000;
+const RELAY_TIMEOUT_MS = 10000;
 
 /**
  * GET /api/wallets/balance

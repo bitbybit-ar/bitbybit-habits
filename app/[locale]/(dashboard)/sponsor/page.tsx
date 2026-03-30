@@ -36,7 +36,7 @@ export default function SponsorDashboard() {
   const { hasExtension: hasWebLN, sendPayment: weblnSendPayment, extensionName } = useWebLN();
   const [activeTab, setActiveTab] = useState<TabType>("byHabit");
   const [showOnboarding, setShowOnboarding] = useState(false);
-  const [preferWebln, setPreferWebln] = useState(false);
+  const [preferWebln, setPreferWebln] = useState(true);
   const [invoiceModal, setInvoiceModal] = useState<{
     paymentRequest: string;
     paymentId: string;
@@ -175,19 +175,20 @@ export default function SponsorDashboard() {
       return false;
     };
 
-    // Run cascade based on user preference
-    if (preferWebln && hasWebLN) {
-      console.log("[Cascade] Trying WebLN first (user preference)");
+    // Run cascade: WebLN first (instant UX), NWC as fallback
+    // When preferWebln is OFF, skip straight to NWC
+    if (hasWebLN && preferWebln) {
+      console.log("[Cascade] Trying WebLN first");
       if (await tryWebLN()) return;
-      console.log("[Cascade] Falling back to NWC");
-      if (await tryNWC()) return;
-    } else {
-      console.log("[Cascade] Trying NWC first");
-      if (await tryNWC()) return;
-      if (hasWebLN) {
-        console.log("[Cascade] Falling back to WebLN");
-        if (await tryWebLN()) return;
-      }
+    }
+
+    console.log("[Cascade] Trying NWC");
+    if (await tryNWC()) return;
+
+    // If WebLN wasn't tried yet (preferWebln was off), try it as last resort
+    if (hasWebLN && !preferWebln) {
+      console.log("[Cascade] Falling back to WebLN");
+      if (await tryWebLN()) return;
     }
 
     // Final fallback: Show QR invoice modal
