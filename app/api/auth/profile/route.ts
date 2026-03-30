@@ -23,6 +23,7 @@ export const GET = apiHandler(async (_req, { session, db }) => {
       nostr_metadata: users.nostr_metadata,
       has_password: users.password_hash,
       totp_enabled: users.totp_enabled,
+      prefer_webln: users.prefer_webln,
     })
     .from(users)
     .where(eq(users.id, session.user_id));
@@ -44,6 +45,7 @@ export const GET = apiHandler(async (_req, { session, db }) => {
     nostr_metadata: profile.nostr_metadata,
     has_password: !!profile.has_password,
     totp_enabled: !!profile.totp_enabled,
+    prefer_webln: profile.prefer_webln,
   };
 });
 
@@ -54,13 +56,14 @@ export const GET = apiHandler(async (_req, { session, db }) => {
  */
 export const PATCH = apiHandler(async (request, { session, db }) => {
   const body = await request.json();
-  const { display_name, username, email, avatar_url, locale, nostr_metadata } = body as {
+  const { display_name, username, email, avatar_url, locale, nostr_metadata, prefer_webln } = body as {
     display_name?: string;
     username?: string;
     email?: string;
     avatar_url?: string;
     locale?: "es" | "en";
     nostr_metadata?: Record<string, unknown>;
+    prefer_webln?: boolean;
   };
 
   if (locale && !["es", "en"].includes(locale)) {
@@ -85,6 +88,7 @@ export const PATCH = apiHandler(async (request, { session, db }) => {
     updates.nostr_metadata = nostr_metadata;
     updates.nostr_metadata_updated_at = new Date();
   }
+  if (prefer_webln !== undefined) updates.prefer_webln = prefer_webln;
 
   if (Object.keys(updates).length === 0) {
     throw new BadRequestError("no_changes");
@@ -104,6 +108,7 @@ export const PATCH = apiHandler(async (request, { session, db }) => {
       nostr_pubkey: users.nostr_pubkey,
       auth_provider: users.auth_provider,
       nostr_metadata: users.nostr_metadata,
+      prefer_webln: users.prefer_webln,
     });
 
   return updated[0];

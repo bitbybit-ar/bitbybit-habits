@@ -14,6 +14,7 @@ export interface User {
   nostr_metadata?: Record<string, unknown> | null;
   nostr_metadata_updated_at?: string | null;
   locale: "es" | "en";
+  prefer_webln: boolean;
   created_at: string;
   updated_at: string;
 }
