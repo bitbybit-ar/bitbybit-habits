@@ -67,9 +67,8 @@ bitbybit-habits/
     types.ts                   <- Interfaces TypeScript compartidas
   messages/                    <- Archivos de traduccion (es.json, en.json)
   styles/                      <- SCSS variables, mixins, glassmorphism system
-  tests/                       <- 35 archivos de test, ~198 tests (Vitest)
-    api/                       <- Tests de endpoints API
-    components/                <- Tests de componentes
+  tests/                       <- 37 archivos de test, ~207 tests (Vitest)
+    api/                       <- Tests de endpoints API (auth, admin, families, habits, completions, payments, wallets, notifications, stats)
     helpers/                   <- Utilidades de test
   docs/
     openapi.yaml               <- Especificacion OpenAPI 3.0 (Swagger)
@@ -236,7 +235,7 @@ Sponsor aprueba -> cascada de pago:
 npm run dev          # Servidor de desarrollo
 npm run build        # Build de produccion
 npm run lint         # ESLint
-npm test             # Correr tests (Vitest, ~198 tests)
+npm test             # Correr tests (Vitest, ~207 tests)
 npm run test:watch   # Tests en modo watch
 npm run test:coverage # Tests con reporte de cobertura
 npx tsc --noEmit     # Type-check sin compilar

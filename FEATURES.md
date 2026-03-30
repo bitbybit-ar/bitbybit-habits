@@ -1,6 +1,6 @@
 # BitByBit — Feature Catalog
 
-> Last updated: 2026-03-29
+> Last updated: 2026-03-30
 
 ## Status Legend
 
@@ -27,8 +27,7 @@
 | TOTP 2FA setup | Working | Generate secret + QR code |
 | TOTP 2FA validation | Working | Validate code during login flow |
 | TOTP 2FA disable | Working | Remove 2FA from account |
-| Recovery codes | Partial | Generated and stored in DB, redemption flow not wired |
-| Dev login | Working | Development-only endpoint for testing |
+| Recovery codes | Working | Generated, hashed, stored in DB, redeemable during 2FA validation |
 
 ## Families
 
@@ -39,6 +38,8 @@
 | Leave family | Working | Sponsor blocked if other members exist; auto-deletes empty families |
 | Delete family | Working | Creator-only, deactivates related habits |
 | Member management | Working | Sponsor can remove members |
+| Family stats | Working | Sponsor-only: completedToday, pending, totalSatsPaid |
+| Family completion history | Working | Sponsor-only, configurable date range (default 7d, max 90d) |
 | Invite code sharing | Working | Copy to clipboard in family card |
 | Multi-family per user | Commented | Users limited to one family (MVP). Code preserved with `// ROADMAP:` |
 | Multi-sponsor per family | Commented | One sponsor per family (MVP). Role toggle UI hidden, promotion API blocked |
@@ -58,7 +59,7 @@
 | Multi-kid assignment | Working | Assign same habit to multiple kids (creates one record per kid) |
 | Color picker | Working | 8 preset colors |
 | Verification: sponsor_approval | Working | Default and primary verification type |
-| Verification: self_verify | Partial | Exists in schema and form, but no distinct behavior in completion flow |
+| Verification: self_verify | Working | Auto-approves completion on submission (no sponsor review needed) |
 | Verification: bot_verify | Stub | Exists in schema only, no implementation |
 | Icon selection | Pending | Field exists in schema but no icon picker UI |
 | Habit templates | Pending | No preset habits or templates |
@@ -97,6 +98,9 @@
 | Wallet encryption | Working | AES-256-GCM encryption of stored NWC URLs |
 | Balance check | Working | Via NWC get_balance |
 | Wallet disconnect | Working | Deactivate wallet |
+| Wallet send | Working | Pay BOLT11 invoice via NWC, strips lightning: prefix |
+| Wallet receive | Working | Create invoice with amount + description via NWC |
+| Transaction history | Working | Paginated list from NWC wallet (limit/offset) |
 | Wallet label | Working | Custom label for wallet |
 | Multiple wallets | Partial | Schema supports multiple, UI shows only active one |
 
@@ -159,6 +163,7 @@
 | Locale routing | Working | /es/, /en/ URL segments |
 | Locale switcher | Working | In navbar |
 | User locale preference | Working | Saved in profile, used for redirects |
+| Auto-locale detection | Working | Middleware detects preferred language from Accept-Language header |
 
 ## API Documentation
 
@@ -176,3 +181,10 @@
 | Family join (kid) | Working | Join with invite code |
 | Welcome walkthrough | Working | 3 tips per role with skip option |
 | Dashboard onboarding | Working | First-visit onboarding card in dashboard |
+
+## PWA
+
+| Feature | Status | Notes |
+|---------|--------|-------|
+| Service Worker | Working | Cache-first for static assets, network-first for pages |
+| Web App Manifest | Working | Standalone mode, app icons, theme color |
