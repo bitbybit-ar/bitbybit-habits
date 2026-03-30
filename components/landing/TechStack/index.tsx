@@ -48,18 +48,6 @@ export const TechStack: React.FC = () => {
         { stat: t("nostr3Stat"), title: t("nostr3Title"), desc: t("nostr3Desc") },
       ],
     },
-    {
-      icon: <Image src="https://github.com/openclaw.png?size=64" alt="OpenClaw" width={40} height={40} className={styles.logoImg} />,
-      title: "OpenClaw",
-      description: t("openclawDesc"),
-      linkLabel: t("openclawLink"),
-      detailTitle: t("openclawDetailTitle"),
-      detailItems: [
-        { stat: t("openclaw1Stat"), title: t("openclaw1Title"), desc: t("openclaw1Desc") },
-        { stat: t("openclaw2Stat"), title: t("openclaw2Title"), desc: t("openclaw2Desc") },
-        { stat: t("openclaw3Stat"), title: t("openclaw3Title"), desc: t("openclaw3Desc") },
-      ],
-    },
   ];
 
   const closeModal = useCallback(() => setActiveModal(null), []);

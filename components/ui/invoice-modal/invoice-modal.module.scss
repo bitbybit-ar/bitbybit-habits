@@ -68,7 +68,7 @@
 }
 
 .qrContainer {
-  background: rgba(255, 255, 255, 0.05);
+  background: alpha($color-text-primary, 5%);
   border-radius: $border-radius-lg;
   padding: $spacing-24;
   display: flex;
@@ -148,14 +148,14 @@
   padding: $spacing-12 $spacing-24;
   background: transparent;
   color: var(--text-secondary, #{$color-text-secondary});
-  border: 1px solid rgba(var(--glass-color, 255, 255, 255), 0.1);
+  border: 1px solid alpha($color-text-primary, 10%);
   border-radius: $border-radius-md;
   font-size: $font-size-body;
   cursor: pointer;
   transition: all 0.2s ease;
 
   &:hover {
-    background: rgba(var(--glass-color, 255, 255, 255), 0.05);
+    background: alpha($color-text-primary, 5%);
     color: var(--text-primary, #{$color-text-primary});
   }
 }

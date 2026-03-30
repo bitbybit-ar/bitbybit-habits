@@ -98,8 +98,8 @@
 
   &:hover {
     transform: translateY(-4px);
-    border-color: rgba(var(--glass-color), 0.12);
-    box-shadow: 0 8px 30px rgba(var(--shadow-color), 0.2);
+    border-color: alpha($color-text-primary, 12%);
+    box-shadow: 0 8px 30px alpha($color-bg, 20%);
   }
 }
 
@@ -186,7 +186,7 @@
   input {
     padding: $spacing-12 $spacing-16;
     border-radius: $border-radius-md;
-    border: 1px solid rgba(var(--glass-color), 0.1);
+    border: 1px solid alpha($color-text-primary, 10%);
     background: $color-bg-3;
     color: $color-text-primary;
     font-size: $font-size-base;
@@ -260,7 +260,7 @@
     color: $color-primary;
     letter-spacing: 0.15em;
     background: $color-bg-3;
-    border: 1px solid rgba(var(--glass-color), 0.1);
+    border: 1px solid alpha($color-text-primary, 10%);
     border-radius: $border-radius-md;
     padding: $spacing-16;
   }
@@ -327,7 +327,7 @@
   width: 8px;
   height: 8px;
   border-radius: $border-radius-full;
-  background: rgba(var(--glass-color), 0.15);
+  background: alpha($color-text-primary, 15%);
   transition: all 0.3s ease;
 }
 

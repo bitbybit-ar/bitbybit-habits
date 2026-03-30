@@ -38,7 +38,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid rgba(var(--glass-text-color), 0.12);
+  border: 2px solid alpha($color-text-primary, 12%);
   background: transparent;
   transition: all 0.2s ease;
   font-size: $font-size-xs;
@@ -56,8 +56,8 @@
 }
 
 .cellMissed {
-  border-color: rgba(var(--glass-text-color), 0.15);
-  background: rgba(var(--glass-text-color), 0.05);
+  border-color: alpha($color-text-primary, 15%);
+  background: alpha($color-text-primary, 5%);
 }
 
 .missedIcon {

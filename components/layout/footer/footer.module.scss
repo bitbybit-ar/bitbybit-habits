@@ -6,7 +6,7 @@
 .footer {
   text-align: center;
   padding: 60px $container-padding;
-  border-top: 1px solid rgba(var(--glass-color), 0.05);
+  border-top: 1px solid alpha($color-text-primary, 5%);
 
   p {
     color: $color-text-secondary;

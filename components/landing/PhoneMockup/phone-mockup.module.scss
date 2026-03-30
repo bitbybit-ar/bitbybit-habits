@@ -112,18 +112,18 @@
   border-radius: 40px;
 
   box-shadow:
-    8px 8px 20px rgba(var(--shadow-color), 0.5),
-    20px 25px 50px rgba(var(--shadow-color), 0.4),
-    40px 50px 80px rgba(var(--shadow-color), 0.3),
-    60px 60px 120px rgba(var(--shadow-color), 0.15),
+    8px 8px 20px alpha($color-bg, 50%),
+    20px 25px 50px alpha($color-bg, 40%),
+    40px 50px 80px alpha($color-bg, 30%),
+    60px 60px 120px alpha($color-bg, 15%),
     0 0 80px alpha($color-primary, 8%),
     0 0 160px alpha($color-primary, 4%);
 
   [data-theme="light"] & {
     box-shadow:
-      6px 6px 16px rgba(var(--shadow-color), 0.12),
-      16px 20px 40px rgba(var(--shadow-color), 0.1),
-      30px 40px 60px rgba(var(--shadow-color), 0.08),
+      6px 6px 16px alpha($color-bg, 12%),
+      16px 20px 40px alpha($color-bg, 10%),
+      30px 40px 60px alpha($color-bg, 8%),
       0 0 60px alpha($color-primary, 6%);
   }
 
@@ -161,15 +161,15 @@
     &:hover {
       transform: rotateY(-8deg) rotateX(3deg);
       box-shadow:
-        6px 6px 16px rgba(var(--shadow-color), 0.45),
-        16px 20px 40px rgba(var(--shadow-color), 0.35),
-        30px 40px 60px rgba(var(--shadow-color), 0.25),
+        6px 6px 16px alpha($color-bg, 45%),
+        16px 20px 40px alpha($color-bg, 35%),
+        30px 40px 60px alpha($color-bg, 25%),
         0 0 100px alpha($color-primary, 10%);
 
       [data-theme="light"] & {
         box-shadow:
-          4px 4px 12px rgba(var(--shadow-color), 0.1),
-          12px 16px 30px rgba(var(--shadow-color), 0.08),
+          4px 4px 12px alpha($color-bg, 10%),
+          12px 16px 30px alpha($color-bg, 8%),
           0 0 80px alpha($color-primary, 8%);
       }
     }
@@ -429,7 +429,7 @@ $virtual-w: 340px;
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: rgba(var(--glass-color), 0.15);
+  background: alpha($color-text-primary, 15%);
   display: flex;
   align-items: center;
   justify-content: center;

@@ -22,7 +22,7 @@
 
 .input {
   background: $color-bg-3;
-  border: 1px solid rgba(var(--glass-color), 0.1);
+  border: 1px solid alpha($color-text-primary, 10%);
   border-radius: $border-radius-md;
   padding: $spacing-12 $spacing-16;
   color: $color-text-primary;
@@ -113,7 +113,7 @@
   background: $color-bg-3;
   border-radius: $border-radius-lg;
   padding: $spacing-16;
-  border: 1px solid rgba(var(--glass-color), 0.05);
+  border: 1px solid alpha($color-text-primary, 5%);
   display: flex;
   align-items: center;
   justify-content: space-between;

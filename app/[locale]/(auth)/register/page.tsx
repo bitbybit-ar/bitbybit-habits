@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import AuthCard from "@/components/auth/AuthCard";
 import { FormInput, FormButton } from "@/components/ui/form";
+import { Container } from "@/components/ui/container";
+import { BackLink } from "@/components/ui/back-link";
 import { useFormValidation } from "@/lib/hooks/useFormValidation";
 import { useNostr } from "@/lib/hooks/useNostr";
 import { resolveApiError } from "@/lib/error-messages";
@@ -145,8 +147,10 @@ export default function RegisterPage() {
   const cpw = form.fieldProps("confirmPassword");
 
   return (
-    <AuthCard
-      subtitle={t("auth.register")}
+    <Container>
+      <BackLink />
+      <AuthCard
+          subtitle={t("auth.register")}
       switchText={t("auth.hasAccount")}
       switchLabel={t("auth.login")}
       switchHref="/login"
@@ -257,5 +261,6 @@ export default function RegisterPage() {
         </FormButton>
       </form>
     </AuthCard>
+    </Container>
   );
 }

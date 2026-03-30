@@ -78,8 +78,8 @@
   padding: $spacing-12 $spacing-16;
   margin-bottom: $spacing-12;
   border-radius: $border-radius-md;
-  border: 1px solid rgba(var(--glass-color, 255, 255, 255), 0.15);
-  background: rgba(var(--glass-color, 255, 255, 255), 0.04);
+  border: 1px solid alpha($color-text-primary, 15%);
+  background: alpha($color-text-primary, 4%);
   color: $color-text-primary;
   font-size: $font-size-sm;
   font-weight: $font-weight-semibold;
@@ -87,8 +87,8 @@
   transition: background 0.2s, border-color 0.2s;
 
   &:hover:not(:disabled) {
-    background: rgba(var(--glass-color, 255, 255, 255), 0.08);
-    border-color: rgba(var(--glass-color, 255, 255, 255), 0.25);
+    background: alpha($color-text-primary, 8%);
+    border-color: alpha($color-text-primary, 25%);
   }
 
   &:disabled {
@@ -164,7 +164,7 @@
   margin-left: auto;
   padding: $spacing-4 $spacing-12;
   border-radius: $border-radius-sm;
-  border: 1px solid rgba(var(--glass-color, 255, 255, 255), 0.1);
+  border: 1px solid alpha($color-text-primary, 10%);
   background: transparent;
   color: $color-text-secondary;
   font-size: $font-size-xs;
@@ -174,7 +174,7 @@
 
   &:hover {
     color: $color-text-primary;
-    border-color: rgba(var(--glass-color, 255, 255, 255), 0.2);
+    border-color: alpha($color-text-primary, 20%);
   }
 }
 
@@ -326,8 +326,8 @@
   gap: $spacing-8;
   padding: $spacing-16;
   border-radius: $border-radius-md;
-  border: 1px solid rgba(var(--glass-color, 255, 255, 255), 0.1);
-  background: rgba(var(--glass-color, 255, 255, 255), 0.03);
+  border: 1px solid alpha($color-text-primary, 10%);
+  background: alpha($color-text-primary, 3%);
   color: $color-text-primary;
   font-size: $font-size-sm;
   font-weight: $font-weight-semibold;
@@ -335,8 +335,8 @@
   transition: all 0.2s ease;
 
   &:hover:not(:disabled) {
-    background: rgba(var(--glass-color, 255, 255, 255), 0.06);
-    border-color: rgba(var(--glass-color, 255, 255, 255), 0.2);
+    background: alpha($color-text-primary, 6%);
+    border-color: alpha($color-text-primary, 20%);
   }
 
   &:active:not(:disabled) {
@@ -559,7 +559,7 @@
     content: "";
     flex: 1;
     height: 1px;
-    background: rgba(var(--glass-color, 255, 255, 255), 0.1);
+    background: alpha($color-text-primary, 10%);
   }
 
   span {
@@ -584,7 +584,7 @@
   justify-content: space-between;
   padding: $spacing-12;
   border-radius: $border-radius-md;
-  background: rgba(var(--glass-color, 255, 255, 255), 0.03);
+  background: alpha($color-text-primary, 3%);
 }
 
 .settingsLabel {
@@ -608,7 +608,7 @@
   width: 100%;
   padding: $spacing-12 $spacing-16;
   border-radius: $border-radius-md;
-  border: 1px solid rgba(var(--glass-color, 255, 255, 255), 0.15);
+  border: 1px solid alpha($color-text-primary, 15%);
   background: transparent;
   color: $color-text-primary;
   font-size: $font-size-sm;
@@ -617,8 +617,8 @@
   transition: all 0.2s ease;
 
   &:hover {
-    background: rgba(var(--glass-color, 255, 255, 255), 0.06);
-    border-color: rgba(var(--glass-color, 255, 255, 255), 0.25);
+    background: alpha($color-text-primary, 6%);
+    border-color: alpha($color-text-primary, 25%);
   }
 }
 
@@ -715,14 +715,14 @@
   padding: $spacing-12 $spacing-24;
   background: transparent;
   color: $color-text-secondary;
-  border: 1px solid rgba(var(--glass-color, 255, 255, 255), 0.1);
+  border: 1px solid alpha($color-text-primary, 10%);
   border-radius: $border-radius-md;
   font-size: $font-size-sm;
   cursor: pointer;
   transition: all 0.2s ease;
 
   &:hover {
-    background: rgba(var(--glass-color, 255, 255, 255), 0.05);
+    background: alpha($color-text-primary, 5%);
     color: $color-text-primary;
   }
 }
@@ -750,7 +750,7 @@
 .input {
   padding: $spacing-12;
   border-radius: $border-radius-md;
-  border: 1px solid rgba(var(--glass-color), 0.1);
+  border: 1px solid alpha($color-text-primary, 10%);
   background: $color-bg;
   color: $color-text-primary;
   font-size: $font-size-sm;

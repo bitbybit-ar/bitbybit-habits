@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { MemberPicker } from "@/components/dashboard/member-picker";
 import { ModalLoader } from "@/components/ui/modal-loader";
@@ -42,6 +42,7 @@ export function EditHabitModal({ habit, kids, onSave, onClose }: EditHabitModalP
   );
   const [assignedTo, setAssignedTo] = useState(habit.assigned_to);
   const [assignedMembers, setAssignedMembers] = useState<string[]>([]);
+  const [initialAssignedMembers, setInitialAssignedMembers] = useState<string[]>([]);
   const [saving, setSaving] = useState(false);
   const [loadingAssignments, setLoadingAssignments] = useState(true);
 
@@ -52,21 +53,44 @@ export function EditHabitModal({ habit, kids, onSave, onClose }: EditHabitModalP
         if (res.ok) {
           const data = await res.json();
           if (data.success && data.data && data.data.length > 0) {
-            setAssignedMembers(data.data.map((a: { user_id: string }) => a.user_id));
+            const members = data.data.map((a: { user_id: string }) => a.user_id);
+            setAssignedMembers(members);
+            setInitialAssignedMembers(members);
           } else {
-            setAssignedMembers(habit.assigned_to ? [habit.assigned_to] : []);
+            const fallback = habit.assigned_to ? [habit.assigned_to] : [];
+            setAssignedMembers(fallback);
+            setInitialAssignedMembers(fallback);
           }
         } else {
-          setAssignedMembers(habit.assigned_to ? [habit.assigned_to] : []);
+          const fallback = habit.assigned_to ? [habit.assigned_to] : [];
+          setAssignedMembers(fallback);
+          setInitialAssignedMembers(fallback);
         }
       } catch {
-        setAssignedMembers(habit.assigned_to ? [habit.assigned_to] : []);
+        const fallback = habit.assigned_to ? [habit.assigned_to] : [];
+        setAssignedMembers(fallback);
+        setInitialAssignedMembers(fallback);
       } finally {
         setLoadingAssignments(false);
       }
     }
     fetchAssignments();
   }, [habit.id, habit.assigned_to]);
+
+  const hasChanges = useMemo(() => {
+    const normalizedVerification = habit.verification_type === "bot_verify" ? "sponsor_approval" : habit.verification_type;
+    return (
+      name.trim() !== habit.name ||
+      (description.trim() || null) !== (habit.description ?? null) ||
+      color !== habit.color ||
+      satReward !== habit.sat_reward ||
+      scheduleType !== habit.schedule_type ||
+      JSON.stringify(scheduleDays) !== JSON.stringify(habit.schedule_days ?? []) ||
+      timesPerWeek !== (habit.schedule_times_per_week ?? 3) ||
+      verificationType !== normalizedVerification ||
+      JSON.stringify([...assignedMembers].sort()) !== JSON.stringify([...initialAssignedMembers].sort())
+    );
+  }, [name, description, color, satReward, scheduleType, scheduleDays, timesPerWeek, verificationType, assignedMembers, initialAssignedMembers, habit]);
 
   const handleDayToggle = (day: number) => {
     setScheduleDays((prev) =>
@@ -239,7 +263,7 @@ export function EditHabitModal({ habit, kids, onSave, onClose }: EditHabitModalP
             onClick={handleSave}
             loading={saving}
             loadingText={t("common.loading")}
-            disabled={!name.trim()}
+            disabled={!name.trim() || !hasChanges}
           >
             {t("common.save")}
           </FormButton>

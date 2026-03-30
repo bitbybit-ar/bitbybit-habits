@@ -15,6 +15,7 @@ export interface DashboardTab {
 
 interface DashboardLayoutProps {
   displayName: string;
+  avatarUrl?: string | null;
   headerExtra?: React.ReactNode;
   statsBar: React.ReactNode;
   tabs: DashboardTab[];
@@ -26,6 +27,7 @@ interface DashboardLayoutProps {
 
 export function DashboardLayout({
   displayName,
+  avatarUrl,
   headerExtra,
   statsBar,
   tabs,
@@ -46,7 +48,12 @@ export function DashboardLayout({
               {headerExtra}
             </div>
             <div className={styles.headerAvatar}>
-              {displayName.charAt(0).toUpperCase()}
+              {avatarUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={avatarUrl} alt="" className={styles.headerAvatarImg} />
+              ) : (
+                displayName.charAt(0).toUpperCase()
+              )}
             </div>
           </div>
           <div className={styles.headerStats}>

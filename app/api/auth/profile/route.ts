@@ -22,6 +22,7 @@ export const GET = apiHandler(async (_req, { session, db }) => {
       auth_provider: users.auth_provider,
       nostr_metadata: users.nostr_metadata,
       has_password: users.password_hash,
+      totp_enabled: users.totp_enabled,
     })
     .from(users)
     .where(eq(users.id, session.user_id));
@@ -42,6 +43,7 @@ export const GET = apiHandler(async (_req, { session, db }) => {
     auth_provider: profile.auth_provider,
     nostr_metadata: profile.nostr_metadata,
     has_password: !!profile.has_password,
+    totp_enabled: !!profile.totp_enabled,
   };
 });
 
@@ -77,11 +79,15 @@ export const PATCH = apiHandler(async (request, { session, db }) => {
   if (display_name !== undefined) updates.display_name = display_name.trim();
   if (username !== undefined) updates.username = username.trim();
   if (email !== undefined) updates.email = email.trim();
-  if (avatar_url !== undefined) updates.avatar_url = avatar_url.trim();
+  if (avatar_url !== undefined) updates.avatar_url = avatar_url?.trim() || null;
   if (locale !== undefined) updates.locale = locale;
   if (nostr_metadata !== undefined) {
     updates.nostr_metadata = nostr_metadata;
     updates.nostr_metadata_updated_at = new Date();
+  }
+
+  if (Object.keys(updates).length === 0) {
+    throw new BadRequestError("no_changes");
   }
 
   const updated = await db

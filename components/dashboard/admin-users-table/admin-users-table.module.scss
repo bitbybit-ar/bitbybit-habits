@@ -72,8 +72,8 @@
   flex: 1;
   padding: $spacing-12 $spacing-16;
   border-radius: $border-radius-md;
-  border: 1px solid rgba(var(--glass-color), 0.15);
-  background: rgba(var(--glass-color), 0.06);
+  border: 1px solid alpha($color-text-primary, 15%);
+  background: alpha($color-text-primary, 6%);
   color: $color-text-primary;
   font-size: $font-size-sm;
   @include transition;
@@ -92,8 +92,8 @@
 .familySelect {
   padding: $spacing-12 $spacing-16;
   border-radius: $border-radius-md;
-  border: 1px solid rgba(var(--glass-color), 0.15);
-  background: rgba(var(--glass-color), 0.06);
+  border: 1px solid alpha($color-text-primary, 15%);
+  background: alpha($color-text-primary, 6%);
   color: $color-text-primary;
   font-size: $font-size-sm;
   min-width: 160px;
@@ -128,7 +128,7 @@
   }
 
   &::-webkit-scrollbar-thumb {
-    background: rgba(var(--glass-color), 0.15);
+    background: alpha($color-text-primary, 15%);
     border-radius: 3px;
   }
 }
@@ -147,7 +147,7 @@
   color: $color-text-secondary;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  border-bottom: 1px solid rgba(var(--glass-color), 0.1);
+  border-bottom: 1px solid alpha($color-text-primary, 10%);
   white-space: nowrap;
 }
 
@@ -155,7 +155,7 @@
   padding: $spacing-12 $spacing-16;
   font-size: $font-size-sm;
   color: $color-text-primary;
-  border-bottom: 1px solid rgba(var(--glass-color), 0.06);
+  border-bottom: 1px solid alpha($color-text-primary, 6%);
   vertical-align: middle;
 }
 
@@ -163,7 +163,7 @@
   @include transition;
 
   &:hover {
-    background: rgba(var(--glass-color), 0.04);
+    background: alpha($color-text-primary, 4%);
   }
 }
 
@@ -266,7 +266,7 @@
 .actionBtn {
   padding: $spacing-4 $spacing-8;
   border-radius: $border-radius-sm;
-  border: 1px solid rgba(var(--glass-color), 0.15);
+  border: 1px solid alpha($color-text-primary, 15%);
   background: transparent;
   color: $color-text-secondary;
   font-size: $font-size-xs;
@@ -309,7 +309,7 @@
 .pageBtn {
   padding: $spacing-8 $spacing-16;
   border-radius: $border-radius-sm;
-  border: 1px solid rgba(var(--glass-color), 0.15);
+  border: 1px solid alpha($color-text-primary, 15%);
   background: transparent;
   color: $color-text-secondary;
   font-size: $font-size-sm;
@@ -379,8 +379,8 @@
   width: 100%;
   padding: $spacing-8 $spacing-12;
   border-radius: $border-radius-sm;
-  border: 1px solid rgba(var(--glass-color), 0.15);
-  background: rgba(var(--glass-color), 0.06);
+  border: 1px solid alpha($color-text-primary, 15%);
+  background: alpha($color-text-primary, 6%);
   color: $color-text-primary;
   font-size: $font-size-sm;
 
@@ -409,7 +409,7 @@
 
 .modalBtnCancel {
   background: transparent;
-  border: 1px solid rgba(var(--glass-color), 0.15);
+  border: 1px solid alpha($color-text-primary, 15%);
   color: $color-text-secondary;
 
   &:hover {

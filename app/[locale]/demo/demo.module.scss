@@ -45,7 +45,7 @@
 
   &:hover {
     color: $color-text-primary;
-    background: rgba(var(--glass-color), 0.1);
+    background: alpha($color-text-primary, 10%);
   }
 
   @include mobile {
@@ -197,7 +197,7 @@
 .backOverlay {
   position: absolute;
   inset: 0;
-  background: rgba(var(--glass-color), 0.4);
+  background: alpha($color-text-primary, 40%);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
   display: flex;

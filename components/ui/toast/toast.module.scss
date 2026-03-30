@@ -49,7 +49,7 @@
   gap: $spacing-12;
   padding: $spacing-12 $spacing-20;
   @include glass-toast;
-  box-shadow: 0 8px 32px rgba(var(--shadow-color), 0.4);
+  box-shadow: 0 8px 32px alpha($color-bg, 40%);
   font-size: $font-size-sm;
   font-weight: $font-weight-medium;
   color: $color-text-primary;

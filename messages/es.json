@@ -36,7 +36,7 @@
     "alreadyCompletedToday": "Ya completaste este hábito hoy",
     "completionNotFound": "Completación no encontrada o ya procesada",
     "invalidDateFormat": "El parámetro de fecha debe tener formato YYYY-MM-DD",
-    "invalidDateRange": "'from' no puede ser posterior a 'to'",
+    "invalidDateRange": "'desde' no puede ser posterior a 'hasta'",
     "sponsorNoWallet": "No tenés una wallet conectada",
     "kidNoWallet": "El kid no tiene wallet conectada",
     "noInvoice": "No hay invoice para pagar",
@@ -54,10 +54,15 @@
     "accountAlreadyHasNostr": "Tu cuenta ya tiene una identidad Nostr vinculada",
     "cannotUnlinkOnlyAuthMethod": "No podés desvincular tu único método de autenticación",
     "nostrOnlyAccount": "Esta cuenta solo usa Nostr. Iniciá sesión con tu extensión Nostr",
+    "nostrNoSigningKey": "No hay clave de firma disponible. Configurá una cuenta en tu extensión Nostr (Alby, nos2x) o creá una nueva clave.",
+    "nostrLinkFailed": "No se pudo vincular la identidad Nostr. Intentá de nuevo.",
+    "nostrLoginFailed": "No se pudo iniciar sesión con Nostr. Intentá de nuevo.",
+    "nostrUnlinkFailed": "No se pudo desvincular la identidad Nostr. Intentá de nuevo.",
     "unauthorized": "No autenticado",
     "forbidden": "No autorizado",
     "resourceExists": "El recurso ya existe",
     "internalError": "Error interno del servidor",
+    "noChanges": "No hay cambios para guardar",
     "noWallet": "No tenés una wallet conectada. Conectá una primero.",
     "missingInvoice": "Pegá o escaneá un Lightning invoice para pagar",
     "invalidInvoice": "Invoice inválido. Debe ser un invoice BOLT11 de Lightning (empieza con lnbc)",
@@ -119,7 +124,14 @@
     "nostrExtensionRequired": "Instalá una extensión Nostr (Alby, nos2x)",
     "nostrLoginInProgress": "Firmando con Nostr...",
     "nostrSiteNotConnected": "Sitio no conectado — permití el acceso en tu extensión Nostr",
-    "nostrSigningRejected": "Firma rechazada — aprobá la solicitud en tu extensión Nostr"
+    "nostrSigningRejected": "Firma rechazada — aprobá la solicitud en tu extensión Nostr",
+    "twoFA": {
+      "title": "Verificación en dos pasos",
+      "enterCode": "Ingresá el código de tu app de autenticación",
+      "recoveryHint": "También podés usar un código de recuperación",
+      "verify": "Verificar",
+      "backToLogin": "Volver al login"
+    }
   },
   "dashboard": {
     "title": "Panel",
@@ -261,7 +273,25 @@
     "nostrSyncing": "Sincronizando...",
     "nostrSyncFailed": "No se pudo sincronizar metadata desde los relays de Nostr",
     "nostrAutoSyncHint": "Los cambios de perfil se publican automáticamente en los relays de Nostr",
-    "nostrImportPrompt": "¿Importar tu nombre y avatar desde Nostr?"
+    "nostrImportPrompt": "¿Importar tu nombre y avatar desde Nostr?",
+    "twoFA": {
+      "title": "Autenticación de dos factores",
+      "description": "Agrega una capa extra de seguridad a tu cuenta",
+      "enable": "Habilitar 2FA",
+      "disable": "Deshabilitar 2FA",
+      "enabled": "Habilitado",
+      "scanQR": "Escaneá este código QR con tu app de autenticación",
+      "enterCode": "Ingresá el código de 6 dígitos",
+      "confirm": "Confirmar",
+      "recoveryCodes": "Códigos de recuperación",
+      "recoveryCodesHint": "Guardalos en un lugar seguro. Cada código se puede usar una sola vez.",
+      "copyAll": "Copiar todos",
+      "copied": "Copiados",
+      "done": "Listo",
+      "disableConfirm": "Ingresá tu código 2FA para deshabilitar",
+      "invalidCode": "Código inválido",
+      "cancel": "Cancelar"
+    }
   },
   "emptyState": {
     "noHabitsTitle": "Todavía no hay hábitos",

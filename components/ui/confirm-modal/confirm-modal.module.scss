@@ -53,7 +53,7 @@
 
 .cancelBtn {
   background: transparent;
-  border: 1px solid rgba(var(--glass-color), 0.15);
+  border: 1px solid alpha($color-text-primary, 15%);
   color: $color-text-secondary;
 
   &:hover {
