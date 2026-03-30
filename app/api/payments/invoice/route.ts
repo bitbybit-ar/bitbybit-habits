@@ -129,6 +129,9 @@ export const POST = apiHandler(async (request, { session, db }) => {
       throw new BadRequestError("nwc_relay_error");
     }
     const msg = error instanceof Error ? error.message : "";
+    if (msg.includes("no info event") || msg.includes("13194")) {
+      throw new BadRequestError("nwc_no_info_event");
+    }
     throw new BadRequestError(
       msg === "timeout" ? "nwc_timeout" : "nwc_invoice_failed"
     );

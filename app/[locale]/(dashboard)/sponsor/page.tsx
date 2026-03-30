@@ -94,7 +94,13 @@ export default function SponsorDashboard() {
     if (!invoiceRes.ok) {
       const errData = await invoiceRes.json().catch(() => null);
       console.error(`[Cascade] Invoice generation failed: ${invoiceRes.status}`, errData);
-      showToast(t("payments.paymentError"), "error");
+      if (errData?.error === "nwc_no_info_event") {
+        showToast(t("payments.nwcNoInfoEvent"), "error");
+      } else if (errData?.error === "kid_no_wallet") {
+        showToast(t("payments.kidNoWallet"), "error");
+      } else {
+        showToast(t("payments.paymentError"), "error");
+      }
       return;
     }
 
@@ -217,6 +223,44 @@ export default function SponsorDashboard() {
       showToast(t("auth.connectionError"), "error");
     }
   }, [showToast, t, familyData, runPaymentCascade]);
+
+  const handleReject = useCallback(async (completionId: string) => {
+    // Optimistic: remove completion from local state
+    const removed = familyData.completions.find((c) => c.id === completionId);
+    familyData.setCompletions((prev) => prev.filter((c) => c.id !== completionId));
+    familyData.setStats((prev) => ({
+      ...prev,
+      pendingApprovals: Math.max(0, prev.pendingApprovals - 1),
+    }));
+
+    try {
+      const res = await fetch("/api/completions/reject", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ completion_id: completionId }),
+      });
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        if (removed) familyData.setCompletions((prev) => [...prev, removed]);
+        familyData.setStats((prev) => ({
+          ...prev,
+          pendingApprovals: prev.pendingApprovals + 1,
+        }));
+        showToast(t("auth.connectionError"), "error");
+        return;
+      }
+
+      showToast(t("sponsorDashboard.rejectSuccess"), "success");
+    } catch {
+      if (removed) familyData.setCompletions((prev) => [...prev, removed]);
+      familyData.setStats((prev) => ({
+        ...prev,
+        pendingApprovals: prev.pendingApprovals + 1,
+      }));
+      showToast(t("auth.connectionError"), "error");
+    }
+  }, [showToast, t, familyData]);
 
   const handleCreateHabit = useCallback(async (data: CreateHabitData) => {
     try {
@@ -351,10 +395,10 @@ export default function SponsorDashboard() {
   return (
     <DashboardLayout displayName={`${t("dashboard.welcome")}, ${displayName}`} avatarName={displayName} avatarUrl={session.data?.avatar_url} statsBar={statsBar} tabs={tabs} activeTab={activeTab} onTabChange={(key) => setActiveTab(key as TabType)} breadcrumbs={breadcrumbs}>
       {activeTab === "byHabit" && (
-        <SponsorHabitsTab habits={habits.data} families={families.data} familyCompletions={familyData.completions} onApprove={handleApprove} onCreateHabit={() => setActiveTab("create")} onEdit={handleEditHabit} onDelete={handleDeleteHabit} currentUserId={session.data?.user_id} kids={allKids} />
+        <SponsorHabitsTab habits={habits.data} families={families.data} familyCompletions={familyData.completions} onApprove={handleApprove} onReject={handleReject} onCreateHabit={() => setActiveTab("create")} onEdit={handleEditHabit} onDelete={handleDeleteHabit} currentUserId={session.data?.user_id} kids={allKids} />
       )}
       {activeTab === "byKid" && (
-        <SponsorByKidTab habits={habits.data} families={families.data} familyCompletions={familyData.completions} onApprove={handleApprove} />
+        <SponsorByKidTab habits={habits.data} families={families.data} familyCompletions={familyData.completions} onApprove={handleApprove} onReject={handleReject} />
       )}
       {activeTab === "create" && (
         <DashboardSection title={t("habits.createHabit")}>

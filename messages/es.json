@@ -552,6 +552,7 @@
     "autoPaidSuccess": "¡Aprobado! Se enviaron {amount} sats ⚡",
     "scanInvoice": "Escaneá o copiá la invoice para pagar {amount} sats",
     "kidNoWallet": "El kid necesita conectar una wallet para recibir sats",
+    "nwcNoInfoEvent": "La wallet del kid no soporta generar invoices. Pedile que use una wallet compatible con NWC (ej: Alby Hub, Mutiny).",
     "approvedNoPay": "Aprobado sin pago. Configurá una wallet para enviar sats.",
     "paymentError": "Error al procesar el pago. Intentá de nuevo.",
     "weblnPaidSuccess": "¡Pagados {amount} sats via {extension}! ⚡",
@@ -596,7 +597,8 @@
     "thu": "J",
     "fri": "V",
     "sat": "S",
-    "approve": "Aprobar"
+    "approve": "Aprobar",
+    "reject": "Rechazar"
   },
   "sponsorDashboard": {
     "pendingApprovals": "Pendientes de aprobación",
@@ -610,6 +612,7 @@
     "selectSchedule": "Seleccionar frecuencia",
     "selectVerification": "Seleccionar verificación",
     "approveSuccess": "Completación aprobada correctamente",
+    "rejectSuccess": "Completación rechazada",
     "approveNoWallet": "Completación aprobada, pero necesitás conectar una wallet Lightning para enviar las recompensas. Andá a la pestaña Wallet para configurarla.",
     "rejectSuccess": "Completación rechazada",
     "createSuccess": "Hábito creado correctamente",
