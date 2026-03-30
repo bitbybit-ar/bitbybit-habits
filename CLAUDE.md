@@ -22,10 +22,10 @@
 - **Iconos**: SVG custom en `components/icons/` (NO lucide-react, NO icon libraries)
 - **i18n**: next-intl con `[locale]` routing (espanol default, ingles segundo idioma)
 - **Base de datos**: Neon DB (PostgreSQL serverless) via `@neondatabase/serverless`
-- **Auth**: Email/username + password con bcryptjs. Boton "Login with Nostr" visible pero deshabilitado (coming soon)
+- **Auth**: Email/username + password con bcryptjs. Login con Nostr (NIP-07 extension) disponible + linking de cuentas existentes
 - **Lightning**: NWC (Nostr Wallet Connect) via `@getalby/sdk`
 - **API Docs**: OpenAPI 3.0 (Swagger) en `docs/openapi.yaml` + pagina interactiva en `/api-docs`
-- **Fuente**: Inter (Google Fonts)
+- **Fuente**: Nunito / Nunito Sans (Google Fonts)
 
 ## Estructura del proyecto
 
@@ -39,12 +39,14 @@ bitbybit-habits/
       layout.tsx               <- Layout principal con NextIntlClientProvider
       page.tsx                 <- Landing page
     api/                       <- API routes (NO dentro de [locale])
-      auth/                    <- login, register, logout, session, profile, 2fa/*
+      admin/                   <- stats, users CRUD, sync-nostr-metadata
+      auth/                    <- login, register, logout, session, profile, 2fa/*, nostr, nostr/link
       completions/             <- CRUD, approve, reject, pending
-      families/                <- CRUD, join, leave, role, stats, completions
-      habits/                  <- CRUD, assignments
-      payments/                <- list, invoice, [id]/pay, [id]/status, retry
-      wallets/                 <- CRUD, balance
+      docs/                    <- Sirve OpenAPI spec como JSON
+      families/                <- CRUD, join, leave, role, stats, completions, [id]/members/[userId]
+      habits/                  <- CRUD, [id]/assignments
+      payments/                <- list, invoice, [id]/pay, [id]/status, [id]/confirm, retry
+      wallets/                 <- CRUD, balance, send, receive
       notifications/           <- list
       stats/                   <- estadisticas y rachas
     layout.tsx                 <- Root layout (solo pasa children)
@@ -65,14 +67,14 @@ bitbybit-habits/
     types.ts                   <- Interfaces TypeScript compartidas
   messages/                    <- Archivos de traduccion (es.json, en.json)
   styles/                      <- SCSS variables, mixins, glassmorphism system
-  tests/                       <- 27 archivos de test, 147 tests (Vitest)
+  tests/                       <- 35 archivos de test, ~198 tests (Vitest)
     api/                       <- Tests de endpoints API
     components/                <- Tests de componentes
     helpers/                   <- Utilidades de test
   docs/
     openapi.yaml               <- Especificacion OpenAPI 3.0 (Swagger)
   middleware.ts                <- next-intl middleware
-  setup-database.sql           <- Schema SQL para Neon DB (8 tablas)
+  setup-database.sql           <- Schema SQL para Neon DB (9 tablas)
 ```
 
 ### Reglas de estructura
@@ -212,6 +214,7 @@ pg_ctl -D '/Volumes/Ext Disk/pg-data' stop
 - **Payment**: registro del pago Lightning (pending/paid/failed) con invoice BOLT11 y payment_hash
 - **Wallet**: conexion NWC para sponsors Y kids (URL encriptada con AES-256-GCM)
 - **Notification**: notificaciones in-app para completaciones, aprobaciones y pagos
+- **HabitAssignment**: relacion many-to-many entre habits y users asignados
 
 ## Flujo principal
 
@@ -233,7 +236,7 @@ Sponsor aprueba -> cascada de pago:
 npm run dev          # Servidor de desarrollo
 npm run build        # Build de produccion
 npm run lint         # ESLint
-npm test             # Correr tests (Vitest, 147 tests)
+npm test             # Correr tests (Vitest, ~198 tests)
 npm run test:watch   # Tests en modo watch
 npm run test:coverage # Tests con reporte de cobertura
 npx tsc --noEmit     # Type-check sin compilar

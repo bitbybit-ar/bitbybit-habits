@@ -22,6 +22,7 @@ export const GET = apiHandler(async (_req, { session, db }) => {
       auth_provider: users.auth_provider,
       nostr_metadata: users.nostr_metadata,
       has_password: users.password_hash,
+      totp_enabled: users.totp_enabled,
     })
     .from(users)
     .where(eq(users.id, session.user_id));
@@ -42,6 +43,7 @@ export const GET = apiHandler(async (_req, { session, db }) => {
     auth_provider: profile.auth_provider,
     nostr_metadata: profile.nostr_metadata,
     has_password: !!profile.has_password,
+    totp_enabled: !!profile.totp_enabled,
   };
 });
 

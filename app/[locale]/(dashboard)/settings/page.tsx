@@ -12,7 +12,7 @@ import { BackLink } from "@/components/ui/back-link";
 import { FormInput, FormSelect, FormButton } from "@/components/ui/form";
 import { useFormValidation } from "@/lib/hooks/useFormValidation";
 import { useNostr } from "@/lib/hooks/useNostr";
-import { NostrichIcon } from "@/components/icons";
+import { NostrichIcon, ShieldIcon } from "@/components/icons";
 import { resolveApiError } from "@/lib/error-messages";
 import type { NostrMetadata } from "@/lib/nostr/types";
 import formStyles from "@/components/ui/form/form.module.scss";
@@ -29,6 +29,7 @@ interface Profile {
   auth_provider: "email" | "nostr";
   nostr_metadata: NostrMetadata | null;
   has_password: boolean;
+  totp_enabled: boolean;
 }
 
 export default function SettingsPage() {
@@ -50,6 +51,16 @@ export default function SettingsPage() {
   const [nostrError, setNostrError] = useState("");
   const [nostrSyncing, setNostrSyncing] = useState(false);
   const [locale, setLocale] = useState<"es" | "en">("es");
+
+  // 2FA state
+  const [twoFAEnabled, setTwoFAEnabled] = useState(false);
+  const [twoFALoading, setTwoFALoading] = useState(false);
+  const [twoFASetupData, setTwoFASetupData] = useState<{ otpauthUri: string; qrCode: string } | null>(null);
+  const [twoFARecoveryCodes, setTwoFARecoveryCodes] = useState<string[] | null>(null);
+  const [twoFACode, setTwoFACode] = useState("");
+  const [twoFAError, setTwoFAError] = useState("");
+  const [twoFADisabling, setTwoFADisabling] = useState(false);
+  const [twoFACopied, setTwoFACopied] = useState(false);
 
   const { confirm, confirmState, handleConfirm, handleCancel } = useConfirm();
   const isNostrOrigin = profile?.auth_provider === "nostr";
@@ -117,6 +128,7 @@ export default function SettingsPage() {
               avatar_url: data.data.avatar_url ?? "",
             });
             setLocale(data.data.locale);
+            setTwoFAEnabled(data.data.totp_enabled ?? false);
           }
         }
       } catch {
@@ -127,6 +139,95 @@ export default function SettingsPage() {
     }
     fetchProfile();
   }, []); // Only fetch on mount
+
+  // ── 2FA handlers ──
+  const handleTwoFASetup = async () => {
+    setTwoFAError("");
+    setTwoFALoading(true);
+    try {
+      const res = await fetch("/api/auth/2fa/setup", { method: "POST" });
+      const data = await res.json();
+      if (data.success && data.data) {
+        setTwoFASetupData(data.data);
+        setTwoFACode("");
+      } else {
+        setTwoFAError(resolveApiError(data.error || "internalError", t));
+      }
+    } catch {
+      setTwoFAError(t("auth.connectionError"));
+    } finally {
+      setTwoFALoading(false);
+    }
+  };
+
+  const handleTwoFAConfirm = async () => {
+    if (twoFACode.length < 6) return;
+    setTwoFAError("");
+    setTwoFALoading(true);
+    try {
+      const res = await fetch("/api/auth/2fa/confirm", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: twoFACode }),
+      });
+      const data = await res.json();
+      if (data.success && data.data?.recoveryCodes) {
+        setTwoFARecoveryCodes(data.data.recoveryCodes);
+        setTwoFASetupData(null);
+        setTwoFACode("");
+      } else {
+        setTwoFAError(t("settings.twoFA.invalidCode"));
+      }
+    } catch {
+      setTwoFAError(t("auth.connectionError"));
+    } finally {
+      setTwoFALoading(false);
+    }
+  };
+
+  const handleTwoFADone = () => {
+    setTwoFARecoveryCodes(null);
+    setTwoFAEnabled(true);
+    setTwoFACopied(false);
+  };
+
+  const handleTwoFADisable = async () => {
+    if (twoFACode.length < 6) return;
+    setTwoFAError("");
+    setTwoFALoading(true);
+    try {
+      const res = await fetch("/api/auth/2fa/disable", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: twoFACode }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setTwoFAEnabled(false);
+        setTwoFADisabling(false);
+        setTwoFACode("");
+      } else {
+        setTwoFAError(t("settings.twoFA.invalidCode"));
+      }
+    } catch {
+      setTwoFAError(t("auth.connectionError"));
+    } finally {
+      setTwoFALoading(false);
+    }
+  };
+
+  const handleCopyRecoveryCodes = async () => {
+    if (!twoFARecoveryCodes) return;
+    await navigator.clipboard.writeText(twoFARecoveryCodes.join("\n"));
+    setTwoFACopied(true);
+  };
+
+  const handleCancelTwoFA = () => {
+    setTwoFASetupData(null);
+    setTwoFADisabling(false);
+    setTwoFACode("");
+    setTwoFAError("");
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -431,6 +532,136 @@ export default function SettingsPage() {
           )}
 
           {nostrError && <p className={styles.nostrError}>{nostrError}</p>}
+        </div>
+
+        {/* 2FA Section */}
+        <div className={styles.twoFASection}>
+          <div className={styles.twoFASectionHeader}>
+            <div className={styles.twoFASectionTitle}>
+              <ShieldIcon size={16} />
+              {t("settings.twoFA.title")}
+            </div>
+            {twoFAEnabled && !twoFADisabling && (
+              <span className={styles.twoFAEnabledBadge}>{t("settings.twoFA.enabled")}</span>
+            )}
+          </div>
+          <p className={styles.twoFADescription}>{t("settings.twoFA.description")}</p>
+
+          {/* Setup: QR code + code input */}
+          {twoFASetupData && (
+            <>
+              <div className={styles.qrContainer}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={twoFASetupData.qrCode}
+                  alt="2FA QR Code"
+                  className={styles.qrImage}
+                />
+                <p className={styles.qrHint}>{t("settings.twoFA.scanQR")}</p>
+              </div>
+              <div className={styles.twoFACodeRow}>
+                <div className={styles.twoFACodeInput}>
+                  <FormInput
+                    id="twofa-code"
+                    label={t("settings.twoFA.enterCode")}
+                    variant="security"
+                    value={twoFACode}
+                    onChange={(v) => setTwoFACode(v.replace(/\D/g, "").slice(0, 6))}
+                    inputMode="numeric"
+                    autoComplete="one-time-code"
+                    placeholder="000000"
+                  />
+                </div>
+                <button
+                  type="button"
+                  className={styles.twoFACodeButton}
+                  onClick={handleTwoFAConfirm}
+                  disabled={twoFACode.length < 6 || twoFALoading}
+                >
+                  {t("settings.twoFA.confirm")}
+                </button>
+              </div>
+              <button type="button" className={styles.twoFACancelButton} onClick={handleCancelTwoFA}>
+                {t("settings.twoFA.cancel")}
+              </button>
+            </>
+          )}
+
+          {/* Recovery codes display */}
+          {twoFARecoveryCodes && (
+            <div className={styles.recoveryCodesBox}>
+              <div className={styles.recoveryCodesTitle}>{t("settings.twoFA.recoveryCodes")}</div>
+              <p className={styles.recoveryCodesHint}>{t("settings.twoFA.recoveryCodesHint")}</p>
+              <div className={styles.recoveryCodesList}>
+                {twoFARecoveryCodes.map((code) => (
+                  <span key={code}>{code}</span>
+                ))}
+              </div>
+              <button type="button" className={styles.copyButton} onClick={handleCopyRecoveryCodes}>
+                {twoFACopied ? t("settings.twoFA.copied") : t("settings.twoFA.copyAll")}
+              </button>
+              <button type="button" className={styles.doneButton} onClick={handleTwoFADone}>
+                {t("settings.twoFA.done")}
+              </button>
+            </div>
+          )}
+
+          {/* Disable form */}
+          {twoFADisabling && (
+            <div className={styles.twoFADisableForm}>
+              <p className={styles.twoFADisableHint}>{t("settings.twoFA.disableConfirm")}</p>
+              <FormInput
+                id="twofa-disable-code"
+                label={t("settings.twoFA.enterCode")}
+                variant="security"
+                value={twoFACode}
+                onChange={(v) => setTwoFACode(v.replace(/\D/g, "").slice(0, 6))}
+                inputMode="numeric"
+                autoComplete="one-time-code"
+                placeholder="000000"
+              />
+              <div className={styles.twoFADisableActions}>
+                <button type="button" className={styles.twoFACancelButton} onClick={handleCancelTwoFA}>
+                  {t("settings.twoFA.cancel")}
+                </button>
+                <button
+                  type="button"
+                  className={styles.twoFADisableButton}
+                  onClick={handleTwoFADisable}
+                  disabled={twoFACode.length < 6 || twoFALoading}
+                >
+                  {t("settings.twoFA.disable")}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Enable/Disable buttons */}
+          {!twoFASetupData && !twoFARecoveryCodes && !twoFADisabling && (
+            twoFAEnabled ? (
+              <button
+                type="button"
+                className={styles.twoFADisableButton}
+                onClick={() => { setTwoFADisabling(true); setTwoFACode(""); setTwoFAError(""); }}
+                disabled={twoFALoading}
+              >
+                <ShieldIcon size={16} />
+                {t("settings.twoFA.disable")}
+              </button>
+            ) : (
+              <button
+                type="button"
+                className={styles.twoFAEnableButton}
+                onClick={handleTwoFASetup}
+                disabled={twoFALoading}
+              >
+                <ShieldIcon size={16} />
+                {t("settings.twoFA.enable")}
+              </button>
+            )
+          )}
+
+          {twoFAError && <p className={styles.twoFAError}>{twoFAError}</p>}
         </div>
 
         {saved && (
