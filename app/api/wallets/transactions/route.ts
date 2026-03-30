@@ -60,13 +60,9 @@ export const GET = apiHandler(async (request, { session, db }) => {
     console.log(`[Wallet:Transactions] Returned ${transactions.length} transactions`);
     return { transactions, has_more: allTxs.length > offset + limit };
   } catch (err) {
+    // Best-effort like balance — return empty on NWC failures
     console.error("[Wallet:Transactions] NWC error:", err);
-
-    const msg = err instanceof Error ? err.message : "";
-    if (msg === "timeout") {
-      throw new BadRequestError("nwc_timeout");
-    }
-    throw new BadRequestError("transactions_failed");
+    return { transactions: [], has_more: false };
   } finally {
     client.close();
   }
