@@ -23,6 +23,11 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [navigating, setNavigating] = useState(false);
 
+  // 2FA state
+  const [twoFAStep, setTwoFAStep] = useState(false);
+  const [tempToken, setTempToken] = useState("");
+  const [twoFACode, setTwoFACode] = useState("");
+
   const form = useFormValidation({
     initialValues: { login: "", password: "" },
     validators: {
@@ -52,6 +57,14 @@ export default function LoginPage() {
         return;
       }
 
+      // 2FA required — switch to code entry step
+      if (data.data?.requires2FA) {
+        setTempToken(data.data.tempToken);
+        setTwoFAStep(true);
+        setTwoFACode("");
+        return;
+      }
+
       setNavigating(true);
       const role = data.data?.role;
       if (role === "kid") router.push("/kid");
@@ -78,11 +91,92 @@ export default function LoginPage() {
     else router.push("/onboard");
   };
 
+  const handleTwoFASubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!twoFACode.trim()) return;
+    setError("");
+    setLoading(true);
+    try {
+      const res = await fetch("/api/auth/2fa/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ tempToken, code: twoFACode.trim() }),
+      });
+      const data = await res.json();
+
+      if (!data.success) {
+        setError(resolveApiError(data.error, t));
+        return;
+      }
+
+      setNavigating(true);
+      const role = data.data?.role;
+      if (role === "kid") router.push("/kid");
+      else if (role === "sponsor") router.push("/sponsor");
+      else router.push("/onboard");
+    } catch {
+      setError(t("auth.connectionError"));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleBackToLogin = () => {
+    setTwoFAStep(false);
+    setTempToken("");
+    setTwoFACode("");
+    setError("");
+  };
+
   const loginField = form.fieldProps("login");
   const passwordField = form.fieldProps("password");
 
   if (navigating) {
     return <Container center><BlockLoader /></Container>;
+  }
+
+  if (twoFAStep) {
+    return (
+      <Container>
+        <BackLink />
+        <AuthCard
+          subtitle={t("auth.twoFA.title")}
+          switchText=""
+          switchLabel=""
+          switchHref="/"
+          showNostr={false}
+          error={error}
+          variant="login"
+        >
+          <form onSubmit={handleTwoFASubmit} className={styles.formLayout} noValidate>
+            <FormInput
+              id="twofa-code"
+              label={t("auth.twoFA.enterCode")}
+              required
+              variant="security"
+              placeholder="000000"
+              autoComplete="one-time-code"
+              inputMode="numeric"
+              value={twoFACode}
+              onChange={(v) => setTwoFACode(v.replace(/\D/g, "").slice(0, 6))}
+            />
+            <p className={styles.recoveryHint}>{t("auth.twoFA.recoveryHint")}</p>
+
+            <FormButton type="submit" loading={loading} loadingText={t("common.loading")}>
+              {t("auth.twoFA.verify")}
+            </FormButton>
+
+            <button
+              type="button"
+              className={styles.forgotLink}
+              onClick={handleBackToLogin}
+            >
+              {t("auth.twoFA.backToLogin")}
+            </button>
+          </form>
+        </AuthCard>
+      </Container>
+    );
   }
 
   return (

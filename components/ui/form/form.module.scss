@@ -145,6 +145,13 @@
   margin-top: 2px;
 }
 
+.recoveryHint {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  text-align: center;
+  margin-top: -$spacing-8;
+}
+
 // ── Password strength indicator ──
 .strengthContainer {
   margin-top: $spacing-4;

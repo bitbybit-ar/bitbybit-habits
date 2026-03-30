@@ -124,7 +124,14 @@
     "nostrExtensionRequired": "Install a Nostr extension (Alby, nos2x)",
     "nostrLoginInProgress": "Signing with Nostr...",
     "nostrSiteNotConnected": "Site not connected — allow access in your Nostr extension",
-    "nostrSigningRejected": "Signing rejected — approve the request in your Nostr extension"
+    "nostrSigningRejected": "Signing rejected — approve the request in your Nostr extension",
+    "twoFA": {
+      "title": "Two-step verification",
+      "enterCode": "Enter the code from your authenticator app",
+      "recoveryHint": "You can also use a recovery code",
+      "verify": "Verify",
+      "backToLogin": "Back to login"
+    }
   },
   "dashboard": {
     "title": "Dashboard",
@@ -253,7 +260,25 @@
     "nostrSyncing": "Syncing...",
     "nostrSyncFailed": "Failed to sync metadata from Nostr relays",
     "nostrAutoSyncHint": "Profile changes are automatically published to Nostr relays",
-    "nostrImportPrompt": "Import your display name and avatar from Nostr?"
+    "nostrImportPrompt": "Import your display name and avatar from Nostr?",
+    "twoFA": {
+      "title": "Two-factor authentication",
+      "description": "Add an extra layer of security to your account",
+      "enable": "Enable 2FA",
+      "disable": "Disable 2FA",
+      "enabled": "Enabled",
+      "scanQR": "Scan this QR code with your authenticator app",
+      "enterCode": "Enter the 6-digit code",
+      "confirm": "Confirm",
+      "recoveryCodes": "Recovery codes",
+      "recoveryCodesHint": "Save these in a safe place. Each code can only be used once.",
+      "copyAll": "Copy all",
+      "copied": "Copied",
+      "done": "Done",
+      "disableConfirm": "Enter your 2FA code to disable",
+      "invalidCode": "Invalid code",
+      "cancel": "Cancel"
+    }
   },
   "emptyState": {
     "noHabitsTitle": "No habits yet",

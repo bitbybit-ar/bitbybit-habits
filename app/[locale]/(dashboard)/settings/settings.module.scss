@@ -230,3 +230,273 @@
   font-size: $font-size-sm;
   color: $color-text-secondary;
 }
+
+// ── 2FA section ──
+.twoFASection {
+  padding-top: $spacing-20;
+  border-top: 1px solid alpha($color-text-secondary, 20%);
+}
+
+.twoFASectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-12;
+}
+
+.twoFASectionTitle {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-secondary;
+  display: flex;
+  align-items: center;
+  gap: $spacing-8;
+}
+
+.twoFADescription {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  margin-bottom: $spacing-12;
+}
+
+.twoFAEnabledBadge {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+  color: $color-success;
+  padding: $spacing-4 $spacing-8;
+  border-radius: $border-radius-sm;
+  background: alpha($color-success, 10%);
+}
+
+.twoFAEnableButton,
+.twoFADisableButton {
+  padding: $spacing-8 $spacing-16;
+  border-radius: $border-radius-md;
+  font-size: $font-size-sm;
+  font-family: $font-family-base;
+  font-weight: $font-weight-medium;
+  cursor: pointer;
+  @include transition;
+  flex-shrink: 0;
+}
+
+.twoFAEnableButton {
+  width: 100%;
+  padding: $spacing-12;
+  border: 1px solid alpha($color-secondary, 20%);
+  background: alpha($color-secondary, 6%);
+  color: $color-secondary;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-8;
+
+  &:hover {
+    background: alpha($color-secondary, 12%);
+    border-color: alpha($color-secondary, 40%);
+  }
+
+  &:disabled {
+    cursor: wait;
+    opacity: 0.7;
+  }
+}
+
+.twoFADisableButton {
+  width: 100%;
+  padding: $spacing-12;
+  border: 1px solid alpha($color-error, 20%);
+  background: alpha($color-error, 6%);
+  color: $color-error;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-8;
+
+  &:hover {
+    background: alpha($color-error, 12%);
+    border-color: alpha($color-error, 30%);
+  }
+
+  &:disabled {
+    cursor: wait;
+    opacity: 0.7;
+  }
+}
+
+.qrContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $spacing-12;
+  padding: $spacing-16;
+  border-radius: $border-radius-md;
+  background: alpha($color-secondary, 4%);
+  border: 1px solid alpha($color-secondary, 15%);
+}
+
+.qrImage {
+  width: 200px;
+  height: 200px;
+  border-radius: $border-radius-sm;
+  background: white;
+  padding: $spacing-8;
+}
+
+.qrHint {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  text-align: center;
+}
+
+.twoFACodeRow {
+  display: flex;
+  gap: $spacing-8;
+  align-items: flex-end;
+}
+
+.twoFACodeInput {
+  flex: 1;
+}
+
+.twoFACodeButton {
+  padding: $spacing-12 $spacing-16;
+  border-radius: $border-radius-md;
+  font-size: $font-size-sm;
+  font-family: $font-family-base;
+  font-weight: $font-weight-medium;
+  cursor: pointer;
+  @include transition;
+  border: none;
+  background: $gradient-primary;
+  color: $color-on-gradient;
+  flex-shrink: 0;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px alpha($color-primary, 30%);
+  }
+
+  &:disabled {
+    cursor: wait;
+    opacity: 0.7;
+    transform: none;
+    box-shadow: none;
+  }
+}
+
+.recoveryCodesBox {
+  padding: $spacing-16;
+  border-radius: $border-radius-md;
+  background: alpha($color-secondary, 4%);
+  border: 1px solid alpha($color-secondary, 15%);
+}
+
+.recoveryCodesTitle {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-secondary;
+  margin-bottom: $spacing-8;
+}
+
+.recoveryCodesHint {
+  font-size: $font-size-xs;
+  color: $color-warning;
+  margin-bottom: $spacing-12;
+}
+
+.recoveryCodesList {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $spacing-4 $spacing-16;
+  margin-bottom: $spacing-12;
+  font-family: monospace;
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+}
+
+.copyButton {
+  width: 100%;
+  padding: $spacing-8;
+  border-radius: $border-radius-md;
+  font-size: $font-size-xs;
+  font-family: $font-family-base;
+  font-weight: $font-weight-medium;
+  cursor: pointer;
+  @include transition;
+  border: 1px solid alpha($color-secondary, 15%);
+  background: alpha($color-secondary, 4%);
+  color: $color-secondary;
+  margin-bottom: $spacing-8;
+
+  &:hover {
+    background: alpha($color-secondary, 10%);
+  }
+}
+
+.doneButton {
+  width: 100%;
+  padding: $spacing-12;
+  border-radius: $border-radius-md;
+  font-size: $font-size-sm;
+  font-family: $font-family-base;
+  font-weight: $font-weight-medium;
+  cursor: pointer;
+  @include transition;
+  border: none;
+  background: $gradient-primary;
+  color: $color-on-gradient;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px alpha($color-primary, 30%);
+  }
+}
+
+.twoFAError {
+  font-size: $font-size-xs;
+  color: $color-error;
+  margin-top: $spacing-8;
+}
+
+.twoFADisableForm {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-12;
+  padding: $spacing-16;
+  border-radius: $border-radius-md;
+  background: alpha($color-error, 4%);
+  border: 1px solid alpha($color-error, 15%);
+}
+
+.twoFADisableHint {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+}
+
+.twoFADisableActions {
+  display: flex;
+  gap: $spacing-8;
+
+  > * {
+    flex: 1;
+  }
+}
+
+.twoFACancelButton {
+  flex: 1;
+  padding: $spacing-8 $spacing-16;
+  border-radius: $border-radius-md;
+  font-size: $font-size-sm;
+  font-family: $font-family-base;
+  font-weight: $font-weight-medium;
+  cursor: pointer;
+  @include transition;
+  border: 1px solid alpha($color-text-secondary, 20%);
+  background: transparent;
+  color: $color-text-secondary;
+
+  &:hover {
+    background: alpha($color-text-secondary, 8%);
+  }
+}
