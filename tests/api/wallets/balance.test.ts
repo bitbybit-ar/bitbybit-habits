@@ -4,11 +4,13 @@ import { createRequest, parseResponse, setSessionCookie, clearSessionCookie, tes
 
 // Mock NWC client
 const mockGetBalance = vi.fn();
+const mockGetInfo = vi.fn();
 const mockClose = vi.fn();
 
 vi.mock("@getalby/sdk", () => ({
   NWCClient: class {
     getBalance = mockGetBalance;
+    getInfo = mockGetInfo;
     close = mockClose;
   },
 }));
@@ -49,17 +51,28 @@ describe("GET /api/wallets/balance", () => {
     const { status, body } = await parseResponse(await GET(req));
     expect(status).toBe(200);
     expect(body.data.balance_sats).toBeNull();
+    expect(body.data.node_info).toBeNull();
   });
 
-  it("returns balance when wallet is connected", async () => {
+  it("returns balance and node info when wallet is connected", async () => {
     await setSessionCookie(testSession);
     mockGetDecryptedNwcUrl.mockResolvedValue("nostr+walletconnect://test");
     // NWC returns balance in millisats (50000 msats = 50 sats)
     mockGetBalance.mockResolvedValue({ balance: 50000 });
+    mockGetInfo.mockResolvedValue({
+      alias: "TestNode",
+      pubkey: "abc123",
+      network: "mainnet",
+      methods: ["pay_invoice", "make_invoice", "get_balance"],
+      color: "#ff0000",
+      block_height: 800000,
+    });
     const req = createRequest("GET", "/api/wallets/balance");
     const { status, body } = await parseResponse(await GET(req));
     expect(status).toBe(200);
     expect(body.data.balance_sats).toBe(50);
+    expect(body.data.node_info.alias).toBe("TestNode");
+    expect(body.data.node_info.methods).toContain("pay_invoice");
     expect(mockClose).toHaveBeenCalled();
   });
 
@@ -67,10 +80,12 @@ describe("GET /api/wallets/balance", () => {
     await setSessionCookie(testSession);
     mockGetDecryptedNwcUrl.mockResolvedValue("nostr+walletconnect://test");
     mockGetBalance.mockRejectedValue(new Error("Connection refused"));
+    mockGetInfo.mockRejectedValue(new Error("Connection refused"));
     const req = createRequest("GET", "/api/wallets/balance");
     const { status, body } = await parseResponse(await GET(req));
     expect(status).toBe(200);
     expect(body.data.balance_sats).toBeNull();
+    expect(body.data.node_info).toBeNull();
     expect(mockClose).toHaveBeenCalled();
   });
 });

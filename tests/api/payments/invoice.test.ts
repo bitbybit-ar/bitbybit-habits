@@ -6,12 +6,21 @@ import { createRequest, parseResponse, setSessionCookie, clearSessionCookie, tes
 const mockMakeInvoice = vi.fn();
 const mockClose = vi.fn();
 
-vi.mock("@getalby/sdk", () => ({
-  NWCClient: class {
-    makeInvoice = mockMakeInvoice;
-    close = mockClose;
-  },
-}));
+vi.mock("@getalby/sdk", () => {
+  class Nip47Error extends Error {
+    code: string;
+    constructor(message: string, code: string) { super(message); this.code = code; }
+  }
+  return {
+    NWCClient: class {
+      makeInvoice = mockMakeInvoice;
+      close = mockClose;
+    },
+    Nip47WalletError: class extends Nip47Error {},
+    Nip47TimeoutError: class extends Nip47Error {},
+    Nip47NetworkError: class extends Nip47Error {},
+  };
+});
 
 // Mock DB
 const mockSelectResult = vi.fn();
@@ -104,7 +113,7 @@ describe("POST /api/payments/invoice", () => {
     expect(body.error).toContain("completion_not_found");
   });
 
-  it("returns 422 when kid has no wallet", async () => {
+  it("returns 400 when kid has no wallet", async () => {
     await setSessionCookie(testSession);
     // First select: combined completion+habit+familyMembers query
     mockSelectResult.mockReturnValueOnce([{
@@ -121,7 +130,7 @@ describe("POST /api/payments/invoice", () => {
       amount_sats: 50,
     });
     const { status, body } = await parseResponse(await POST(req));
-    expect(status).toBe(422);
+    expect(status).toBe(400);
     expect(body.error).toBe("kid_no_wallet");
   });
 

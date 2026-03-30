@@ -1,8 +1,9 @@
 import { apiHandler, BadRequestError } from "@/lib/api";
 import { getDecryptedNwcUrl } from "@/app/api/wallets/route";
-import { NWCClient } from "@getalby/sdk";
+import { NWCClient, Nip47WalletError, Nip47TimeoutError, Nip47NetworkError } from "@getalby/sdk";
 
-const BOLT11_RE = /^lnbc[0-9a-zA-Z]+1[qpzry9x8gf2tvdw0s3jn54khce6mua7l]+$/i;
+// BOLT11: ln + network (bc/tb/bcrt/tbs) + optional amount + 1 separator + bech32 data
+const BOLT11_RE = /^ln(bc|tb|bcrt|tbs)\d*[munp]?1[qpzry9x8gf2tvdw0s3jn54khce6mua7l]+$/i;
 
 /**
  * POST /api/wallets/send
@@ -21,7 +22,7 @@ export const POST = apiHandler(async (request, { session, db }) => {
   // Strip lightning: URI prefix if present
   const bolt11 = invoice.replace(/^lightning:/i, "").trim();
 
-  // Validate BOLT11 format (lnbc prefix + bech32 checksum structure)
+  // Validate BOLT11 format
   if (!BOLT11_RE.test(bolt11)) {
     throw new BadRequestError("invalid_invoice");
   }
@@ -42,8 +43,34 @@ export const POST = apiHandler(async (request, { session, db }) => {
     const result = await Promise.race([payPromise, timeoutPromise]);
     return { preimage: result.preimage };
   } catch (err) {
-    const msg = err instanceof Error ? err.message : "payment_failed";
-    if (msg.includes("insufficient") || msg.includes("INSUFFICIENT")) {
+    if (err instanceof Nip47WalletError) {
+      const code = err.code?.toUpperCase() ?? "";
+      if (code === "INSUFFICIENT_BALANCE" || code === "INSUFFICIENT_FUNDS") {
+        throw new BadRequestError("insufficient_funds");
+      }
+      if (code === "QUOTA_EXCEEDED") {
+        throw new BadRequestError("quota_exceeded");
+      }
+      if (code === "RATE_LIMITED") {
+        throw new BadRequestError("wallet_rate_limited");
+      }
+      if (code === "NOT_IMPLEMENTED") {
+        throw new BadRequestError("pay_not_supported");
+      }
+      throw new BadRequestError(`wallet_error: ${err.code}`);
+    }
+    if (err instanceof Nip47TimeoutError) {
+      throw new BadRequestError("nwc_timeout");
+    }
+    if (err instanceof Nip47NetworkError) {
+      throw new BadRequestError("nwc_relay_error");
+    }
+
+    const msg = err instanceof Error ? err.message.toLowerCase() : "";
+    if (msg.includes("timeout")) {
+      throw new BadRequestError("nwc_timeout");
+    }
+    if (msg.includes("insufficient") || msg.includes("not enough")) {
       throw new BadRequestError("insufficient_funds");
     }
     throw new BadRequestError("payment_failed");

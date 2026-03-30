@@ -1,10 +1,9 @@
-import { NextResponse } from "next/server";
 import { apiHandler, BadRequestError, ForbiddenError } from "@/lib/api";
 import { completions, habits, payments, wallets, familyMembers } from "@/lib/db";
 import { decrypt } from "@/lib/crypto";
 import { eq, and } from "drizzle-orm";
-import { NWCClient } from "@getalby/sdk";
-import type { ApiResponse } from "@/lib/types";
+import { NWCClient, Nip47WalletError, Nip47TimeoutError, Nip47NetworkError } from "@getalby/sdk";
+import { extractPaymentHash } from "@/lib/lightning";
 
 /**
  * POST /api/payments/invoice
@@ -67,10 +66,7 @@ export const POST = apiHandler(async (request, { session, db }) => {
     .limit(1);
 
   if (!walletRows[0]) {
-    return NextResponse.json<ApiResponse>(
-      { success: false, error: "kid_no_wallet" },
-      { status: 422 }
-    );
+    throw new BadRequestError("kid_no_wallet");
   }
 
   const nwcUrl = decrypt(walletRows[0].nwc_url_encrypted);
@@ -82,6 +78,9 @@ export const POST = apiHandler(async (request, { session, db }) => {
       description: `BitByBit: ${habitName}`,
     });
 
+    // Some wallets (e.g. Primal) return empty payment_hash — extract from BOLT11
+    const payment_hash = transaction.payment_hash || extractPaymentHash(transaction.invoice) || "";
+
     // If we have a payment_id from approve, update that record.
     // Otherwise create a new one (backward compatibility for retry).
     let finalPaymentId = payment_id;
@@ -91,7 +90,7 @@ export const POST = apiHandler(async (request, { session, db }) => {
         .update(payments)
         .set({
           payment_request: transaction.invoice,
-          payment_hash: transaction.payment_hash,
+          payment_hash,
         })
         .where(eq(payments.id, payment_id));
     } else {
@@ -103,7 +102,7 @@ export const POST = apiHandler(async (request, { session, db }) => {
           to_user_id: kidUserId,
           amount_sats,
           payment_request: transaction.invoice,
-          payment_hash: transaction.payment_hash,
+          payment_hash,
           status: "pending",
         })
         .returning();
@@ -112,14 +111,26 @@ export const POST = apiHandler(async (request, { session, db }) => {
 
     return {
       paymentRequest: transaction.invoice,
-      paymentHash: transaction.payment_hash,
+      paymentHash: payment_hash,
       payment_id: finalPaymentId,
       completion_id,
     };
   } catch (error) {
+    if (error instanceof Nip47WalletError) {
+      if (error.code === "NOT_IMPLEMENTED") {
+        throw new BadRequestError("make_invoice_not_supported");
+      }
+      throw new BadRequestError(`wallet_error: ${error.code}`);
+    }
+    if (error instanceof Nip47TimeoutError) {
+      throw new BadRequestError("nwc_timeout");
+    }
+    if (error instanceof Nip47NetworkError) {
+      throw new BadRequestError("nwc_relay_error");
+    }
     const msg = error instanceof Error ? error.message : "";
     throw new BadRequestError(
-      msg.includes("timeout") ? "nwc_timeout" : "nwc_invoice_failed"
+      msg === "timeout" ? "nwc_timeout" : "nwc_invoice_failed"
     );
   } finally {
     client.close();

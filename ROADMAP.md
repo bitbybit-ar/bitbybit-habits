@@ -10,6 +10,14 @@ See [FEATURES.md](./FEATURES.md) for the complete feature catalog with status.
 
 ---
 
+## Phase 0: Auth Improvements (v1.0.x)
+
+Priority: **High** — Extend Nostr login before expanding scope.
+
+- [ ] **Remote signing login (NIP-46)** — Allow users to sign in using a remote signer (nsecBunker, Amber, etc.) via NIP-46. Currently only NIP-07 browser extension is supported. This unlocks mobile users and hardware signers without exposing the private key to the browser.
+
+---
+
 ## Phase 1: Foundation Hardening (v1.1)
 
 Priority: **High** — Polish the MVP before expanding scope.

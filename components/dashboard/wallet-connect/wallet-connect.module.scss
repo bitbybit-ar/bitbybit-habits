@@ -29,7 +29,7 @@
 }
 
 .connectTitle {
-  font-size: 1.2rem;
+  font-size: $font-size-lg-alt;
   font-weight: $font-weight-bold;
   color: $color-text-primary;
   margin: 0;
@@ -66,34 +66,6 @@
 
   &:active {
     transform: scale(0.98);
-  }
-}
-
-.extensionButton {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: $spacing-8;
-  width: 100%;
-  padding: $spacing-12 $spacing-16;
-  margin-bottom: $spacing-12;
-  border-radius: $border-radius-md;
-  border: 1px solid alpha($color-text-primary, 15%);
-  background: alpha($color-text-primary, 4%);
-  color: $color-text-primary;
-  font-size: $font-size-sm;
-  font-weight: $font-weight-semibold;
-  cursor: pointer;
-  transition: background 0.2s, border-color 0.2s;
-
-  &:hover:not(:disabled) {
-    background: alpha($color-text-primary, 8%);
-    border-color: alpha($color-text-primary, 25%);
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
   }
 }
 
@@ -151,13 +123,13 @@
 }
 
 .badge {
-  padding: 2px $spacing-8;
+  padding: $spacing-4 $spacing-8;
   border-radius: $border-radius-sm;
   background: alpha($color-primary, 15%);
   color: $color-primary;
   font-size: $font-size-xs;
   font-weight: $font-weight-bold;
-  letter-spacing: 0.5px;
+  letter-spacing: $letter-spacing-wide;
 }
 
 .settingsButton {
@@ -178,6 +150,52 @@
   }
 }
 
+// ── Connection warning ──
+
+.connectionWarning {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-8;
+  padding: $spacing-16;
+  margin-bottom: $spacing-16;
+  border-radius: $border-radius-md;
+  background: alpha($color-warning, 8%);
+  border: 1px solid alpha($color-warning, 25%);
+}
+
+.warningText {
+  margin: 0;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-warning;
+}
+
+.warningHint {
+  margin: 0;
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  line-height: 1.4;
+}
+
+.reconnectButton {
+  align-self: flex-start;
+  margin-top: $spacing-4;
+  padding: $spacing-8 $spacing-16;
+  border-radius: $border-radius-sm;
+  border: 1px solid alpha($color-warning, 40%);
+  background: alpha($color-warning, 12%);
+  color: $color-warning;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: alpha($color-warning, 20%);
+    border-color: $color-warning;
+  }
+}
+
 // ── Balance ──
 
 .balanceSection {
@@ -189,6 +207,12 @@
   background: alpha($color-primary, 6%);
   border-radius: $border-radius-lg;
   border: 1px solid alpha($color-primary, 10%);
+
+  &[data-dead] {
+    opacity: 0.4;
+    border-color: alpha($color-text-secondary, 10%);
+    background: alpha($color-text-primary, 2%);
+  }
 }
 
 .balanceIcon {
@@ -205,7 +229,7 @@
 }
 
 .balanceValue {
-  font-size: 2rem;
+  font-size: $font-size-display;
   font-weight: $font-weight-bold;
   color: $color-text-primary;
   line-height: 1;
@@ -221,7 +245,7 @@
   border: none;
   background: transparent;
   color: $color-text-secondary;
-  font-size: 1.2rem;
+  font-size: $font-size-lg-alt;
   cursor: pointer;
   transition: transform 0.3s ease, color 0.2s ease;
 
@@ -282,24 +306,188 @@
   cursor: pointer;
   transition: all 0.2s ease;
 
-  &:hover {
+  &:hover:not(:disabled) {
     background: alpha($color-text-primary, 6%);
     border-color: alpha($color-text-primary, 20%);
   }
 
-  &:active {
+  &:active:not(:disabled) {
     transform: scale(0.97);
   }
 
-  &[data-variant="send"]:hover {
+  &[data-variant="send"]:hover:not(:disabled) {
     border-color: alpha($color-accent, 40%);
     color: $color-accent;
   }
 
-  &[data-variant="receive"]:hover {
+  &[data-variant="receive"]:hover:not(:disabled) {
     border-color: alpha($color-secondary, 40%);
     color: $color-secondary;
   }
+
+  &:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+}
+
+// ── Transactions button ──
+
+.txButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-8;
+  width: 100%;
+  margin-top: $spacing-12;
+  padding: $spacing-12;
+  border-radius: $border-radius-md;
+  border: 1px solid alpha($color-text-primary, 8%);
+  background: transparent;
+  color: $color-text-secondary;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover:not(:disabled) {
+    color: $color-text-primary;
+    background: alpha($color-text-primary, 4%);
+    border-color: alpha($color-text-primary, 15%);
+  }
+
+  &:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+}
+
+// ── Transactions list ──
+
+.txEmpty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $spacing-8;
+  padding: $spacing-32 0;
+  color: $color-text-secondary;
+  text-align: center;
+}
+
+.txEmptyTitle {
+  font-size: $font-size-base;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin: 0;
+}
+
+.txEmptyDesc {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  margin: 0;
+  max-width: 260px;
+}
+
+.txList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-4;
+  margin-bottom: $spacing-12;
+}
+
+.txItem {
+  display: flex;
+  align-items: center;
+  gap: $spacing-12;
+  padding: $spacing-12;
+  border-radius: $border-radius-md;
+  background: alpha($color-text-primary, 2%);
+  transition: background 0.15s ease;
+
+  &:hover {
+    background: alpha($color-text-primary, 5%);
+  }
+}
+
+.txIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: $spacing-32;
+  height: $spacing-32;
+  border-radius: $border-radius-full;
+  flex-shrink: 0;
+
+  &[data-type="incoming"] {
+    background: alpha($color-success, 12%);
+    color: $color-success;
+  }
+
+  &[data-type="outgoing"] {
+    background: alpha($color-accent, 12%);
+    color: $color-accent;
+  }
+}
+
+.txInfo {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-4;
+  flex: 1;
+  min-width: 0;
+}
+
+.txLabel {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.txDesc {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.txDate {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  opacity: 0.7;
+}
+
+.txAmount {
+  display: flex;
+  align-items: baseline;
+  gap: $spacing-4;
+  font-size: $font-size-base;
+  font-weight: $font-weight-bold;
+  flex-shrink: 0;
+
+  &[data-type="incoming"] {
+    color: $color-success;
+  }
+
+  &[data-type="outgoing"] {
+    color: $color-text-primary;
+  }
+}
+
+.txSats {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-normal;
+  color: $color-text-secondary;
+}
+
+.loadingText {
+  text-align: center;
+  padding: $spacing-32 0;
+  color: $color-text-secondary;
+  font-size: $font-size-sm;
 }
 
 // ── Sub-views ──
@@ -316,7 +504,7 @@
   border: none;
   background: transparent;
   color: $color-text-secondary;
-  font-size: 1.2rem;
+  font-size: $font-size-lg-alt;
   cursor: pointer;
   transition: color 0.2s;
 
@@ -434,7 +622,7 @@
 }
 
 .qrContainer {
-  background: rgba(255, 255, 255, 0.05);
+  background: alpha($color-text-primary, 5%);
   border-radius: $border-radius-lg;
   padding: $spacing-20;
   display: flex;

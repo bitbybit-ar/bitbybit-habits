@@ -2,7 +2,7 @@ import { apiHandler, NotFoundError, ForbiddenError } from "@/lib/api";
 import { payments, wallets } from "@/lib/db";
 import { decrypt } from "@/lib/crypto";
 import { eq, and } from "drizzle-orm";
-import { NWCClient } from "@getalby/sdk";
+import { NWCClient, Nip47WalletError } from "@getalby/sdk";
 
 /**
  * GET /api/payments/[id]/status
@@ -56,16 +56,40 @@ export const GET = apiHandler(async (_request, { session, db, params }) => {
 
   try {
     // 5 second timeout on the NWC call
-    const lookupPromise = client.lookupInvoice({
-      payment_hash: payment.payment_hash,
-    });
     const timeoutPromise = new Promise<never>((_, reject) =>
       setTimeout(() => reject(new Error("NWC lookup timeout")), 5000)
     );
 
-    const result = await Promise.race([lookupPromise, timeoutPromise]);
+    let settled = false;
 
-    if (result.settled_at) {
+    try {
+      const result = await Promise.race([
+        client.lookupInvoice({ payment_hash: payment.payment_hash }),
+        timeoutPromise,
+      ]);
+      settled = !!result.settled_at;
+    } catch (lookupErr) {
+      // Fallback: some wallets (e.g. Primal) don't support lookupInvoice —
+      // search recent transactions by payment_hash instead.
+      if (lookupErr instanceof Nip47WalletError && lookupErr.code === "NOT_FOUND") {
+        try {
+          const txResult = await Promise.race([
+            client.listTransactions({ limit: 20 }),
+            timeoutPromise,
+          ]);
+          const txs = txResult.transactions ?? [];
+          const match = txs.find(
+            (tx: { payment_hash?: string; state?: string }) =>
+              tx.payment_hash === payment.payment_hash && tx.state === "settled"
+          );
+          settled = !!match;
+        } catch {
+          // listTransactions also failed — give up gracefully
+        }
+      }
+    }
+
+    if (settled) {
       // Atomic update: only set to "paid" if still pending (prevents duplicate updates)
       await db
         .update(payments)

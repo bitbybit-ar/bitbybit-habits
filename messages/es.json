@@ -234,7 +234,20 @@
     "descriptionPlaceholder": "ej. Pago a un amigo",
     "generateInvoice": "Generar invoice",
     "newInvoice": "Nuevo invoice",
-    "receiveError": "Error al generar el invoice"
+    "receiveError": "Error al generar el invoice",
+    "transactions": "Transacciones",
+    "noTransactions": "Sin transacciones todavia",
+    "noTransactionsDesc": "Tus pagos enviados y recibidos apareceran aca.",
+    "incoming": "Recibido",
+    "outgoing": "Enviado",
+    "settled": "Confirmado",
+    "pendingTx": "Pendiente",
+    "failedTx": "Fallido",
+    "loadMore": "Cargar mas",
+    "transactionsError": "No se pudieron cargar las transacciones",
+    "connectionLost": "No se pudo conectar con la wallet",
+    "connectionLostHint": "La conexion NWC expiro o el relay no responde. Reconecta tu wallet con una nueva URL.",
+    "reconnect": "Reconectar wallet"
   },
   "sats": {
     "sats": "sats",

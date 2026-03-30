@@ -1,6 +1,7 @@
 import { apiHandler, BadRequestError } from "@/lib/api";
 import { getDecryptedNwcUrl } from "@/app/api/wallets/route";
-import { NWCClient } from "@getalby/sdk";
+import { NWCClient, Nip47WalletError, Nip47TimeoutError, Nip47NetworkError } from "@getalby/sdk";
+import { extractPaymentHash } from "@/lib/lightning";
 
 const MAX_INVOICE_SATS = 1_000_000;
 const MAX_DESCRIPTION_LENGTH = 500;
@@ -47,11 +48,33 @@ export const POST = apiHandler(async (request, { session, db }) => {
     );
 
     const result = await Promise.race([invoicePromise, timeoutPromise]);
+    // Some wallets (e.g. Primal) return empty payment_hash — extract from BOLT11
+    const payment_hash = result.payment_hash || extractPaymentHash(result.invoice) || "";
     return {
       payment_request: result.invoice,
-      payment_hash: result.payment_hash,
+      payment_hash,
     };
-  } catch {
+  } catch (err) {
+    if (err instanceof Nip47WalletError) {
+      if (err.code === "NOT_IMPLEMENTED") {
+        throw new BadRequestError("make_invoice_not_supported");
+      }
+      if (err.code === "RATE_LIMITED") {
+        throw new BadRequestError("wallet_rate_limited");
+      }
+      throw new BadRequestError(`wallet_error: ${err.code}`);
+    }
+    if (err instanceof Nip47TimeoutError) {
+      throw new BadRequestError("nwc_timeout");
+    }
+    if (err instanceof Nip47NetworkError) {
+      throw new BadRequestError("nwc_relay_error");
+    }
+
+    const msg = err instanceof Error ? err.message : "";
+    if (msg === "timeout") {
+      throw new BadRequestError("nwc_timeout");
+    }
     throw new BadRequestError("invoice_failed");
   } finally {
     client.close();
