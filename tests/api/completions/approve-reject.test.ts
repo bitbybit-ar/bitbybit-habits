@@ -16,11 +16,14 @@ const chainable = () => {
   return chain;
 };
 
+const mockDeleteWhere = vi.fn().mockResolvedValue(undefined);
+
 vi.mock("@/lib/db", () => ({
   getDb: () => ({
     select: () => chainable(),
     insert: () => ({ values: (...args: unknown[]) => { mockInsertValues(...args); return { returning: () => Promise.resolve([{ id: "payment-1" }]) }; } }),
     update: () => ({ set: () => ({ where: () => ({ returning: mockUpdateReturning }) }) }),
+    delete: () => ({ where: mockDeleteWhere }),
   }),
   completions: { id: "id", habit_id: "h", status: "s", user_id: "u" },
   habits: { id: "id", family_id: "f", sat_reward: "sr", assigned_to: "at", name: "n" },
@@ -125,16 +128,16 @@ describe("/api/completions/reject", () => {
     expect(status).toBe(404);
   });
 
-  it("rejects completion", async () => {
+  it("rejects completion by deleting it", async () => {
     await setSessionCookie(testSession);
     selectResults.push([{
       id: UUID.completion1, user_id: UUID.user2, habit_name: "Read",
     }]);
-    mockUpdateReturning.mockResolvedValue([{ id: UUID.completion1, status: "rejected" }]);
 
-    const req = createRequest("POST", "/api/completions/reject", { completion_id: UUID.completion1, reason: "Not enough evidence" });
+    const req = createRequest("POST", "/api/completions/reject", { completion_id: UUID.completion1 });
     const { status, body } = await parseResponse(await reject(req));
     expect(status).toBe(200);
-    expect(body.data.status).toBe("rejected");
+    expect(body.data.deleted).toBe(true);
+    expect(mockDeleteWhere).toHaveBeenCalled();
   });
 });
