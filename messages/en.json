@@ -232,7 +232,10 @@
     "pendingTx": "Pending",
     "failedTx": "Failed",
     "loadMore": "Load more",
-    "transactionsError": "Could not load transactions"
+    "transactionsError": "Could not load transactions",
+    "connectionLost": "Could not reach wallet",
+    "connectionLostHint": "The NWC connection expired or the relay is not responding. Reconnect your wallet with a new URL.",
+    "reconnect": "Reconnect wallet"
   },
   "sats": {
     "sats": "sats",

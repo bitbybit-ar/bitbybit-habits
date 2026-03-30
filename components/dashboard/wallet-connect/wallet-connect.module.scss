@@ -178,6 +178,52 @@
   }
 }
 
+// ── Connection warning ──
+
+.connectionWarning {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-8;
+  padding: $spacing-16;
+  margin-bottom: $spacing-16;
+  border-radius: $border-radius-md;
+  background: alpha($color-warning, 8%);
+  border: 1px solid alpha($color-warning, 25%);
+}
+
+.warningText {
+  margin: 0;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-warning;
+}
+
+.warningHint {
+  margin: 0;
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  line-height: 1.4;
+}
+
+.reconnectButton {
+  align-self: flex-start;
+  margin-top: $spacing-4;
+  padding: $spacing-8 $spacing-16;
+  border-radius: $border-radius-sm;
+  border: 1px solid alpha($color-warning, 40%);
+  background: alpha($color-warning, 12%);
+  color: $color-warning;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: alpha($color-warning, 20%);
+    border-color: $color-warning;
+  }
+}
+
 // ── Balance ──
 
 .balanceSection {
@@ -189,6 +235,12 @@
   background: alpha($color-primary, 6%);
   border-radius: $border-radius-lg;
   border: 1px solid alpha($color-primary, 10%);
+
+  &[data-dead] {
+    opacity: 0.4;
+    border-color: alpha($color-text-secondary, 10%);
+    background: rgba(var(--glass-color, 255, 255, 255), 0.02);
+  }
 }
 
 .balanceIcon {
@@ -282,23 +334,28 @@
   cursor: pointer;
   transition: all 0.2s ease;
 
-  &:hover {
+  &:hover:not(:disabled) {
     background: rgba(var(--glass-color, 255, 255, 255), 0.06);
     border-color: rgba(var(--glass-color, 255, 255, 255), 0.2);
   }
 
-  &:active {
+  &:active:not(:disabled) {
     transform: scale(0.97);
   }
 
-  &[data-variant="send"]:hover {
+  &[data-variant="send"]:hover:not(:disabled) {
     border-color: alpha($color-accent, 40%);
     color: $color-accent;
   }
 
-  &[data-variant="receive"]:hover {
+  &[data-variant="receive"]:hover:not(:disabled) {
     border-color: alpha($color-secondary, 40%);
     color: $color-secondary;
+  }
+
+  &:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
   }
 }
 
@@ -321,10 +378,15 @@
   cursor: pointer;
   transition: all 0.2s ease;
 
-  &:hover {
+  &:hover:not(:disabled) {
     color: $color-text-primary;
     background: rgba(var(--glass-color, 255, 255, 255), 0.04);
     border-color: rgba(var(--glass-color, 255, 255, 255), 0.15);
+  }
+
+  &:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
   }
 }
 

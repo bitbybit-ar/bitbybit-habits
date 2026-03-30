@@ -232,7 +232,10 @@
     "pendingTx": "Pendiente",
     "failedTx": "Fallido",
     "loadMore": "Cargar mas",
-    "transactionsError": "No se pudieron cargar las transacciones"
+    "transactionsError": "No se pudieron cargar las transacciones",
+    "connectionLost": "No se pudo conectar con la wallet",
+    "connectionLostHint": "La conexion NWC expiro o el relay no responde. Reconecta tu wallet con una nueva URL.",
+    "reconnect": "Reconectar wallet"
   },
   "sats": {
     "sats": "sats",

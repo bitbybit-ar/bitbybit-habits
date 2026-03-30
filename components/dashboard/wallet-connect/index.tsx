@@ -43,6 +43,7 @@ export function WalletConnect() {
   const [saving, setSaving] = useState(false);
   const [balance, setBalance] = useState<number | null>(null);
   const [balanceLoading, setBalanceLoading] = useState(false);
+  const [connectionDead, setConnectionDead] = useState(false);
   const [nodeInfo, setNodeInfo] = useState<{
     alias: string | null;
     pubkey: string | null;
@@ -91,16 +92,26 @@ export function WalletConnect() {
       if (res.ok) {
         const data = await res.json();
         if (data.success) {
-          if (data.data?.balance_sats != null) {
+          const gotBalance = data.data?.balance_sats != null;
+          const gotNode = !!data.data?.node_info;
+
+          if (gotBalance) {
             setBalance(data.data.balance_sats);
+            setConnectionDead(false);
           }
-          if (data.data?.node_info) {
+          if (gotNode) {
             setNodeInfo(data.data.node_info);
+            setConnectionDead(false);
+          }
+
+          // Both null = NWC relay unreachable / stale connection
+          if (!gotBalance && !gotNode) {
+            setConnectionDead(true);
           }
         }
       }
     } catch {
-      // Balance fetch is best-effort
+      setConnectionDead(true);
     } finally {
       setBalanceLoading(false);
     }
@@ -391,7 +402,7 @@ export function WalletConnect() {
       {wallet && view === "main" && (
         <div className={styles.card}>
           <div className={styles.statusRow}>
-            <div className={styles.statusIndicator} data-connected="true" />
+            <div className={styles.statusIndicator} data-connected={connectionDead ? "false" : "true"} />
             <span className={styles.statusText}>
               {wallet.label || t("wallet.walletConnected")}
             </span>
@@ -400,7 +411,18 @@ export function WalletConnect() {
             </button>
           </div>
 
-          <div className={styles.balanceSection}>
+          {/* Stale connection warning */}
+          {connectionDead && !balanceLoading && (
+            <div className={styles.connectionWarning}>
+              <p className={styles.warningText}>{t("wallet.connectionLost")}</p>
+              <p className={styles.warningHint}>{t("wallet.connectionLostHint")}</p>
+              <button className={styles.reconnectButton} onClick={() => { handleDisconnect(); }}>
+                {t("wallet.reconnect")}
+              </button>
+            </div>
+          )}
+
+          <div className={styles.balanceSection} data-dead={connectionDead || undefined}>
             <div className={styles.balanceIcon}><BoltIcon size={24} /></div>
             <div className={styles.balanceInfo}>
               {balanceLoading ? (
@@ -418,11 +440,21 @@ export function WalletConnect() {
           </div>
 
           <div className={styles.actions}>
-            <button className={styles.actionButton} data-variant="send" onClick={() => setView("send")}>
+            <button
+              className={styles.actionButton}
+              data-variant="send"
+              onClick={() => setView("send")}
+              disabled={connectionDead}
+            >
               <SendIcon size={20} />
               <span>{t("wallet.send")}</span>
             </button>
-            <button className={styles.actionButton} data-variant="receive" onClick={() => setView("receive")}>
+            <button
+              className={styles.actionButton}
+              data-variant="receive"
+              onClick={() => setView("receive")}
+              disabled={connectionDead}
+            >
               <ReceiveIcon size={20} />
               <span>{t("wallet.receive")}</span>
             </button>
@@ -431,6 +463,7 @@ export function WalletConnect() {
           <button
             className={styles.txButton}
             onClick={() => { setView("transactions"); fetchTransactions(); }}
+            disabled={connectionDead}
           >
             <ListIcon size={16} />
             <span>{t("wallet.transactions")}</span>
