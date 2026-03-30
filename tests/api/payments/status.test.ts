@@ -42,7 +42,7 @@ vi.mock("@/lib/crypto", () => ({
 }));
 
 vi.mock("drizzle-orm", () => ({
-  eq: vi.fn(), and: vi.fn(),
+  eq: vi.fn(), and: vi.fn(), or: vi.fn(),
 }));
 
 import { GET } from "@/app/api/payments/[id]/status/route";
@@ -173,6 +173,29 @@ describe("GET /api/payments/[id]/status", () => {
     expect(status).toBe(200);
     expect(body.data.settled).toBe(false);
     expect(mockClose).toHaveBeenCalled();
+  });
+
+  it("updates failed payment to paid when invoice settled via QR", async () => {
+    await setSessionCookie(testSession);
+    mockSelectResult.mockReturnValueOnce([{
+      id: UUID.payment1,
+      status: "failed",
+      payment_hash: "abc123",
+      from_user_id: UUID.user1,
+      to_user_id: UUID.user2,
+    }]);
+    mockSelectResult.mockReturnValueOnce([{
+      nwc_url_encrypted: "enc_nostr+walletconnect://test",
+    }]);
+    mockLookupInvoice.mockResolvedValue({ settled_at: 1234567890 });
+
+    const req = createRequest("GET", `/api/payments/${UUID.payment1}/status`);
+    const { status, body } = await parseResponse(await GET(req, routeCtx));
+    expect(status).toBe(200);
+    expect(body.data.settled).toBe(true);
+    expect(mockUpdateSet).toHaveBeenCalledWith(
+      expect.objectContaining({ status: "paid" })
+    );
   });
 
   it("returns settled: false on NWC timeout", async () => {

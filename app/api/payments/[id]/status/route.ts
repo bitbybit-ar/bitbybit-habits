@@ -1,7 +1,7 @@
 import { apiHandler, NotFoundError, ForbiddenError } from "@/lib/api";
 import { payments, wallets } from "@/lib/db";
 import { decrypt } from "@/lib/crypto";
-import { eq, and } from "drizzle-orm";
+import { eq, and, or } from "drizzle-orm";
 import { NWCClient, Nip47WalletError } from "@getalby/sdk";
 
 /**
@@ -90,11 +90,15 @@ export const GET = apiHandler(async (_request, { session, db, params }) => {
     }
 
     if (settled) {
-      // Atomic update: only set to "paid" if still pending (prevents duplicate updates)
+      // Atomic update: set to "paid" if pending or failed (NWC auto-pay may have
+      // marked it failed before the manual QR payment settled)
       await db
         .update(payments)
         .set({ status: "paid", paid_at: new Date(), payment_method: "manual" })
-        .where(and(eq(payments.id, paymentId), eq(payments.status, "pending")));
+        .where(and(
+          eq(payments.id, paymentId),
+          or(eq(payments.status, "pending"), eq(payments.status, "failed"))
+        ));
 
       return { settled: true };
     }
