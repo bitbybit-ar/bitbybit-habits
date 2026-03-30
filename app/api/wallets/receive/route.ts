@@ -1,6 +1,7 @@
 import { apiHandler, BadRequestError } from "@/lib/api";
 import { getDecryptedNwcUrl } from "@/app/api/wallets/route";
 import { NWCClient, Nip47WalletError, Nip47TimeoutError, Nip47NetworkError } from "@getalby/sdk";
+import { extractPaymentHash } from "@/lib/lightning";
 
 const MAX_INVOICE_SATS = 1_000_000;
 const MAX_DESCRIPTION_LENGTH = 500;
@@ -48,10 +49,12 @@ export const POST = apiHandler(async (request, { session, db }) => {
     );
 
     const result = await Promise.race([invoicePromise, timeoutPromise]);
-    console.log(`[Wallet:Receive] Invoice created, hash: ${result.payment_hash?.slice(0, 8)}...`);
+    // Some wallets (e.g. Primal) return empty payment_hash — extract from BOLT11
+    const payment_hash = result.payment_hash || extractPaymentHash(result.invoice) || "";
+    console.log(`[Wallet:Receive] Invoice created, hash: ${payment_hash.slice(0, 8)}...`);
     return {
       payment_request: result.invoice,
-      payment_hash: result.payment_hash,
+      payment_hash,
     };
   } catch (err) {
     console.error("[Wallet:Receive] makeInvoice error:", err);
