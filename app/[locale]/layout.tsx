@@ -9,6 +9,7 @@ import Footer from "@/components/layout/footer";
 import { SwRegister } from "@/components/sw-register";
 import { ToastProvider } from "@/components/ui/toast";
 import { ThemeProvider } from "@/lib/theme-context";
+import { SessionProvider } from "@/lib/session-context";
 import { StructuredData } from "@/components/seo/structured-data";
 import "@/styles/globals.scss";
 
@@ -109,17 +110,19 @@ export default async function LocaleLayout({
       <body className={`${nunito.variable} ${nunitoSans.variable}`}>
         <NextIntlClientProvider locale={locale} messages={messages}>
           <ThemeProvider>
-            <ToastProvider>
-              <a href="#main-content" className="skip-link">
-                {messages && typeof messages === "object" && "accessibility" in messages
-                  ? (messages.accessibility as Record<string, string>).skipToContent
-                  : "Skip to content"}
-              </a>
-              <Navbar />
-              <SwRegister />
-              <main id="main-content">{children}</main>
-              <Footer />
-            </ToastProvider>
+            <SessionProvider>
+              <ToastProvider>
+                <a href="#main-content" className="skip-link">
+                  {messages && typeof messages === "object" && "accessibility" in messages
+                    ? (messages.accessibility as Record<string, string>).skipToContent
+                    : "Skip to content"}
+                </a>
+                <Navbar />
+                <SwRegister />
+                <main id="main-content">{children}</main>
+                <Footer />
+              </ToastProvider>
+            </SessionProvider>
           </ThemeProvider>
         </NextIntlClientProvider>
       </body>
