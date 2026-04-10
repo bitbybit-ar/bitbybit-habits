@@ -13,53 +13,24 @@ import {
 import { NotificationBell } from "@/components/dashboard/notification-bell";
 import { LanguageSwitcher } from "@/components/layout/language-switcher";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
+import { useSessionContext } from "@/lib/session-context";
 import styles from "./navbar.module.scss";
 import { cn } from "@/lib/utils";
-
-interface NavbarUser {
-  user_id: string;
-  display_name?: string;
-  role?: string | null;
-}
 
 export const Navbar: React.FC = () => {
   const t = useTranslations();
   const pathname = usePathname();
   const router = useRouter();
+  const { session: user, isLoading: sessionLoading, refreshSession, clearSession } = useSessionContext();
   const [visible, setVisible] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
-  const [user, setUser] = useState<NavbarUser | null>(null);
-  const [checkedSession, setCheckedSession] = useState(false);
 
   const isLanding = /^\/(es|en)?\/?$/.test(pathname);
   const isLoginPage = /^\/(es|en)\/login\/?$/.test(pathname);
   const isRegisterPage = /^\/(es|en)\/register\/?$/.test(pathname);
+  const checkedSession = !sessionLoading;
   const isLoggedIn = !!user;
-
-  // Fetch session on mount and on route changes (login/logout navigates)
-  useEffect(() => {
-    let cancelled = false;
-
-    fetch("/api/auth/session", { cache: "no-store" })
-      .then((res) => (res.ok ? res.json() : { success: false }))
-      .then((data) => {
-        if (!cancelled) {
-          setUser(data.success ? data.data : null);
-          setCheckedSession(true);
-        }
-      })
-      .catch(() => {
-        if (!cancelled) {
-          setUser(null);
-          setCheckedSession(true);
-        }
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [pathname]);
 
   const LANDING_LINKS = [
     { href: "#how-it-works", label: t("landing.nav.howItWorks") },
@@ -104,14 +75,15 @@ export const Navbar: React.FC = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [isLanding, closeMenu]);
 
-  // Close mobile menu on route change
+  // Refresh session + close mobile menu on route change
   useEffect(() => {
     closeMenu();
-  }, [pathname, closeMenu]);
+    void refreshSession();
+  }, [pathname, closeMenu, refreshSession]);
 
   const handleLogout = async () => {
     await fetch("/api/auth/logout", { method: "POST" });
-    setUser(null);
+    clearSession();
     router.push("/");
   };
 
