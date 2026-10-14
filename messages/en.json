@@ -524,7 +524,8 @@
     "footer": {
       "builtFor": "Built for",
       "hackathonName": "La Crypta Lightning Hackathons 2026",
-      "motto": "Bitcoin o Muerte"
+      "motto": "Bitcoin o Muerte",
+      "credit": "A <link>BitByBit</link> project"
     },
     "whyLightning": {
       "title": "Why Bitcoin Lightning?",
