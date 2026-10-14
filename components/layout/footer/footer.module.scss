@@ -40,6 +40,21 @@
   object-fit: cover;
 }
 
+.footer .credit {
+  font-size: $font-size-xs;
+  margin: $spacing-16 0 0;
+}
+
+.creditLink {
+  color: inherit;
+  text-decoration: underline;
+  @include transition;
+
+  &:hover {
+    color: $color-text-primary;
+  }
+}
+
 .motto {
   font-family: $font-family-display;
   font-size: 1.2rem;

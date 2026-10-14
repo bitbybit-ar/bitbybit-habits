@@ -2,11 +2,12 @@
 
 import React from "react";
 import Image from "next/image";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import styles from "./footer.module.scss";
 
 export const Footer: React.FC = () => {
   const t = useTranslations("landing.footer");
+  const studioUrl = `https://bitbybit.com.ar/${useLocale() === "es" ? "es" : "en"}`;
 
   return (
     <footer className={styles.footer}>
@@ -30,6 +31,15 @@ export const Footer: React.FC = () => {
           />
         </a>
       </div>
+      <p className={styles.credit}>
+        {t.rich("credit", {
+          link: (chunks) => (
+            <a href={studioUrl} target="_blank" rel="noopener" className={styles.creditLink}>
+              {chunks}
+            </a>
+          ),
+        })}
+      </p>
     </footer>
   );
 };
