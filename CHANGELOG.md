@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.1.0](https://github.com/bitbybit-ar/bitbybit-habits/compare/v1.0.0...v1.1.0) (2026-10-14)
+
+
+### Features
+
+* centralize session state with SessionProvider ([dfabd1f](https://github.com/bitbybit-ar/bitbybit-habits/commit/dfabd1f2848f7d12ab2bd4f097a97d2e1d16f4be))
+* centralize session with SessionProvider ([3014a31](https://github.com/bitbybit-ar/bitbybit-habits/commit/3014a316f811b4c9e487004857ec1c0c2b76367d))
+* credit BitByBit in the footer and use the studio favicon ([47a3cd7](https://github.com/bitbybit-ar/bitbybit-habits/commit/47a3cd7c482e964315d2a2b8476e1e199b9f3851))
+
 ## [Unreleased]
 
 ### Features — Lightning Payments (FOUNDATIONS hackathon)
