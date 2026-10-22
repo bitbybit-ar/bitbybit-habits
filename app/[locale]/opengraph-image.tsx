@@ -1,12 +1,14 @@
 import { ImageResponse } from "next/og";
+import { SITE_URL } from "@/lib/seo";
 
 export const runtime = "edge";
 export const alt = "BitByBit — Earn sats. Build habits.";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-export default function Image({ params }: { params: { locale: string } }) {
-  const isEn = params.locale === "en";
+export default async function Image({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const isEn = locale === "en";
 
   return new ImageResponse(
     (
@@ -100,7 +102,7 @@ export default function Image({ params }: { params: { locale: string } }) {
             fontSize: 20,
           }}
         >
-          <span>bitbybit.com.ar</span>
+          <span>{new URL(SITE_URL).host}</span>
           <span style={{ color: "#F7A825" }}>•</span>
           <span>Bitcoin Lightning Network</span>
         </div>

@@ -1,41 +1,19 @@
 export const dynamic = "force-static";
 
 import type { MetadataRoute } from "next";
+import { routing } from "@/i18n/routing";
+import { languageAlternates, localeUrl, PUBLIC_PATHS } from "@/lib/seo";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = "https://bitbybit.com.ar";
   const lastModified = new Date();
 
-  return [
-    {
-      url: baseUrl,
+  return PUBLIC_PATHS.flatMap((path) =>
+    routing.locales.map((locale) => ({
+      url: localeUrl(locale, path),
       lastModified,
-      changeFrequency: "weekly",
-      priority: 1,
-    },
-    {
-      url: `${baseUrl}/en`,
-      lastModified,
-      changeFrequency: "weekly",
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/es`,
-      lastModified,
-      changeFrequency: "weekly",
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/es/demo`,
-      lastModified,
-      changeFrequency: "monthly",
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/en/demo`,
-      lastModified,
-      changeFrequency: "monthly",
-      priority: 0.7,
-    },
-  ];
+      changeFrequency: path === "" ? ("weekly" as const) : ("monthly" as const),
+      priority: path === "" ? 1 : 0.8,
+      alternates: { languages: languageAlternates(path) },
+    })),
+  );
 }

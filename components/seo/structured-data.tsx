@@ -1,3 +1,5 @@
+import { localeUrl, SITE_NAME, SITE_URL } from "@/lib/seo";
+
 interface StructuredDataProps {
   locale: string;
 }
@@ -13,9 +15,9 @@ export function StructuredData({ locale }: StructuredDataProps) {
     "@graph": [
       {
         "@type": "WebApplication",
-        name: "BitByBit",
+        name: SITE_NAME,
         description,
-        url: "https://bitbybit.com.ar",
+        url: localeUrl(locale, ""),
         applicationCategory: "LifestyleApplication",
         operatingSystem: "Web",
         inLanguage: ["es", "en"],
@@ -27,9 +29,9 @@ export function StructuredData({ locale }: StructuredDataProps) {
       },
       {
         "@type": "Organization",
-        name: "BitByBit",
-        url: "https://bitbybit.com.ar",
-        logo: "https://bitbybit.com.ar/icons/icon.svg",
+        name: SITE_NAME,
+        url: SITE_URL,
+        logo: `${SITE_URL}/icons/icon.svg`,
       },
     ],
   };
