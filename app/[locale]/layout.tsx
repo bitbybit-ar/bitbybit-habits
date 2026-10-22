@@ -11,6 +11,7 @@ import { ToastProvider } from "@/components/ui/toast";
 import { ThemeProvider } from "@/lib/theme-context";
 import { SessionProvider } from "@/lib/session-context";
 import { StructuredData } from "@/components/seo/structured-data";
+import { SITE_NAME, SITE_URL } from "@/lib/seo";
 import "@/styles/globals.scss";
 
 const nunito = Nunito({
@@ -33,39 +34,12 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
-  const t = await getTranslations("common");
-  const seo = await getTranslations("seo");
-
-  const title = `${t("appName")} — ${seo("tagline")}`;
-  const description = seo("description");
-  const baseUrl = "https://bitbybit.com.ar";
-  const localeUrl = `${baseUrl}/${locale}`;
+  const seo = await getTranslations({ locale, namespace: "seo" });
 
   return {
-    title,
-    description,
-    metadataBase: new URL(baseUrl),
-    openGraph: {
-      type: "website",
-      locale: locale === "en" ? "en_US" : "es_AR",
-      alternateLocale: locale === "en" ? ["es_AR"] : ["en_US"],
-      url: localeUrl,
-      siteName: "BitByBit",
-      title,
-      description,
-    },
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-    },
-    alternates: {
-      canonical: localeUrl,
-      languages: {
-        es: "/es",
-        en: "/en",
-      },
-    },
+    title: `${SITE_NAME} — ${seo("tagline")}`,
+    description: seo("description"),
+    metadataBase: new URL(SITE_URL),
   };
 }
 

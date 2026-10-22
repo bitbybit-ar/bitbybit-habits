@@ -1,5 +1,8 @@
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
+import { NOINDEX } from "@/lib/seo";
+
+export const metadata = NOINDEX;
 
 export default async function DashboardGroupLayout({
   children,
