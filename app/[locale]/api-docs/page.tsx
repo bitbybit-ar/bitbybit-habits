@@ -18,7 +18,6 @@ export default function ApiDocsPage() {
   const [cssLoaded, setCssLoaded] = useState(false);
 
   useEffect(() => {
-    // @ts-expect-error — CSS module has no type declarations
     import("swagger-ui-react/swagger-ui.css").then(() => setCssLoaded(true));
 
     fetch("/api/docs")
