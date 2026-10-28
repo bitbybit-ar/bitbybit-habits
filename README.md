@@ -30,6 +30,7 @@ The reward is real, instant, and theirs. That's what makes the habit stick.
 | **API Docs** | OpenAPI 3.0 (Swagger) at `/api-docs` — 42 endpoints fully documented |
 | **Testing** | Vitest (207 tests across 37 API test files) |
 | **Icons** | Custom SVGs in `components/icons/` (no external icon libraries) |
+| **Hosting** | Vercel. Only `main` deploys (`git.deploymentEnabled` in `vercel.json`), so a pushed branch gets no preview; deployments are kept 1 day. Every deployment's function counts toward the team's storage |
 
 ## Getting Started
 
